@@ -132,3 +132,11 @@ test("panel shell clears stale groupMode and routes adhoc destination through pl
     /programCapacity\s*>\s*1[\s\S]*?selectedTvs:\s*\[\s*\]/
   );
 });
+
+test("panel shell exposes live commit toggle and shell_command execute path", () => {
+  const src = readPanelSource();
+  assert.match(src, /liveCommit/);
+  assert.match(src, /avaccess_execute_route_plan/);
+  assert.match(src, /Live Send|live commit/i);
+  assert.match(src, /inventory\.json/);
+});

@@ -34,7 +34,11 @@ const DEFAULT_STATE = {
   groupMode: null,
   selectedPrograms: [],
   lastPlan: null,
+  liveCommit: false,
 };
+
+const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
+const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 
 const SCREEN_TITLES = {
   "browse-sport": "Sports",
@@ -55,10 +59,18 @@ class PanelHealth extends HTMLElement {
     this._boundClick = this._onClick.bind(this);
     this._boundInput = this._onInput.bind(this);
     this._eventsBound = false;
+    this._inventoryLiveReady = false;
+    this._inventoryLoaded = false;
+    this._liveCommitSynced = false;
+  }
+
+  get hass() {
+    return this._hass;
   }
 
   set hass(hass) {
     this._hass = hass;
+    this._syncLiveCommitFromHass();
     this.render();
   }
 
@@ -74,6 +86,7 @@ class PanelHealth extends HTMLElement {
       this.addEventListener("input", this._boundInput);
       this._eventsBound = true;
     }
+    this._loadInventoryLiveReady();
     this.render();
   }
 
@@ -109,6 +122,64 @@ class PanelHealth extends HTMLElement {
   _setState(nextState) {
     this._state = { ...this._state, ...nextState };
     this.render();
+  }
+
+  async _loadInventoryLiveReady() {
+    try {
+      const response = await fetch(INVENTORY_JSON_URL);
+      if (!response.ok) {
+        this._inventoryLiveReady = false;
+      } else {
+        const inventory = await response.json();
+        this._inventoryLiveReady = isInventoryLiveReady(inventory);
+      }
+    } catch {
+      this._inventoryLiveReady = false;
+    }
+    this._inventoryLoaded = true;
+    if (this._state.liveCommit && !this._inventoryLiveReady) {
+      this._state = { ...this._state, liveCommit: false };
+    }
+    this._syncLiveCommitFromHass();
+    if (this.isConnected) this.render();
+  }
+
+  _syncLiveCommitFromHass() {
+    if (this._liveCommitSynced || !this._inventoryLoaded || !this._hass?.states) return;
+    const entity = this._hass.states["input_boolean.avaccess_live_commit"];
+    if (!entity) return;
+    this._liveCommitSynced = true;
+    const liveCommit = entity.state === "on" && this._inventoryLiveReady;
+    if (this._state.liveCommit !== liveCommit) {
+      this._state = { ...this._state, liveCommit };
+    }
+  }
+
+  _planSendLabel() {
+    return this._state.liveCommit ? "Live Send" : "Dry-run Send";
+  }
+
+  _renderLiveCommitToggle() {
+    const ready = this._inventoryLiveReady;
+    const active = this._state.liveCommit;
+    const tip = ready
+      ? "When on, Send executes IR+UDP via Home Assistant"
+      : "Live blocked: fill inventory hostnames (no REPLACE_ME) and export inventory.json";
+    return `
+      <div class="live-commit-row">
+        <button
+          type="button"
+          class="live-commit-toggle ${active ? "is-active" : ""}"
+          data-action="toggle-live-commit"
+          title="${escapeAttr(tip)}"
+          ${ready ? "" : "disabled aria-disabled=\"true\""}
+          aria-pressed="${active ? "true" : "false"}"
+        >
+          Live commit
+        </button>
+        <span class="live-commit-hint">${ready ? (active ? "Live" : "Dry-run") : "Inventory not live-ready"}</span>
+      </div>
+    `;
   }
 
   _captureGuideSearchCaret() {
@@ -289,6 +360,11 @@ class PanelHealth extends HTMLElement {
     }
     if (action === "send-tv-first") {
       this._sendTvFirst();
+      return;
+    }
+    if (action === "toggle-live-commit") {
+      if (!this._inventoryLiveReady) return;
+      this._setState({ liveCommit: !this._state.liveCommit });
       return;
     }
     if (action === "send-plan") {
@@ -531,28 +607,50 @@ class PanelHealth extends HTMLElement {
     });
   }
 
-  _sendPlan() {
+  async _sendPlan() {
     const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
     if (!groupMode) return;
     let programs = this._state.selectedPrograms;
     if ((!programs || programs.length === 0) && this._state.selectedContent) {
       programs = [this._toProgram(this._state.selectedContent)];
     }
+    const liveRequested = this._state.liveCommit;
+    const liveReady = this._inventoryLiveReady;
+    const commit = liveRequested && liveReady ? "live" : "dry_run";
     const plan = buildRoutePlan({
       mode: groupMode,
       programs,
       selectedTvs: this._state.selectedTvs,
       busyEncoderIds: listBusyEncoderIds(this._assignments),
-      commit: "dry_run",
+      commit,
     });
     if (plan.error) {
       this._setState({ lastPlan: plan, groupMode });
       return;
     }
+
+    const warnings = [...(plan.warnings ?? [])];
+    if (liveRequested && !liveReady) {
+      warnings.push(LIVE_BLOCKED_WARNING);
+    }
+
     const assignments = applyRoutePlan(this._assignments, plan);
     this._saveAssignments(assignments);
+
+    if (liveRequested && liveReady && this.hass?.callService) {
+      try {
+        const plan_b64 = btoa(unescape(encodeURIComponent(JSON.stringify(plan))));
+        await this.hass.callService("shell_command", "avaccess_execute_route_plan", {
+          plan_b64,
+          live: true,
+        });
+      } catch (error) {
+        warnings.push(`Live execute failed: ${error?.message ?? error}`);
+      }
+    }
+
     this._setState({
-      lastPlan: plan,
+      lastPlan: { ...plan, warnings },
       selectedPrograms: [],
       selectedContent: null,
       groupMode: null,
@@ -760,7 +858,7 @@ class PanelHealth extends HTMLElement {
     const sendDisabled =
       !content || this._state.selectedTvs.length === 0 || Boolean(speculative?.error);
     const sendLabel = viaPlan
-      ? "Dry-run Send"
+      ? this._planSendLabel()
       : `Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}`;
     return `
       <section class="screen">
@@ -902,7 +1000,7 @@ class PanelHealth extends HTMLElement {
           data-action="send-plan"
           ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
         >
-          Dry-run Send
+          ${this._planSendLabel()}
         </button>
       </section>
     `;
@@ -1007,7 +1105,7 @@ class PanelHealth extends HTMLElement {
                   data-action="send-plan"
                   ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
                 >
-                  Dry-run Send
+                  ${this._planSendLabel()}
                 </button>`
               : `<button
                   type="button"
@@ -1197,6 +1295,7 @@ class PanelHealth extends HTMLElement {
         .mode-toggle button,
         .preset-chip,
         .tv-toolbar button,
+        .live-commit-toggle,
         .primary-action,
         .stub-card {
           border: 0;
@@ -1451,6 +1550,39 @@ class PanelHealth extends HTMLElement {
           box-shadow: inset 0 0 0 2px var(--cyan);
         }
 
+        .live-commit-row {
+          align-items: center;
+          display: flex;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+
+        .live-commit-toggle {
+          background: rgba(165, 243, 252, 0.08);
+          border: 1px solid rgba(165, 243, 252, 0.35);
+          border-radius: var(--radius-md);
+          color: var(--cyan-stage);
+          font-weight: 800;
+          padding: 10px 14px;
+        }
+
+        .live-commit-toggle.is-active {
+          background: var(--cyan);
+          border-color: var(--cyan);
+          color: white;
+        }
+
+        .live-commit-toggle[disabled] {
+          cursor: not-allowed;
+          opacity: 0.55;
+        }
+
+        .live-commit-hint {
+          color: var(--muted-stage);
+          font-size: 0.8rem;
+          font-weight: 700;
+        }
+
         .dry-run-summary {
           background: var(--surface);
           border: 1px solid rgba(14, 116, 144, 0.35);
@@ -1581,6 +1713,7 @@ class PanelHealth extends HTMLElement {
             <div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>
           </header>
           ${this._renderChipRow()}
+          ${this._renderLiveCommitToggle()}
           ${this._renderDryRunSummary()}
           ${this._renderScreen()}
         </div>
@@ -1602,6 +1735,37 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value);
+}
+
+function deviceById(devices, id) {
+  if (!Array.isArray(devices)) return null;
+  return devices.find((item) => item?.id === id) ?? null;
+}
+
+function hostnameIssue(deviceId, device) {
+  const hostname = device?.hostname;
+  if (!hostname || typeof hostname !== "string" || !hostname.trim()) {
+    return `${deviceId}: missing hostname`;
+  }
+  if (hostname.includes("REPLACE_ME")) {
+    return `${deviceId}: hostname contains REPLACE_ME`;
+  }
+  return null;
+}
+
+function isInventoryLiveReady(inventory) {
+  if (!inventory || typeof inventory !== "object") return false;
+  const encoders = inventory.encoders;
+  const receivers = inventory.receivers;
+  for (let i = 1; i <= 10; i += 1) {
+    const encId = `ENC-${String(i).padStart(2, "0")}`;
+    if (hostnameIssue(encId, deviceById(encoders, encId))) return false;
+  }
+  for (let i = 1; i <= 35; i += 1) {
+    const rxId = `RX-${String(i).padStart(2, "0")}`;
+    if (hostnameIssue(rxId, deviceById(receivers, rxId))) return false;
+  }
+  return true;
 }
 
 if (!customElements.get("panel-health")) {
