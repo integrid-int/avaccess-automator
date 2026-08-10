@@ -10,6 +10,7 @@ frequently and can route content to:
 
 - Sport pages are generated from `channels.yaml -> sports_pages`
 - Dashboard includes per-sport views (NFL, College Football, Basketball examples)
+- IR transport uses Global Caché iTach (`channels.yaml: ir_transport: itach_tcp`)
 - Added helper: `input_text.avaccess_target_rxs`
 - Added scripts:
   - `script.avaccess_route_selected_program_to_tvs`

@@ -57,6 +57,8 @@ shell_command:
     --profile numeric_v1 --preset 3_nine_programs
   avaccess_route_targets: python3 /config/avaccess/scripts/route_targets.py --inventory /config/avaccess/config/inventory.yaml
     --encoder "{{ encoder }}" --targets "{{ targets }}"
+  avaccess_itach_send_channel: python3 /config/avaccess/scripts/send_xumo_ir_itach.py --itach-config /config/avaccess/config/itach.yaml
+    --encoder "{{ encoder }}" --digits "{{ digits }}" --suffix "{{ suffix }}" --digit-delay-ms {{ digit_delay_ms }}
 script:
   avaccess_preset_1_all:
     alias: AVAccess Preset 1_all
@@ -106,16 +108,6 @@ script:
         program_g: ENC-07
         program_h: ENC-08
         program_i: ENC-09
-      encoder_ir_entity:
-        ENC-01: remote.xumo_01_ir
-        ENC-02: remote.xumo_02_ir
-        ENC-03: remote.xumo_03_ir
-        ENC-04: remote.xumo_04_ir
-        ENC-05: remote.xumo_05_ir
-        ENC-06: remote.xumo_06_ir
-        ENC-07: remote.xumo_07_ir
-        ENC-08: remote.xumo_08_ir
-        ENC-09: remote.xumo_09_ir
       channels:
         espn:
           number: '206'
@@ -185,26 +177,26 @@ script:
       program_key: '{{ (program | default(states(''input_select.avaccess_program''), true)) | lower }}'
       channel_key: '{{ (channel | default(states(''input_select.avaccess_channel''), true)) | lower }}'
       selected_encoder: '{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}'
-      remote_entity: '{{ encoder_ir_entity[selected_encoder] if selected_encoder in encoder_ir_entity else none }}'
       channel_number: '{{ channels[channel_key][''number''] if channel_key in channels else none }}'
       digit_delay: '00:00:00.25'
+      digit_delay_ms: 250
+      suffix_text: '{{ suffix_commands | join('','') }}'
     sequence:
     - choose:
-      - conditions: '{{ remote_entity is not none and channel_number is not none }}'
+      - conditions: '{{ selected_encoder is not none and channel_number is not none }}'
         sequence:
-        - repeat:
-            for_each: '{{ (channel_number | string | list) + suffix_commands }}'
-            sequence:
-            - service: remote.send_command
-              data:
-                entity_id: '{{ remote_entity }}'
-                command: '{{ repeat.item }}'
-            - delay: '{{ digit_delay }}'
+        - service: shell_command.avaccess_itach_send_channel
+          data:
+            encoder: '{{ selected_encoder }}'
+            digits: '{{ channel_number }}'
+            suffix: '{{ suffix_text }}'
+            digit_delay_ms: '{{ digit_delay_ms }}'
       default:
       - service: system_log.write
         data:
           level: warning
-          message: AVAccess tune failed; check program/channel maps. program={{ program_key }} channel={{ channel_key }}
+          message: AVAccess tune failed (itach_tcp); check program/channel/itach maps. program={{ program_key }} channel={{
+            channel_key }}
   avaccess_tune_selected_channel:
     alias: AVAccess tune selected channel
     mode: single

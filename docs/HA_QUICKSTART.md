@@ -20,11 +20,13 @@ On your HA host, place this repo under:
 cd /config/avaccess
 cp config/inventory.example.yaml config/inventory.yaml
 cp config/channels.example.yaml config/channels.yaml
+cp config/itach.example.yaml config/itach.yaml
 ```
 
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
-- `config/channels.yaml` → program→encoder mapping, IR entities, favorite channels, and favorite macros
+- `config/channels.yaml` → program→encoder mapping, favorite channels, sports pages, and macros
+- `config/itach.yaml` → iTach host/port/output mapping + learned Xumo IR codes
 - `config/schedule_sync.yaml` (optional) → weekly auto-update + blackout-aware channel selection (ZIP 27403)
 - `config/channels.yaml` `sports_pages:` section → defines NFL/NCAA/NBA tabs in dashboard
 
@@ -86,6 +88,7 @@ Phase 2 routing flow (one/many TVs):
 For automated weekly NFL channel updates, see:
 - `docs/WEEKLY_SCHEDULE_SYNC.md`
 - `docs/PHASE2_SPORTS_PAGES.md`
+- `docs/GLOBAL_CACHE_ITACH_SETUP.md`
 
 Optional maintenance shell commands (used by the pretty Settings tab buttons):
 

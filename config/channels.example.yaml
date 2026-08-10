@@ -1,4 +1,6 @@
 provider: spectrum
+ir_transport: itach_tcp
+itach_config_path: /config/avaccess/config/itach.yaml
 
 # Tie logical programs to encoder-connected Xumo boxes.
 program_to_encoder:
@@ -12,8 +14,8 @@ program_to_encoder:
   program_h: ENC-08
   program_i: ENC-09
 
-# Home Assistant IR remote entities (example names).
-# Each Xumo should have a dedicated IR target for reliability.
+# Home Assistant IR remote entities (optional fallback when ir_transport=ha_remote).
+# For ir_transport=itach_tcp these are not required.
 encoder_ir_entity:
   ENC-01: remote.xumo_01_ir
   ENC-02: remote.xumo_02_ir

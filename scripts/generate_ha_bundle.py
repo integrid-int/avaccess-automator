@@ -60,12 +60,17 @@ def resolve_presets(inventory: dict[str, Any], profile_override: str | None) -> 
 
 
 def validate_channels(channels_cfg: dict[str, Any]) -> None:
-    required_keys = ("program_to_encoder", "encoder_ir_entity", "channels")
+    required_keys = ("program_to_encoder", "channels")
     for key in required_keys:
         if key not in channels_cfg:
             raise SystemExit(f"channels file missing required key: {key}")
     if not isinstance(channels_cfg["channels"], dict) or not channels_cfg["channels"]:
         raise SystemExit("channels must be a non-empty mapping")
+    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
+    if ir_transport not in {"ha_remote", "itach_tcp"}:
+        raise SystemExit("ir_transport must be 'ha_remote' or 'itach_tcp'")
+    if ir_transport == "ha_remote" and "encoder_ir_entity" not in channels_cfg:
+        raise SystemExit("channels file missing required key for ha_remote mode: encoder_ir_entity")
 
 
 def build_package(
@@ -78,10 +83,13 @@ def build_package(
     validate_channels(channels_cfg)
 
     program_to_encoder = channels_cfg["program_to_encoder"]
-    encoder_ir_entity = channels_cfg["encoder_ir_entity"]
+    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
+    encoder_ir_entity = channels_cfg.get("encoder_ir_entity", {})
     channels = channels_cfg["channels"]
     suffix_commands = channels_cfg.get("suffix_commands", ["ok"])
     digit_delay = channels_cfg.get("digit_delay", "00:00:00.25")
+    digit_delay_ms = int(channels_cfg.get("digit_delay_ms", 250))
+    itach_config_path = str(channels_cfg.get("itach_config_path", "/config/avaccess/config/itach.yaml"))
 
     program_keys = list(program_to_encoder.keys())
     channel_keys = list(channels.keys())
@@ -109,6 +117,12 @@ def build_package(
         "python3 /config/avaccess/scripts/route_targets.py "
         f"--inventory {inventory_ha_path} --encoder \"{{{{ encoder }}}}\" --targets \"{{{{ targets }}}}\""
     )
+    if ir_transport == "itach_tcp":
+        shell_command["avaccess_itach_send_channel"] = (
+            "python3 /config/avaccess/scripts/send_xumo_ir_itach.py "
+            f"--itach-config {itach_config_path} --encoder \"{{{{ encoder }}}}\" "
+            "--digits \"{{ digits }}\" --suffix \"{{ suffix }}\" --digit-delay-ms {{ digit_delay_ms }}"
+        )
 
     scripts["avaccess_set_program"] = {
         "alias": "AVAccess select program",
@@ -124,29 +138,24 @@ def build_package(
         ],
     }
 
-    scripts["avaccess_tune_channel"] = {
-        "alias": "AVAccess tune channel on Xumo",
-        "mode": "queued",
-        "fields": {
-            "program": {
-                "description": "Program key (optional; uses selected program when omitted)",
-                "example": program_keys[0],
-            },
-            "channel": {"description": "Channel key from channels map", "example": channel_keys[0]},
-        },
-        "variables": {
-            "program_to_encoder": program_to_encoder,
-            "encoder_ir_entity": encoder_ir_entity,
-            "channels": channels,
-            "suffix_commands": suffix_commands,
-            "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
-            "channel_key": "{{ (channel | default(states('input_select.avaccess_channel'), true)) | lower }}",
-            "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
-            "remote_entity": "{{ encoder_ir_entity[selected_encoder] if selected_encoder in encoder_ir_entity else none }}",
-            "channel_number": "{{ channels[channel_key]['number'] if channel_key in channels else none }}",
-            "digit_delay": digit_delay,
-        },
-        "sequence": [
+    tune_variables: dict[str, Any] = {
+        "program_to_encoder": program_to_encoder,
+        "channels": channels,
+        "suffix_commands": suffix_commands,
+        "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
+        "channel_key": "{{ (channel | default(states('input_select.avaccess_channel'), true)) | lower }}",
+        "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
+        "channel_number": "{{ channels[channel_key]['number'] if channel_key in channels else none }}",
+        "digit_delay": digit_delay,
+        "digit_delay_ms": digit_delay_ms,
+        "suffix_text": "{{ suffix_commands | join(',') }}",
+    }
+    if ir_transport == "ha_remote":
+        tune_variables["encoder_ir_entity"] = encoder_ir_entity
+        tune_variables["remote_entity"] = (
+            "{{ encoder_ir_entity[selected_encoder] if selected_encoder in encoder_ir_entity else none }}"
+        )
+        tune_sequence = [
             {
                 "choose": [
                     {
@@ -176,14 +185,60 @@ def build_package(
                         "data": {
                             "level": "warning",
                             "message": (
-                                "AVAccess tune failed; check program/channel maps. "
+                                "AVAccess tune failed (ha_remote); check program/channel/entity maps. "
                                 "program={{ program_key }} channel={{ channel_key }}"
                             ),
                         },
                     }
                 ],
             }
-        ],
+        ]
+    else:
+        tune_sequence = [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
+                        "sequence": [
+                            {
+                                "service": "shell_command.avaccess_itach_send_channel",
+                                "data": {
+                                    "encoder": "{{ selected_encoder }}",
+                                    "digits": "{{ channel_number }}",
+                                    "suffix": "{{ suffix_text }}",
+                                    "digit_delay_ms": "{{ digit_delay_ms }}",
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess tune failed (itach_tcp); check program/channel/itach maps. "
+                                "program={{ program_key }} channel={{ channel_key }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ]
+
+    scripts["avaccess_tune_channel"] = {
+        "alias": "AVAccess tune channel on Xumo",
+        "mode": "queued",
+        "fields": {
+            "program": {
+                "description": "Program key (optional; uses selected program when omitted)",
+                "example": program_keys[0],
+            },
+            "channel": {"description": "Channel key from channels map", "example": channel_keys[0]},
+        },
+        "variables": tune_variables,
+        "sequence": tune_sequence,
     }
 
     scripts["avaccess_tune_selected_channel"] = {

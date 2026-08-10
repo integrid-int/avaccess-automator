@@ -3,11 +3,17 @@
 Xumo channel/app navigation is most reliable through IR commands.  
 This document shows a practical pattern for one-tap channel buttons on iPad.
 
+Current project default transport:
+- **Global Caché iTach IP2IR-P** (`ir_transport: itach_tcp`)
+
 ## 1) Prerequisites
 
 1. An IR integration in Home Assistant (Broadlink, ESPHome IR, or Infrared proxy).  
 2. Learned commands for digits `0-9`, `ok`, `home`, arrows, back.  
 3. One IR emitter/entity per Xumo (recommended), or carefully isolated emitters.
+
+For direct iTach setup (without HA remote entities), see:
+- `docs/GLOBAL_CACHE_ITACH_SETUP.md`
 
 ## 2) Data model
 
