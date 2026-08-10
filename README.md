@@ -141,7 +141,7 @@ Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=9`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=10`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 

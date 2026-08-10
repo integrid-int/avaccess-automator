@@ -5,6 +5,7 @@ import {
   applyAssignment,
   applyRoutePlan,
   listBusyEncoderIds,
+  getAssignmentForProgram,
   getAssignmentForTv,
   resolveSendPresetId,
   createEmptyAssignments,
@@ -123,4 +124,32 @@ test("applyRoutePlan no-ops when plan has error", () => {
     error: "No free encoders",
   });
   assert.deepEqual(after, before);
+});
+
+test("getAssignmentForProgram finds ENC-XX slots by programId after applyRoutePlan", () => {
+  let assignments = createEmptyAssignments();
+  assignments = applyRoutePlan(assignments, {
+    mode: "adhoc",
+    commit: "dry_run",
+    slots: [
+      {
+        index: 1,
+        encoderId: "ENC-01",
+        program: { kind: "game", id: "g1", label: "A @ B", channel: "FOX" },
+        tvs: [1, 5, 9],
+        tune: null,
+        udp: null,
+        status: "planned",
+      },
+    ],
+    warnings: [],
+  });
+
+  const byProgram = getAssignmentForProgram(assignments, "g1");
+  assert.ok(byProgram);
+  assert.equal(byProgram.routeId, "ENC-01");
+  assert.equal(byProgram.programId, "g1");
+  assert.deepEqual(byProgram.tvs, [1, 5, 9]);
+  assert.equal(getAssignmentForProgram(assignments, "ENC-01")?.programId, "g1");
+  assert.equal(getAssignmentForProgram(assignments, "missing"), null);
 });

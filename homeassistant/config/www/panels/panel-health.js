@@ -2,6 +2,7 @@ import {
   applyAssignment,
   applyRoutePlan,
   createEmptyAssignments,
+  getAssignmentForProgram,
   getAssignmentForTv,
   listBusyEncoderIds,
   loadAssignments,
@@ -135,7 +136,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _routeBadgeHtml(routeId) {
-    const route = this._assignments[routeId];
+    const route = getAssignmentForProgram(this._assignments, routeId);
     if (!route?.tvs?.length) return "";
     const count = route.tvs.length;
     const preview = route.tvs.slice(0, 3).join(", ");
@@ -316,17 +317,18 @@ class PanelHealth extends HTMLElement {
   }
 
   _seedDestinationTvs(routeId) {
-    return [...(this._assignments[routeId]?.tvs ?? [])].sort((a, b) => a - b);
+    const assignment = getAssignmentForProgram(this._assignments, routeId);
+    return [...(assignment?.tvs ?? [])].sort((a, b) => a - b);
   }
 
   _seedDestinationMode(routeId) {
-    const assignment = this._assignments[routeId];
+    const assignment = getAssignmentForProgram(this._assignments, routeId);
     if (!assignment?.tvs?.length) return "presets";
     return assignment.presetId ? "presets" : "tvs";
   }
 
   _seedDestinationPresetId(routeId) {
-    return this._assignments[routeId]?.presetId ?? null;
+    return getAssignmentForProgram(this._assignments, routeId)?.presetId ?? null;
   }
 
   _setDestMode(value) {
@@ -742,6 +744,7 @@ class PanelHealth extends HTMLElement {
   _renderDestinationScreen() {
     const content = this._state.selectedContent;
     const isAdhoc = this._state.destMode === "tvs" || this._state.groupMode === "adhoc";
+    const viaPlan = this._shouldSendViaPlan();
     const programs = content ? [this._toProgram(content)] : [];
     const speculative =
       isAdhoc && content && this._state.selectedTvs.length > 0
@@ -756,6 +759,9 @@ class PanelHealth extends HTMLElement {
     const noFreeEncoders = speculative?.error === "No free encoders";
     const sendDisabled =
       !content || this._state.selectedTvs.length === 0 || Boolean(speculative?.error);
+    const sendLabel = viaPlan
+      ? "Dry-run Send"
+      : `Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}`;
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -781,7 +787,7 @@ class PanelHealth extends HTMLElement {
           data-action="send-destination"
           ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
         >
-          Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
+          ${sendLabel}
         </button>
       </section>
     `;

@@ -46,6 +46,20 @@ export function getAssignmentForTv(assignments, tv) {
   return null;
 }
 
+/** Resolve a route by program/content id (ENC-XX slots store programId separately). */
+export function getAssignmentForProgram(assignments, programId) {
+  if (!programId || !assignments) return null;
+  if (assignments[programId]) {
+    return { routeId: programId, ...assignments[programId] };
+  }
+  for (const [routeId, assignment] of Object.entries(assignments)) {
+    if (assignment.programId === programId) {
+      return { routeId, ...assignment };
+    }
+  }
+  return null;
+}
+
 export function loadAssignments(storage, key) {
   try {
     const raw = storage.getItem(key);
