@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,28 @@ from scripts.avaccess.xmltv_lib import Program, fetch_xmltv_bytes, parse_xmltv
 
 DEFAULT_CONFIG = ROOT / "config" / "guide_epg.yaml"
 DEFAULT_OUT = ROOT / "homeassistant" / "config" / "www" / "avaccess" / "guide_epg.json"
+
+_NFL_RE = re.compile(
+    r"\bnfl\b|sunday night football|monday night football|thursday night football",
+    re.I,
+)
+_CFB_RE = re.compile(r"college football|\bncaa football\b", re.I)
+_NBA_RE = re.compile(r"\bnba\b", re.I)
+_NHL_RE = re.compile(r"\bnhl\b", re.I)
+
+
+def classify_sport_key(title: str) -> str:
+    """Map an EPG title to a Sports tab key."""
+    text = str(title or "")
+    if _NFL_RE.search(text):
+        return "nfl"
+    if _CFB_RE.search(text):
+        return "cfb"
+    if _NBA_RE.search(text):
+        return "nba"
+    if _NHL_RE.search(text):
+        return "nhl"
+    return "other"
 
 
 def _iso(moment: dt.datetime | None) -> str | None:
@@ -69,7 +92,92 @@ def _select_now_next(
     return current, upcoming
 
 
-def build_guide_epg(cfg: dict[str, Any], now: dt.datetime | None = None) -> dict[str, Any]:
+def _load_lineup_sports(
+    cfg: dict[str, Any], config_path: Path | None = None
+) -> dict[str, str]:
+    """Return channelNumber → name for sports-category lineup rows."""
+    explicit = cfg.get("sports_channel_numbers")
+    names: dict[str, str] = {}
+    lineup_path = cfg.get("lineup_file")
+    if lineup_path:
+        path = Path(str(lineup_path))
+        if not path.is_absolute():
+            candidates = [ROOT / path]
+            if config_path is not None:
+                candidates.insert(0, config_path.parent / path)
+            path = next((p for p in candidates if p.is_file()), candidates[0])
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for ch in data.get("channels") or []:
+            if str(ch.get("category", "")).lower() != "sports":
+                continue
+            number = str(ch.get("number", "")).strip()
+            if not number:
+                continue
+            names[number] = str(ch.get("name") or number)
+    if isinstance(explicit, list) and explicit:
+        allowed = [str(n) for n in explicit]
+        names = {n: names.get(n, n) for n in allowed}
+    return names
+
+
+def _sport_item(*, number: str, name: str, program: Program) -> dict[str, Any]:
+    start_iso = _iso(program.start) or ""
+    return {
+        "id": f"sport-{number}-{start_iso}",
+        "channelNumber": number,
+        "channelName": name,
+        "title": program.title,
+        "start": _iso(program.start),
+        "end": _iso(program.stop),
+        "sportKey": classify_sport_key(program.title),
+    }
+
+
+def build_sports_block(
+    *,
+    channel_programs: dict[str, list[Program]],
+    sports_names: dict[str, str],
+    now: dt.datetime,
+    window_hours: int,
+) -> dict[str, Any]:
+    """Build Now + Upcoming sports lists (no duplicates)."""
+    window_end = now + dt.timedelta(hours=window_hours)
+    now_items: list[dict[str, Any]] = []
+    upcoming_items: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
+    def sort_key(number: str) -> tuple[int, str]:
+        return (int(number), number) if number.isdigit() else (10**9, number)
+
+    for number, name in sorted(sports_names.items(), key=lambda kv: sort_key(kv[0])):
+        programs = sorted(channel_programs.get(number, []), key=lambda p: p.start)
+        for program in programs:
+            item = _sport_item(number=number, name=name, program=program)
+            if item["id"] in seen_ids:
+                continue
+            if _is_airing(program, now):
+                now_items.append(item)
+                seen_ids.add(item["id"])
+                continue
+            if now < program.start <= window_end:
+                upcoming_items.append(item)
+                seen_ids.add(item["id"])
+
+    now_items.sort(key=lambda i: i.get("start") or "")
+    upcoming_items.sort(key=lambda i: i.get("start") or "")
+    return {
+        "windowHours": window_hours,
+        "now": now_items,
+        "upcoming": upcoming_items,
+    }
+
+
+def build_guide_epg(
+    cfg: dict[str, Any],
+    now: dt.datetime | None = None,
+    *,
+    config_path: Path | None = None,
+) -> dict[str, Any]:
     """Build guide EPG JSON from config mapping Spectrum numbers → XMLTV ids."""
     tz_name = str(cfg.get("timezone") or "UTC")
     tz = ZoneInfo(tz_name)
@@ -96,6 +204,7 @@ def build_guide_epg(cfg: dict[str, Any], now: dt.datetime | None = None) -> dict
         raise ValueError("config.channel_number_map must be a mapping")
 
     out_channels: dict[str, Any] = {}
+    programs_by_number: dict[str, list[Program]] = {}
     for number, xmltv_ids in number_map.items():
         number_s = str(number)
         if isinstance(xmltv_ids, str):
@@ -109,6 +218,7 @@ def build_guide_epg(cfg: dict[str, Any], now: dt.datetime | None = None) -> dict
         channel_programs: list[Program] = []
         for ch_id in ids:
             channel_programs.extend(by_channel.get(ch_id, []))
+        programs_by_number[number_s] = channel_programs
         current, upcoming = _select_now_next(channel_programs, now)
         out_channels[number_s] = {
             "number": number_s,
@@ -116,10 +226,20 @@ def build_guide_epg(cfg: dict[str, Any], now: dt.datetime | None = None) -> dict
             "next": _program_payload(upcoming),
         }
 
+    sports_names = _load_lineup_sports(cfg, config_path=config_path)
+    window_hours = int(cfg.get("sports_window_hours") or 12)
+    sports = build_sports_block(
+        channel_programs=programs_by_number,
+        sports_names=sports_names,
+        now=now,
+        window_hours=window_hours,
+    )
+
     return {
         "zip": str(cfg.get("zip_code", "")),
         "generatedAt": now.astimezone(dt.timezone.utc).isoformat(),
         "channels": out_channels,
+        "sports": sports,
     }
 
 
@@ -147,7 +267,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         cfg = load_config(args.config)
-        payload = build_guide_epg(cfg)
+        payload = build_guide_epg(cfg, config_path=args.config.resolve())
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(
             json.dumps(payload, indent=2, sort_keys=False) + "\n",

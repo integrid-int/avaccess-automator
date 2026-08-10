@@ -2,12 +2,22 @@
 <!DOCTYPE tv SYSTEM "xmltv.dtd">
 <tv>
   <channel id="espn.example"><display-name>ESPN</display-name></channel>
+  <channel id="espn2.example"><display-name>ESPN2</display-name></channel>
   <channel id="fox.example"><display-name>WGHP</display-name></channel>
   <programme start="20260810180000 +0000" stop="20260810190000 +0000" channel="espn.example">
     <title>SportsCenter</title>
   </programme>
-  <programme start="20260810190000 +0000" stop="20260810200000 +0000" channel="espn.example">
+  <programme start="20260810190000 +0000" stop="20260810210000 +0000" channel="espn.example">
+    <title>College Football: Georgia vs Alabama</title>
+  </programme>
+  <programme start="20260810210000 +0000" stop="20260810230000 +0000" channel="espn.example">
     <title>NFL Live</title>
+  </programme>
+  <programme start="20260810183000 +0000" stop="20260810200000 +0000" channel="espn2.example">
+    <title>NBA: Lakers at Celtics</title>
+  </programme>
+  <programme start="20260810200000 +0000" stop="20260810220000 +0000" channel="espn2.example">
+    <title>NHL: Bruins at Maple Leafs</title>
   </programme>
   <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="fox.example">
     <title>Local News</title>

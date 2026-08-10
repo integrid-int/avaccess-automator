@@ -1,4 +1,4 @@
-# XMLTV → guide_epg.json builder config (ZIP 27403 Spectrum/Xumo favorites).
+# XMLTV → guide_epg.json builder config (ZIP 27403 Spectrum Gold / TV Platinum).
 # Copy to config/guide_epg.yaml and point source at your XMLTV feed.
 #
 #   python3 scripts/avaccess/build_guide_epg.py \
@@ -16,14 +16,28 @@ source:
   file: tests/fixtures/guide_sample.xmltv
   compression: none
 
-# Spectrum/Xumo guide number → XMLTV channel id(s). First matching programmes win.
+# Used to resolve sports-category channel numbers/names when sports_channel_numbers omitted.
+lineup_file: config/spectrum_lineup_27403.json
+
+sports_window_hours: 12
+
+# Spectrum guide number → XMLTV channel id(s). First matching programmes win.
+# Numbers match Greensboro Gold/Platinum snapshot (ESPN=17, ESPN2=16, locals 7/9/10/11).
 channel_number_map:
-  "4": ["fox.example"]       # WGHP FOX
-  "2": []                    # WFMY CBS — fill with XMLTV id
-  "12": []                   # WXII NBC
-  "45": []                   # WXLV ABC
-  "206": ["espn.example"]    # ESPN
-  "207": []                  # ESPN2
-  "400": []                  # FS1
-  "245": []                  # TNT
-  "705": []                  # NFL Sunday Ticket 1
+  "7": ["fox.example"]        # stub: map WXLV/local as needed
+  "9": []                     # WFMY CBS
+  "10": []                    # WGHP FOX
+  "11": []                    # WXII NBC
+  "16": ["espn2.example"]     # ESPN2
+  "17": ["espn.example"]      # ESPN
+  "38": []                    # NBC Sports
+  "51": []                    # FanDuel Sports Network South-Carolinas
+  "52": []                    # Golf Channel
+  "67": []                    # FanDuel Sports Network Southeast
+  "302": []                   # ESPNews
+  "306": []                   # MLB Network
+  "308": []                   # NBA TV
+  "310": []                   # NFL Network
+  "312": []                   # NHL Network
+  "315": []                   # CBS Sports Network
+  "370": []                   # ESPNU
