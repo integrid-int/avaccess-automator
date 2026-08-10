@@ -17,6 +17,7 @@ import {
   STORAGE_KEY,
   TOKENS,
   filterGuideChannels,
+  mergeGuideWithEpg,
   range,
 } from "./panel-data.js";
 import { buildRoutePlan, stripedTvs } from "./route-planner.js";
@@ -39,6 +40,10 @@ const DEFAULT_STATE = {
 
 const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
+const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
+const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
+const GUIDE_UNAVAILABLE_BANNER =
+  "Guide listings unavailable — channel list only";
 
 const SCREEN_TITLES = {
   "browse-sport": "Sports",
@@ -62,6 +67,9 @@ class PanelHealth extends HTMLElement {
     this._inventoryLiveReady = false;
     this._inventoryLoaded = false;
     this._liveCommitSynced = false;
+    this.guideEpg = null;
+    this.guideEpgAvailable = false;
+    this._guideEpgTimer = null;
   }
 
   get hass() {
@@ -87,6 +95,10 @@ class PanelHealth extends HTMLElement {
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
+    this._loadGuideEpg();
+    if (!this._guideEpgTimer) {
+      this._guideEpgTimer = setInterval(() => this._loadGuideEpg(), GUIDE_EPG_REFRESH_MS);
+    }
     this.render();
   }
 
@@ -95,6 +107,10 @@ class PanelHealth extends HTMLElement {
       this.removeEventListener("click", this._boundClick);
       this.removeEventListener("input", this._boundInput);
       this._eventsBound = false;
+    }
+    if (this._guideEpgTimer) {
+      clearInterval(this._guideEpgTimer);
+      this._guideEpgTimer = null;
     }
   }
 
@@ -142,6 +158,50 @@ class PanelHealth extends HTMLElement {
     }
     this._syncLiveCommitFromHass();
     if (this.isConnected) this.render();
+  }
+
+  async _loadGuideEpg() {
+    try {
+      const response = await fetch(GUIDE_EPG_JSON_URL, { cache: "no-store" });
+      if (!response.ok) {
+        this.guideEpg = null;
+        this.guideEpgAvailable = false;
+      } else {
+        const feed = await response.json();
+        this.guideEpg = feed;
+        const { epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, feed);
+        this.guideEpgAvailable = epgAvailable;
+      }
+    } catch {
+      this.guideEpg = null;
+      this.guideEpgAvailable = false;
+    }
+    if (this.isConnected) this.render();
+  }
+
+  _guideFeedState() {
+    const { channels, epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, this.guideEpg);
+    return {
+      channels: filterGuideChannels(channels, this._state.guideQuery),
+      guideEpgAvailable: epgAvailable,
+    };
+  }
+
+  _guideUnavailableBannerHtml(guideEpgAvailable) {
+    if (guideEpgAvailable) return "";
+    return `<div class="guide-epg-banner" role="status">${GUIDE_UNAVAILABLE_BANNER}</div>`;
+  }
+
+  _renderGuideRowCells(channel) {
+    const nowTitle = channel.nowTitle ? String(channel.nowTitle) : "";
+    const nextTitle = channel.nextTitle ? String(channel.nextTitle) : "";
+    return `
+      <b>${escapeHtml(channel.number)}</b>
+      <span class="guide-name">${escapeHtml(channel.name)}</span>
+      <span class="guide-now" title="${escapeAttr(nowTitle)}">${nowTitle ? escapeHtml(nowTitle) : "—"}</span>
+      <span class="guide-next" title="${escapeAttr(nextTitle)}">${nextTitle ? escapeHtml(nextTitle) : "—"}</span>
+      ${this._routeBadgeHtml(channel.id)}
+    `;
   }
 
   _syncLiveCommitFromHass() {
@@ -790,26 +850,24 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderGuideScreen() {
-    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    const { channels, guideEpgAvailable } = this._guideFeedState();
     return `
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse guide</p>
           <h2 aria-label="Spectrum · ZIP 27403">Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
         </div>
+        ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
         <label class="search">
-          <span>Search by channel, name, or category</span>
-          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+          <span>Search by channel, name, or title</span>
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
         </label>
         <div class="list">
           ${channels
             .map(
               (channel) => `
                 <button type="button" class="guide-row" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
-                  <b>${escapeHtml(channel.number)}</b>
-                  <span>${escapeHtml(channel.name)}</span>
-                  <em>${escapeHtml(channel.category)}</em>
-                  ${this._routeBadgeHtml(channel.id)}
+                  ${this._renderGuideRowCells(channel)}
                 </button>
               `
             )
@@ -1055,12 +1113,13 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderGuideProgramOptions() {
-    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    const { channels, guideEpgAvailable } = this._guideFeedState();
     const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
     return `
+      ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
       <label class="search">
-        <span>Search by channel, name, or category</span>
-        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+        <span>Search by channel, name, or title</span>
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
       </label>
       <div class="list">
         ${channels
@@ -1068,10 +1127,7 @@ class PanelHealth extends HTMLElement {
             const selected = selectedIds.has(channel.id) ? "is-selected" : "";
             return `
               <button type="button" class="guide-row ${selected}" data-action="toggle-program" data-value="${escapeAttr(channel.id)}">
-                <b>${escapeHtml(channel.number)}</b>
-                <span>${escapeHtml(channel.name)}</span>
-                <em>${escapeHtml(channel.category)}</em>
-                ${this._routeBadgeHtml(channel.id)}
+                ${this._renderGuideRowCells(channel)}
               </button>
             `;
           })
@@ -1168,11 +1224,12 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderGuideContentOptions() {
-    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    const { channels, guideEpgAvailable } = this._guideFeedState();
     return `
+      ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
       <label class="search">
-        <span>Search by channel, name, or category</span>
-        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+        <span>Search by channel, name, or title</span>
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
       </label>
       <div class="list">
         ${channels
@@ -1180,10 +1237,7 @@ class PanelHealth extends HTMLElement {
             const selected = this._state.selectedContent?.id === channel.id ? "is-selected" : "";
             return `
               <button type="button" class="guide-row ${selected}" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
-                <b>${escapeHtml(channel.number)}</b>
-                <span>${escapeHtml(channel.name)}</span>
-                <em>${escapeHtml(channel.category)}</em>
-                ${this._routeBadgeHtml(channel.id)}
+                ${this._renderGuideRowCells(channel)}
               </button>
             `;
           })
@@ -1484,16 +1538,48 @@ class PanelHealth extends HTMLElement {
           margin: 0 0 8px;
         }
 
+        .guide-epg-banner {
+          color: var(--muted);
+          font-weight: 700;
+          margin: 0 0 12px;
+        }
+
         .guide-row {
           align-items: center;
           display: grid;
           gap: 10px;
-          grid-template-columns: 64px 1fr auto auto;
+          grid-template-columns: 56px minmax(90px, 1.1fr) minmax(70px, 1fr) minmax(70px, 1fr) auto;
         }
 
         .guide-row b {
           color: var(--cyan);
           font-size: 1.1rem;
+        }
+
+        .guide-name {
+          font-weight: 700;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .guide-now,
+        .guide-next {
+          color: var(--muted);
+          font-size: 0.9rem;
+          overflow: hidden;
+        }
+
+        .guide-now {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .guide-next {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          white-space: normal;
         }
 
         .guide-row em {
