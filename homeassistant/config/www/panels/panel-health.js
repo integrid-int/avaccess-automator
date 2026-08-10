@@ -8,6 +8,7 @@ import {
 import {
   GUIDE_CHANNELS,
   PRESETS,
+  SPECTRUM_ZIP,
   SPORTS,
   STORAGE_KEY,
   TOKENS,
@@ -247,7 +248,7 @@ class PanelHealth extends HTMLElement {
               data-action="open-sport"
               data-value="${escapeAttr(item.id)}"
             >
-              <span>${escapeHtml(item.icon)}</span>${escapeHtml(item.title)}
+              <span>${escapeHtml(item.icon)}</span>${escapeHtml(item.chipTitle ?? item.title)}
             </button>
           `
         ).join("")}
@@ -301,7 +302,7 @@ class PanelHealth extends HTMLElement {
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse guide</p>
-          <h2>Spectrum ${escapeHtml(this._panel?.config?.environment ?? "test")} guide</h2>
+          <h2>Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
         </div>
         <label class="search">
           <span>Search by channel, name, or category</span>
@@ -453,7 +454,7 @@ class PanelHealth extends HTMLElement {
         }
 
         .stage {
-          border-radius: 24px;
+          border-radius: var(--radius-md);
           background: var(--graphite);
           color: var(--text-stage);
           padding: 18px;
@@ -487,7 +488,7 @@ class PanelHealth extends HTMLElement {
 
         .state-pill {
           border: 1px solid rgba(165, 243, 252, 0.35);
-          border-radius: 999px;
+          border-radius: var(--radius-md);
           color: var(--cyan-stage);
           padding: 8px 12px;
           white-space: nowrap;
@@ -516,7 +517,7 @@ class PanelHealth extends HTMLElement {
         .chip {
           align-items: center;
           background: rgba(255, 255, 255, 0.09);
-          border-radius: 999px;
+          border-radius: var(--radius-md);
           color: var(--text-stage);
           display: inline-flex;
           gap: 8px;
@@ -531,7 +532,7 @@ class PanelHealth extends HTMLElement {
 
         .screen {
           background: var(--surface);
-          border-radius: 20px;
+          border-radius: var(--radius-md);
           color: var(--text);
           min-height: 420px;
           padding: 18px;
@@ -570,7 +571,7 @@ class PanelHealth extends HTMLElement {
         .stub-card {
           background: #f9fafb;
           border: 1px solid #e5e7eb;
-          border-radius: 16px;
+          border-radius: var(--radius-md);
           color: var(--text);
           cursor: pointer;
           padding: 14px;
@@ -681,7 +682,7 @@ class PanelHealth extends HTMLElement {
         }
 
         .tv.is-assigned:not(.is-selected) {
-          background: #fef3c7;
+          background: #d1d5db;
         }
 
         .tv.is-selected {
@@ -691,7 +692,7 @@ class PanelHealth extends HTMLElement {
 
         .primary-action {
           background: var(--cyan);
-          border-radius: 14px;
+          border-radius: var(--radius-md);
           color: white;
           font-weight: 900;
           padding: 14px 18px;

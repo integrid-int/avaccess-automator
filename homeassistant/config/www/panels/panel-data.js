@@ -82,6 +82,7 @@ export const SPORTS = [
   {
     id: "nfl",
     title: "NFL",
+    chipTitle: "NFL",
     icon: "🏈",
     games: [
       game("nfl-1", "Chiefs", "kc", "Bills", "buf", "FOX", "1:00 PM"),
@@ -94,6 +95,7 @@ export const SPORTS = [
   {
     id: "cfb",
     title: "College Football",
+    chipTitle: "CFB",
     icon: "🎓",
     games: [
       game("cfb-1", "Georgia", "uga", "Alabama", "ala", "ABC", "3:30 PM", "ncaa"),
@@ -105,6 +107,7 @@ export const SPORTS = [
   {
     id: "nba",
     title: "NBA",
+    chipTitle: "NBA",
     icon: "🏀",
     games: [
       game("nba-1", "Lakers", "lal", "Celtics", "bos", "TNT", "7:30 PM", "nba"),
@@ -116,6 +119,7 @@ export const SPORTS = [
   {
     id: "nhl",
     title: "NHL",
+    chipTitle: "NHL",
     icon: "🏒",
     games: [
       game("nhl-1", "Bruins", "bos", "Maple Leafs", "tor", "TNT", "7:00 PM", "nhl"),
@@ -127,6 +131,7 @@ export const SPORTS = [
   {
     id: "mlb",
     title: "MLB",
+    chipTitle: "MLB",
     icon: "⚾",
     games: [
       game("mlb-1", "Yankees", "nyy", "Red Sox", "bos", "YES", "7:05 PM", "mlb"),
@@ -138,6 +143,7 @@ export const SPORTS = [
   {
     id: "wnba",
     title: "WNBA",
+    chipTitle: "WNBA",
     icon: "🏀",
     games: [
       game("wnba-1", "Aces", "lv", "Liberty", "ny", "ESPN2", "8:00 PM", "wnba"),
