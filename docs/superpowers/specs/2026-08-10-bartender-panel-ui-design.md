@@ -1,7 +1,7 @@
 # Bartender Sports Routing Panel UI Design
 
 **Date:** 2026-08-10  
-**Status:** Spec updated — awaiting re-approval (TV-first path added)  
+**Status:** Approved — implementation plan written  
 **Surface:** Home Assistant custom panel (`panel-health` / `/panel-health`) for iPad Companion
 
 ## Problem
