@@ -1,0 +1,50 @@
+# Global Cache iTach IP2IR-P layout for 10 Xumo boxes (12 outputs total, 2 spare)
+# Units: gc1..gc4 (3 IR outputs each)
+#
+# Each output corresponds to one stick-on emitter and one Xumo box.
+# Use one emitter per Xumo to avoid cross-talk.
+
+controllers:
+  gc1_p1: { host: 192.168.10.210, port: 4998, module: 1, connector: 1 }
+  gc1_p2: { host: 192.168.10.210, port: 4998, module: 1, connector: 2 }
+  gc1_p3: { host: 192.168.10.210, port: 4998, module: 1, connector: 3 }
+  gc2_p1: { host: 192.168.10.211, port: 4998, module: 1, connector: 1 }
+  gc2_p2: { host: 192.168.10.211, port: 4998, module: 1, connector: 2 }
+  gc2_p3: { host: 192.168.10.211, port: 4998, module: 1, connector: 3 }
+  gc3_p1: { host: 192.168.10.212, port: 4998, module: 1, connector: 1 }
+  gc3_p2: { host: 192.168.10.212, port: 4998, module: 1, connector: 2 }
+  gc3_p3: { host: 192.168.10.212, port: 4998, module: 1, connector: 3 }
+  gc4_p1: { host: 192.168.10.213, port: 4998, module: 1, connector: 1 }
+  gc4_p2: { host: 192.168.10.213, port: 4998, module: 1, connector: 2 }
+  gc4_p3: { host: 192.168.10.213, port: 4998, module: 1, connector: 3 }
+
+# Map each encoder's Xumo to one physical iTach IR output.
+encoder_to_output:
+  ENC-01: gc1_p1
+  ENC-02: gc1_p2
+  ENC-03: gc1_p3
+  ENC-04: gc2_p1
+  ENC-05: gc2_p2
+  ENC-06: gc2_p3
+  ENC-07: gc3_p1
+  ENC-08: gc3_p2
+  ENC-09: gc3_p3
+  ENC-10: gc4_p1
+
+# IR command payloads for sendir (replace with your learned Xumo codes).
+# Value format = everything after the sequence id in:
+# sendir,<module>:<connector>,<seq>,<THIS_PAYLOAD>
+codes:
+  "0": "38000,1,1,REPLACE_WITH_XUMO_CODE_0"
+  "1": "38000,1,1,REPLACE_WITH_XUMO_CODE_1"
+  "2": "38000,1,1,REPLACE_WITH_XUMO_CODE_2"
+  "3": "38000,1,1,REPLACE_WITH_XUMO_CODE_3"
+  "4": "38000,1,1,REPLACE_WITH_XUMO_CODE_4"
+  "5": "38000,1,1,REPLACE_WITH_XUMO_CODE_5"
+  "6": "38000,1,1,REPLACE_WITH_XUMO_CODE_6"
+  "7": "38000,1,1,REPLACE_WITH_XUMO_CODE_7"
+  "8": "38000,1,1,REPLACE_WITH_XUMO_CODE_8"
+  "9": "38000,1,1,REPLACE_WITH_XUMO_CODE_9"
+  ok: "38000,1,1,REPLACE_WITH_XUMO_CODE_OK"
+  back: "38000,1,1,REPLACE_WITH_XUMO_CODE_BACK"
+  home: "38000,1,1,REPLACE_WITH_XUMO_CODE_HOME"
