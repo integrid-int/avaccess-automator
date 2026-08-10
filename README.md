@@ -9,6 +9,7 @@ Home Assistant panel validation playground for high-availability style test runs
   `homeassistant/config/configuration.yaml`.
 - A panel validation utility at `scripts/validate_panels.py`.
 - Automated tests for the validator in `tests/test_validate_panels.py`.
+- Interactive sports assignment demo panel with group/individual assignment controls.
 
 ## Python setup for local validation
 
@@ -36,6 +37,7 @@ python3 -m venv .venv
 3. Open Home Assistant:
    - URL: `http://localhost:8123`
    - Panel path: `/panel-health`
+   - Sidebar title: `Sports Assignments`
 
 ## Panel validation workflows
 
