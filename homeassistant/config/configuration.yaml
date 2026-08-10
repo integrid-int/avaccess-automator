@@ -7,10 +7,10 @@ scene: !include scenes.yaml
 
 panel_custom:
   - name: panel-health
-    sidebar_title: Sports Assignments
+    sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=1
+    module_url: /local/panels/panel-health.js?v=3
     require_admin: false
     config:
       environment: test
