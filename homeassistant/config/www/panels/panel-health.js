@@ -860,4 +860,6 @@ class PanelHealth extends HTMLElement {
   }
 }
 
-customElements.define("panel-health", PanelHealth);
+if (!customElements.get("panel-health")) {
+  customElements.define("panel-health", PanelHealth);
+}
