@@ -115,7 +115,10 @@ def test_continues_after_slot_error(monkeypatch):
     )
     assert report["ok"] is False
     assert report["slots"][0]["status"] == "error"
+    assert report["slots"][0]["error"] == "ir failed"
+    assert report["slots"][0]["message"] == "ir failed"
     assert report["slots"][1]["status"] == "ok"
+    assert "error" not in report["slots"][1]
     assert any("ir failed" in e for e in report["errors"])
 
 
@@ -146,6 +149,37 @@ def test_live_preflight_fails_on_bad_inventory(monkeypatch):
     }
     with pytest.raises(erp.PreflightError):
         erp.execute_plan(plan, inventory=inv, itach={}, live=True)
+
+
+def test_live_preflight_fails_on_missing_network(monkeypatch):
+    monkeypatch.setattr(erp, "send_ir_digits", lambda **kw: None)
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [
+            {
+                "index": 1,
+                "encoderId": "ENC-01",
+                "program": {"id": "g1", "channelNumber": "206"},
+                "tvs": [1],
+                "tune": {"channelNumber": "206"},
+                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                "status": "planned",
+            }
+        ],
+        "warnings": [],
+    }
+    inv = {
+        "network": {},
+        "encoders": [{"id": "ENC-01", "hostname": "IPE935-AAA"}],
+        "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
+    }
+    with pytest.raises(erp.PreflightError) as excinfo:
+        erp.execute_plan(plan, inventory=inv, itach={}, live=True)
+    assert any("broadcast" in e for e in excinfo.value.errors)
+    assert any("udp_switch_port" in e for e in excinfo.value.errors)
 
 
 def test_cli_dry_run_exit_0(monkeypatch, tmp_path, capsys):

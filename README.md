@@ -82,23 +82,27 @@ For local Core (no Docker), the same paths are available via checked-in symlinks
 
 #### 1. Inventory hostnames
 
-Copy the striped example and replace every `REPLACE_ME` hostname for encoders (`ENC-01`…`ENC-10`) and receivers (`RX-01`…`RX-35`) you will reference:
+The repo ships `config/inventory.yaml` as a **symlink** to `inventory.example.yaml`. Remove it (or use `--remove-destination`) before copying so `cp` does not follow the symlink and overwrite the example:
 
 ```bash
+rm config/inventory.yaml
 cp config/inventory.example.yaml config/inventory.yaml
 # edit config/inventory.yaml — real TX/RX hostnames, broadcast/port
+#
+# equivalent: cp --remove-destination config/inventory.example.yaml config/inventory.yaml
 ```
 
-The repo ships `config/inventory.yaml` as a symlink to the example so Live stays gated off until you replace it with a filled file.
+Fill every `REPLACE_ME` hostname for encoders (`ENC-01`…`ENC-10`) and receivers (`RX-01`…`RX-35`), plus non-empty `network.broadcast` and `network.udp_switch_port`.
 
 #### 2. iTach IR codes
 
+Same symlink pattern — remove the link first (or `cp --remove-destination`) so the example is not clobbered:
+
 ```bash
+rm config/itach.yaml
 cp config/itach.example.yaml config/itach.yaml
 # edit config/itach.yaml — iTach host, encoder→output map, digit / OK IR codes
 ```
-
-Same symlink pattern applies until real IR codes are filled.
 
 #### 3. Export inventory JSON (panel Live gate)
 
@@ -109,7 +113,7 @@ After editing inventory YAML, refresh the browser-readable gate file:
   --input config/inventory.yaml
 ```
 
-Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/avaccess/inventory.json`). The panel fetches this on connect; Live commit stays disabled while any referenced hostname is missing or contains `REPLACE_ME`.
+Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/avaccess/inventory.json`). The panel Live gate requires **all** `ENC-01`…`ENC-10` and `RX-01`…`RX-35` hostnames filled (no `REPLACE_ME`) plus non-empty `network.broadcast` and `network.udp_switch_port`. CLI `--live` is narrower: it validates only devices referenced by the plan (and the same network fields).
 
 #### 4. Dry-run vs Live toggle
 
@@ -119,6 +123,8 @@ Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/av
 | **Live** | Panel **Live commit** on **and** inventory JSON live-ready | After local apply, posts plan to `shell_command.avaccess_execute_route_plan` (`plan_b64` + `live: true`) for IR tune → UDP reconnect per slot |
 
 The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass` is available. If Live is requested but inventory is not ready, Send still applies locally and records a warning: `Live blocked: inventory not ready`.
+
+Home Assistant `shell_command` often does **not** return script stdout to `hass.callService`. The panel best-effort parses stdout when present and merges per-slot statuses into the Live summary; otherwise check the CLI JSON report or Home Assistant logs for detailed per-slot live results.
 
 #### 5. CLI execute (offline / ops)
 
@@ -130,7 +136,7 @@ The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass
   --plan-file /tmp/plan.json \
   --dry-run
 
-# Live (requires inventory validation for the plan; exit 2 on preflight fail)
+# Live (validates plan-referenced ENC/RX + network; exit 2 on preflight fail)
 .venv/bin/python scripts/avaccess/execute_route_plan.py \
   --inventory config/inventory.yaml \
   --itach-config config/itach.yaml \
@@ -138,7 +144,7 @@ The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass
   --live
 ```
 
-Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot status and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
+Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot `status` / `error` and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
 
 #### 6. Still out of scope (Track C)
 
@@ -161,7 +167,7 @@ Group presets and the adhoc TV grid are exclusive modes: bartenders plan either 
 Every Send builds a `RoutePlan`, shows the summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser.
 
 - **Dry-run Send** (default) — occupancy only; no IR or UDP.
-- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json`); then Send calls HA `shell_command.avaccess_execute_route_plan` for live IR tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing.
+- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json` with all ENC/RX hostnames + network fields); then Send calls HA `shell_command.avaccess_execute_route_plan` for live IR tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing. When the UI cannot capture shell stdout, use the CLI JSON report or HA logs for per-slot live results.
 
 ### Preset 1 — ALL (one program → all TVs)
 
@@ -222,7 +228,7 @@ Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=11`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=12`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 

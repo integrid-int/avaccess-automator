@@ -637,20 +637,31 @@ class PanelHealth extends HTMLElement {
     const assignments = applyRoutePlan(this._assignments, plan);
     this._saveAssignments(assignments);
 
+    let lastPlan = { ...plan, warnings };
     if (liveRequested && liveReady && this.hass?.callService) {
       try {
         const plan_b64 = btoa(unescape(encodeURIComponent(JSON.stringify(plan))));
-        await this.hass.callService("shell_command", "avaccess_execute_route_plan", {
-          plan_b64,
-          live: true,
-        });
+        const response = await this.hass.callService(
+          "shell_command",
+          "avaccess_execute_route_plan",
+          {
+            plan_b64,
+            live: true,
+          }
+        );
+        const report = parseLiveExecuteReport(response);
+        if (report) {
+          lastPlan = mergeLiveReportIntoPlan(lastPlan, report);
+        }
       } catch (error) {
-        warnings.push(`Live execute failed: ${error?.message ?? error}`);
+        const message = `Live execute failed: ${error?.message ?? error}`;
+        warnings.push(message);
+        lastPlan = { ...lastPlan, warnings, error: lastPlan.error ?? message };
       }
     }
 
     this._setState({
-      lastPlan: { ...plan, warnings },
+      lastPlan,
       selectedPrograms: [],
       selectedContent: null,
       groupMode: null,
@@ -934,6 +945,7 @@ class PanelHealth extends HTMLElement {
   _renderDryRunSummary() {
     const plan = this._state.lastPlan;
     if (!plan) return "";
+    const summaryLabel = plan.commit === "live" ? "Live summary" : "Dry-run summary";
     const error = plan.error
       ? `<p class="plan-error">${escapeHtml(plan.error)}</p>`
       : "";
@@ -941,20 +953,29 @@ class PanelHealth extends HTMLElement {
       .map((warning) => `<p class="plan-warning">${escapeHtml(warning)}</p>`)
       .join("");
     const slots = (plan.slots ?? [])
-      .map(
-        (slot) => `
+      .map((slot) => {
+        const status =
+          slot.status && slot.status !== "planned"
+            ? ` · ${escapeHtml(slot.status)}${
+                slot.status === "error" && (slot.error || slot.message)
+                  ? `: ${escapeHtml(slot.error || slot.message)}`
+                  : ""
+              }`
+            : "";
+        return `
           <li>
             <b>${escapeHtml(slot.encoderId)}</b>
             · ${escapeHtml(slot.program?.label ?? "Program")}
             · TVs ${escapeHtml((slot.tvs ?? []).join(", "))}
+            ${status}
           </li>
-        `
-      )
+        `;
+      })
       .join("");
     return `
       <aside class="dry-run-summary" aria-live="polite">
         <div class="dry-run-heading">
-          <p class="eyebrow">Dry-run summary</p>
+          <p class="eyebrow">${summaryLabel}</p>
           <button type="button" class="link-button" data-action="dismiss-plan">Dismiss</button>
         </div>
         ${error}
@@ -1753,8 +1774,32 @@ function hostnameIssue(deviceId, device) {
   return null;
 }
 
+function networkIssues(inventory) {
+  const net = inventory?.network;
+  if (!net || typeof net !== "object") {
+    return ["Missing network.broadcast", "Missing network.udp_switch_port"];
+  }
+  const issues = [];
+  if (
+    net.broadcast == null ||
+    typeof net.broadcast !== "string" ||
+    !net.broadcast.trim()
+  ) {
+    issues.push("Missing or empty network.broadcast");
+  }
+  if (
+    net.udp_switch_port == null ||
+    net.udp_switch_port === "" ||
+    (typeof net.udp_switch_port === "string" && !net.udp_switch_port.trim())
+  ) {
+    issues.push("Missing or empty network.udp_switch_port");
+  }
+  return issues;
+}
+
 function isInventoryLiveReady(inventory) {
   if (!inventory || typeof inventory !== "object") return false;
+  if (networkIssues(inventory).length > 0) return false;
   const encoders = inventory.encoders;
   const receivers = inventory.receivers;
   for (let i = 1; i <= 10; i += 1) {
@@ -1766,6 +1811,66 @@ function isInventoryLiveReady(inventory) {
     if (hostnameIssue(rxId, deviceById(receivers, rxId))) return false;
   }
   return true;
+}
+
+function extractShellCommandStdout(response) {
+  if (response == null) return null;
+  if (typeof response === "string") return response;
+  if (typeof response !== "object") return null;
+  if (typeof response.stdout === "string") return response.stdout;
+  if (typeof response.output === "string") return response.output;
+  const nested = response.response;
+  if (nested && typeof nested === "object") {
+    if (typeof nested.stdout === "string") return nested.stdout;
+    if (typeof nested.output === "string") return nested.output;
+  }
+  return null;
+}
+
+function parseLiveExecuteReport(response) {
+  const stdout = extractShellCommandStdout(response);
+  if (!stdout || typeof stdout !== "string") return null;
+  const lines = stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    try {
+      const parsed = JSON.parse(lines[i]);
+      if (parsed && typeof parsed === "object" && Array.isArray(parsed.slots)) {
+        return parsed;
+      }
+    } catch {
+      // keep scanning for a JSON report line
+    }
+  }
+  return null;
+}
+
+function mergeLiveReportIntoPlan(plan, report) {
+  const reportSlots = Array.isArray(report?.slots) ? report.slots : [];
+  const slots = (plan.slots ?? []).map((slot, index) => {
+    const match =
+      reportSlots.find((item) => item?.encoderId && item.encoderId === slot.encoderId) ??
+      reportSlots[index];
+    if (!match || typeof match !== "object") return slot;
+    const next = { ...slot };
+    if (match.status) next.status = match.status;
+    const err = match.error ?? match.message;
+    if (err) {
+      next.error = err;
+      next.message = err;
+    } else if (match.status === "ok") {
+      delete next.error;
+      delete next.message;
+    }
+    return next;
+  });
+  const warnings = [...(plan.warnings ?? [])];
+  for (const err of report?.errors ?? []) {
+    if (err && !warnings.includes(err)) warnings.push(String(err));
+  }
+  return { ...plan, slots, warnings };
 }
 
 if (!customElements.get("panel-health")) {

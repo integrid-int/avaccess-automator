@@ -52,16 +52,32 @@ def _hostname_issue(device_id: str, device: dict | None) -> str | None:
     return None
 
 
+def _network_issues(inventory: dict) -> list[str]:
+    """Require non-empty network.broadcast and network.udp_switch_port."""
+    errors: list[str] = []
+    net = inventory.get("network") if isinstance(inventory, dict) else None
+    if not isinstance(net, dict):
+        return ["Missing network.broadcast", "Missing network.udp_switch_port"]
+    broadcast = net.get("broadcast")
+    if broadcast is None or str(broadcast).strip() == "":
+        errors.append("Missing or empty network.broadcast")
+    port = net.get("udp_switch_port")
+    if port is None or str(port).strip() == "":
+        errors.append("Missing or empty network.udp_switch_port")
+    return errors
+
+
 def validate_inventory_for_plan(
     inventory: dict, plan: dict
 ) -> tuple[bool, list[str]]:
     """Validate that every ENC/RX referenced by ``plan`` has a real hostname."""
     errors: list[str] = []
+    errors.extend(_network_issues(inventory))
     encoders = inventory.get("encoders") if isinstance(inventory, dict) else None
     receivers = inventory.get("receivers") if isinstance(inventory, dict) else None
     slots = plan.get("slots") if isinstance(plan, dict) else None
     if not isinstance(slots, list):
-        return False, ["Plan has no slots list"]
+        return False, [*errors, "Plan has no slots list"]
 
     for slot in slots:
         if not isinstance(slot, dict):
@@ -93,6 +109,7 @@ def validate_inventory_for_plan(
 def is_inventory_live_ready(inventory: dict) -> tuple[bool, list[str]]:
     """True only if all 10 encoders and 35 receivers have real hostnames."""
     errors: list[str] = []
+    errors.extend(_network_issues(inventory))
     encoders = inventory.get("encoders") if isinstance(inventory, dict) else None
     receivers = inventory.get("receivers") if isinstance(inventory, dict) else None
 

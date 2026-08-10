@@ -139,4 +139,8 @@ test("panel shell exposes live commit toggle and shell_command execute path", ()
   assert.match(src, /avaccess_execute_route_plan/);
   assert.match(src, /Live Send|live commit/i);
   assert.match(src, /inventory\.json/);
+  assert.match(src, /networkIssues|udp_switch_port/);
+  assert.match(src, /parseLiveExecuteReport|mergeLiveReportIntoPlan/);
+  assert.match(src, /Live summary/);
+  assert.match(src, /plan\.commit\s*===\s*["']live["']/);
 });

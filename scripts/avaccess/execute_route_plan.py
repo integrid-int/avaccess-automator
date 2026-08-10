@@ -87,7 +87,7 @@ def execute_plan(
         if not isinstance(slot, dict):
             msg = "Invalid slot entry"
             report_errors.append(msg)
-            slots_out.append({"status": "error", "message": msg})
+            slots_out.append({"status": "error", "error": msg, "message": msg})
             continue
 
         slot_out = copy.deepcopy(slot)
@@ -121,12 +121,14 @@ def execute_plan(
                 dry_run=dry_run,
             )
             slot_out["status"] = "ok"
-            if "message" in slot_out:
-                del slot_out["message"]
+            for key in ("error", "message"):
+                if key in slot_out:
+                    del slot_out[key]
         except Exception as exc:  # noqa: BLE001 — per-slot continue
             msg = str(exc)
             slot_out["status"] = "error"
-            slot_out["message"] = msg
+            slot_out["error"] = msg
+            slot_out["message"] = msg  # alias for older consumers
             report_errors.append(f"{encoder_id or '?'}: {msg}")
         finally:
             session += 1
