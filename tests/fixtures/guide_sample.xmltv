@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv>
+  <channel id="espn.example"><display-name>ESPN</display-name></channel>
+  <channel id="fox.example"><display-name>WGHP</display-name></channel>
+  <programme start="20260810180000 +0000" stop="20260810190000 +0000" channel="espn.example">
+    <title>SportsCenter</title>
+  </programme>
+  <programme start="20260810190000 +0000" stop="20260810200000 +0000" channel="espn.example">
+    <title>NFL Live</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="fox.example">
+    <title>Local News</title>
+  </programme>
+</tv>
