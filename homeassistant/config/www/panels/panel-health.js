@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js";
+} from "./assignment-store.js?v=14";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -19,8 +19,8 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js";
+} from "./panel-data.js?v=14";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=14";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
