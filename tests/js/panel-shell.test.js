@@ -84,3 +84,22 @@ test("panel shell keeps radii at token scale and avoids amber assignment accents
   assert.doesNotMatch(src, /999px/);
   assert.doesNotMatch(src, /#fef3c7/i);
 });
+
+test("panel shell brands AVAccess Sports Routing and drops stub content picker", () => {
+  const src = readPanelSource();
+  assert.match(src, /AVAccess · iPad/);
+  assert.match(src, /Sports Routing/);
+  assert.doesNotMatch(src, /open-content-picker/);
+  assert.doesNotMatch(src, /Graphite routing shell/);
+});
+
+test("panel shell renders logos, route badges, and restores guide search focus", () => {
+  const src = readPanelSource();
+  assert.match(src, /awayLogo/);
+  assert.match(src, /homeLogo/);
+  assert.match(src, /team-logo/);
+  assert.match(src, /route-badge/);
+  assert.match(src, /_captureGuideSearchCaret/);
+  assert.match(src, /_restoreGuideSearchCaret/);
+  assert.match(src, /setSelectionRange/);
+});

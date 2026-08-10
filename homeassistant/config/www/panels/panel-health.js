@@ -103,6 +103,63 @@ class PanelHealth extends HTMLElement {
     this.render();
   }
 
+  _captureGuideSearchCaret() {
+    const active = this.querySelector?.('[data-action="guide-search"]');
+    if (!active || document.activeElement !== active) return null;
+    return {
+      value: active.value,
+      start: active.selectionStart,
+      end: active.selectionEnd,
+    };
+  }
+
+  _restoreGuideSearchCaret(snapshot) {
+    if (!snapshot) return;
+    const input = this.querySelector('[data-action="guide-search"]');
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    try {
+      const start = snapshot.start ?? input.value.length;
+      const end = snapshot.end ?? start;
+      input.setSelectionRange(start, end);
+    } catch {
+      // Some input types reject selection ranges; focus alone is enough.
+    }
+  }
+
+  _routeBadgeHtml(routeId) {
+    const route = this._assignments[routeId];
+    if (!route?.tvs?.length) return "";
+    const count = route.tvs.length;
+    const preview = route.tvs.slice(0, 3).join(", ");
+    const label = count <= 3 ? `TVs ${preview}` : `${count} TVs`;
+    return `<span class="route-badge">${escapeHtml(label)}</span>`;
+  }
+
+  _renderGameCard(game, { kicker, selected = false, cta = "Choose destination" }) {
+    const selectedClass = selected ? "is-selected" : "";
+    return `
+      <button type="button" class="content-card ${selectedClass}" data-action="select-game" data-value="${escapeAttr(game.id)}">
+        <span class="card-kicker">${escapeHtml(kicker)}</span>
+        <span class="matchup">
+          <span class="team">
+            <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="36" height="36" loading="lazy">
+            <span>${escapeHtml(game.away)}</span>
+          </span>
+          <span class="at" aria-hidden="true">@</span>
+          <span class="team">
+            <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="36" height="36" loading="lazy">
+            <span>${escapeHtml(game.home)}</span>
+          </span>
+        </span>
+        <span class="card-meta">
+          <span>${escapeHtml(cta)}</span>
+          ${this._routeBadgeHtml(game.id)}
+        </span>
+      </button>
+    `;
+  }
+
   _activeSport() {
     return SPORTS.find((sport) => sport.id === this._state.sportId) ?? SPORTS[0];
   }
@@ -152,10 +209,6 @@ class PanelHealth extends HTMLElement {
     }
     if (action === "open-destination") {
       this._setState({ screen: "destination" });
-      return;
-    }
-    if (action === "open-content-picker") {
-      this._setState({ screen: "content-picker" });
       return;
     }
     if (action === "set-dest-mode") {
@@ -382,18 +435,14 @@ class PanelHealth extends HTMLElement {
         <div class="screen-heading">
           <p class="eyebrow">Browse sport</p>
           <h2>${escapeHtml(sport.title)}</h2>
-          <button type="button" class="link-button" data-action="open-content-picker">Open content picker</button>
         </div>
         <div class="card-grid">
           ${sport.games
-            .map(
-              (game) => `
-                <button type="button" class="content-card" data-action="select-game" data-value="${escapeAttr(game.id)}">
-                  <span class="card-kicker">${escapeHtml(game.channel)} - ${escapeHtml(game.tipoff)}</span>
-                  <strong>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</strong>
-                  <span>Choose destination</span>
-                </button>
-              `
+            .map((game) =>
+              this._renderGameCard(game, {
+                kicker: `${game.channel} - ${game.tipoff}`,
+                cta: "Choose destination",
+              })
             )
             .join("")}
         </div>
@@ -421,6 +470,7 @@ class PanelHealth extends HTMLElement {
                   <b>${escapeHtml(channel.number)}</b>
                   <span>${escapeHtml(channel.name)}</span>
                   <em>${escapeHtml(channel.category)}</em>
+                  ${this._routeBadgeHtml(channel.id)}
                 </button>
               `
             )
@@ -551,16 +601,13 @@ class PanelHealth extends HTMLElement {
               <h3>${escapeHtml(sport.title)}</h3>
               <div class="card-grid">
                 ${sport.games
-                  .map((game) => {
-                    const selected = this._state.selectedContent?.id === game.id ? "is-selected" : "";
-                    return `
-                      <button type="button" class="content-card ${selected}" data-action="select-game" data-value="${escapeAttr(game.id)}">
-                        <span class="card-kicker">${escapeHtml(sport.chipTitle ?? sport.title)} - ${escapeHtml(game.channel)} - ${escapeHtml(game.tipoff)}</span>
-                        <strong>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</strong>
-                        <span>${this._state.entryPath === "tv" ? "Select content" : "Choose destination"}</span>
-                      </button>
-                    `;
-                  })
+                  .map((game) =>
+                    this._renderGameCard(game, {
+                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
+                      selected: this._state.selectedContent?.id === game.id,
+                      cta: this._state.entryPath === "tv" ? "Select content" : "Choose destination",
+                    })
+                  )
                   .join("")}
               </div>
             </div>
@@ -586,6 +633,7 @@ class PanelHealth extends HTMLElement {
                 <b>${escapeHtml(channel.number)}</b>
                 <span>${escapeHtml(channel.name)}</span>
                 <em>${escapeHtml(channel.category)}</em>
+                ${this._routeBadgeHtml(channel.id)}
               </button>
             `;
           })
@@ -628,8 +676,12 @@ class PanelHealth extends HTMLElement {
   render() {
     if (!this.isConnected) return;
 
+    const guideSearchCaret = this._captureGuideSearchCaret();
+
     this.innerHTML = `
       <style>
+        @import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap");
+
         :host {
           --canvas: ${TOKENS.canvas};
           --graphite: ${TOKENS.stage};
@@ -648,7 +700,7 @@ class PanelHealth extends HTMLElement {
           min-height: 100%;
           color: var(--text);
           background: var(--canvas);
-          font-family: Inter, "Segoe UI", system-ui, sans-serif;
+          font-family: Sora, "Avenir Next", "Segoe UI", sans-serif;
         }
 
         .shell {
@@ -785,12 +837,6 @@ class PanelHealth extends HTMLElement {
           text-align: left;
         }
 
-        .content-card strong {
-          display: block;
-          font-size: 1.05rem;
-          margin: 6px 0;
-        }
-
         .content-card.is-selected,
         .guide-row.is-selected {
           border-color: var(--cyan);
@@ -803,6 +849,55 @@ class PanelHealth extends HTMLElement {
           font-weight: 900;
           letter-spacing: 0.08em;
           text-transform: uppercase;
+        }
+
+        .matchup {
+          align-items: center;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin: 10px 0 8px;
+        }
+
+        .team {
+          align-items: center;
+          display: inline-flex;
+          gap: 8px;
+          font-size: 1.05rem;
+          font-weight: 800;
+        }
+
+        .team-logo {
+          background: #fff;
+          border-radius: var(--radius-sm);
+          display: block;
+          height: 36px;
+          object-fit: contain;
+          width: 36px;
+        }
+
+        .at {
+          color: var(--muted);
+          font-weight: 800;
+        }
+
+        .card-meta {
+          align-items: center;
+          color: var(--muted);
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: space-between;
+        }
+
+        .route-badge {
+          background: var(--cyan-soft);
+          border-radius: var(--radius-sm);
+          color: var(--cyan);
+          font-size: 0.72rem;
+          font-weight: 800;
+          padding: 4px 8px;
+          white-space: nowrap;
         }
 
         .search {
@@ -842,7 +937,7 @@ class PanelHealth extends HTMLElement {
           align-items: center;
           display: grid;
           gap: 10px;
-          grid-template-columns: 64px 1fr auto;
+          grid-template-columns: 64px 1fr auto auto;
         }
 
         .guide-row b {
@@ -974,8 +1069,8 @@ class PanelHealth extends HTMLElement {
         <div class="stage">
           <header class="topbar">
             <div class="brand">
-              <span>Bartender HA panel</span>
-              <h1>Graphite routing shell</h1>
+              <span>AVAccess · iPad</span>
+              <h1>Sports Routing</h1>
             </div>
             <div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>
           </header>
@@ -984,6 +1079,8 @@ class PanelHealth extends HTMLElement {
         </div>
       </div>
     `;
+
+    this._restoreGuideSearchCaret(guideSearchCaret);
   }
 }
 

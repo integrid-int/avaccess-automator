@@ -85,7 +85,7 @@ Use when the bartender knows **what** to show first:
    - **Presets** — Preset 1 (all 35 TVs), Preset 2 (4 Programs), or Preset 3 (9 Programs).
    - **Pick TVs** — multi-select TVs 1–35 on the grid.
 4. Tap **Send to TVs**.
-5. Return to the prior browse list; assigned TVs show updated badges.
+5. Return to the prior browse list; game/guide rows show assignment badges (TV count or preview), and the TV grid shows occupancy.
 
 ### Path B — TV-first
 
@@ -109,7 +109,7 @@ Each TV can only show one route (game or guide channel). When you send a new ass
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=6`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=7`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 
