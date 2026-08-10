@@ -151,7 +151,7 @@ The bartender panel uses a **top chip row** to switch browse modes:
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
 - **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403**. Use the search field to filter by channel number or name. (Static lineup only — **no EPG now/next** in Track A.)
+- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403**. Use the search field to filter by channel number or name. (Static lineup only — **no EPG now/next**; Track C.)
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
