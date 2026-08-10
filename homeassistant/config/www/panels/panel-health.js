@@ -1,120 +1,48 @@
-/**
- * AVAccess bartender panel for Home Assistant Companion (iPad).
- * Sport tabs → game cards (logos + names) → preset groups or adhoc TVs 1–35.
- */
-const STORAGE_KEY = "avaccess-bartender-panel-v1";
+import {
+  applyAssignment,
+  createEmptyAssignments,
+  getAssignmentForTv,
+  loadAssignments,
+  saveAssignments,
+} from "./assignment-store.js";
+import {
+  GUIDE_CHANNELS,
+  PRESETS,
+  SPORTS,
+  STORAGE_KEY,
+  TOKENS,
+  filterGuideChannels,
+  range,
+} from "./panel-data.js";
 
-const PRESETS = [
-  {
-    id: "1_all",
-    label: "Preset 1 — ALL",
-    shortLabel: "ALL",
-    description: "One game on every TV",
-    tvs: range(1, 35),
-  },
-  {
-    id: "2_four_programs",
-    label: "Preset 2 — 4 Programs",
-    shortLabel: "4 Prog",
-    description: "Split across 4 encoder groups",
-    tvs: range(1, 35),
-    blocks: [
-      { name: "A", tvs: range(1, 9) },
-      { name: "B", tvs: range(10, 18) },
-      { name: "C", tvs: range(19, 27) },
-      { name: "D", tvs: range(28, 35) },
-    ],
-  },
-  {
-    id: "3_nine_programs",
-    label: "Preset 3 — 9 Programs",
-    shortLabel: "9 Prog",
-    description: "Split across 9 encoder groups",
-    tvs: range(1, 35),
-    blocks: [
-      { name: "1", tvs: range(1, 4) },
-      { name: "2", tvs: range(5, 8) },
-      { name: "3", tvs: range(9, 12) },
-      { name: "4", tvs: range(13, 16) },
-      { name: "5", tvs: range(17, 20) },
-      { name: "6", tvs: range(21, 24) },
-      { name: "7", tvs: range(25, 28) },
-      { name: "8", tvs: range(29, 32) },
-      { name: "9", tvs: range(33, 35) },
-    ],
-  },
-];
+const DEFAULT_STATE = {
+  screen: "browse-sport",
+  sportId: SPORTS[0]?.id ?? null,
+  guideQuery: "",
+  selectedContent: null,
+  selectedTvs: [],
+  destMode: "presets",
+  contentMode: "sports",
+  entryPath: "content",
+};
 
-const SPORTS = [
-  {
-    id: "nfl",
-    title: "NFL",
-    icon: "🏈",
-    games: [
-      game("nfl-1", "Chiefs", "kc", "Bills", "buf", "FOX", "1:00 PM"),
-      game("nfl-2", "Eagles", "phi", "Cowboys", "dal", "CBS", "1:00 PM"),
-      game("nfl-3", "49ers", "sf", "Seahawks", "sea", "FOX", "4:25 PM"),
-      game("nfl-4", "Ravens", "bal", "Steelers", "pit", "NBC", "8:20 PM"),
-      game("nfl-5", "Lions", "det", "Packers", "gb", "NFLN", "Thursday"),
-    ],
-  },
-  {
-    id: "cfb",
-    title: "College Football",
-    icon: "🎓",
-    games: [
-      game("cfb-1", "Georgia", "uga", "Alabama", "ala", "ABC", "3:30 PM", "ncaa"),
-      game("cfb-2", "Ohio State", "osu", "Michigan", "mich", "FOX", "12:00 PM", "ncaa"),
-      game("cfb-3", "Texas", "tex", "Oklahoma", "okla", "ESPN", "7:30 PM", "ncaa"),
-      game("cfb-4", "USC", "usc", "Oregon", "ore", "NBC", "8:00 PM", "ncaa"),
-    ],
-  },
-  {
-    id: "basketball",
-    title: "Basketball",
-    icon: "🏀",
-    games: [
-      game("nba-1", "Lakers", "lal", "Celtics", "bos", "TNT", "7:30 PM", "nba"),
-      game("nba-2", "Warriors", "gs", "Nuggets", "den", "ESPN", "10:00 PM", "nba"),
-      game("nba-3", "Knicks", "ny", "Heat", "mia", "ABC", "3:00 PM", "nba"),
-      game("nba-4", "Suns", "phx", "Mavericks", "dal", "ESPN2", "9:00 PM", "nba"),
-    ],
-  },
-];
-
-function range(start, end) {
-  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-}
-
-function logoUrl(abbrev, league) {
-  const sport = league || "nfl";
-  return `https://a.espncdn.com/i/teamlogos/${sport}/500/${abbrev}.png`;
-}
-
-function game(id, away, awayAbbr, home, homeAbbr, channel, tipoff, league = "nfl") {
-  return {
-    id,
-    away,
-    home,
-    channel,
-    tipoff,
-    awayLogo: logoUrl(awayAbbr, league),
-    homeLogo: logoUrl(homeAbbr, league),
-  };
-}
+const SCREEN_TITLES = {
+  "browse-sport": "Sports",
+  "browse-guide": "Guide",
+  "browse-tvs": "TVs",
+  destination: "Destination",
+  "content-picker": "Content Picker",
+};
 
 class PanelHealth extends HTMLElement {
   constructor() {
     super();
     this._hass = null;
     this._panel = null;
-    this._sportId = SPORTS[0].id;
-    this._selectedGameId = null;
-    this._selectedTvs = [];
-    this._activePresetId = null;
-    this._assignments = this._loadAssignments();
+    this._state = { ...DEFAULT_STATE };
+    this._assignments = createEmptyAssignments();
     this._boundClick = this._onClick.bind(this);
-    this._boundChange = this._onChange.bind(this);
+    this._boundInput = this._onInput.bind(this);
     this._eventsBound = false;
   }
 
@@ -129,9 +57,10 @@ class PanelHealth extends HTMLElement {
   }
 
   connectedCallback() {
+    this._assignments = this._loadAssignments();
     if (!this._eventsBound) {
       this.addEventListener("click", this._boundClick);
-      this.addEventListener("change", this._boundChange);
+      this.addEventListener("input", this._boundInput);
       this._eventsBound = true;
     }
     this.render();
@@ -140,211 +69,346 @@ class PanelHealth extends HTMLElement {
   disconnectedCallback() {
     if (this._eventsBound) {
       this.removeEventListener("click", this._boundClick);
-      this.removeEventListener("change", this._boundChange);
+      this.removeEventListener("input", this._boundInput);
       this._eventsBound = false;
     }
   }
 
   _loadAssignments() {
+    const storage = this._storage();
+    return storage ? loadAssignments(storage, STORAGE_KEY) : createEmptyAssignments();
+  }
+
+  _saveAssignments(assignments) {
+    const storage = this._storage();
+    if (storage) {
+      saveAssignments(storage, STORAGE_KEY, assignments);
+    }
+    this._assignments = assignments;
+  }
+
+  _storage() {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (error) {
-      console.warn("Unable to load bartender assignments", error);
-      return {};
+      return globalThis.localStorage ?? null;
+    } catch {
+      return null;
     }
   }
 
-  _saveAssignments() {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this._assignments));
-    } catch (error) {
-      console.warn("Unable to save bartender assignments", error);
-    }
-  }
-
-  _sport() {
-    return SPORTS.find((sport) => sport.id === this._sportId) || SPORTS[0];
-  }
-
-  _selectedGame() {
-    const sport = this._sport();
-    return sport.games.find((item) => item.id === this._selectedGameId) || null;
-  }
-
-  _gameLabel(gameItem) {
-    return `${gameItem.away} @ ${gameItem.home}`;
-  }
-
-  _onClick(event) {
-    const target = event.target.closest("[data-action]");
-    if (!target) {
-      return;
-    }
-
-    const action = target.dataset.action;
-    const value = target.dataset.value;
-
-    if (action === "select-sport") {
-      this._sportId = value;
-      this._selectedGameId = null;
-      this._selectedTvs = [];
-      this._activePresetId = null;
-      this.render();
-      return;
-    }
-
-    if (action === "select-game") {
-      this._selectedGameId = value;
-      const existing = this._assignments[value];
-      this._selectedTvs = existing?.tvs ? [...existing.tvs] : [];
-      this._activePresetId = existing?.presetId || null;
-      this.render();
-      return;
-    }
-
-    if (action === "toggle-tv") {
-      const tv = Number(value);
-      const next = new Set(this._selectedTvs);
-      if (next.has(tv)) {
-        next.delete(tv);
-      } else {
-        next.add(tv);
-      }
-      this._selectedTvs = Array.from(next).sort((a, b) => a - b);
-      this._activePresetId = null;
-      this.render();
-      return;
-    }
-
-    if (action === "apply-preset") {
-      const preset = PRESETS.find((item) => item.id === value);
-      if (!preset) {
-        return;
-      }
-      this._activePresetId = preset.id;
-      // For bartender speed: ALL fills every TV. Multi-program presets
-      // preselect the first block so the operator can expand/adjust.
-      if (preset.id === "1_all") {
-        this._selectedTvs = [...preset.tvs];
-      } else if (preset.blocks?.length) {
-        this._selectedTvs = [...preset.blocks[0].tvs];
-      } else {
-        this._selectedTvs = [...preset.tvs];
-      }
-      this.render();
-      return;
-    }
-
-    if (action === "select-preset-block") {
-      const [presetId, blockName] = value.split(":");
-      const preset = PRESETS.find((item) => item.id === presetId);
-      const block = preset?.blocks?.find((item) => item.name === blockName);
-      if (!block) {
-        return;
-      }
-      this._activePresetId = presetId;
-      this._selectedTvs = [...block.tvs];
-      this.render();
-      return;
-    }
-
-    if (action === "select-all-tvs") {
-      this._selectedTvs = range(1, 35);
-      this._activePresetId = "1_all";
-      this.render();
-      return;
-    }
-
-    if (action === "clear-tvs") {
-      this._selectedTvs = [];
-      this._activePresetId = null;
-      this.render();
-      return;
-    }
-
-    if (action === "apply-assignment") {
-      this._applyAssignment();
-      return;
-    }
-
-    if (action === "clear-game-assignment") {
-      if (!this._selectedGameId) {
-        return;
-      }
-      delete this._assignments[this._selectedGameId];
-      this._selectedTvs = [];
-      this._activePresetId = null;
-      this._saveAssignments();
-      this.render();
-    }
-  }
-
-  _onChange() {
-    // Checkbox fallback path not required; TV toggles use click actions.
-  }
-
-  _applyAssignment() {
-    const gameItem = this._selectedGame();
-    if (!gameItem || this._selectedTvs.length === 0) {
-      return;
-    }
-
-    // One TV can only show one game: remove overlapping TVs from other games.
-    const selected = new Set(this._selectedTvs);
-    for (const [gameId, assignment] of Object.entries(this._assignments)) {
-      if (gameId === gameItem.id) {
-        continue;
-      }
-      assignment.tvs = assignment.tvs.filter((tv) => !selected.has(tv));
-      if (assignment.tvs.length === 0) {
-        delete this._assignments[gameId];
-      }
-    }
-
-    this._assignments[gameItem.id] = {
-      sportId: this._sportId,
-      label: this._gameLabel(gameItem),
-      channel: gameItem.channel,
-      presetId: this._activePresetId,
-      tvs: [...this._selectedTvs],
-      updatedAt: new Date().toISOString(),
-    };
-    this._saveAssignments();
+  _setState(nextState) {
+    this._state = { ...this._state, ...nextState };
     this.render();
   }
 
-  _tvStatus(tv) {
-    for (const assignment of Object.values(this._assignments)) {
-      if (assignment.tvs.includes(tv)) {
-        return assignment;
-      }
-    }
-    return null;
+  _activeSport() {
+    return SPORTS.find((sport) => sport.id === this._state.sportId) ?? SPORTS[0];
   }
 
-  _presetBlocksMarkup(preset) {
-    if (!preset.blocks) {
-      return "";
+  _selectedContentLabel() {
+    const content = this._state.selectedContent;
+    if (!content) return "No content selected";
+    if (content.kind === "channel") return `${content.number} ${content.name}`;
+    return `${content.away} @ ${content.home}`;
+  }
+
+  _onClick(event) {
+    const target = event.target.closest?.("[data-action]");
+    if (!target) return;
+
+    const { action, value } = target.dataset;
+    if (action === "open-sport") {
+      this._setState({
+        screen: "browse-sport",
+        sportId: value || this._state.sportId,
+        contentMode: "sports",
+        entryPath: "content",
+      });
+      return;
     }
+    if (action === "open-guide") {
+      this._setState({ screen: "browse-guide", contentMode: "guide", entryPath: "content" });
+      return;
+    }
+    if (action === "open-tvs") {
+      this._setState({ screen: "browse-tvs", entryPath: "tv", destMode: "tvs" });
+      return;
+    }
+    if (action === "select-sport-content") {
+      this._selectSportContent(value);
+      return;
+    }
+    if (action === "select-guide-content") {
+      this._selectGuideContent(value);
+      return;
+    }
+    if (action === "open-destination") {
+      this._setState({ screen: "destination" });
+      return;
+    }
+    if (action === "open-content-picker") {
+      this._setState({ screen: "content-picker" });
+      return;
+    }
+    if (action === "set-dest-mode") {
+      this._setState({ destMode: value === "presets" ? "presets" : "tvs" });
+      return;
+    }
+    if (action === "apply-preset") {
+      this._applyPreset(value);
+      return;
+    }
+    if (action === "toggle-tv") {
+      this._toggleTv(Number(value));
+      return;
+    }
+    if (action === "clear-tvs") {
+      this._setState({ selectedTvs: [] });
+      return;
+    }
+    if (action === "save-route") {
+      this._saveRoute();
+    }
+  }
+
+  _onInput(event) {
+    const target = event.target;
+    if (target?.dataset?.action === "guide-search") {
+      this._setState({ guideQuery: target.value });
+    }
+  }
+
+  _selectSportContent(gameId) {
+    const sport = this._activeSport();
+    const game = sport.games.find((item) => item.id === gameId);
+    if (!game) return;
+    this._setState({
+      screen: "destination",
+      selectedContent: { ...game, kind: "game", sportId: sport.id },
+      selectedTvs: [],
+      destMode: "presets",
+      contentMode: "sports",
+      entryPath: "content",
+    });
+  }
+
+  _selectGuideContent(channelId) {
+    const channel = GUIDE_CHANNELS.find((item) => item.id === channelId);
+    if (!channel) return;
+    this._setState({
+      screen: "destination",
+      selectedContent: { ...channel, kind: "channel" },
+      selectedTvs: [],
+      destMode: "tvs",
+      contentMode: "guide",
+      entryPath: "content",
+    });
+  }
+
+  _applyPreset(presetId) {
+    const preset = PRESETS.find((item) => item.id === presetId);
+    if (!preset) return;
+    this._setState({ selectedTvs: [...preset.tvs], destMode: "presets" });
+  }
+
+  _toggleTv(tv) {
+    if (!Number.isInteger(tv)) return;
+    const selected = new Set(this._state.selectedTvs);
+    if (selected.has(tv)) selected.delete(tv);
+    else selected.add(tv);
+    this._setState({ selectedTvs: Array.from(selected).sort((a, b) => a - b), destMode: "tvs" });
+  }
+
+  _saveRoute() {
+    const content = this._state.selectedContent;
+    if (!content || this._state.selectedTvs.length === 0) return;
+
+    const assignments = applyAssignment(this._assignments, {
+      routeId: content.id,
+      kind: content.kind,
+      sportId: content.sportId,
+      label: this._selectedContentLabel(),
+      channel: content.channel ?? content.number,
+      presetId: this._state.destMode === "presets" ? PRESETS.find((preset) => sameTvs(preset.tvs, this._state.selectedTvs))?.id : null,
+      tvs: this._state.selectedTvs,
+    });
+    this._saveAssignments(assignments);
+    this._setState({ screen: this._state.entryPath === "tv" ? "browse-tvs" : "browse-sport" });
+  }
+
+  _renderChipRow() {
+    const sport = this._activeSport();
     return `
-      <div class="block-row">
-        ${preset.blocks
-          .map((block) => {
-            const active =
-              this._activePresetId === preset.id &&
-              this._selectedTvs.join(",") === block.tvs.join(",")
-                ? "is-active"
-                : "";
+      <nav class="chips" aria-label="Panel screens">
+        ${SPORTS.map(
+          (item) => `
+            <button
+              type="button"
+              class="chip ${this._state.screen === "browse-sport" && item.id === sport.id ? "is-active" : ""}"
+              data-action="open-sport"
+              data-value="${escapeAttr(item.id)}"
+            >
+              <span>${escapeHtml(item.icon)}</span>${escapeHtml(item.title)}
+            </button>
+          `
+        ).join("")}
+        <button type="button" class="chip ${this._state.screen === "browse-guide" ? "is-active" : ""}" data-action="open-guide">
+          Guide
+        </button>
+        <button type="button" class="chip ${this._state.screen === "browse-tvs" ? "is-active" : ""}" data-action="open-tvs">
+          TVs
+        </button>
+      </nav>
+    `;
+  }
+
+  _renderScreen() {
+    if (this._state.screen === "browse-guide") return this._renderGuideScreen();
+    if (this._state.screen === "browse-tvs") return this._renderTvsScreen();
+    if (this._state.screen === "destination") return this._renderDestinationScreen();
+    if (this._state.screen === "content-picker") return this._renderContentPickerScreen();
+    return this._renderSportScreen();
+  }
+
+  _renderSportScreen() {
+    const sport = this._activeSport();
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Browse sport</p>
+          <h2>${escapeHtml(sport.title)}</h2>
+          <button type="button" class="link-button" data-action="open-content-picker">Open content picker</button>
+        </div>
+        <div class="card-grid">
+          ${sport.games
+            .map(
+              (game) => `
+                <button type="button" class="content-card" data-action="select-sport-content" data-value="${escapeAttr(game.id)}">
+                  <span class="card-kicker">${escapeHtml(game.channel)} - ${escapeHtml(game.tipoff)}</span>
+                  <strong>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</strong>
+                  <span>Choose destination</span>
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  _renderGuideScreen() {
+    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Browse guide</p>
+          <h2>Spectrum ${escapeHtml(this._panel?.config?.environment ?? "test")} guide</h2>
+        </div>
+        <label class="search">
+          <span>Search by channel, name, or category</span>
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+        </label>
+        <div class="list">
+          ${channels
+            .map(
+              (channel) => `
+                <button type="button" class="guide-row" data-action="select-guide-content" data-value="${escapeAttr(channel.id)}">
+                  <b>${escapeHtml(channel.number)}</b>
+                  <span>${escapeHtml(channel.name)}</span>
+                  <em>${escapeHtml(channel.category)}</em>
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  _renderTvsScreen() {
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Browse TVs</p>
+          <h2>Select TVs first</h2>
+          <button type="button" class="link-button" data-action="open-content-picker">Pick content next</button>
+        </div>
+        ${this._renderTvGrid()}
+      </section>
+    `;
+  }
+
+  _renderDestinationScreen() {
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Destination</p>
+          <h2>${escapeHtml(this._selectedContentLabel())}</h2>
+          <button type="button" class="link-button" data-action="open-content-picker">Change content</button>
+        </div>
+        <div class="mode-toggle" role="group" aria-label="Destination mode">
+          <button type="button" class="${this._state.destMode === "presets" ? "is-active" : ""}" data-action="set-dest-mode" data-value="presets">
+            Presets
+          </button>
+          <button type="button" class="${this._state.destMode === "tvs" ? "is-active" : ""}" data-action="set-dest-mode" data-value="tvs">
+            TVs
+          </button>
+        </div>
+        <div class="preset-row">
+          ${PRESETS.map(
+            (preset) => `
+              <button type="button" class="preset-chip" data-action="apply-preset" data-value="${escapeAttr(preset.id)}">
+                <b>${escapeHtml(preset.shortLabel)}</b>
+                <span>${escapeHtml(preset.description)}</span>
+              </button>
+            `
+          ).join("")}
+        </div>
+        ${this._renderTvGrid()}
+        <button type="button" class="primary-action" data-action="save-route">
+          Save route to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
+        </button>
+      </section>
+    `;
+  }
+
+  _renderContentPickerScreen() {
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Content picker</p>
+          <h2>Choose the next content source</h2>
+        </div>
+        <div class="stub-grid">
+          <button type="button" data-action="open-sport" class="stub-card">Browse sports content</button>
+          <button type="button" data-action="open-guide" class="stub-card">Browse guide content</button>
+          <button type="button" data-action="open-destination" class="stub-card">Return to destination</button>
+        </div>
+      </section>
+    `;
+  }
+
+  _renderTvGrid() {
+    return `
+      <div class="tv-toolbar">
+        <span>${this._state.selectedTvs.length} selected</span>
+        <button type="button" data-action="clear-tvs">Clear TVs</button>
+      </div>
+      <div class="tv-grid" aria-label="TV picker">
+        ${range(1, 35)
+          .map((tv) => {
+            const assignment = getAssignmentForTv(this._assignments, tv);
+            const selected = this._state.selectedTvs.includes(tv) ? "is-selected" : "";
+            const assigned = assignment ? "is-assigned" : "";
+            const label = assignment ? `${tv}: ${assignment.label}` : `TV ${tv}`;
             return `
               <button
                 type="button"
-                class="block-chip ${active}"
-                data-action="select-preset-block"
-                data-value="${preset.id}:${block.name}"
+                class="tv ${selected} ${assigned}"
+                data-action="toggle-tv"
+                data-value="${tv}"
+                title="${escapeAttr(label)}"
               >
-                ${block.name}
-                <span>${block.tvs[0]}–${block.tvs[block.tvs.length - 1]}</span>
+                ${tv}
               </button>
             `;
           })
@@ -354,510 +418,331 @@ class PanelHealth extends HTMLElement {
   }
 
   render() {
-    if (!this.isConnected) {
-      return;
-    }
-
-    const sport = this._sport();
-    const selectedGame = this._selectedGame();
-    const env = this._panel?.config?.environment ?? "live";
+    if (!this.isConnected) return;
 
     this.innerHTML = `
       <style>
-        @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
-
-        :host, .wrap {
-          font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
-          color: #142033;
+        :host {
+          --canvas: ${TOKENS.canvas};
+          --graphite: ${TOKENS.stage};
+          --surface: ${TOKENS.surfaceBrowse};
+          --stage-surface: ${TOKENS.surfaceStage};
+          --cyan: ${TOKENS.accent}; /* #0e7490 */
+          --cyan-soft: ${TOKENS.accentMutedBrowse};
+          --cyan-stage: ${TOKENS.accentMutedStage};
+          --text: ${TOKENS.textPrimaryBrowse};
+          --text-stage: ${TOKENS.textPrimaryStage};
+          --muted: ${TOKENS.textMutedBrowse};
+          --muted-stage: ${TOKENS.textMutedStage};
+          --radius-sm: ${TOKENS.radiusSm};
+          --radius-md: ${TOKENS.radiusMd};
           display: block;
           min-height: 100%;
-          background:
-            radial-gradient(1200px 500px at 10% -10%, #d9ecff 0%, transparent 55%),
-            radial-gradient(900px 420px at 100% 0%, #dff7ea 0%, transparent 50%),
-            linear-gradient(180deg, #f3f7fb 0%, #eef3f8 100%);
+          color: var(--text);
+          background: var(--canvas);
+          font-family: Inter, "Segoe UI", system-ui, sans-serif;
         }
 
-        .wrap {
-          padding: 18px 18px 28px;
+        .shell {
+          min-height: 100%;
+          padding: 20px;
           box-sizing: border-box;
+          background:
+            radial-gradient(circle at top left, rgba(14, 116, 144, 0.2), transparent 32rem),
+            linear-gradient(135deg, var(--canvas) 0%, #e5e7eb 100%);
+        }
+
+        .stage {
+          border-radius: 24px;
+          background: var(--graphite);
+          color: var(--text-stage);
+          padding: 18px;
+          box-shadow: 0 24px 80px rgba(17, 24, 39, 0.22);
         }
 
         .topbar {
           display: flex;
+          align-items: flex-start;
           justify-content: space-between;
-          align-items: flex-end;
-          gap: 12px;
-          margin-bottom: 14px;
+          gap: 16px;
+          margin-bottom: 16px;
         }
 
-        .brand {
-          font-family: Manrope, sans-serif;
+        .brand span,
+        .eyebrow {
+          color: var(--cyan-stage);
+          font-size: 0.75rem;
           font-weight: 800;
-          font-size: clamp(1.4rem, 2.4vw, 2rem);
-          letter-spacing: -0.03em;
-          line-height: 1.1;
+          letter-spacing: 0.14em;
+          margin: 0 0 6px;
+          text-transform: uppercase;
         }
 
-        .brand span {
+        .brand h1,
+        .screen-heading h2 {
+          margin: 0;
+          font-size: clamp(1.45rem, 2.8vw, 2.4rem);
+          letter-spacing: -0.04em;
+        }
+
+        .state-pill {
+          border: 1px solid rgba(165, 243, 252, 0.35);
+          border-radius: 999px;
+          color: var(--cyan-stage);
+          padding: 8px 12px;
+          white-space: nowrap;
+        }
+
+        .chips {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 18px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+        }
+
+        .chip,
+        .link-button,
+        .mode-toggle button,
+        .preset-chip,
+        .tv-toolbar button,
+        .primary-action,
+        .stub-card {
+          border: 0;
+          cursor: pointer;
+          font: inherit;
+        }
+
+        .chip {
+          align-items: center;
+          background: rgba(255, 255, 255, 0.09);
+          border-radius: 999px;
+          color: var(--text-stage);
+          display: inline-flex;
+          gap: 8px;
+          padding: 10px 14px;
+          white-space: nowrap;
+        }
+
+        .chip.is-active {
+          background: var(--cyan);
+          color: white;
+        }
+
+        .screen {
+          background: var(--surface);
+          border-radius: 20px;
+          color: var(--text);
+          min-height: 420px;
+          padding: 18px;
+        }
+
+        .screen-heading {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+
+        .screen-heading .eyebrow {
+          color: var(--cyan);
+        }
+
+        .link-button,
+        .tv-toolbar button {
+          background: var(--cyan-soft);
+          border-radius: var(--radius-md);
+          color: var(--cyan);
+          font-weight: 800;
+          padding: 10px 12px;
+        }
+
+        .card-grid,
+        .stub-grid {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .content-card,
+        .guide-row,
+        .stub-card {
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 16px;
+          color: var(--text);
+          cursor: pointer;
+          padding: 14px;
+          text-align: left;
+        }
+
+        .content-card strong {
           display: block;
+          font-size: 1.05rem;
+          margin: 6px 0;
+        }
+
+        .card-kicker {
+          color: var(--cyan);
           font-size: 0.78rem;
-          font-weight: 600;
+          font-weight: 900;
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          color: #4d627a;
-          margin-bottom: 4px;
         }
 
-        .meta {
-          color: #4d627a;
-          font-size: 0.9rem;
-          text-align: right;
-        }
-
-        .tabs {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          padding-bottom: 4px;
-          margin-bottom: 14px;
-        }
-
-        .tab {
-          border: 0;
-          border-radius: 999px;
-          padding: 12px 18px;
-          font-family: Manrope, sans-serif;
-          font-weight: 700;
-          font-size: 1rem;
-          background: rgba(255, 255, 255, 0.72);
-          color: #24364d;
-          cursor: pointer;
-          white-space: nowrap;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.08);
-        }
-
-        .tab.is-active {
-          background: #0f7a4c;
-          color: #fff;
-          box-shadow: none;
-        }
-
-        .layout {
-          display: grid;
-          grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
-          gap: 14px;
-          align-items: start;
-        }
-
-        @media (max-width: 980px) {
-          .layout {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .panel {
-          background: rgba(255, 255, 255, 0.86);
-          border-radius: 22px;
-          box-shadow: 0 10px 30px rgba(20, 32, 51, 0.08);
-          padding: 14px;
-        }
-
-        .games {
-          display: grid;
-          gap: 10px;
-        }
-
-        .game {
-          display: grid;
-          grid-template-columns: 1fr auto;
-          gap: 10px;
-          align-items: center;
-          width: 100%;
-          text-align: left;
-          border: 0;
-          border-radius: 18px;
-          padding: 12px 14px;
-          background: #f7fafc;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.06);
-          cursor: pointer;
-        }
-
-        .game.is-selected {
-          background: #e8f7ef;
-          box-shadow: inset 0 0 0 2px #0f7a4c;
-        }
-
-        .matchup {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          min-width: 0;
-        }
-
-        .team {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          min-width: 0;
-        }
-
-        .team img {
-          width: 42px;
-          height: 42px;
-          object-fit: contain;
-          flex: 0 0 auto;
-          background: #fff;
-          border-radius: 50%;
-          padding: 4px;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.08);
-        }
-
-        .team strong {
-          font-family: Manrope, sans-serif;
-          font-size: 1.02rem;
-          font-weight: 700;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .at {
-          color: #6a7d93;
-          font-weight: 700;
-          padding: 0 2px;
-        }
-
-        .game-meta {
-          text-align: right;
-          color: #4d627a;
-          font-size: 0.86rem;
-          line-height: 1.35;
-        }
-
-        .game-meta b {
-          display: block;
-          color: #142033;
-          font-size: 0.95rem;
-        }
-
-        .section-title {
-          font-family: Manrope, sans-serif;
-          font-weight: 800;
-          font-size: 1.05rem;
-          margin: 0 0 10px;
-        }
-
-        .hint {
-          color: #4d627a;
-          font-size: 0.9rem;
-          margin: 0 0 12px;
-        }
-
-        .preset-grid {
+        .search {
           display: grid;
           gap: 8px;
           margin-bottom: 12px;
         }
 
-        .preset {
-          border: 0;
-          border-radius: 14px;
+        .search span,
+        .tv-toolbar span {
+          color: var(--muted);
+          font-weight: 700;
+        }
+
+        .search input {
+          border: 1px solid #d1d5db;
+          border-radius: var(--radius-md);
+          font: inherit;
           padding: 12px;
-          text-align: left;
-          background: #f4f7fb;
-          cursor: pointer;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.08);
         }
 
-        .preset.is-active {
-          background: #e7f1ff;
-          box-shadow: inset 0 0 0 2px #1d5fbf;
+        .list {
+          display: grid;
+          gap: 8px;
         }
 
-        .preset strong {
-          display: block;
-          font-family: Manrope, sans-serif;
-          font-size: 0.98rem;
+        .guide-row {
+          align-items: center;
+          display: grid;
+          gap: 10px;
+          grid-template-columns: 64px 1fr auto;
         }
 
-        .preset span {
-          color: #4d627a;
-          font-size: 0.84rem;
+        .guide-row b {
+          color: var(--cyan);
+          font-size: 1.1rem;
         }
 
-        .block-row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin: 8px 0 4px;
+        .guide-row em {
+          color: var(--muted);
+          font-style: normal;
         }
 
-        .block-chip {
-          border: 0;
-          border-radius: 10px;
-          padding: 8px 10px;
-          background: #fff;
-          cursor: pointer;
-          font-weight: 600;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.1);
-        }
-
-        .block-chip span {
-          display: block;
-          font-size: 0.75rem;
-          color: #4d627a;
-          font-weight: 500;
-        }
-
-        .block-chip.is-active {
-          background: #1d5fbf;
-          color: #fff;
-        }
-
-        .block-chip.is-active span {
-          color: rgba(255, 255, 255, 0.85);
-        }
-
+        .mode-toggle,
+        .preset-row,
         .tv-toolbar {
           display: flex;
+          flex-wrap: wrap;
           gap: 8px;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
         }
 
-        .tv-toolbar button,
-        .actions button {
-          border: 0;
-          border-radius: 12px;
-          padding: 12px 14px;
-          font-family: Manrope, sans-serif;
-          font-weight: 700;
-          cursor: pointer;
+        .mode-toggle button,
+        .preset-chip {
+          background: #eef2f7;
+          border-radius: var(--radius-md);
+          padding: 11px 13px;
         }
 
-        .ghost {
-          background: #e8eef5;
-          color: #24364d;
+        .mode-toggle button.is-active {
+          background: var(--cyan);
+          color: white;
         }
 
-        .primary {
-          background: #0f7a4c;
-          color: #fff;
-          flex: 1;
+        .preset-chip b,
+        .preset-chip span {
+          display: block;
         }
 
-        .danger {
-          background: #f3e6e6;
-          color: #8a2f2f;
+        .preset-chip span {
+          color: var(--muted);
+          font-size: 0.8rem;
         }
 
         .tv-grid {
           display: grid;
+          gap: 7px;
           grid-template-columns: repeat(7, minmax(0, 1fr));
-          gap: 6px;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
         }
 
         .tv {
           aspect-ratio: 1;
+          background: #eef2f7;
           border: 0;
-          border-radius: 12px;
-          background: #f2f5f8;
-          font-family: Manrope, sans-serif;
-          font-weight: 800;
-          font-size: 0.95rem;
+          border-radius: var(--radius-sm);
+          color: var(--text);
           cursor: pointer;
-          box-shadow: inset 0 0 0 1px rgba(20, 32, 51, 0.08);
-        }
-
-        .tv.is-selected {
-          background: #0f7a4c;
-          color: #fff;
+          font-weight: 900;
         }
 
         .tv.is-assigned:not(.is-selected) {
-          background: #ffe8c7;
+          background: #fef3c7;
         }
 
-        .actions {
-          display: flex;
-          gap: 8px;
+        .tv.is-selected {
+          background: var(--cyan);
+          color: white;
         }
 
-        .summary {
-          margin-top: 12px;
+        .primary-action {
+          background: var(--cyan);
           border-radius: 14px;
-          background: #f7fafc;
-          padding: 10px 12px;
-          font-size: 0.9rem;
+          color: white;
+          font-weight: 900;
+          padding: 14px 18px;
+          width: 100%;
         }
 
-        .summary ul {
-          margin: 8px 0 0;
-          padding-left: 18px;
-        }
+        @media (max-width: 760px) {
+          .topbar,
+          .screen-heading {
+            align-items: stretch;
+            flex-direction: column;
+          }
 
-        .empty {
-          padding: 28px 12px;
-          text-align: center;
-          color: #4d627a;
+          .tv-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+          }
         }
       </style>
 
-      <div class="wrap">
-        <div class="topbar">
-          <div class="brand">
-            <span>AVAccess · iPad Bar Panel</span>
-            Sports Routing
-          </div>
-          <div class="meta">
-            Env: ${env}<br>
-            TVs online: 35
-          </div>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="Sports">
-          ${SPORTS.map(
-            (item) => `
-              <button
-                type="button"
-                class="tab ${item.id === sport.id ? "is-active" : ""}"
-                data-action="select-sport"
-                data-value="${item.id}"
-              >
-                ${item.icon} ${item.title}
-              </button>
-            `
-          ).join("")}
-        </div>
-
-        <div class="layout">
-          <section class="panel">
-            <h2 class="section-title">${sport.title} games</h2>
-            <p class="hint">Tap a game, then send it to a preset group or pick TVs 1–35.</p>
-            <div class="games">
-              ${sport.games
-                .map((item) => {
-                  const assigned = this._assignments[item.id];
-                  return `
-                    <button
-                      type="button"
-                      class="game ${item.id === this._selectedGameId ? "is-selected" : ""}"
-                      data-action="select-game"
-                      data-value="${item.id}"
-                    >
-                      <div class="matchup">
-                        <div class="team">
-                          <img src="${item.awayLogo}" alt="${item.away} logo" loading="lazy">
-                          <strong>${item.away}</strong>
-                        </div>
-                        <div class="at">@</div>
-                        <div class="team">
-                          <img src="${item.homeLogo}" alt="${item.home} logo" loading="lazy">
-                          <strong>${item.home}</strong>
-                        </div>
-                      </div>
-                      <div class="game-meta">
-                        <b>${item.channel}</b>
-                        ${item.tipoff}
-                        ${
-                          assigned
-                            ? `<div>TVs: ${assigned.tvs.join(", ")}</div>`
-                            : "<div>Unassigned</div>"
-                        }
-                      </div>
-                    </button>
-                  `;
-                })
-                .join("")}
+      <div class="shell">
+        <div class="stage">
+          <header class="topbar">
+            <div class="brand">
+              <span>Bartender HA panel</span>
+              <h1>Graphite routing shell</h1>
             </div>
-          </section>
-
-          <aside class="panel">
-            ${
-              selectedGame
-                ? `
-                  <h2 class="section-title">Assign ${this._gameLabel(selectedGame)}</h2>
-                  <p class="hint">Groups use project presets. Adhoc lets you multi-select any TVs.</p>
-
-                  <div class="preset-grid">
-                    ${PRESETS.map((preset) => {
-                      const active = this._activePresetId === preset.id ? "is-active" : "";
-                      return `
-                        <button
-                          type="button"
-                          class="preset ${active}"
-                          data-action="apply-preset"
-                          data-value="${preset.id}"
-                        >
-                          <strong>${preset.label}</strong>
-                          <span>${preset.description}</span>
-                          ${this._presetBlocksMarkup(preset)}
-                        </button>
-                      `;
-                    }).join("")}
-                  </div>
-
-                  <div class="tv-toolbar">
-                    <button type="button" class="ghost" data-action="select-all-tvs">Select 1–35</button>
-                    <button type="button" class="ghost" data-action="clear-tvs">Clear TVs</button>
-                  </div>
-
-                  <div class="tv-grid" aria-label="TV picker">
-                    ${range(1, 35)
-                      .map((tv) => {
-                        const selected = this._selectedTvs.includes(tv) ? "is-selected" : "";
-                        const occupied = this._tvStatus(tv) ? "is-assigned" : "";
-                        return `
-                          <button
-                            type="button"
-                            class="tv ${selected} ${occupied}"
-                            data-action="toggle-tv"
-                            data-value="${tv}"
-                          >${tv}</button>
-                        `;
-                      })
-                      .join("")}
-                  </div>
-
-                  <div class="actions">
-                    <button type="button" class="primary" data-action="apply-assignment">
-                      Apply to ${this._selectedTvs.length || 0} TV${this._selectedTvs.length === 1 ? "" : "s"}
-                    </button>
-                    <button type="button" class="danger" data-action="clear-game-assignment">
-                      Clear
-                    </button>
-                  </div>
-                `
-                : `
-                  <div class="empty">
-                    <h2 class="section-title">Choose a game</h2>
-                    <p class="hint">Select a matchup to assign presets or individual TVs.</p>
-                  </div>
-                `
-            }
-
-            <div class="summary">
-              <strong>Live assignments</strong>
-              ${
-                Object.keys(this._assignments).length
-                  ? `<ul>
-                      ${Object.values(this._assignments)
-                        .map(
-                          (item) =>
-                            `<li><b>${item.label}</b> → TVs ${item.tvs.join(", ")}${
-                              item.presetId ? ` (${item.presetId})` : ""
-                            }</li>`
-                        )
-                        .join("")}
-                    </ul>`
-                  : "<p class=\"hint\" style=\"margin:8px 0 0\">No routes yet.</p>"
-              }
-            </div>
-          </aside>
+            <div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>
+          </header>
+          ${this._renderChipRow()}
+          ${this._renderScreen()}
         </div>
       </div>
     `;
   }
+}
+
+function sameTvs(left, right) {
+  return left.length === right.length && left.every((tv, index) => tv === right[index]);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
 }
 
 if (!customElements.get("panel-health")) {
