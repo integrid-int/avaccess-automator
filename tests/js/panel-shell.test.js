@@ -116,3 +116,19 @@ test("panel shell exposes group-first multi-program and dry-run plan actions", (
   assert.match(src, /No free encoders/);
   assert.doesNotMatch(src, /Split across 4 encoder groups/);
 });
+
+test("panel shell clears stale groupMode and routes adhoc destination through planner", () => {
+  const src = readPanelSource();
+  assert.match(src, /_setDestMode/);
+  assert.match(src, /_shouldSendViaPlan/);
+  assert.match(src, /groupMode:\s*["']adhoc["']/);
+  assert.match(src, /groupMode:\s*null/);
+  assert.match(src, /destMode === ["']tvs["']\s*\?\s*["']adhoc["']/);
+  assert.match(src, /mode:\s*["']adhoc["']/);
+  assert.match(src, /plan-error-banner/);
+  // Preset 2/3 select-group must not seed the full 1–35 TV list into selectedTvs.
+  assert.match(
+    src,
+    /programCapacity\s*>\s*1[\s\S]*?selectedTvs:\s*\[\s*\]/
+  );
+});

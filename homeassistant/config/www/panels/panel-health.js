@@ -193,11 +193,19 @@ class PanelHealth extends HTMLElement {
         sportId: value || this._state.sportId,
         contentMode: "sports",
         entryPath: "content",
+        groupMode: null,
+        selectedPrograms: [],
       });
       return;
     }
     if (action === "open-guide") {
-      this._setState({ screen: "browse-guide", contentMode: "guide", entryPath: "content" });
+      this._setState({
+        screen: "browse-guide",
+        contentMode: "guide",
+        entryPath: "content",
+        groupMode: null,
+        selectedPrograms: [],
+      });
       return;
     }
     if (action === "open-tvs") {
@@ -207,6 +215,9 @@ class PanelHealth extends HTMLElement {
         destMode: "presets",
         selectedContent: null,
         selectedPresetId: null,
+        groupMode: null,
+        selectedPrograms: [],
+        selectedTvs: [],
       });
       return;
     }
@@ -223,19 +234,11 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "set-dest-mode") {
-      const destMode = value === "presets" ? "presets" : "tvs";
-      this._setState({
-        destMode,
-        selectedPresetId: destMode === "presets" ? this._state.selectedPresetId : null,
-      });
+      this._setDestMode(value);
       return;
     }
     if (action === "set-tv-browse-mode") {
-      const destMode = value === "presets" ? "presets" : "tvs";
-      this._setState({
-        destMode,
-        selectedPresetId: destMode === "presets" ? this._state.selectedPresetId : null,
-      });
+      this._setDestMode(value);
       return;
     }
     if (action === "next-choose-content") {
@@ -326,6 +329,33 @@ class PanelHealth extends HTMLElement {
     return this._assignments[routeId]?.presetId ?? null;
   }
 
+  _setDestMode(value) {
+    const destMode = value === "presets" ? "presets" : "tvs";
+    if (destMode === "tvs") {
+      this._setState({
+        destMode,
+        selectedPresetId: null,
+        groupMode: "adhoc",
+      });
+      return;
+    }
+    const preset = PRESETS.find((item) => item.id === this._state.selectedPresetId);
+    this._setState({
+      destMode,
+      groupMode: preset?.mode ?? null,
+    });
+  }
+
+  _deriveGroupMode(destMode, selectedPresetId) {
+    if (destMode === "tvs") return "adhoc";
+    return PRESETS.find((item) => item.id === selectedPresetId)?.mode ?? null;
+  }
+
+  _shouldSendViaPlan() {
+    const mode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
+    return mode === "adhoc" || mode === "preset_1" || mode === "preset_2" || mode === "preset_3";
+  }
+
   _selectGame(gameId) {
     const game = SPORTS.flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
       (item) => item.game.id === gameId
@@ -341,14 +371,18 @@ class PanelHealth extends HTMLElement {
       });
       return;
     }
+    const selectedPresetId = this._seedDestinationPresetId(game.game.id);
+    const destMode = this._seedDestinationMode(game.game.id);
     this._setState({
       screen: "destination",
       selectedContent,
       selectedTvs: this._seedDestinationTvs(game.game.id),
-      selectedPresetId: this._seedDestinationPresetId(game.game.id),
-      destMode: this._seedDestinationMode(game.game.id),
+      selectedPresetId,
+      destMode,
       contentMode: "sports",
       entryPath: "content",
+      groupMode: this._deriveGroupMode(destMode, selectedPresetId),
+      selectedPrograms: [],
     });
   }
 
@@ -364,14 +398,18 @@ class PanelHealth extends HTMLElement {
       });
       return;
     }
+    const selectedPresetId = this._seedDestinationPresetId(channel.id);
+    const destMode = this._seedDestinationMode(channel.id);
     this._setState({
       screen: "destination",
       selectedContent,
       selectedTvs: this._seedDestinationTvs(channel.id),
-      selectedPresetId: this._seedDestinationPresetId(channel.id),
-      destMode: this._seedDestinationMode(channel.id),
+      selectedPresetId,
+      destMode,
       contentMode: "guide",
       entryPath: "content",
+      groupMode: this._deriveGroupMode(destMode, selectedPresetId),
+      selectedPrograms: [],
     });
   }
 
@@ -425,7 +463,7 @@ class PanelHealth extends HTMLElement {
       this._setState({
         groupMode: preset.mode,
         selectedPresetId: presetId,
-        selectedTvs: [...preset.tvs],
+        selectedTvs: [],
         selectedPrograms: [],
         selectedContent: null,
         destMode: "presets",
@@ -492,20 +530,21 @@ class PanelHealth extends HTMLElement {
   }
 
   _sendPlan() {
-    if (!this._state.groupMode) return;
+    const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
+    if (!groupMode) return;
     let programs = this._state.selectedPrograms;
     if ((!programs || programs.length === 0) && this._state.selectedContent) {
       programs = [this._toProgram(this._state.selectedContent)];
     }
     const plan = buildRoutePlan({
-      mode: this._state.groupMode,
+      mode: groupMode,
       programs,
       selectedTvs: this._state.selectedTvs,
       busyEncoderIds: listBusyEncoderIds(this._assignments),
       commit: "dry_run",
     });
     if (plan.error) {
-      this._setState({ lastPlan: plan });
+      this._setState({ lastPlan: plan, groupMode });
       return;
     }
     const assignments = applyRoutePlan(this._assignments, plan);
@@ -514,6 +553,9 @@ class PanelHealth extends HTMLElement {
       lastPlan: plan,
       selectedPrograms: [],
       selectedContent: null,
+      groupMode: null,
+      selectedPresetId: null,
+      selectedTvs: [],
       screen: this._browseScreenForContent(),
     });
   }
@@ -522,10 +564,17 @@ class PanelHealth extends HTMLElement {
     const content = this._state.selectedContent;
     if (!content) return;
 
-    if (this._state.groupMode === "preset_1" || this._state.groupMode === "adhoc") {
+    // Planner modes (including leftover preset_2/3) never fall through to applyAssignment.
+    if (this._shouldSendViaPlan()) {
+      const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
+      const programs =
+        (groupMode === "preset_2" || groupMode === "preset_3") && this._state.selectedPrograms.length > 0
+          ? this._state.selectedPrograms
+          : [this._toProgram(content)];
       this._state = {
         ...this._state,
-        selectedPrograms: [this._toProgram(content)],
+        groupMode,
+        selectedPrograms: programs,
       };
       this._sendPlan();
       return;
@@ -547,14 +596,19 @@ class PanelHealth extends HTMLElement {
       tvs: selectedTvs,
     });
     this._saveAssignments(assignments);
-    this._backToBrowse();
+    this._setState({
+      groupMode: null,
+      selectedPrograms: [],
+      screen: this._browseScreenForContent(),
+    });
   }
 
   _sendTvFirst() {
     if (!this._state.selectedContent || this._state.selectedTvs.length === 0) return;
-    if (this._state.groupMode === "adhoc" || this._state.groupMode === "preset_1") {
+    if (this._shouldSendViaPlan()) {
       this._state = {
         ...this._state,
+        groupMode: this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode,
         selectedPrograms: [this._toProgram(this._state.selectedContent)],
       };
       this._sendPlan();
@@ -686,6 +740,22 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderDestinationScreen() {
+    const content = this._state.selectedContent;
+    const isAdhoc = this._state.destMode === "tvs" || this._state.groupMode === "adhoc";
+    const programs = content ? [this._toProgram(content)] : [];
+    const speculative =
+      isAdhoc && content && this._state.selectedTvs.length > 0
+        ? buildRoutePlan({
+            mode: "adhoc",
+            programs,
+            selectedTvs: this._state.selectedTvs,
+            busyEncoderIds: listBusyEncoderIds(this._assignments),
+            commit: "dry_run",
+          })
+        : null;
+    const noFreeEncoders = speculative?.error === "No free encoders";
+    const sendDisabled =
+      !content || this._state.selectedTvs.length === 0 || Boolean(speculative?.error);
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -701,10 +771,16 @@ class PanelHealth extends HTMLElement {
             Pick TVs
           </button>
         </div>
+        ${noFreeEncoders ? `<div class="plan-error-banner">No free encoders</div>` : ""}
         <div class="destination-body">
           ${this._state.destMode === "presets" ? this._renderPresetChoices() : this._renderTvGrid()}
         </div>
-        <button type="button" class="primary-action" data-action="send-destination">
+        <button
+          type="button"
+          class="primary-action"
+          data-action="send-destination"
+          ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
+        >
           Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
         </button>
       </section>
