@@ -33,7 +33,7 @@ test("panel shell exposes content-first destination actions and labels", () => {
   assert.match(src, /data-action=["']select-game["']/);
   assert.match(src, /data-action=["']select-channel["']/);
   assert.match(src, /data-action=["']set-dest-mode["']/);
-  assert.match(src, /data-action=["']apply-preset["']/);
+  assert.match(src, /data-action=["']select-group["']/);
   assert.match(src, /data-action=["']toggle-tv["']/);
   assert.match(src, /data-action=["']send-destination["']/);
   assert.match(src, /data-action=["']back-browse["']/);
@@ -102,4 +102,17 @@ test("panel shell renders logos, route badges, and restores guide search focus",
   assert.match(src, /_captureGuideSearchCaret/);
   assert.match(src, /_restoreGuideSearchCaret/);
   assert.match(src, /setSelectionRange/);
+});
+
+test("panel shell exposes group-first multi-program and dry-run plan actions", () => {
+  const src = readPanelSource();
+  assert.match(src, /buildRoutePlan/);
+  assert.match(src, /applyRoutePlan/);
+  assert.match(src, /program-picker/);
+  assert.match(src, /data-action=\"select-group\"/);
+  assert.match(src, /data-action=\"toggle-program\"/);
+  assert.match(src, /data-action=\"send-plan\"/);
+  assert.match(src, /Dry-run/);
+  assert.match(src, /No free encoders/);
+  assert.doesNotMatch(src, /Split across 4 encoder groups/);
 });

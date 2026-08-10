@@ -1,7 +1,9 @@
 import {
   applyAssignment,
+  applyRoutePlan,
   createEmptyAssignments,
   getAssignmentForTv,
+  listBusyEncoderIds,
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
@@ -16,6 +18,7 @@ import {
   filterGuideChannels,
   range,
 } from "./panel-data.js";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -27,6 +30,9 @@ const DEFAULT_STATE = {
   destMode: "presets",
   contentMode: "sports",
   entryPath: "content",
+  groupMode: null,
+  selectedPrograms: [],
+  lastPlan: null,
 };
 
 const SCREEN_TITLES = {
@@ -35,6 +41,7 @@ const SCREEN_TITLES = {
   "browse-tvs": "TVs",
   destination: "Destination",
   "content-picker": "Content Picker",
+  "program-picker": "Program Picker",
 };
 
 class PanelHealth extends HTMLElement {
@@ -136,10 +143,14 @@ class PanelHealth extends HTMLElement {
     return `<span class="route-badge">${escapeHtml(label)}</span>`;
   }
 
-  _renderGameCard(game, { kicker, selected = false, cta = "Choose destination" }) {
+  _renderGameCard(
+    game,
+    { kicker, selected = false, cta = "Choose destination", action = "select-game" } = {}
+  ) {
     const selectedClass = selected ? "is-selected" : "";
+    const actionAttr = action === "toggle-program" ? 'data-action="toggle-program"' : 'data-action="select-game"';
     return `
-      <button type="button" class="content-card ${selectedClass}" data-action="select-game" data-value="${escapeAttr(game.id)}">
+      <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}">
         <span class="card-kicker">${escapeHtml(kicker)}</span>
         <span class="matchup">
           <span class="team">
@@ -229,7 +240,15 @@ class PanelHealth extends HTMLElement {
     }
     if (action === "next-choose-content") {
       if (this._state.selectedTvs.length > 0) {
-        this._setState({ screen: "content-picker", selectedContent: null });
+        const preset = PRESETS.find((item) => item.id === this._state.selectedPresetId);
+        const groupMode =
+          this._state.destMode === "tvs" ? "adhoc" : (preset?.mode ?? "adhoc");
+        this._setState({
+          screen: "content-picker",
+          selectedContent: null,
+          selectedPrograms: [],
+          groupMode,
+        });
       }
       return;
     }
@@ -240,8 +259,16 @@ class PanelHealth extends HTMLElement {
       });
       return;
     }
-    if (action === "apply-preset") {
-      this._applyPreset(value);
+    if (action === "select-group") {
+      this._selectGroup(value);
+      return;
+    }
+    if (action === "toggle-program") {
+      this._toggleProgram(value);
+      return;
+    }
+    if (action === "clear-programs") {
+      this._setState({ selectedPrograms: [] });
       return;
     }
     if (action === "toggle-tv") {
@@ -249,7 +276,7 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "clear-tvs") {
-      this._setState({ selectedTvs: [], selectedPresetId: null });
+      this._setState({ selectedTvs: [], selectedPresetId: null, groupMode: null });
       return;
     }
     if (action === "send-destination" || action === "save-route") {
@@ -258,6 +285,14 @@ class PanelHealth extends HTMLElement {
     }
     if (action === "send-tv-first") {
       this._sendTvFirst();
+      return;
+    }
+    if (action === "send-plan") {
+      this._sendPlan();
+      return;
+    }
+    if (action === "dismiss-plan") {
+      this._setState({ lastPlan: null });
       return;
     }
     if (action === "back-browse") {
@@ -340,10 +375,92 @@ class PanelHealth extends HTMLElement {
     });
   }
 
-  _applyPreset(presetId) {
+  _activePreset() {
+    return PRESETS.find((item) => item.id === this._state.selectedPresetId) ?? null;
+  }
+
+  _programCapacity() {
+    const preset = this._activePreset();
+    if (preset) return preset.programCapacity;
+    if (this._state.groupMode === "preset_2") return 4;
+    if (this._state.groupMode === "preset_3") return 9;
+    return 1;
+  }
+
+  _toProgram(content) {
+    if (!content) return null;
+    if (content.kind === "channel") {
+      return {
+        id: content.id,
+        kind: "channel",
+        label: `${content.number} ${content.name}`,
+        channel: content.number,
+        channelNumber: String(content.number),
+      };
+    }
+    return {
+      id: content.id,
+      kind: "game",
+      sportId: content.sportId ?? null,
+      label: `${content.away} @ ${content.home}`,
+      channel: content.channel,
+      channelNumber: null,
+    };
+  }
+
+  _findContentById(contentId) {
+    for (const sport of SPORTS) {
+      const game = sport.games.find((item) => item.id === contentId);
+      if (game) return { ...game, kind: "game", sportId: sport.id };
+    }
+    const channel = GUIDE_CHANNELS.find((item) => item.id === contentId);
+    if (channel) return { ...channel, kind: "channel" };
+    return null;
+  }
+
+  _selectGroup(presetId) {
     const preset = PRESETS.find((item) => item.id === presetId);
     if (!preset) return;
-    this._setState({ selectedTvs: [...preset.tvs], selectedPresetId: presetId, destMode: "presets" });
+    if (preset.programCapacity > 1) {
+      this._setState({
+        groupMode: preset.mode,
+        selectedPresetId: presetId,
+        selectedTvs: [...preset.tvs],
+        selectedPrograms: [],
+        selectedContent: null,
+        destMode: "presets",
+        screen: "program-picker",
+        contentMode: "sports",
+      });
+      return;
+    }
+    this._setState({
+      groupMode: preset.mode,
+      selectedTvs: [...preset.tvs],
+      selectedPresetId: presetId,
+      destMode: "presets",
+    });
+  }
+
+  _toggleProgram(contentId) {
+    const content = this._findContentById(contentId);
+    if (!content) return;
+    const program = this._toProgram(content);
+    const existing = this._state.selectedPrograms;
+    const index = existing.findIndex((item) => item.id === program.id);
+    if (index >= 0) {
+      this._setState({
+        selectedPrograms: existing.filter((item) => item.id !== program.id),
+      });
+      return;
+    }
+    const capacity = this._programCapacity();
+    if (existing.length >= capacity) return;
+    this._setState({
+      selectedPrograms: [...existing, program],
+      contentMode: content.kind === "channel" ? "guide" : "sports",
+      sportId: content.sportId ?? this._state.sportId,
+    });
   }
 
   _toggleTv(tv) {
@@ -355,6 +472,7 @@ class PanelHealth extends HTMLElement {
       selectedTvs: Array.from(selected).sort((a, b) => a - b),
       selectedPresetId: null,
       destMode: "tvs",
+      groupMode: "adhoc",
     });
   }
 
@@ -362,11 +480,58 @@ class PanelHealth extends HTMLElement {
     this._setState({ screen: this._browseScreenForContent() });
   }
 
+  _speculativePlan(programs = this._state.selectedPrograms) {
+    if (!this._state.groupMode) return null;
+    return buildRoutePlan({
+      mode: this._state.groupMode,
+      programs,
+      selectedTvs: this._state.selectedTvs,
+      busyEncoderIds: listBusyEncoderIds(this._assignments),
+      commit: "dry_run",
+    });
+  }
+
+  _sendPlan() {
+    if (!this._state.groupMode) return;
+    let programs = this._state.selectedPrograms;
+    if ((!programs || programs.length === 0) && this._state.selectedContent) {
+      programs = [this._toProgram(this._state.selectedContent)];
+    }
+    const plan = buildRoutePlan({
+      mode: this._state.groupMode,
+      programs,
+      selectedTvs: this._state.selectedTvs,
+      busyEncoderIds: listBusyEncoderIds(this._assignments),
+      commit: "dry_run",
+    });
+    if (plan.error) {
+      this._setState({ lastPlan: plan });
+      return;
+    }
+    const assignments = applyRoutePlan(this._assignments, plan);
+    this._saveAssignments(assignments);
+    this._setState({
+      lastPlan: plan,
+      selectedPrograms: [],
+      selectedContent: null,
+      screen: this._browseScreenForContent(),
+    });
+  }
+
   _sendDestination() {
     const content = this._state.selectedContent;
     if (!content) return;
-    const selectedTvs = [...this._state.selectedTvs].sort((a, b) => a - b);
 
+    if (this._state.groupMode === "preset_1" || this._state.groupMode === "adhoc") {
+      this._state = {
+        ...this._state,
+        selectedPrograms: [this._toProgram(content)],
+      };
+      this._sendPlan();
+      return;
+    }
+
+    const selectedTvs = [...this._state.selectedTvs].sort((a, b) => a - b);
     const assignments = applyAssignment(this._assignments, {
       routeId: content.id,
       kind: content.kind,
@@ -387,6 +552,14 @@ class PanelHealth extends HTMLElement {
 
   _sendTvFirst() {
     if (!this._state.selectedContent || this._state.selectedTvs.length === 0) return;
+    if (this._state.groupMode === "adhoc" || this._state.groupMode === "preset_1") {
+      this._state = {
+        ...this._state,
+        selectedPrograms: [this._toProgram(this._state.selectedContent)],
+      };
+      this._sendPlan();
+      return;
+    }
     this._sendDestination();
   }
 
@@ -425,6 +598,7 @@ class PanelHealth extends HTMLElement {
     if (this._state.screen === "browse-tvs") return this._renderTvsScreen();
     if (this._state.screen === "destination") return this._renderDestinationScreen();
     if (this._state.screen === "content-picker") return this._renderContentPickerScreen();
+    if (this._state.screen === "program-picker") return this._renderProgramPickerScreen();
     return this._renderSportScreen();
   }
 
@@ -540,21 +714,186 @@ class PanelHealth extends HTMLElement {
   _renderPresetChoices() {
     return `
       <div class="preset-row">
-        ${PRESETS.map(
-          (preset) => `
-            <button type="button" class="preset-chip" data-action="apply-preset" data-value="${escapeAttr(preset.id)}">
+        ${PRESETS.map((preset) => {
+          const active = this._state.selectedPresetId === preset.id ? "is-active" : "";
+          return `
+            <button type="button" class="preset-chip ${active}" data-action="select-group" data-value="${escapeAttr(preset.id)}">
               <b>${escapeHtml(preset.shortLabel)}</b>
               <span>${escapeHtml(preset.description)}</span>
             </button>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  _programLabel(program) {
+    return program?.label ?? "Empty";
+  }
+
+  _renderSlotStrip() {
+    const capacity = this._programCapacity();
+    const stripeCount = this._activePreset()?.stripeCount ?? capacity;
+    const slots = Array.from({ length: capacity }, (_, index) => {
+      const program = this._state.selectedPrograms[index];
+      const ordinal = index + 1;
+      const tvs = program ? stripedTvs(stripeCount, ordinal) : [];
+      const preview = program
+        ? `ENC-${String(ordinal).padStart(2, "0")} · TVs ${tvs.slice(0, 4).join(", ")}${tvs.length > 4 ? "…" : ""}`
+        : "Empty";
+      return `
+        <div class="slot-chip ${program ? "is-filled" : ""}">
+          <b>Slot ${ordinal}: ${escapeHtml(program ? this._programLabel(program) : "—")}</b>
+          <span>${escapeHtml(preview)}</span>
+        </div>
+      `;
+    });
+    return `<div class="slot-strip" aria-label="Program slots">${slots.join("")}</div>`;
+  }
+
+  _renderDryRunSummary() {
+    const plan = this._state.lastPlan;
+    if (!plan) return "";
+    const error = plan.error
+      ? `<p class="plan-error">${escapeHtml(plan.error)}</p>`
+      : "";
+    const warnings = (plan.warnings ?? [])
+      .map((warning) => `<p class="plan-warning">${escapeHtml(warning)}</p>`)
+      .join("");
+    const slots = (plan.slots ?? [])
+      .map(
+        (slot) => `
+          <li>
+            <b>${escapeHtml(slot.encoderId)}</b>
+            · ${escapeHtml(slot.program?.label ?? "Program")}
+            · TVs ${escapeHtml((slot.tvs ?? []).join(", "))}
+          </li>
+        `
+      )
+      .join("");
+    return `
+      <aside class="dry-run-summary" aria-live="polite">
+        <div class="dry-run-heading">
+          <p class="eyebrow">Dry-run summary</p>
+          <button type="button" class="link-button" data-action="dismiss-plan">Dismiss</button>
+        </div>
+        ${error}
+        ${warnings}
+        ${slots ? `<ul class="plan-slots">${slots}</ul>` : ""}
+        ${!plan.error && !slots ? "<p>No slots planned.</p>" : ""}
+      </aside>
+    `;
+  }
+
+  _renderProgramPickerScreen() {
+    const preset = this._activePreset();
+    const heading = preset?.label ?? "Programs";
+    const speculative = this._speculativePlan();
+    const sendDisabled =
+      this._state.selectedPrograms.length === 0 || Boolean(speculative?.error);
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Group programs</p>
+            <h2>${escapeHtml(heading)}</h2>
+          </div>
+          <button type="button" class="link-button" data-action="back-browse">Back</button>
+        </div>
+        ${this._renderSlotStrip()}
+        <div class="tv-toolbar">
+          <span>${this._state.selectedPrograms.length} / ${this._programCapacity()} programs</span>
+          <button type="button" data-action="clear-programs">Clear programs</button>
+        </div>
+        <div class="mode-toggle" role="group" aria-label="Content mode">
+          <button type="button" class="${this._state.contentMode === "sports" ? "is-active" : ""}" data-action="set-content-mode" data-value="sports">
+            Sports
+          </button>
+          <button type="button" class="${this._state.contentMode === "guide" ? "is-active" : ""}" data-action="set-content-mode" data-value="guide">
+            Guide
+          </button>
+        </div>
+        ${this._state.contentMode === "guide" ? this._renderGuideProgramOptions() : this._renderSportsProgramOptions()}
+        <button
+          type="button"
+          class="primary-action"
+          data-action="send-plan"
+          ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
+        >
+          Dry-run Send
+        </button>
+      </section>
+    `;
+  }
+
+  _renderSportsProgramOptions() {
+    const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
+    return `
+      <div class="content-stack">
+        ${SPORTS.map(
+          (sport) => `
+            <div class="content-section">
+              <h3>${escapeHtml(sport.title)}</h3>
+              <div class="card-grid">
+                ${sport.games
+                  .map((game) =>
+                    this._renderGameCard(game, {
+                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
+                      selected: selectedIds.has(game.id),
+                      cta: selectedIds.has(game.id) ? "Selected for slot" : "Add to slots",
+                      action: "toggle-program",
+                    })
+                  )
+                  .join("")}
+              </div>
+            </div>
           `
         ).join("")}
       </div>
     `;
   }
 
+  _renderGuideProgramOptions() {
+    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
+    return `
+      <label class="search">
+        <span>Search by channel, name, or category</span>
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+      </label>
+      <div class="list">
+        ${channels
+          .map((channel) => {
+            const selected = selectedIds.has(channel.id) ? "is-selected" : "";
+            return `
+              <button type="button" class="guide-row ${selected}" data-action="toggle-program" data-value="${escapeAttr(channel.id)}">
+                <b>${escapeHtml(channel.number)}</b>
+                <span>${escapeHtml(channel.name)}</span>
+                <em>${escapeHtml(channel.category)}</em>
+                ${this._routeBadgeHtml(channel.id)}
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
   _renderContentPickerScreen() {
     const tvFirst = this._state.entryPath === "tv";
-    const sendDisabled = !this._state.selectedContent || this._state.selectedTvs.length === 0;
+    const programs = this._state.selectedContent
+      ? [this._toProgram(this._state.selectedContent)]
+      : [];
+    const speculative =
+      tvFirst && (this._state.groupMode === "adhoc" || this._state.groupMode === "preset_1")
+        ? this._speculativePlan(programs)
+        : null;
+    const noFreeEncoders = speculative?.error === "No free encoders";
+    const sendDisabled =
+      !this._state.selectedContent ||
+      this._state.selectedTvs.length === 0 ||
+      Boolean(speculative?.error);
+    const usePlanSend = this._state.groupMode === "adhoc" || this._state.groupMode === "preset_1";
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -567,6 +906,7 @@ class PanelHealth extends HTMLElement {
           }
         </div>
         ${tvFirst ? `<div class="locked-summary">Sending to TVs: ${escapeHtml(this._selectedTvsLabel())}</div>` : ""}
+        ${noFreeEncoders ? `<div class="plan-error-banner">No free encoders</div>` : ""}
         <div class="mode-toggle" role="group" aria-label="Content mode">
           <button type="button" class="${this._state.contentMode === "sports" ? "is-active" : ""}" data-action="set-content-mode" data-value="sports">
             Sports
@@ -578,14 +918,23 @@ class PanelHealth extends HTMLElement {
         ${this._state.contentMode === "guide" ? this._renderGuideContentOptions() : this._renderSportsContentOptions()}
         ${
           tvFirst
-            ? `<button
-                type="button"
-                class="primary-action"
-                data-action="send-tv-first"
-                ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
-              >
-                Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
-              </button>`
+            ? usePlanSend
+              ? `<button
+                  type="button"
+                  class="primary-action"
+                  data-action="send-plan"
+                  ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
+                >
+                  Dry-run Send
+                </button>`
+              : `<button
+                  type="button"
+                  class="primary-action"
+                  data-action="send-tv-first"
+                  ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
+                >
+                  Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
+                </button>`
             : ""
         }
       </section>
@@ -982,13 +1331,88 @@ class PanelHealth extends HTMLElement {
         }
 
         .preset-chip b,
-        .preset-chip span {
+        .preset-chip span,
+        .slot-chip b,
+        .slot-chip span {
           display: block;
         }
 
-        .preset-chip span {
+        .preset-chip span,
+        .slot-chip span {
           color: var(--muted);
           font-size: 0.8rem;
+        }
+
+        .preset-chip.is-active {
+          background: var(--cyan);
+          color: white;
+        }
+
+        .preset-chip.is-active span {
+          color: rgba(255, 255, 255, 0.82);
+        }
+
+        .slot-strip {
+          display: grid;
+          gap: 8px;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          margin-bottom: 12px;
+        }
+
+        .slot-chip {
+          background: #eef2f7;
+          border-radius: var(--radius-md);
+          padding: 11px 13px;
+        }
+
+        .slot-chip.is-filled {
+          box-shadow: inset 0 0 0 2px var(--cyan);
+        }
+
+        .dry-run-summary {
+          background: var(--surface);
+          border: 1px solid rgba(14, 116, 144, 0.35);
+          border-radius: var(--radius-md);
+          color: var(--text);
+          margin-bottom: 14px;
+          padding: 14px;
+        }
+
+        .dry-run-heading {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 8px;
+        }
+
+        .dry-run-heading .eyebrow {
+          color: var(--cyan);
+        }
+
+        .plan-slots {
+          margin: 0;
+          padding-left: 18px;
+        }
+
+        .plan-error,
+        .plan-error-banner {
+          color: var(--graphite);
+          font-weight: 800;
+          margin: 0 0 8px;
+        }
+
+        .plan-error-banner {
+          background: var(--cyan-soft);
+          border-radius: var(--radius-md);
+          color: var(--cyan);
+          margin-bottom: 12px;
+          padding: 12px;
+        }
+
+        .plan-warning {
+          color: var(--muted);
+          margin: 0 0 6px;
         }
 
         .tv-grid {
@@ -1075,6 +1499,7 @@ class PanelHealth extends HTMLElement {
             <div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>
           </header>
           ${this._renderChipRow()}
+          ${this._renderDryRunSummary()}
           ${this._renderScreen()}
         </div>
       </div>
