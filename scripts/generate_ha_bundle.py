@@ -207,6 +207,61 @@ def build_package(
             ],
         }
 
+    # Optional "favorite scenes" that combine preset recall + multi-program channel tune.
+    favorites = channels_cfg.get("favorites", {})
+    if favorites and not isinstance(favorites, dict):
+        raise SystemExit("favorites must be a mapping when provided")
+    preset_delay = channels_cfg.get("favorite_preset_delay", "00:00:02")
+    preset_script_by_key = {k: f"script.avaccess_preset_{slug(k)}" for k in presets.keys()}
+    for favorite_key, favorite in favorites.items():
+        if not isinstance(favorite, dict):
+            raise SystemExit(f"favorites.{favorite_key} must be a mapping")
+        fav_slug = slug(favorite_key)
+        fav_label = favorite.get("label", favorite_key)
+        fav_preset = favorite.get("preset")
+        fav_tunes = favorite.get("tunes", [])
+        if not isinstance(fav_tunes, list):
+            raise SystemExit(f"favorites.{favorite_key}.tunes must be a list")
+
+        sequence: list[dict[str, Any]] = []
+        if fav_preset:
+            if fav_preset not in preset_script_by_key:
+                available = ", ".join(presets.keys())
+                raise SystemExit(
+                    f"favorites.{favorite_key}.preset '{fav_preset}' not found in presets ({available})"
+                )
+            sequence.append({"service": preset_script_by_key[fav_preset]})
+            sequence.append({"delay": preset_delay})
+
+        for idx, tune in enumerate(fav_tunes, 1):
+            if not isinstance(tune, dict):
+                raise SystemExit(f"favorites.{favorite_key}.tunes[{idx}] must be a mapping")
+            program = tune.get("program")
+            channel = tune.get("channel")
+            if not program or not channel:
+                raise SystemExit(
+                    f"favorites.{favorite_key}.tunes[{idx}] must include 'program' and 'channel'"
+                )
+            sequence.append(
+                {
+                    "service": "script.avaccess_tune_channel",
+                    "data": {"program": str(program).lower(), "channel": str(channel).lower()},
+                }
+            )
+            if tune.get("delay_after"):
+                sequence.append({"delay": tune["delay_after"]})
+
+        if not sequence:
+            raise SystemExit(
+                f"favorites.{favorite_key} has no actions. Define preset and/or tunes."
+            )
+
+        scripts[f"avaccess_favorite_{fav_slug}"] = {
+            "alias": f"AVAccess Favorite {fav_label}",
+            "mode": "single",
+            "sequence": sequence,
+        }
+
     package = {
         "input_select": {
             "avaccess_program": {
@@ -271,6 +326,53 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
             }
         )
 
+    favorites = channels_cfg.get("favorites", {})
+    favorite_buttons = []
+    if isinstance(favorites, dict):
+        for favorite_key, favorite in favorites.items():
+            fav_slug = slug(favorite_key)
+            fav_label = (
+                favorite.get("label", favorite_key)
+                if isinstance(favorite, dict)
+                else str(favorite_key)
+            )
+            favorite_buttons.append(
+                {
+                    "type": "button",
+                    "name": fav_label,
+                    "icon": "mdi:star",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": f"script.avaccess_favorite_{fav_slug}",
+                    },
+                }
+            )
+
+    cards: list[dict[str, Any]] = [
+        {
+            "type": "entities",
+            "title": "Active Selection",
+            "entities": ["input_select.avaccess_program", "input_select.avaccess_channel"],
+        }
+    ]
+    if favorite_buttons:
+        cards.append(
+            {
+                "type": "grid",
+                "title": "Favorites",
+                "columns": 3,
+                "square": False,
+                "cards": favorite_buttons,
+            }
+        )
+    cards.extend(
+        [
+            {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
+            {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
+            {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
+        ]
+    )
+
     dashboard = {
         "title": "AVAccess Matrix",
         "views": [
@@ -278,16 +380,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
                 "title": "AV Control",
                 "path": "av-control",
                 "icon": "mdi:video-input-component",
-                "cards": [
-                    {
-                        "type": "entities",
-                        "title": "Active Selection",
-                        "entities": ["input_select.avaccess_program", "input_select.avaccess_channel"],
-                    },
-                    {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
-                    {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
-                    {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
-                ],
+                "cards": cards,
             }
         ],
     }

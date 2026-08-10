@@ -23,6 +23,19 @@ input_select:
     - tnt
     - fox
     - cbs
+    - nfl_afternoon_game_1
+    - nfl_afternoon_game_2
+    - nfl_afternoon_game_3
+    - nfl_afternoon_game_4
+    - nfl_sunday_game_1
+    - nfl_sunday_game_2
+    - nfl_sunday_game_3
+    - nfl_sunday_game_4
+    - nfl_sunday_game_5
+    - nfl_sunday_game_6
+    - nfl_sunday_game_7
+    - nfl_sunday_game_8
+    - nfl_sunday_game_9
     initial: espn
     icon: mdi:television-guide
 shell_command:
@@ -104,6 +117,45 @@ script:
         cbs:
           number: '2'
           label: CBS
+        nfl_afternoon_game_1:
+          number: '705'
+          label: NFL A1
+        nfl_afternoon_game_2:
+          number: '706'
+          label: NFL A2
+        nfl_afternoon_game_3:
+          number: '707'
+          label: NFL A3
+        nfl_afternoon_game_4:
+          number: '708'
+          label: NFL A4
+        nfl_sunday_game_1:
+          number: '705'
+          label: NFL S1
+        nfl_sunday_game_2:
+          number: '706'
+          label: NFL S2
+        nfl_sunday_game_3:
+          number: '707'
+          label: NFL S3
+        nfl_sunday_game_4:
+          number: '708'
+          label: NFL S4
+        nfl_sunday_game_5:
+          number: '709'
+          label: NFL S5
+        nfl_sunday_game_6:
+          number: '710'
+          label: NFL S6
+        nfl_sunday_game_7:
+          number: '711'
+          label: NFL S7
+        nfl_sunday_game_8:
+          number: '712'
+          label: NFL S8
+        nfl_sunday_game_9:
+          number: '713'
+          label: NFL S9
       suffix_commands:
       - ok
       program_key: '{{ (program | default(states(''input_select.avaccess_program''), true)) | lower }}'
@@ -172,3 +224,194 @@ script:
         entity_id: input_select.avaccess_channel
         option: cbs
     - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_afternoon_game_1:
+    alias: AVAccess tune NFL A1
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_afternoon_game_1
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_afternoon_game_2:
+    alias: AVAccess tune NFL A2
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_afternoon_game_2
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_afternoon_game_3:
+    alias: AVAccess tune NFL A3
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_afternoon_game_3
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_afternoon_game_4:
+    alias: AVAccess tune NFL A4
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_afternoon_game_4
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_1:
+    alias: AVAccess tune NFL S1
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_1
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_2:
+    alias: AVAccess tune NFL S2
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_2
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_3:
+    alias: AVAccess tune NFL S3
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_3
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_4:
+    alias: AVAccess tune NFL S4
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_4
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_5:
+    alias: AVAccess tune NFL S5
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_5
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_6:
+    alias: AVAccess tune NFL S6
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_6
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_7:
+    alias: AVAccess tune NFL S7
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_7
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_8:
+    alias: AVAccess tune NFL S8
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_8
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nfl_sunday_game_9:
+    alias: AVAccess tune NFL S9
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nfl_sunday_game_9
+    - service: script.avaccess_tune_selected_channel
+  avaccess_favorite_fox:
+    alias: AVAccess Favorite FOX
+    mode: single
+    sequence:
+    - service: script.avaccess_preset_1_all
+    - delay: 00:00:02
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_a
+        channel: fox
+  avaccess_favorite_nfl_afternoon_games:
+    alias: AVAccess Favorite NFL Afternoon Games
+    mode: single
+    sequence:
+    - service: script.avaccess_preset_2_four_programs
+    - delay: 00:00:02
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_a
+        channel: nfl_afternoon_game_1
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_b
+        channel: nfl_afternoon_game_2
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_c
+        channel: nfl_afternoon_game_3
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_d
+        channel: nfl_afternoon_game_4
+  avaccess_favorite_all_nfl_sunday_games:
+    alias: AVAccess Favorite All NFL Sunday Games
+    mode: single
+    sequence:
+    - service: script.avaccess_preset_3_nine_programs
+    - delay: 00:00:02
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_a
+        channel: nfl_sunday_game_1
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_b
+        channel: nfl_sunday_game_2
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_c
+        channel: nfl_sunday_game_3
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_d
+        channel: nfl_sunday_game_4
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_e
+        channel: nfl_sunday_game_5
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_f
+        channel: nfl_sunday_game_6
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_g
+        channel: nfl_sunday_game_7
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_h
+        channel: nfl_sunday_game_8
+    - service: script.avaccess_tune_channel
+      data:
+        program: program_i
+        channel: nfl_sunday_game_9

@@ -39,7 +39,80 @@ channels:
   cbs:
     number: "2"
     label: "CBS"
+  nfl_afternoon_game_1:
+    number: "705"
+    label: "NFL A1"
+  nfl_afternoon_game_2:
+    number: "706"
+    label: "NFL A2"
+  nfl_afternoon_game_3:
+    number: "707"
+    label: "NFL A3"
+  nfl_afternoon_game_4:
+    number: "708"
+    label: "NFL A4"
+  nfl_sunday_game_1:
+    number: "705"
+    label: "NFL S1"
+  nfl_sunday_game_2:
+    number: "706"
+    label: "NFL S2"
+  nfl_sunday_game_3:
+    number: "707"
+    label: "NFL S3"
+  nfl_sunday_game_4:
+    number: "708"
+    label: "NFL S4"
+  nfl_sunday_game_5:
+    number: "709"
+    label: "NFL S5"
+  nfl_sunday_game_6:
+    number: "710"
+    label: "NFL S6"
+  nfl_sunday_game_7:
+    number: "711"
+    label: "NFL S7"
+  nfl_sunday_game_8:
+    number: "712"
+    label: "NFL S8"
+  nfl_sunday_game_9:
+    number: "713"
+    label: "NFL S9"
 
 # Optional per-channel tail command depending on remote behavior.
 # Common values: ["ok"] or [].
 suffix_commands: ["ok"]
+
+# Favorite macros for one-tap operation:
+# - optional preset recall
+# - then one or many channel tune actions across program slots
+favorite_preset_delay: "00:00:02"
+favorites:
+  fox:
+    label: "FOX"
+    preset: 1_all
+    tunes:
+      - { program: program_a, channel: fox }
+
+  nfl_afternoon_games:
+    label: "NFL Afternoon Games"
+    preset: 2_four_programs
+    tunes:
+      - { program: program_a, channel: nfl_afternoon_game_1 }
+      - { program: program_b, channel: nfl_afternoon_game_2 }
+      - { program: program_c, channel: nfl_afternoon_game_3 }
+      - { program: program_d, channel: nfl_afternoon_game_4 }
+
+  all_nfl_sunday_games:
+    label: "All NFL Sunday Games"
+    preset: 3_nine_programs
+    tunes:
+      - { program: program_a, channel: nfl_sunday_game_1 }
+      - { program: program_b, channel: nfl_sunday_game_2 }
+      - { program: program_c, channel: nfl_sunday_game_3 }
+      - { program: program_d, channel: nfl_sunday_game_4 }
+      - { program: program_e, channel: nfl_sunday_game_5 }
+      - { program: program_f, channel: nfl_sunday_game_6 }
+      - { program: program_g, channel: nfl_sunday_game_7 }
+      - { program: program_h, channel: nfl_sunday_game_8 }
+      - { program: program_i, channel: nfl_sunday_game_9 }

@@ -24,7 +24,7 @@ cp config/channels.example.yaml config/channels.yaml
 
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
-- `config/channels.yaml` → program→encoder mapping, IR entities, favorite channels
+- `config/channels.yaml` → program→encoder mapping, IR entities, favorite channels, and favorite macros
 
 ## 3) Generate HA package + dashboard YAML
 
@@ -65,6 +65,11 @@ After restart you should see:
 1. Tap preset (1/2/3)  
 2. Tap active program (A..I)  
 3. Tap channel (ESPN/TNT/...)  
+
+Or use one-tap favorites:
+- **FOX** (Preset 1 + FOX tune)
+- **NFL Afternoon Games** (Preset 2 + 4 program tunes)
+- **All NFL Sunday Games** (Preset 3 + 9 program tunes)
 
 ## Notes
 

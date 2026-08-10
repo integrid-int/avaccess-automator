@@ -55,3 +55,16 @@ If you want guide context (what's on now/next), use an XMLTV/EPG integration in 
 - Search card for program titles
 
 Treat unofficial Spectrum API scripts as optional and non-critical.
+
+## 6) Favorite macros (recommended for sports ops)
+
+You can define one-tap favorites in `channels.yaml` that:
+1) optionally apply a preset, then  
+2) tune one or many program slots.
+
+Included examples:
+- `fox`
+- `nfl_afternoon_games`
+- `all_nfl_sunday_games`
+
+This is ideal for weekly game-day operation: update only the NFL channel numbers in `channels.yaml`, regenerate the HA bundle, and keep the same operator buttons.

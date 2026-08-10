@@ -13,6 +13,29 @@ views:
     - input_select.avaccess_program
     - input_select.avaccess_channel
   - type: grid
+    title: Favorites
+    columns: 3
+    square: false
+    cards:
+    - type: button
+      name: FOX
+      icon: mdi:star
+      tap_action:
+        action: call-service
+        service: script.avaccess_favorite_fox
+    - type: button
+      name: NFL Afternoon Games
+      icon: mdi:star
+      tap_action:
+        action: call-service
+        service: script.avaccess_favorite_nfl_afternoon_games
+    - type: button
+      name: All NFL Sunday Games
+      icon: mdi:star
+      tap_action:
+        action: call-service
+        service: script.avaccess_favorite_all_nfl_sunday_games
+  - type: grid
     title: Presets
     columns: 3
     square: false
@@ -141,3 +164,81 @@ views:
       tap_action:
         action: call-service
         service: script.avaccess_tune_cbs
+    - type: button
+      name: NFL A1
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_afternoon_game_1
+    - type: button
+      name: NFL A2
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_afternoon_game_2
+    - type: button
+      name: NFL A3
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_afternoon_game_3
+    - type: button
+      name: NFL A4
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_afternoon_game_4
+    - type: button
+      name: NFL S1
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_1
+    - type: button
+      name: NFL S2
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_2
+    - type: button
+      name: NFL S3
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_3
+    - type: button
+      name: NFL S4
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_4
+    - type: button
+      name: NFL S5
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_5
+    - type: button
+      name: NFL S6
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_6
+    - type: button
+      name: NFL S7
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_7
+    - type: button
+      name: NFL S8
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_8
+    - type: button
+      name: NFL S9
+      icon: mdi:television-play
+      tap_action:
+        action: call-service
+        service: script.avaccess_tune_nfl_sunday_game_9
