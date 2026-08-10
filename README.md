@@ -8,6 +8,7 @@ Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-f
 - **[docs/HOME_ASSISTANT_CHANNELS.md](docs/HOME_ASSISTANT_CHANNELS.md)** — one-tap channel buttons and guide options
 - **[docs/HA_QUICKSTART.md](docs/HA_QUICKSTART.md)** — generate package/dashboard and run in Home Assistant
 - **[docs/WEEKLY_SCHEDULE_SYNC.md](docs/WEEKLY_SCHEDULE_SYNC.md)** — weekly EPG sync with local-blackout preference
+- **`homeassistant/dashboards/avaccess_matrix_dashboard_pretty.example.yaml`** — polished iPad-style Lovelace mockup
 
 ## Quick start (after inventory is filled)
 

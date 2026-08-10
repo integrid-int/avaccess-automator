@@ -52,6 +52,8 @@ Use one of these approaches:
 
 - **YAML dashboard mode**: point a dashboard to `/config/dashboards/avaccess_matrix.yaml`
 - **Raw config editor**: paste the generated dashboard YAML into a dashboard
+- **Polished mockup version**: use `homeassistant/dashboards/avaccess_matrix_dashboard_pretty.example.yaml`
+  as a starting point, then adjust entity IDs.
 
 ## 6) Restart Home Assistant
 
@@ -74,6 +76,25 @@ Or use one-tap favorites:
 
 For automated weekly NFL channel updates, see:
 - `docs/WEEKLY_SCHEDULE_SYNC.md`
+
+Optional maintenance shell commands (used by the pretty Settings tab buttons):
+
+```yaml
+shell_command:
+  avaccess_weekly_refresh: >
+    python3 /config/avaccess/scripts/refresh_ha_weekly.py
+    --channels /config/avaccess/config/channels.yaml
+    --sync-config /config/avaccess/config/schedule_sync.yaml
+    --inventory /config/avaccess/config/inventory.yaml
+    --out-package /config/packages/avaccess_matrix.yaml
+    --out-dashboard /config/dashboards/avaccess_matrix.yaml
+  avaccess_generate_bundle: >
+    python3 /config/avaccess/scripts/generate_ha_bundle.py
+    --inventory /config/avaccess/config/inventory.yaml
+    --channels /config/avaccess/config/channels.yaml
+    --out-package /config/packages/avaccess_matrix.yaml
+    --out-dashboard /config/dashboards/avaccess_matrix.yaml
+```
 
 ## Notes
 

@@ -1,0 +1,293 @@
+# AVAccess iPad dashboard (polished example)
+# Copy into a Lovelace dashboard YAML file, then adjust entities/sensors as needed.
+
+title: AVAccess Matrix
+views:
+  - title: Control
+    path: av-control
+    icon: mdi:video-input-component
+    badges: []
+    cards:
+      - type: markdown
+        content: >
+          ## AVAccess Matrix
+
+          Tap a **Favorite** for one-step game-day routing, or use Preset → Program → Channel.
+          Local blackout handling is supported via weekly sync for ZIP **27403**.
+
+      - type: entities
+        title: Active Selection
+        show_header_toggle: false
+        entities:
+          - entity: input_select.avaccess_program
+            name: Active Program
+          - entity: input_select.avaccess_channel
+            name: Active Channel
+
+      - type: grid
+        title: Favorites
+        columns: 3
+        square: false
+        cards:
+          - type: button
+            name: FOX
+            icon: mdi:star
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.avaccess_favorite_fox
+          - type: button
+            name: NFL Afternoon Games
+            icon: mdi:star
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.avaccess_favorite_nfl_afternoon_games
+          - type: button
+            name: All NFL Sunday Games
+            icon: mdi:star
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.avaccess_favorite_all_nfl_sunday_games
+
+      - type: grid
+        title: Presets
+        columns: 3
+        square: false
+        cards:
+          - type: button
+            name: Preset 1 ALL
+            icon: mdi:video-switch
+            tap_action:
+              action: call-service
+              service: script.avaccess_preset_1_all
+          - type: button
+            name: Preset 2 4 Programs
+            icon: mdi:video-switch
+            tap_action:
+              action: call-service
+              service: script.avaccess_preset_2_four_programs
+          - type: button
+            name: Preset 3 9 Programs
+            icon: mdi:video-switch
+            tap_action:
+              action: call-service
+              service: script.avaccess_preset_3_nine_programs
+
+      - type: grid
+        title: Programs
+        columns: 3
+        square: true
+        cards:
+          - type: button
+            name: Program A
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_a }
+          - type: button
+            name: Program B
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_b }
+          - type: button
+            name: Program C
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_c }
+          - type: button
+            name: Program D
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_d }
+          - type: button
+            name: Program E
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_e }
+          - type: button
+            name: Program F
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_f }
+          - type: button
+            name: Program G
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_g }
+          - type: button
+            name: Program H
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_h }
+          - type: button
+            name: Program I
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.avaccess_set_program
+              data: { program: program_i }
+
+      - type: markdown
+        content: "### Channels"
+
+      - type: grid
+        columns: 4
+        square: false
+        cards:
+          - type: button
+            name: FOX
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_fox }
+          - type: button
+            name: CBS
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_cbs }
+          - type: button
+            name: ESPN
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_espn }
+          - type: button
+            name: TNT
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_tnt }
+          - type: button
+            name: NFL A1
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_1 }
+          - type: button
+            name: NFL A2
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_2 }
+          - type: button
+            name: NFL A3
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_3 }
+          - type: button
+            name: NFL A4
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_4 }
+          - type: button
+            name: NFL S1
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_1 }
+          - type: button
+            name: NFL S2
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_2 }
+          - type: button
+            name: NFL S3
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_3 }
+          - type: button
+            name: NFL S4
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_4 }
+          - type: button
+            name: NFL S5
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_5 }
+          - type: button
+            name: NFL S6
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_6 }
+          - type: button
+            name: NFL S7
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_7 }
+          - type: button
+            name: NFL S8
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_8 }
+          - type: button
+            name: NFL S9
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_9 }
+
+      - type: markdown
+        content: >
+          _Tip: Keep favorites at the top for operators. Use the full channel matrix only when
+          customizing individual games._
+
+  - title: Guide
+    path: guide
+    icon: mdi:television-guide
+    badges: []
+    cards:
+      - type: markdown
+        content: >
+          ## Guide (optional)
+
+          Add EPG entities here (XMLTV integration recommended).  
+          Suggested entities: `sensor.fox_current_program`, `sensor.cbs_current_program`,
+          `sensor.espn_current_program`, plus Sunday Ticket channel sensors.
+
+      - type: entities
+        title: Example EPG Sensors
+        show_header_toggle: false
+        entities:
+          - entity: sensor.fox_current_program
+            name: FOX Now
+          - entity: sensor.cbs_current_program
+            name: CBS Now
+          - entity: sensor.espn_current_program
+            name: ESPN Now
+          - entity: sensor.nfl_st_1_current_program
+            name: NFL ST 1 Now
+
+      - type: markdown
+        content: >
+          Configure your EPG integration first, then replace placeholder sensor IDs above with your
+          real entities.
+
+  - title: Settings
+    path: settings
+    icon: mdi:cog
+    badges: []
+    cards:
+      - type: entities
+        title: Runtime Controls
+        entities:
+          - entity: input_select.avaccess_program
+            name: Default Program
+          - entity: input_select.avaccess_channel
+            name: Default Channel
+
+      - type: grid
+        title: Maintenance
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Weekly Schedule Refresh
+            icon: mdi:update
+            tap_action:
+              action: call-service
+              service: shell_command.avaccess_weekly_refresh
+          - type: button
+            name: Regenerate HA Bundle
+            icon: mdi:file-refresh
+            tap_action:
+              action: call-service
+              service: shell_command.avaccess_generate_bundle
+
+      - type: markdown
+        content: >
+          If maintenance buttons are unavailable, add the corresponding `shell_command` entries in
+          your Home Assistant config.
