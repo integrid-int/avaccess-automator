@@ -1,6 +1,6 @@
 # AVAccess Route Planner + Guide Now/Next Design
 
-**Status:** Draft for review  
+**Status:** Approved  
 **Date:** 2026-08-10  
 **Supersedes (partial):** bartender panel preset behavior in `2026-08-10-bartender-panel-ui-design.md` where that spec treated Presets 2/3 as whole-TV-set shortcuts. Visual system (Graphite + Cyan) and dual entry paths remain.
 
@@ -225,4 +225,4 @@ Each phase gets its own implementation plan under `docs/superpowers/plans/` afte
 ## Approval
 
 Design sections approved in brainstorming (architecture, Track A, Track B, Track C).  
-Awaiting review of this written spec before implementation plans.
+Written spec approved 2026-08-10. Track A implementation plan: `docs/superpowers/plans/2026-08-10-avaccess-route-planner-track-a.md`.
