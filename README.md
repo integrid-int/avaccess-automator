@@ -4,18 +4,21 @@ Home Assistant test environment for validating the **iPad bartender Sports Routi
 
 ## Goals (aligned with AVAccess plan)
 
-This panel is designed for Home Assistant Companion on iPad and mirrors the Phase 2 sports-routing workflow:
+This panel is designed for Home Assistant Companion on iPad and implements **Track A** of the AVAccess route planner: group/program planning with a dry-run `RoutePlan` (no live UDP/IR).
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
 - **Spectrum channel guide** for ZIP **27403** (Spectrum / Xumo tune numbers and labels)
-- **Groups = project presets**:
-  - Preset 1 — ALL (all 35 TVs)
-  - Preset 2 — 4 Programs (encoder blocks)
-  - Preset 3 — 9 Programs (encoder blocks)
-- **Individuals = TVs 1–35**, with adhoc multi-select
-- **Dual entry paths:** content-first (pick game/channel, then TVs) or TV-first (pick TVs, then content)
+- **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
+  - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
+  - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
+  - **Preset 3 — 9 Programs** — pick up to 9 programs; striped across `ENC-01`…`ENC-09`; unused encoder slots omitted / left unchanged
+- **Pick TVs (adhoc)** — multi-select TVs 1–35; planner claims the lowest-index free encoder (`ENC-01`…`ENC-10`); errors with **No free encoders** if none are free
+- **Send is dry-run only (Track A)** — builds a `RoutePlan`, shows the summary, and updates local occupancy; **no live UDP or IR**
+- Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Dry-run Send**
 - Clean, large-target UI for bartender speed
+
+Track B (live UDP/IR) and Track C (EPG now/next) are out of scope for this panel revision.
 
 ## What this repository provides
 
@@ -69,47 +72,76 @@ The bartender panel uses a **top chip row** to switch browse modes:
 
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
-- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list. Tap a game card to choose it.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403**. Use the search field to filter by channel number or name. Tap a row to choose a channel.
-- **TVs** — starts the **TV-first** path (see below).
+- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
+- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403**. Use the search field to filter by channel number or name. (Static lineup only — **no EPG now/next** in Track A.)
+- **TVs** — starts the **TV-first / adhoc** path (see below).
 
-Presets (`1_all`, `2_four_programs`, `3_nine_programs`) and the TV grid (1–35) are **never shown together** on the same step. The UI uses exclusive mode switches so bartenders pick either presets or adhoc TVs, not both at once.
+Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
 
-### Path A — Content-first (default)
+### Dry-run Send (Track A)
+
+Every **Dry-run Send** builds a `RoutePlan`, shows the dry-run summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser. It does **not** emit live UDP reconnects or IR tunes. Live commit is Track B.
+
+### Preset 1 — ALL (one program → all TVs)
+
+1. Pick one game or guide channel (content-first), **or** start from TVs / Preset 1 and then choose content.
+2. Confirm destination as **Preset 1**.
+3. Tap **Dry-run Send**.
+4. Plan: one slot — `ENC-01` → TVs `1`–`35`.
+
+### Preset 2 / Preset 3 — striped multi-program groups
+
+These are **Groups / Programs** flows, not “paint one program onto all 35 TVs” or contiguous encoder-block shortcuts.
+
+1. Choose **Preset 2** (up to 4 programs) or **Preset 3** (up to 9 programs) **first**.
+2. Multi-select programs from Sports and/or Guide. Selection order is slot order: 1st → `ENC-01`, 2nd → `ENC-02`, and so on.
+3. Tap **Dry-run Send** when at least one program is selected (extra taps past capacity are ignored).
+4. TVs are assigned **striped** by encoder ordinal `k` (1-based):  
+   `tvs = [t for t in 1..35 if (t - 1) % N == (k - 1)]` with `N=4` (Preset 2) or `N=9` (Preset 3).
+5. Unused program slots are **omitted** from the plan; those encoders stay unchanged.
+6. The dry-run summary lists each chosen program → encoder → striped TV list (for example, Preset 2 with two games shows `ENC-01` / `ENC-02` only).
+
+### Pick TVs — adhoc free encoder
+
+1. Select any non-empty set of TVs 1–35 (content-first destination **Pick TVs**, or TV-first path).
+2. Pick **one** program (game or guide channel).
+3. Planner claims the **lowest-index free** encoder among `ENC-01`…`ENC-10` (`ENC-10` is eligible as spare).
+4. If every encoder is busy, Send is blocked and the panel shows **No free encoders**.
+5. Tap **Dry-run Send** to apply the plan locally (occupancy only — no live network).
+
+### Path A — Content-first (Preset 1 and adhoc)
 
 Use when the bartender knows **what** to show first:
 
 1. Tap a **sport chip** or **Guide**.
 2. Tap a **game card** or **guide channel row**.
 3. On the destination screen, choose **Presets** or **Pick TVs** (exclusive modes):
-   - **Presets** — Preset 1 (all 35 TVs), Preset 2 (4 Programs), or Preset 3 (9 Programs).
-   - **Pick TVs** — multi-select TVs 1–35 on the grid.
-4. Tap **Send to TVs**.
-5. Return to the prior browse list; game/guide rows show assignment badges (TV count or preview), and the TV grid shows occupancy.
+   - **Presets** — Preset 1 for all-TV one-program; Preset 2/3 enter the multi-program group picker (add more programs as needed).
+   - **Pick TVs** — multi-select TVs 1–35 on the grid (adhoc free-encoder path).
+4. Tap **Dry-run Send**.
+5. Return to the prior browse list with updated badges / occupancy from the dry-run plan.
 
-### Path B — TV-first
+### Path B — TV-first (adhoc)
 
 Use when the bartender knows **which TVs** need content first:
 
 1. Tap the **TVs** chip.
-2. On the TV browse screen, use the exclusive mode switch:
-   - **Pick TVs** — multi-select grid 1–35.
-   - **Presets** — Preset 1/2/3 as a quick fill for the TV selection.
+2. Multi-select grid 1–35 (**Pick TVs**).
 3. Tap **Next: Choose content** (requires at least one TV selected).
-4. On the content picker, choose **Sports** or **Guide** (exclusive modes — not both lists at once):
+4. On the content picker, choose **Sports** or **Guide** (exclusive modes):
    - **Sports** — sport chips + game list.
    - **Guide** — ZIP 27403 Spectrum/Xumo list + search.
 5. Tap a game or channel.
-6. Tap **Send to N TVs** (TVs were already chosen; no second TV picker).
+6. Tap **Dry-run Send** (claims a free encoder for the selected TVs).
 7. Return to TVs browse with updated occupancy.
 
-### Assignments
+### Assignments / occupancy
 
-Each TV can only show one route (game or guide channel). When you send a new assignment, overlapping TVs are removed from any previous route automatically. Assignments persist in browser `localStorage` on the iPad.
+Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy (which encoder is busy, with what label/channel, covering which TVs). Overlapping TVs move to the new plan’s encoder; previous encoders drop those TVs from their local set. State persists in browser `localStorage` on the iPad.
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=7`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=9`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 
