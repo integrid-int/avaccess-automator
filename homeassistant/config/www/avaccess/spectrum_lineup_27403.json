@@ -1,0 +1,1647 @@
+{
+  "zip": "27403",
+  "package": "gold",
+  "packageColumn": "TV Platinum",
+  "source": "tests/fixtures/spectrum_greensboro_tvchannelsguide.md",
+  "generatedAt": "2026-08-10T23:36:49.830443+00:00",
+  "channels": [
+    {
+      "id": "ch-3",
+      "number": "3",
+      "name": "wcwg",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-4",
+      "number": "4",
+      "name": "WUNC (PBS)",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-6",
+      "number": "6",
+      "name": "wlxi",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-7",
+      "number": "7",
+      "name": "wxlv",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-9",
+      "number": "9",
+      "name": "wfmy",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-10",
+      "number": "10",
+      "name": "wghp",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-11",
+      "number": "11",
+      "name": "wxii",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-12",
+      "number": "12",
+      "name": "wgpx",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-14",
+      "number": "14",
+      "name": "Spectrum News 1",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-15",
+      "number": "15",
+      "name": "wmyv",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-16",
+      "number": "16",
+      "name": "ESPN2",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-17",
+      "number": "17",
+      "name": "ESPN",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-18",
+      "number": "18",
+      "name": "Paramount Network",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-20",
+      "number": "20",
+      "name": "Freeform",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-21",
+      "number": "21",
+      "name": "TNT",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-22",
+      "number": "22",
+      "name": "BET",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-23",
+      "number": "23",
+      "name": "TBS",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-24",
+      "number": "24",
+      "name": "AMC",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-25",
+      "number": "25",
+      "name": "Discovery",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-26",
+      "number": "26",
+      "name": "Weather Channel",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-27",
+      "number": "27",
+      "name": "MTV",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-28",
+      "number": "28",
+      "name": "A&E",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-29",
+      "number": "29",
+      "name": "National Geographic",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-30",
+      "number": "30",
+      "name": "CNBC",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-31",
+      "number": "31",
+      "name": "HLN",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-32",
+      "number": "32",
+      "name": "Nickelodeon",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-33",
+      "number": "33",
+      "name": "Lifetime",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-34",
+      "number": "34",
+      "name": "CNN",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-35",
+      "number": "35",
+      "name": "CMT",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-36",
+      "number": "36",
+      "name": "VH1",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-37",
+      "number": "37",
+      "name": "Comedy Central",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-38",
+      "number": "38",
+      "name": "NBC Sports",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-39",
+      "number": "39",
+      "name": "C-SPAN",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-40",
+      "number": "40",
+      "name": "Fox News",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-41",
+      "number": "41",
+      "name": "truTV",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-43",
+      "number": "43",
+      "name": "Bravo",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-44",
+      "number": "44",
+      "name": "TLC",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-45",
+      "number": "45",
+      "name": "Syfy",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-46",
+      "number": "46",
+      "name": "E!",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-48",
+      "number": "48",
+      "name": "Cartoon Network",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-49",
+      "number": "49",
+      "name": "Hallmark Channel",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-50",
+      "number": "50",
+      "name": "USA Network",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-51",
+      "number": "51",
+      "name": "FanDuel Sports Network South-Carolinas",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-52",
+      "number": "52",
+      "name": "Golf Channel",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-53",
+      "number": "53",
+      "name": "History",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-54",
+      "number": "54",
+      "name": "Nick Jr",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-55",
+      "number": "55",
+      "name": "HGTV",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-57",
+      "number": "57",
+      "name": "TCM",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-59",
+      "number": "59",
+      "name": "MS NOW",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-60",
+      "number": "60",
+      "name": "FX",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-61",
+      "number": "61",
+      "name": "MTV Classic",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-62",
+      "number": "62",
+      "name": "TV Land",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-63",
+      "number": "63",
+      "name": "Animal Planet",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-64",
+      "number": "64",
+      "name": "Discovery Life",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-65",
+      "number": "65",
+      "name": "Food Network",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-66",
+      "number": "66",
+      "name": "Eternal Word Television Network",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-67",
+      "number": "67",
+      "name": "FanDuel Sports Network Southeast",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-70",
+      "number": "70",
+      "name": "Oxygen",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-71",
+      "number": "71",
+      "name": "WE tv",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-72",
+      "number": "72",
+      "name": "Lifetime Movie Network",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-73",
+      "number": "73",
+      "name": "Disney Channel",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-76",
+      "number": "76",
+      "name": "Investigation Discovery",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-78",
+      "number": "78",
+      "name": "Hallmark Mystery",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-79",
+      "number": "79",
+      "name": "CNBC World",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-80",
+      "number": "80",
+      "name": "DISCOVERY TURBO TV",
+      "category": "Xumo",
+      "music": false
+    },
+    {
+      "id": "ch-81",
+      "number": "81",
+      "name": "Fox Business",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-86",
+      "number": "86",
+      "name": "Gem Shopping Network",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-87",
+      "number": "87",
+      "name": "Shop LC",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-98",
+      "number": "98",
+      "name": "NewsNation",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-109",
+      "number": "109",
+      "name": "FXX",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-110",
+      "number": "110",
+      "name": "BBC America",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-119",
+      "number": "119",
+      "name": "MTV2",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-124",
+      "number": "124",
+      "name": "UP TV",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-128",
+      "number": "128",
+      "name": "REELZ",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-130",
+      "number": "130",
+      "name": "Nat Geo Wild",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-131",
+      "number": "131",
+      "name": "Smithsonian Channel",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-133",
+      "number": "133",
+      "name": "VICE",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-134",
+      "number": "134",
+      "name": "FYI",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-135",
+      "number": "135",
+      "name": "Destination America",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-136",
+      "number": "136",
+      "name": "Science Channel",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-137",
+      "number": "137",
+      "name": "Crime + Investigation",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-140",
+      "number": "140",
+      "name": "American Heroes Channel",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-141",
+      "number": "141",
+      "name": "Military History Channel",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-144",
+      "number": "144",
+      "name": "Fusion",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-151",
+      "number": "151",
+      "name": "Heroes & Icons",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-159",
+      "number": "159",
+      "name": "QVC",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-161",
+      "number": "161",
+      "name": "Magnolia Network",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-163",
+      "number": "163",
+      "name": "Cooking Channel",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-165",
+      "number": "165",
+      "name": "Travel Channel",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-169",
+      "number": "169",
+      "name": "Fuse",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-173",
+      "number": "173",
+      "name": "OWN",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-174",
+      "number": "174",
+      "name": "Lifetime Real Women",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-175",
+      "number": "175",
+      "name": "Pop",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-176",
+      "number": "176",
+      "name": "HSN",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-177",
+      "number": "177",
+      "name": "Game Show Network",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-179",
+      "number": "179",
+      "name": "Logo",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-182",
+      "number": "182",
+      "name": "BET Her",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-184",
+      "number": "184",
+      "name": "TV One",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-185",
+      "number": "185",
+      "name": "ASPiRE",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-187",
+      "number": "187",
+      "name": "Ovation",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-188",
+      "number": "188",
+      "name": "Jewelry Television",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-189",
+      "number": "189",
+      "name": "Cleo TV",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-194",
+      "number": "194",
+      "name": "ShopHQ",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-207",
+      "number": "207",
+      "name": "Bloomberg Business Television",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-209",
+      "number": "209",
+      "name": "BBC News",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-210",
+      "number": "210",
+      "name": "i24 News",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-216",
+      "number": "216",
+      "name": "CNN International",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-222",
+      "number": "222",
+      "name": "Newsmax",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-224",
+      "number": "224",
+      "name": "Scripps News",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-226",
+      "number": "226",
+      "name": "C-SPAN 2",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-227",
+      "number": "227",
+      "name": "C-SPAN 3",
+      "category": "News",
+      "music": false
+    },
+    {
+      "id": "ch-253",
+      "number": "253",
+      "name": "Boomerang",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-254",
+      "number": "254",
+      "name": "Disney Junior",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-255",
+      "number": "255",
+      "name": "Universal Kids",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-256",
+      "number": "256",
+      "name": "Baby First TV",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-262",
+      "number": "262",
+      "name": "Nicktoons",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-263",
+      "number": "263",
+      "name": "TeenNick",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-265",
+      "number": "265",
+      "name": "Disney XD",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-266",
+      "number": "266",
+      "name": "Discovery Family",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-286",
+      "number": "286",
+      "name": "MTV Live",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-291",
+      "number": "291",
+      "name": "Revolt",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-295",
+      "number": "295",
+      "name": "GAC Family",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-297",
+      "number": "297",
+      "name": "RFD TV",
+      "category": "Lifestyle",
+      "music": false
+    },
+    {
+      "id": "ch-302",
+      "number": "302",
+      "name": "ESPNews",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-306",
+      "number": "306",
+      "name": "MLB Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-307",
+      "number": "307",
+      "name": "MLB Strike Zone",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-308",
+      "number": "308",
+      "name": "NBA TV",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-309",
+      "number": "309",
+      "name": "BravesVision",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-310",
+      "number": "310",
+      "name": "NFL Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-311",
+      "number": "311",
+      "name": "NFL RedZone",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-312",
+      "number": "312",
+      "name": "NHL Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-315",
+      "number": "315",
+      "name": "CBS Sports Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-316",
+      "number": "316",
+      "name": "Olympic Channel",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-330",
+      "number": "330",
+      "name": "Spectrum SportsNet",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-331",
+      "number": "331",
+      "name": "Spectrum SportsNet LA",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-339",
+      "number": "339",
+      "name": "YES Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-370",
+      "number": "370",
+      "name": "ESPNU",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-372",
+      "number": "372",
+      "name": "Stadium College Sports Atlantic",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-373",
+      "number": "373",
+      "name": "Stadium College Sports Central",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-374",
+      "number": "374",
+      "name": "Stadium College Sports Pacific",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-382",
+      "number": "382",
+      "name": "Big Ten Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-384",
+      "number": "384",
+      "name": "SEC Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-385",
+      "number": "385",
+      "name": "SEC Network Alternate",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-388",
+      "number": "388",
+      "name": "BTN Extra 1",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-392",
+      "number": "392",
+      "name": "ESPN College Extra",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-400",
+      "number": "400",
+      "name": "Fox Sports 1",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-401",
+      "number": "401",
+      "name": "FOX Sports 2",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-402",
+      "number": "402",
+      "name": "RACER Network",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-403",
+      "number": "403",
+      "name": "Motor Trend",
+      "category": "Documentary",
+      "music": false
+    },
+    {
+      "id": "ch-406",
+      "number": "406",
+      "name": "Tennis Channel",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-408",
+      "number": "408",
+      "name": "Outdoor Channel",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-413",
+      "number": "413",
+      "name": "FanDuel TV",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-416",
+      "number": "416",
+      "name": "GOL TV",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-417",
+      "number": "417",
+      "name": "beIN Sports",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-419",
+      "number": "419",
+      "name": "Fox Soccer Plus",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-440",
+      "number": "440",
+      "name": "ESPN Deportes",
+      "category": "Spanish",
+      "music": false
+    },
+    {
+      "id": "ch-442",
+      "number": "442",
+      "name": "Fox Deportes",
+      "category": "Spanish",
+      "music": false
+    },
+    {
+      "id": "ch-443",
+      "number": "443",
+      "name": "beIN Sports Spanish",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-444",
+      "number": "444",
+      "name": "TUDN",
+      "category": "Spanish",
+      "music": false
+    },
+    {
+      "id": "ch-461",
+      "number": "461",
+      "name": "INSP",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-463",
+      "number": "463",
+      "name": "Daystar Television Network",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-464",
+      "number": "464",
+      "name": "Trinity Broadcasting Network",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-465",
+      "number": "465",
+      "name": "BYU-TV",
+      "category": "International",
+      "music": false
+    },
+    {
+      "id": "ch-468",
+      "number": "468",
+      "name": "Cowboy Channel",
+      "category": "Sports",
+      "music": false
+    },
+    {
+      "id": "ch-469",
+      "number": "469",
+      "name": "Jewish Life Television",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-470",
+      "number": "470",
+      "name": "SonLife Broadcasting Network",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-472",
+      "number": "472",
+      "name": "TBN Inspire",
+      "category": "Religious",
+      "music": false
+    },
+    {
+      "id": "ch-474",
+      "number": "474",
+      "name": "Impact TV Network",
+      "category": "International",
+      "music": false
+    },
+    {
+      "id": "ch-481",
+      "number": "481",
+      "name": "QVC2",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-484",
+      "number": "484",
+      "name": "HSN2",
+      "category": "Shopping",
+      "music": false
+    },
+    {
+      "id": "ch-511",
+      "number": "511",
+      "name": "HBO",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-512",
+      "number": "512",
+      "name": "HBO Hits",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-513",
+      "number": "513",
+      "name": "HBO Drama",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-515",
+      "number": "515",
+      "name": "HBO Comedy",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-516",
+      "number": "516",
+      "name": "HBO Movies",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-517",
+      "number": "517",
+      "name": "HBO Latino",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-531",
+      "number": "531",
+      "name": "Cinemax",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-532",
+      "number": "532",
+      "name": "MoreMAX",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-533",
+      "number": "533",
+      "name": "Cinemax Action",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-536",
+      "number": "536",
+      "name": "Cinemax Spanish",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-537",
+      "number": "537",
+      "name": "Cinemax Classics",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-551",
+      "number": "551",
+      "name": "Paramount+ with Showtime",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-552",
+      "number": "552",
+      "name": "Showtime 2",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-553",
+      "number": "553",
+      "name": "SHO x BET",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-554",
+      "number": "554",
+      "name": "Showtime Extreme",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-555",
+      "number": "555",
+      "name": "Showtime Showcase",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-556",
+      "number": "556",
+      "name": "Showtime Next",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-557",
+      "number": "557",
+      "name": "Showtime Women",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-558",
+      "number": "558",
+      "name": "Showtime Familyzone",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-571",
+      "number": "571",
+      "name": "The Movie Channel",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-572",
+      "number": "572",
+      "name": "The Movie Channel Extra",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-581",
+      "number": "581",
+      "name": "Starz",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-582",
+      "number": "582",
+      "name": "Starz Edge",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-583",
+      "number": "583",
+      "name": "Starz in Black",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-584",
+      "number": "584",
+      "name": "Starz Kids & Family",
+      "category": "Kids",
+      "music": false
+    },
+    {
+      "id": "ch-585",
+      "number": "585",
+      "name": "Starz Cinema",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-586",
+      "number": "586",
+      "name": "Starz Comedy",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-595",
+      "number": "595",
+      "name": "MGM+ East",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-597",
+      "number": "597",
+      "name": "MGM+ Hits",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-598",
+      "number": "598",
+      "name": "MGM+ Marquee",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-599",
+      "number": "599",
+      "name": "MGM+ Drive-In",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-602",
+      "number": "602",
+      "name": "Starz Encore",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-603",
+      "number": "603",
+      "name": "Starz Encore Action",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-604",
+      "number": "604",
+      "name": "Starz Encore Black",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-605",
+      "number": "605",
+      "name": "Starz Encore Classic",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-606",
+      "number": "606",
+      "name": "Starz Encore Suspense",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-607",
+      "number": "607",
+      "name": "Starz Encore Westerns",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-608",
+      "number": "608",
+      "name": "Starz Encore Family",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-620",
+      "number": "620",
+      "name": "MoviePlex",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-621",
+      "number": "621",
+      "name": "IndiePlex",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-622",
+      "number": "622",
+      "name": "RetroPlex",
+      "category": "Premium",
+      "music": false
+    },
+    {
+      "id": "ch-623",
+      "number": "623",
+      "name": "Flix",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-625",
+      "number": "625",
+      "name": "SundanceTV",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-627",
+      "number": "627",
+      "name": "IFC",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-632",
+      "number": "632",
+      "name": "FX Movie Channel",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-633",
+      "number": "633",
+      "name": "MGM HD",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-640",
+      "number": "640",
+      "name": "HDNet Movies",
+      "category": "Entertainment",
+      "music": false
+    },
+    {
+      "id": "ch-827",
+      "number": "827",
+      "name": "Galavisi\u00f3n",
+      "category": "Spanish",
+      "music": false
+    },
+    {
+      "id": "ch-898",
+      "number": "898",
+      "name": "UNIVERSO",
+      "category": "Spanish",
+      "music": false
+    },
+    {
+      "id": "ch-1240",
+      "number": "1240",
+      "name": "wxlv-tv2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1241",
+      "number": "1241",
+      "name": "wxlv-tv3",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1245",
+      "number": "1245",
+      "name": "wxii-tv2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1250",
+      "number": "1250",
+      "name": "wghp2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1255",
+      "number": "1255",
+      "name": "wfmy-dt2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1260",
+      "number": "1260",
+      "name": "wcwg-dt2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1261",
+      "number": "1261",
+      "name": "wcwg-dt3",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1265",
+      "number": "1265",
+      "name": "wmyv2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1266",
+      "number": "1266",
+      "name": "wmyv3",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1275",
+      "number": "1275",
+      "name": "wunc-dt2",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1276",
+      "number": "1276",
+      "name": "wunc-dt3",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1277",
+      "number": "1277",
+      "name": "wunc-dt4",
+      "category": "Local",
+      "music": false
+    },
+    {
+      "id": "ch-1404",
+      "number": "1404",
+      "name": "Phoenix Info News",
+      "category": "International",
+      "music": false
+    },
+    {
+      "id": "ch-1575",
+      "number": "1575",
+      "name": "TV5MONDE",
+      "category": "International",
+      "music": false
+    },
+    {
+      "id": "ch-1581",
+      "number": "1581",
+      "name": "Rai Italia",
+      "category": "International",
+      "music": false
+    }
+  ]
+}
