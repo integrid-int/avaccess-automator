@@ -227,3 +227,4 @@ Each phase gets its own implementation plan under `docs/superpowers/plans/` afte
 Design sections approved in brainstorming (architecture, Track A, Track B, Track C).  
 Written spec approved 2026-08-10. Track A implementation plan: `docs/superpowers/plans/2026-08-10-avaccess-route-planner-track-a.md`.
 Track B implementation plan: `docs/superpowers/plans/2026-08-10-avaccess-route-planner-track-b.md`.
+Track C implementation plan: `docs/superpowers/plans/2026-08-10-avaccess-route-planner-track-c.md`.
