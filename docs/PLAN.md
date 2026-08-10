@@ -19,6 +19,13 @@
 
 **Constraint noted:** Not married to Home Assistant — pick the simplest reliable stack.
 
+### Locked decisions (current)
+
+1. **TV split strategy:** numeric for now; move to zone mapping later via file profile.  
+2. **ENC-10:** spare/extra for now (not used in Presets 2/3).  
+3. **Preset 2 encoder set:** ENC-01..ENC-04.  
+4. **Preset 3 encoder set:** ENC-01..ENC-09.
+
 ---
 
 ## 2. How the hardware actually switches
@@ -104,6 +111,17 @@ Useful for “room on / room off” from the same UI.
 - **Primary:** Home Assistant **or** Companion for the iPad button surface.  
 - **Engine:** a small Python/shell module that owns device inventory + preset UDP sends (reusable from HA `shell_command`, Companion, or Node-RED).  
 - Keep **VDirector** installed as a technician fallback.
+
+### Home Assistant vs Companion (pluses / minuses)
+
+| Platform | Pluses | Minuses |
+|----------|--------|---------|
+| **Home Assistant** | Strong iPad dashboarding; automations/schedules; easy add-ons (IR, notifications, EPG cards); future integration beyond AV | More setup and maintenance; no native AVAccess integration so scripts are required |
+| **BitFocus Companion** | Very fast AV button workflow; native feel for preset panels; simple operator UX | Less strong for “TV guide + search + automations”; Xumo control depends on added IR workflow |
+
+**Short take:**  
+- If you want **channel search + guide overlays + future automation**, pick **Home Assistant**.  
+- If you want **fastest operator preset panel only**, pick **Companion**.
 
 ---
 
@@ -252,6 +270,16 @@ Xumo Stream Box has **no documented open IP control API** for channel/app naviga
 
 **Scope tip:** You probably do **not** need to control all 10 Xumos live on every dashboard page — only the encoders used by the **active preset** (1, 4, or 9).
 
+### Channel picking (practical)
+
+Because Xumo lacks an open LAN API, the workable channel-select flow is:
+
+1. Define favorite channels in config (e.g., ESPN=206, TNT=245).  
+2. HA button runs a script that sends IR digits (e.g., `2`,`0`,`6`,`OK`) to the Xumo tied to the encoder.  
+3. Optional “Program A/B/C” channel buttons per active encoder page.
+
+This gives one-tap channel changes from iPad even without native IP control.
+
 ---
 
 ## 8. Implementation phases
@@ -293,7 +321,24 @@ Xumo Stream Box has **no documented open IP control API** for channel/app naviga
 
 ---
 
-## 10. Suggested next step
+## 10. Spectrum guide data (“bonus guide info”)
+
+There is no official, supported Home Assistant integration for Spectrum channel-guide control. Practical options:
+
+| Option | Reliability | Notes |
+|--------|-------------|-------|
+| **A. XMLTV/EPG integration in Home Assistant** | High | Best supported way to show now/next guide cards and search in HA |
+| **B. Unofficial Spectrum web endpoints / old scripts** | Low-Medium | Works for some users but brittle and may break with auth/API changes |
+| **C. Manual favorites list only (no guide feed)** | Very High | Simplest: channel buttons without dynamic program data |
+
+**Recommended path:**  
+1) Start with **manual favorite channels** for dependable one-tap switching.  
+2) Add **EPG/XMLTV integration** for on-screen guide/search cards on iPad.  
+3) Treat unofficial Spectrum APIs as optional experiments, not core ops.
+
+---
+
+## 11. Suggested next step
 
 Build a minimal **inventory + Preset 1 UDP proof** on the AV LAN:
 

@@ -1,0 +1,45 @@
+provider: spectrum
+
+# Tie logical programs to encoder-connected Xumo boxes.
+program_to_encoder:
+  program_a: ENC-01
+  program_b: ENC-02
+  program_c: ENC-03
+  program_d: ENC-04
+  program_e: ENC-05
+  program_f: ENC-06
+  program_g: ENC-07
+  program_h: ENC-08
+  program_i: ENC-09
+
+# Home Assistant IR remote entities (example names).
+# Each Xumo should have a dedicated IR target for reliability.
+encoder_ir_entity:
+  ENC-01: remote.xumo_01_ir
+  ENC-02: remote.xumo_02_ir
+  ENC-03: remote.xumo_03_ir
+  ENC-04: remote.xumo_04_ir
+  ENC-05: remote.xumo_05_ir
+  ENC-06: remote.xumo_06_ir
+  ENC-07: remote.xumo_07_ir
+  ENC-08: remote.xumo_08_ir
+  ENC-09: remote.xumo_09_ir
+
+# Favorite channels used for one-tap buttons.
+channels:
+  espn:
+    number: "206"
+    label: "ESPN"
+  tnt:
+    number: "245"
+    label: "TNT"
+  fox:
+    number: "4"
+    label: "FOX"
+  cbs:
+    number: "2"
+    label: "CBS"
+
+# Optional per-channel tail command depending on remote behavior.
+# Common values: ["ok"] or [].
+suffix_commands: ["ok"]

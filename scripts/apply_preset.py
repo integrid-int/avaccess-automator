@@ -35,6 +35,48 @@ def index_by_id(items: list[dict]) -> dict[str, dict]:
     return {item["id"]: item for item in items}
 
 
+def resolve_presets(inventory: dict, profile_override: str | None) -> tuple[str | None, dict]:
+    """Return (profile_name, presets) with backward compatibility.
+
+    Supported inventory styles:
+    1) Legacy:
+       presets: {...}
+    2) Profile-based:
+       mapping_profiles:
+         active: numeric
+         profiles:
+           numeric:
+             presets: {...}
+           zones:
+             presets: {...}
+    """
+    mapping_profiles = inventory.get("mapping_profiles")
+    if not mapping_profiles:
+        presets = inventory.get("presets")
+        if not presets:
+            raise SystemExit("Inventory must include 'presets' or 'mapping_profiles'")
+        return None, presets
+
+    profiles = mapping_profiles.get("profiles", {})
+    if not profiles:
+        raise SystemExit("mapping_profiles.profiles is empty")
+
+    selected = profile_override or mapping_profiles.get("active")
+    if not selected:
+        selected = next(iter(profiles))
+    if selected not in profiles:
+        available = ", ".join(profiles.keys())
+        raise SystemExit(
+            f"Unknown mapping profile '{selected}'. Available profiles: {available}"
+        )
+
+    profile_data = profiles[selected]
+    presets = profile_data.get("presets", {})
+    if not presets:
+        raise SystemExit(f"mapping_profiles.profiles.{selected}.presets is empty")
+    return selected, presets
+
+
 def build_message(tx_hostname: str, session: int, rx_hostnames: list[str]) -> bytes:
     # msg_b_reconnect IPE935-...:1:2 IPD935-... IPD935-...
     header = f"msg_b_reconnect {tx_hostname}:{session}:{len(rx_hostnames)}"
@@ -56,14 +98,22 @@ def send_udp(payload: bytes, broadcast: str, port: int, dry_run: bool) -> None:
         sock.close()
 
 
-def apply_preset(inventory: dict, preset_name: str, dry_run: bool, delay_s: float) -> None:
+def apply_preset(
+    inventory: dict,
+    preset_name: str,
+    dry_run: bool,
+    delay_s: float,
+    mapping_profile: str | None,
+) -> None:
     encoders = index_by_id(inventory["encoders"])
     receivers = index_by_id(inventory["receivers"])
-    presets = inventory["presets"]
+    selected_profile, presets = resolve_presets(inventory, mapping_profile)
     if preset_name not in presets:
         raise SystemExit(
             f"Unknown preset '{preset_name}'. Available: {', '.join(presets)}"
         )
+    if selected_profile:
+        print(f"using mapping profile: {selected_profile}")
 
     net = inventory.get("network", {})
     broadcast = net.get("broadcast", "255.255.255.255")
@@ -106,6 +156,10 @@ def main() -> None:
         required=True,
         help="Preset key from inventory YAML (e.g. 1_all, 2_four_programs, 3_nine_programs)",
     )
+    parser.add_argument(
+        "--profile",
+        help="Optional mapping profile key (when inventory uses mapping_profiles).",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--delay",
@@ -116,7 +170,13 @@ def main() -> None:
     args = parser.parse_args()
 
     inventory = load_inventory(args.inventory)
-    apply_preset(inventory, args.preset, dry_run=args.dry_run, delay_s=args.delay)
+    apply_preset(
+        inventory,
+        args.preset,
+        dry_run=args.dry_run,
+        delay_s=args.delay,
+        mapping_profile=args.profile,
+    )
 
 
 if __name__ == "__main__":
