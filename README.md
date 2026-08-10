@@ -4,11 +4,11 @@ Home Assistant test environment for validating the **iPad bartender Sports Routi
 
 ## Goals (aligned with AVAccess plan)
 
-This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner) plus **Track B** (hybrid dry-run / live IR+UDP execute when inventory validates).
+This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner), **Track B** (hybrid dry-run / live IR+UDP execute when inventory validates), and **Track C** Guide now/next EPG overlay from XMLTV.
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
-- **Spectrum channel guide** for ZIP **27403** (Spectrum / Xumo tune numbers and labels)
+- **Spectrum channel guide** for ZIP **27403** (Spectrum / Xumo tune numbers and labels) with optional **now/next** titles from `guide_epg.json`
 - **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
@@ -18,7 +18,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Send**
 - Clean, large-target UI for bartender speed
 
-**Track C** (EPG now/next, telnet free-encoder discovery, zone mapping) remains out of scope.
+**Still out of scope:** telnet free-encoder discovery and zone mapping profiles.
 
 ## What this repository provides
 
@@ -146,9 +146,68 @@ Home Assistant `shell_command` often does **not** return script stdout to `hass.
 
 Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot `status` / `error` and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
 
-#### 6. Still out of scope (Track C)
+#### 6. Still out of scope after Track B
 
-Guide now/next EPG overlay, telnet truth for free-encoder discovery, and zone mapping profiles are **not** part of Track B.
+Telnet truth for free-encoder discovery and zone mapping profiles are **not** part of Track B (or Track C Guide EPG).
+
+### Track C — Guide EPG now/next (operators)
+
+Track C overlays **now/next** program titles on the fixed ZIP **27403** Guide lineup. It does **not** change Live routing, `RoutePlan`, Send, or encoder logic.
+
+Canonical builder: `scripts/avaccess/build_guide_epg.py`. Config: `config/guide_epg.yaml`. Output served as `/local/avaccess/guide_epg.json`.
+
+Compose already mounts `../config` → `/config/avaccess/config` and `../scripts/avaccess` → `/config/avaccess/scripts`. The HA package `packages/avaccess_guide.yaml` exposes:
+
+- `shell_command.avaccess_refresh_guide_epg` → `avaccess/run_build_guide_epg.py`
+
+#### 1. Guide EPG config
+
+The repo ships `config/guide_epg.yaml` as a **symlink** to `guide_epg.example.yaml`. Remove it (or use `--remove-destination`) before copying so `cp` does not follow the symlink and overwrite the example:
+
+```bash
+rm config/guide_epg.yaml
+cp config/guide_epg.example.yaml config/guide_epg.yaml
+# edit config/guide_epg.yaml — XMLTV source + channel_number_map
+#
+# equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
+```
+
+Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s Spectrum/Xumo number maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next.
+
+#### 2. Build / refresh `guide_epg.json`
+
+CLI (from repo root):
+
+```bash
+.venv/bin/python scripts/avaccess/build_guide_epg.py \
+  --config config/guide_epg.yaml \
+  --out homeassistant/config/www/avaccess/guide_epg.json
+```
+
+From Home Assistant (Developer Tools → Actions, or automation):
+
+```yaml
+action: shell_command.avaccess_refresh_guide_epg
+```
+
+Optional hourly refresh (example — add to `automations.yaml` or a package if desired):
+
+```yaml
+# automation:
+#   - id: avaccess_refresh_guide_epg_hourly
+#     alias: AVAccess refresh Guide EPG
+#     trigger:
+#       - platform: time_pattern
+#         hours: "/1"
+#     action:
+#       - service: shell_command.avaccess_refresh_guide_epg
+```
+
+#### 3. Stale feed and banner
+
+The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sport chips are unchanged.
+
+The checked-in default `guide_epg.json` uses a stale `generatedAt` so the degrade banner is obvious until you run the builder.
 
 ## Operator guide — Sports Routing panel
 
@@ -157,7 +216,7 @@ The bartender panel uses a **top chip row** to switch browse modes:
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
 - **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403**. Use the search field to filter by channel number or name. (Static lineup only — **no EPG now/next**; Track C.)
+- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
@@ -228,7 +287,7 @@ Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=12`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=13`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 

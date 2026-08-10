@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./config:/config
-      # Track B executor + inventory (canonical sources at repo root)
+      # Track B/C: executor + Guide EPG builder; inventory / itach / guide_epg YAML
       - ../scripts/avaccess:/config/avaccess/scripts:ro
       - ../config:/config/avaccess/config:ro
       - /etc/localtime:/etc/localtime:ro
