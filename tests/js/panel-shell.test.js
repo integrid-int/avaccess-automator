@@ -27,6 +27,21 @@ test("panel shell exposes chip actions for sports guide and TVs", () => {
   assert.match(src, /data-action=["']open-tvs["']/);
 });
 
+test("panel shell exposes content-first destination actions and labels", () => {
+  const src = readPanelSource();
+  assert.match(src, /data-action=["']select-sport["']/);
+  assert.match(src, /data-action=["']select-game["']/);
+  assert.match(src, /data-action=["']select-channel["']/);
+  assert.match(src, /data-action=["']set-dest-mode["']/);
+  assert.match(src, /data-action=["']apply-preset["']/);
+  assert.match(src, /data-action=["']toggle-tv["']/);
+  assert.match(src, /data-action=["']send-destination["']/);
+  assert.match(src, /data-action=["']back-browse["']/);
+  assert.match(src, /Presets/);
+  assert.match(src, /Pick TVs/);
+  assert.match(src, /Spectrum · ZIP 27403/);
+});
+
 test("panel shell renders short sports chips and Spectrum ZIP guide label", () => {
   const src = readPanelSource();
   const chipLabels = Object.fromEntries(SPORTS.map((sport) => [sport.id, sport.chipTitle]));

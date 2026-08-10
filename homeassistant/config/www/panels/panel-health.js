@@ -117,7 +117,7 @@ class PanelHealth extends HTMLElement {
     if (!target) return;
 
     const { action, value } = target.dataset;
-    if (action === "open-sport") {
+    if (action === "open-sport" || action === "select-sport") {
       this._setState({
         screen: "browse-sport",
         sportId: value || this._state.sportId,
@@ -134,12 +134,12 @@ class PanelHealth extends HTMLElement {
       this._setState({ screen: "browse-tvs", entryPath: "tv", destMode: "tvs" });
       return;
     }
-    if (action === "select-sport-content") {
-      this._selectSportContent(value);
+    if (action === "select-game") {
+      this._selectGame(value);
       return;
     }
-    if (action === "select-guide-content") {
-      this._selectGuideContent(value);
+    if (action === "select-channel") {
+      this._selectChannel(value);
       return;
     }
     if (action === "open-destination") {
@@ -166,8 +166,12 @@ class PanelHealth extends HTMLElement {
       this._setState({ selectedTvs: [] });
       return;
     }
-    if (action === "save-route") {
-      this._saveRoute();
+    if (action === "send-destination" || action === "save-route") {
+      this._sendDestination();
+      return;
+    }
+    if (action === "back-browse") {
+      this._backToBrowse();
     }
   }
 
@@ -178,28 +182,43 @@ class PanelHealth extends HTMLElement {
     }
   }
 
-  _selectSportContent(gameId) {
+  _browseScreenForContent() {
+    if (this._state.entryPath === "tv") return "browse-tvs";
+    return this._state.contentMode === "guide" ? "browse-guide" : "browse-sport";
+  }
+
+  _seedDestinationTvs(routeId) {
+    return [...(this._assignments[routeId]?.tvs ?? [])].sort((a, b) => a - b);
+  }
+
+  _seedDestinationMode(routeId) {
+    const assignment = this._assignments[routeId];
+    if (!assignment?.tvs?.length) return "presets";
+    return assignment.presetId ? "presets" : "tvs";
+  }
+
+  _selectGame(gameId) {
     const sport = this._activeSport();
     const game = sport.games.find((item) => item.id === gameId);
     if (!game) return;
     this._setState({
       screen: "destination",
       selectedContent: { ...game, kind: "game", sportId: sport.id },
-      selectedTvs: [],
-      destMode: "presets",
+      selectedTvs: this._seedDestinationTvs(game.id),
+      destMode: this._seedDestinationMode(game.id),
       contentMode: "sports",
       entryPath: "content",
     });
   }
 
-  _selectGuideContent(channelId) {
+  _selectChannel(channelId) {
     const channel = GUIDE_CHANNELS.find((item) => item.id === channelId);
     if (!channel) return;
     this._setState({
       screen: "destination",
       selectedContent: { ...channel, kind: "channel" },
-      selectedTvs: [],
-      destMode: "tvs",
+      selectedTvs: this._seedDestinationTvs(channel.id),
+      destMode: this._seedDestinationMode(channel.id),
       contentMode: "guide",
       entryPath: "content",
     });
@@ -219,9 +238,14 @@ class PanelHealth extends HTMLElement {
     this._setState({ selectedTvs: Array.from(selected).sort((a, b) => a - b), destMode: "tvs" });
   }
 
-  _saveRoute() {
+  _backToBrowse() {
+    this._setState({ screen: this._browseScreenForContent() });
+  }
+
+  _sendDestination() {
     const content = this._state.selectedContent;
-    if (!content || this._state.selectedTvs.length === 0) return;
+    if (!content) return;
+    const selectedTvs = [...this._state.selectedTvs].sort((a, b) => a - b);
 
     const assignments = applyAssignment(this._assignments, {
       routeId: content.id,
@@ -229,11 +253,11 @@ class PanelHealth extends HTMLElement {
       sportId: content.sportId,
       label: this._selectedContentLabel(),
       channel: content.channel ?? content.number,
-      presetId: this._state.destMode === "presets" ? PRESETS.find((preset) => sameTvs(preset.tvs, this._state.selectedTvs))?.id : null,
-      tvs: this._state.selectedTvs,
+      presetId: this._state.destMode === "presets" ? PRESETS.find((preset) => sameTvs(preset.tvs, selectedTvs))?.id : null,
+      tvs: selectedTvs,
     });
     this._saveAssignments(assignments);
-    this._setState({ screen: this._state.entryPath === "tv" ? "browse-tvs" : "browse-sport" });
+    this._backToBrowse();
   }
 
   _renderChipRow() {
@@ -245,7 +269,7 @@ class PanelHealth extends HTMLElement {
             <button
               type="button"
               class="chip ${this._state.screen === "browse-sport" && item.id === sport.id ? "is-active" : ""}"
-              data-action="open-sport"
+              data-action="select-sport"
               data-value="${escapeAttr(item.id)}"
             >
               <span>${escapeHtml(item.icon)}</span>${escapeHtml(item.chipTitle ?? item.title)}
@@ -283,7 +307,7 @@ class PanelHealth extends HTMLElement {
           ${sport.games
             .map(
               (game) => `
-                <button type="button" class="content-card" data-action="select-sport-content" data-value="${escapeAttr(game.id)}">
+                <button type="button" class="content-card" data-action="select-game" data-value="${escapeAttr(game.id)}">
                   <span class="card-kicker">${escapeHtml(game.channel)} - ${escapeHtml(game.tipoff)}</span>
                   <strong>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</strong>
                   <span>Choose destination</span>
@@ -302,7 +326,7 @@ class PanelHealth extends HTMLElement {
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse guide</p>
-          <h2>Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
+          <h2 aria-label="Spectrum · ZIP 27403">Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
         </div>
         <label class="search">
           <span>Search by channel, name, or category</span>
@@ -312,7 +336,7 @@ class PanelHealth extends HTMLElement {
           ${channels
             .map(
               (channel) => `
-                <button type="button" class="guide-row" data-action="select-guide-content" data-value="${escapeAttr(channel.id)}">
+                <button type="button" class="guide-row" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
                   <b>${escapeHtml(channel.number)}</b>
                   <span>${escapeHtml(channel.name)}</span>
                   <em>${escapeHtml(channel.category)}</em>
@@ -344,31 +368,38 @@ class PanelHealth extends HTMLElement {
         <div class="screen-heading">
           <p class="eyebrow">Destination</p>
           <h2>${escapeHtml(this._selectedContentLabel())}</h2>
-          <button type="button" class="link-button" data-action="open-content-picker">Change content</button>
+          <button type="button" class="link-button" data-action="back-browse">Back to browse</button>
         </div>
         <div class="mode-toggle" role="group" aria-label="Destination mode">
           <button type="button" class="${this._state.destMode === "presets" ? "is-active" : ""}" data-action="set-dest-mode" data-value="presets">
             Presets
           </button>
           <button type="button" class="${this._state.destMode === "tvs" ? "is-active" : ""}" data-action="set-dest-mode" data-value="tvs">
-            TVs
+            Pick TVs
           </button>
         </div>
-        <div class="preset-row">
-          ${PRESETS.map(
-            (preset) => `
-              <button type="button" class="preset-chip" data-action="apply-preset" data-value="${escapeAttr(preset.id)}">
-                <b>${escapeHtml(preset.shortLabel)}</b>
-                <span>${escapeHtml(preset.description)}</span>
-              </button>
-            `
-          ).join("")}
+        <div class="destination-body">
+          ${this._state.destMode === "presets" ? this._renderPresetChoices() : this._renderTvGrid()}
         </div>
-        ${this._renderTvGrid()}
-        <button type="button" class="primary-action" data-action="save-route">
-          Save route to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
+        <button type="button" class="primary-action" data-action="send-destination">
+          Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
         </button>
       </section>
+    `;
+  }
+
+  _renderPresetChoices() {
+    return `
+      <div class="preset-row">
+        ${PRESETS.map(
+          (preset) => `
+            <button type="button" class="preset-chip" data-action="apply-preset" data-value="${escapeAttr(preset.id)}">
+              <b>${escapeHtml(preset.shortLabel)}</b>
+              <span>${escapeHtml(preset.description)}</span>
+            </button>
+          `
+        ).join("")}
+      </div>
     `;
   }
 
