@@ -158,10 +158,45 @@ export const GUIDE_CHANNELS = [
   { id: "ch-nfl-a1", number: "705", name: "NFL Sunday Ticket 1", category: "Sports" },
 ];
 
+export const GUIDE_EPG_STALE_MS = 6 * 60 * 60 * 1000;
+
+export function isGuideEpgFresh(feed, nowMs = Date.now()) {
+  if (!feed || !feed.generatedAt) return false;
+  const generatedMs = Date.parse(feed.generatedAt);
+  if (Number.isNaN(generatedMs)) return false;
+  return nowMs - generatedMs <= GUIDE_EPG_STALE_MS;
+}
+
+export function mergeGuideWithEpg(channels, feed, nowMs = Date.now()) {
+  if (!isGuideEpgFresh(feed, nowMs)) {
+    return { channels, epgAvailable: false };
+  }
+  const epgChannels = feed.channels || {};
+  return {
+    epgAvailable: true,
+    channels: channels.map((channel) => {
+      const epg = epgChannels[channel.number];
+      if (!epg) return channel;
+      const merged = { ...channel };
+      if (epg.now?.title != null) merged.nowTitle = epg.now.title;
+      if (epg.next?.title != null) merged.nextTitle = epg.next.title;
+      return merged;
+    }),
+  };
+}
+
 export function filterGuideChannels(channels, query) {
   const q = String(query || "").trim().toLowerCase();
   if (!q) return channels;
-  return channels.filter(
-    (c) => c.number.includes(q) || c.name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q)
-  );
+  return channels.filter((c) => {
+    const nowTitle = String(c.nowTitle || "").toLowerCase();
+    const nextTitle = String(c.nextTitle || "").toLowerCase();
+    return (
+      c.number.includes(q) ||
+      c.name.toLowerCase().includes(q) ||
+      c.category.toLowerCase().includes(q) ||
+      nowTitle.includes(q) ||
+      nextTitle.includes(q)
+    );
+  });
 }
