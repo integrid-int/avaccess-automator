@@ -58,3 +58,34 @@ export function loadAssignments(storage, key) {
 export function saveAssignments(storage, key, assignments) {
   storage.setItem(key, JSON.stringify(assignments));
 }
+
+export function listBusyEncoderIds(assignments) {
+  return Object.entries(assignments)
+    .filter(([, route]) => (route.tvs?.length ?? 0) > 0)
+    .map(([routeId, route]) => route.encoderId ?? routeId)
+    .sort();
+}
+
+export function applyRoutePlan(assignments, plan) {
+  if (!plan || plan.error || !Array.isArray(plan.slots) || plan.slots.length === 0) {
+    return assignments;
+  }
+  let next = assignments;
+  for (const s of plan.slots) {
+    next = applyAssignment(next, {
+      routeId: s.encoderId,
+      kind: s.program.kind,
+      sportId: s.program.sportId ?? null,
+      label: s.program.label,
+      channel: s.program.channel,
+      presetId: plan.mode,
+      tvs: s.tvs,
+    });
+    next[s.encoderId] = {
+      ...next[s.encoderId],
+      encoderId: s.encoderId,
+      programId: s.program.id,
+    };
+  }
+  return next;
+}

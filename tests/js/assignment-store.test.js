@@ -1,7 +1,14 @@
 // tests/js/assignment-store.test.js
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyAssignment, getAssignmentForTv, resolveSendPresetId } from "../../homeassistant/config/www/panels/assignment-store.js";
+import {
+  applyAssignment,
+  applyRoutePlan,
+  listBusyEncoderIds,
+  getAssignmentForTv,
+  resolveSendPresetId,
+  createEmptyAssignments,
+} from "../../homeassistant/config/www/panels/assignment-store.js";
 import { PRESETS, range } from "../../homeassistant/config/www/panels/panel-data.js";
 
 test("applyAssignment clears overlapping TVs from other routes", () => {
@@ -62,4 +69,58 @@ test("resolveSendPresetId returns null for adhoc TV picks", () => {
     }),
     null
   );
+});
+
+test("applyRoutePlan stores encoder slots and clears overlapping TVs", () => {
+  let assignments = createEmptyAssignments();
+  assignments = applyRoutePlan(assignments, {
+    mode: "preset_2",
+    commit: "dry_run",
+    slots: [
+      {
+        index: 1,
+        encoderId: "ENC-01",
+        program: { kind: "game", id: "g1", label: "A @ B", channel: "FOX" },
+        tvs: [1, 5, 9],
+        tune: null,
+        udp: null,
+        status: "planned",
+      },
+    ],
+    warnings: [],
+  });
+  assert.deepEqual(assignments["ENC-01"].tvs, [1, 5, 9]);
+  assert.equal(listBusyEncoderIds(assignments).includes("ENC-01"), true);
+
+  assignments = applyRoutePlan(assignments, {
+    mode: "adhoc",
+    commit: "dry_run",
+    slots: [
+      {
+        index: 1,
+        encoderId: "ENC-02",
+        program: { kind: "game", id: "g2", label: "C @ D", channel: "CBS" },
+        tvs: [5, 6],
+        tune: null,
+        udp: null,
+        status: "planned",
+      },
+    ],
+    warnings: [],
+  });
+  assert.deepEqual(assignments["ENC-01"].tvs, [1, 9]);
+  assert.deepEqual(assignments["ENC-02"].tvs, [5, 6]);
+  assert.equal(getAssignmentForTv(assignments, 5).encoderId ?? getAssignmentForTv(assignments, 5).routeId, "ENC-02");
+});
+
+test("applyRoutePlan no-ops when plan has error", () => {
+  const before = createEmptyAssignments();
+  const after = applyRoutePlan(before, {
+    mode: "adhoc",
+    commit: "dry_run",
+    slots: [],
+    warnings: [],
+    error: "No free encoders",
+  });
+  assert.deepEqual(after, before);
 });
