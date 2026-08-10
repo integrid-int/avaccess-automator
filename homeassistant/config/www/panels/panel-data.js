@@ -1,3 +1,5 @@
+import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=15";
+
 export const SPECTRUM_ZIP = "27403";
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";
 
@@ -19,22 +21,6 @@ export const TOKENS = {
 
 export function range(start, end) {
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-}
-
-function logoUrl(abbrev, league = "nfl") {
-  return `https://a.espncdn.com/i/teamlogos/${league}/500/${abbrev}.png`;
-}
-
-function game(id, away, awayAbbr, home, homeAbbr, channel, tipoff, league = "nfl") {
-  return {
-    id,
-    away,
-    home,
-    channel,
-    tipoff,
-    awayLogo: logoUrl(awayAbbr, league),
-    homeLogo: logoUrl(homeAbbr, league),
-  };
 }
 
 export const PRESETS = [
@@ -70,93 +56,17 @@ export const PRESETS = [
   },
 ];
 
+/** Sports chips are EPG title filters — no seed games. */
 export const SPORTS = [
-  {
-    id: "nfl",
-    title: "NFL",
-    chipTitle: "NFL",
-    icon: "🏈",
-    games: [
-      game("nfl-1", "Chiefs", "kc", "Bills", "buf", "FOX", "1:00 PM"),
-      game("nfl-2", "Eagles", "phi", "Cowboys", "dal", "CBS", "1:00 PM"),
-      game("nfl-3", "49ers", "sf", "Seahawks", "sea", "FOX", "4:25 PM"),
-      game("nfl-4", "Ravens", "bal", "Steelers", "pit", "NBC", "8:20 PM"),
-      game("nfl-5", "Lions", "det", "Packers", "gb", "NFLN", "Thursday"),
-    ],
-  },
-  {
-    id: "cfb",
-    title: "College Football",
-    chipTitle: "CFB",
-    icon: "🎓",
-    games: [
-      game("cfb-1", "Georgia", "uga", "Alabama", "ala", "ABC", "3:30 PM", "ncaa"),
-      game("cfb-2", "Ohio State", "osu", "Michigan", "mich", "FOX", "12:00 PM", "ncaa"),
-      game("cfb-3", "Texas", "tex", "Oklahoma", "okla", "ESPN", "7:30 PM", "ncaa"),
-      game("cfb-4", "USC", "usc", "Oregon", "ore", "NBC", "8:00 PM", "ncaa"),
-    ],
-  },
-  {
-    id: "nba",
-    title: "NBA",
-    chipTitle: "NBA",
-    icon: "🏀",
-    games: [
-      game("nba-1", "Lakers", "lal", "Celtics", "bos", "TNT", "7:30 PM", "nba"),
-      game("nba-2", "Warriors", "gs", "Nuggets", "den", "ESPN", "10:00 PM", "nba"),
-      game("nba-3", "Knicks", "ny", "Heat", "mia", "ABC", "3:00 PM", "nba"),
-      game("nba-4", "Suns", "phx", "Mavericks", "dal", "ESPN2", "9:00 PM", "nba"),
-    ],
-  },
-  {
-    id: "nhl",
-    title: "NHL",
-    chipTitle: "NHL",
-    icon: "🏒",
-    games: [
-      game("nhl-1", "Bruins", "bos", "Maple Leafs", "tor", "TNT", "7:00 PM", "nhl"),
-      game("nhl-2", "Rangers", "nyr", "Islanders", "nyi", "MSG", "7:30 PM", "nhl"),
-      game("nhl-3", "Avalanche", "col", "Stars", "dal", "ESPN", "8:00 PM", "nhl"),
-      game("nhl-4", "Oilers", "edm", "Canucks", "van", "ESPN+", "10:00 PM", "nhl"),
-    ],
-  },
-  {
-    id: "mlb",
-    title: "MLB",
-    chipTitle: "MLB",
-    icon: "⚾",
-    games: [
-      game("mlb-1", "Yankees", "nyy", "Red Sox", "bos", "YES", "7:05 PM", "mlb"),
-      game("mlb-2", "Dodgers", "lad", "Giants", "sf", "ESPN", "10:10 PM", "mlb"),
-      game("mlb-3", "Braves", "atl", "Mets", "nym", "SNY", "7:20 PM", "mlb"),
-      game("mlb-4", "Cubs", "chc", "Cardinals", "stl", "FS1", "2:15 PM", "mlb"),
-    ],
-  },
-  {
-    id: "wnba",
-    title: "WNBA",
-    chipTitle: "WNBA",
-    icon: "🏀",
-    games: [
-      game("wnba-1", "Aces", "lv", "Liberty", "ny", "ESPN2", "8:00 PM", "wnba"),
-      game("wnba-2", "Storm", "sea", "Lynx", "min", "NBA TV", "7:00 PM", "wnba"),
-      game("wnba-3", "Sun", "conn", "Fever", "ind", "ESPN", "1:00 PM", "wnba"),
-      game("wnba-4", "Wings", "dal", "Mercury", "phx", "Amazon", "9:00 PM", "wnba"),
-    ],
-  },
+  { id: "all", title: "All sports", chipTitle: "All", icon: "" },
+  { id: "nfl", title: "NFL", chipTitle: "NFL", icon: "" },
+  { id: "cfb", title: "College Football", chipTitle: "CFB", icon: "" },
+  { id: "nba", title: "NBA", chipTitle: "NBA", icon: "" },
+  { id: "nhl", title: "NHL", chipTitle: "NHL", icon: "" },
+  { id: "other", title: "Other", chipTitle: "Other", icon: "" },
 ];
 
-export const GUIDE_CHANNELS = [
-  { id: "ch-fox", number: "4", name: "WGHP FOX", category: "Local" },
-  { id: "ch-cbs", number: "2", name: "WFMY CBS", category: "Local" },
-  { id: "ch-nbc", number: "12", name: "WXII NBC", category: "Local" },
-  { id: "ch-abc", number: "45", name: "WXLV ABC", category: "Local" },
-  { id: "ch-espn", number: "206", name: "ESPN", category: "Sports" },
-  { id: "ch-espn2", number: "207", name: "ESPN2", category: "Sports" },
-  { id: "ch-fs1", number: "400", name: "FS1", category: "Sports" },
-  { id: "ch-tnt", number: "245", name: "TNT", category: "Sports" },
-  { id: "ch-nfl-a1", number: "705", name: "NFL Sunday Ticket 1", category: "Sports" },
-];
+export const GUIDE_CHANNELS = LINEUP_CHANNELS;
 
 export const GUIDE_EPG_STALE_MS = 6 * 60 * 60 * 1000;
 
@@ -199,4 +109,80 @@ export function filterGuideChannels(channels, query) {
       nextTitle.includes(q)
     );
   });
+}
+
+export function guideCategories(channels) {
+  const seen = new Set();
+  const cats = [];
+  for (const channel of channels) {
+    const cat = String(channel.category || "").trim();
+    if (!cat || seen.has(cat)) continue;
+    seen.add(cat);
+    cats.push(cat);
+  }
+  return cats.sort((a, b) => a.localeCompare(b));
+}
+
+export function filterGuideByCategory(channels, category) {
+  const cat = String(category || "").trim();
+  if (!cat || cat.toLowerCase() === "all") return channels;
+  return channels.filter((c) => c.category === cat);
+}
+
+function formatSportTime(iso) {
+  if (!iso) return "";
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) return String(iso);
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(ms));
+  } catch {
+    return String(iso);
+  }
+}
+
+function normalizeSportItem(item, bucket) {
+  return {
+    id: item.id,
+    kind: "game",
+    source: "epg",
+    title: item.title,
+    channel: item.channelName || item.channelNumber,
+    channelNumber: String(item.channelNumber),
+    channelName: item.channelName || "",
+    tipoff: formatSportTime(bucket === "now" ? item.start : item.start),
+    start: item.start,
+    end: item.end,
+    sportKey: item.sportKey || "other",
+    bucket,
+    away: item.title,
+    home: "",
+    awayLogo: "",
+    homeLogo: "",
+  };
+}
+
+export function sportsFromEpg(feed, nowMs = Date.now()) {
+  if (!isGuideEpgFresh(feed, nowMs) || !feed?.sports) {
+    return { available: false, now: [], upcoming: [] };
+  }
+  const now = (feed.sports.now || []).map((item) => normalizeSportItem(item, "now"));
+  const upcoming = (feed.sports.upcoming || []).map((item) =>
+    normalizeSportItem(item, "upcoming")
+  );
+  return { available: true, now, upcoming };
+}
+
+export function filterSportsByTab(items, sportKey) {
+  const key = String(sportKey || "all");
+  if (!key || key === "all") return items;
+  return items.filter((item) => item.sportKey === key);
+}
+
+export function allSportsItems(feed, nowMs = Date.now()) {
+  const { available, now, upcoming } = sportsFromEpg(feed, nowMs);
+  return { available, items: [...now, ...upcoming] };
 }

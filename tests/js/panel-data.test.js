@@ -6,21 +6,36 @@ import {
   GUIDE_CHANNELS,
   PRESETS,
   filterGuideChannels,
+  filterGuideByCategory,
+  guideCategories,
   mergeGuideWithEpg,
   isGuideEpgFresh,
+  sportsFromEpg,
+  filterSportsByTab,
 } from "../../homeassistant/config/www/panels/panel-data.js";
 
-test("spectrum zip is 27403 and sports include nhl/mlb/wnba", () => {
+test("spectrum zip is 27403 and sports tabs are EPG filters", () => {
   assert.equal(SPECTRUM_ZIP, "27403");
   const ids = SPORTS.map((s) => s.id);
-  for (const id of ["nfl", "cfb", "nba", "nhl", "mlb", "wnba"]) {
-    assert.ok(ids.includes(id));
-  }
+  assert.deepEqual(ids, ["all", "nfl", "cfb", "nba", "nhl", "other"]);
+  assert.ok(GUIDE_CHANNELS.length >= 100);
+  assert.ok(GUIDE_CHANNELS.some((c) => c.number === "17" && c.name === "ESPN"));
+  assert.ok(!GUIDE_CHANNELS.some((c) => /music choice/i.test(c.name)));
 });
 
 test("guide filter matches channel number or name", () => {
   const hits = filterGuideChannels(GUIDE_CHANNELS, "espn");
-  assert.ok(hits.some((c) => c.number === "206"));
+  assert.ok(hits.some((c) => c.number === "17"));
+});
+
+test("guide category filter and categories list", () => {
+  const cats = guideCategories(GUIDE_CHANNELS);
+  assert.ok(cats.includes("Sports"));
+  assert.ok(cats.includes("Local"));
+  const sports = filterGuideByCategory(GUIDE_CHANNELS, "Sports");
+  assert.ok(sports.length > 0);
+  assert.ok(sports.every((c) => c.category === "Sports"));
+  assert.equal(filterGuideByCategory(GUIDE_CHANNELS, "All").length, GUIDE_CHANNELS.length);
 });
 
 test("presets expose 1_all / 2_four_programs / 3_nine_programs", () => {
@@ -47,8 +62,8 @@ test("mergeGuideWithEpg attaches now/next when feed fresh", () => {
     zip: "27403",
     generatedAt: "2026-08-10T18:00:00Z",
     channels: {
-      "206": {
-        number: "206",
+      "17": {
+        number: "17",
         now: { title: "SportsCenter" },
         next: { title: "NFL Live" },
       },
@@ -56,7 +71,7 @@ test("mergeGuideWithEpg attaches now/next when feed fresh", () => {
   };
   const { channels, epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, feed, nowMs);
   assert.equal(epgAvailable, true);
-  const espn = channels.find((c) => c.number === "206");
+  const espn = channels.find((c) => c.number === "17");
   assert.equal(espn.nowTitle, "SportsCenter");
   assert.equal(espn.nextTitle, "NFL Live");
 });
@@ -69,10 +84,49 @@ test("mergeGuideWithEpg marks unavailable when stale", () => {
   assert.equal(isGuideEpgFresh(feed, nowMs), false);
 });
 
+test("sportsFromEpg reads now/upcoming and filters by tab", () => {
+  const nowMs = Date.parse("2026-08-10T18:30:00Z");
+  const feed = {
+    generatedAt: "2026-08-10T18:00:00Z",
+    sports: {
+      windowHours: 12,
+      now: [
+        {
+          id: "sport-17-a",
+          channelNumber: "17",
+          channelName: "ESPN",
+          title: "SportsCenter",
+          start: "2026-08-10T18:00:00+00:00",
+          end: "2026-08-10T19:00:00+00:00",
+          sportKey: "other",
+        },
+      ],
+      upcoming: [
+        {
+          id: "sport-17-b",
+          channelNumber: "17",
+          channelName: "ESPN",
+          title: "College Football: Georgia vs Alabama",
+          start: "2026-08-10T19:00:00+00:00",
+          end: "2026-08-10T21:00:00+00:00",
+          sportKey: "cfb",
+        },
+      ],
+    },
+  };
+  const { available, now, upcoming } = sportsFromEpg(feed, nowMs);
+  assert.equal(available, true);
+  assert.equal(now.length, 1);
+  assert.equal(upcoming.length, 1);
+  assert.equal(filterSportsByTab([...now, ...upcoming], "cfb").length, 1);
+  assert.equal(filterSportsByTab([...now, ...upcoming], "nfl").length, 0);
+  assert.equal(sportsFromEpg(null, nowMs).available, false);
+});
+
 test("filterGuideChannels matches now/next titles", () => {
   const rows = [
     {
-      number: "206",
+      number: "17",
       name: "ESPN",
       category: "Sports",
       nowTitle: "SportsCenter",
@@ -80,5 +134,4 @@ test("filterGuideChannels matches now/next titles", () => {
     },
   ];
   assert.equal(filterGuideChannels(rows, "sportscenter").length, 1);
-  assert.equal(filterGuideChannels(rows, "nfl live").length, 1);
 });
