@@ -1,0 +1,87 @@
+# Weekly schedule sync settings for scripts/sync_weekly_schedule.py
+
+timezone: America/New_York
+zip_code: "27403"
+
+# 0 = upcoming Sunday, 1 = Sunday after next, etc.
+target_week_offset: 0
+include_today_if_sunday: false
+
+source:
+  # Choose one:
+  # file: /config/epg/spectrum.xmltv.gz
+  url: https://example.com/your-xmltv.xml.gz
+  # auto | gzip | none
+  compression: auto
+
+# Program matching terms to consider "NFL game" rows.
+nfl_keywords:
+  - NFL
+  - Football
+  - Sunday Ticket
+
+# Blackout handling:
+# When a game exists on both local affiliate and Sunday Ticket,
+# choose local first.
+prefer_local_for_blackout: true
+channel_class_priority: [local, nfl_ticket, other]
+
+# Channel classification used by blackout-aware selection.
+# Fill these with your XMLTV channel IDs / display names once known.
+channel_classification:
+  local:
+    by_channel_id: []
+    by_display_name: []
+    by_display_name_contains:
+      - WGHP
+      - WFMY
+      - WXII
+      - WXLV
+      - FOX
+      - CBS
+      - NBC
+      - ABC
+    by_numbers: []
+  nfl_ticket:
+    by_channel_id: []
+    by_display_name: []
+    by_display_name_contains:
+      - Sunday Ticket
+      - NFL ST
+      - NFL Ticket
+    by_numbers: ["705", "706", "707", "708", "709", "710", "711", "712", "713"]
+
+# Optional per-zip market overrides.
+market_profiles:
+  "27403":
+    local_display_name_contains:
+      - WGHP
+      - WFMY
+      - WXII
+      - WXLV
+
+afternoon_window:
+  start: "13:00"
+  end: "19:00"
+
+sunday_window:
+  start: "09:00"
+  end: "23:59"
+
+# Map XMLTV channels to your Spectrum channel numbers.
+# You can map by XMLTV channel id and/or display-name.
+channel_number_map:
+  by_channel_id:
+    # "I12345.schedulesdirect.org": "705"
+  by_display_name:
+    # "FOX": "4"
+    # "WGHP": "8"
+    # "WFMY": "2"
+    # "WXII": "12"
+    # "WXLV": "45"
+    # "NFL ST 1": "705"
+    # "NFL ST 2": "706"
+
+# Used when schedule data does not produce enough channels.
+fallback_afternoon_numbers: ["705", "706", "707", "708"]
+fallback_sunday_numbers: ["705", "706", "707", "708", "709", "710", "711", "712", "713"]

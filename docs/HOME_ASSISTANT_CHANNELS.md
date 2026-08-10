@@ -68,3 +68,6 @@ Included examples:
 - `all_nfl_sunday_games`
 
 This is ideal for weekly game-day operation: update only the NFL channel numbers in `channels.yaml`, regenerate the HA bundle, and keep the same operator buttons.
+
+For blackout-aware weekly automation (local channel preferred over Sunday Ticket when both carry the same game), see:
+- `docs/WEEKLY_SCHEDULE_SYNC.md`

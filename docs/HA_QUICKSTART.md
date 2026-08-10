@@ -25,6 +25,7 @@ cp config/channels.example.yaml config/channels.yaml
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
 - `config/channels.yaml` → program→encoder mapping, IR entities, favorite channels, and favorite macros
+- `config/schedule_sync.yaml` (optional) → weekly auto-update + blackout-aware channel selection (ZIP 27403)
 
 ## 3) Generate HA package + dashboard YAML
 
@@ -70,6 +71,9 @@ Or use one-tap favorites:
 - **FOX** (Preset 1 + FOX tune)
 - **NFL Afternoon Games** (Preset 2 + 4 program tunes)
 - **All NFL Sunday Games** (Preset 3 + 9 program tunes)
+
+For automated weekly NFL channel updates, see:
+- `docs/WEEKLY_SCHEDULE_SYNC.md`
 
 ## Notes
 

@@ -39,6 +39,7 @@ channels:
   cbs:
     number: "2"
     label: "CBS"
+  # These NFL slot numbers can be auto-updated weekly by schedule sync.
   nfl_afternoon_game_1:
     number: "705"
     label: "NFL A1"
