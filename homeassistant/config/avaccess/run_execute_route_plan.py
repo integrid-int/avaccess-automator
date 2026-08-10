@@ -21,8 +21,8 @@ HERE = Path(__file__).resolve().parent
 
 
 def _repo_root() -> Path | None:
-    # homeassistant/config/avaccess -> parents[3] == repo root when checked out normally
-    candidate = HERE.parents[3]
+    # homeassistant/config/avaccess -> parents[2] == repo root when checked out normally
+    candidate = HERE.parents[2]
     marker = candidate / "scripts" / "avaccess" / "execute_route_plan.py"
     if marker.is_file():
         return candidate
