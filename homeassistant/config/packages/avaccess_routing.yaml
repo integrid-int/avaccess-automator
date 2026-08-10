@@ -1,0 +1,23 @@
+# AVAccess Track B — live commit toggle + route-plan executor
+#
+# shell_command runs with cwd = HA config dir (./config in compose, or
+# homeassistant/config for local Core). Paths below are relative to that cwd.
+#
+# Compose mounts (see homeassistant/docker-compose.yml):
+#   ../scripts/avaccess -> /config/avaccess/scripts
+#   ../config           -> /config/avaccess/config
+# Local Core uses the same relative paths via checked-in symlinks under avaccess/.
+
+input_boolean:
+  avaccess_live_commit:
+    name: AVAccess Live Commit
+    icon: mdi:broadcast
+    initial: false
+
+shell_command:
+  avaccess_execute_route_plan: >-
+    python3 avaccess/run_execute_route_plan.py
+    --inventory avaccess/config/inventory.yaml
+    --itach-config avaccess/config/itach.yaml
+    --plan-b64 {{ plan_b64 }}
+    {% if live is true or live == True or live == 'true' %}--live{% else %}--dry-run{% endif %}

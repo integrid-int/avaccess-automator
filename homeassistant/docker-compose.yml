@@ -5,6 +5,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./config:/config
+      # Track B executor + inventory (canonical sources at repo root)
+      - ../scripts/avaccess:/config/avaccess/scripts:ro
+      - ../config:/config/avaccess/config:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=UTC

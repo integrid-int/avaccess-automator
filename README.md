@@ -66,6 +66,33 @@ python3 -m venv .venv
    - Panel path: `/panel-health`
    - Sidebar title: `Sports Routing`
 
+### Track B — route-plan executor mounts
+
+Canonical Python lives at `scripts/avaccess/`; device YAML at `config/`.
+
+Compose binds these into the HA config tree (see `homeassistant/docker-compose.yml`):
+
+- `../scripts/avaccess` → `/config/avaccess/scripts` (ro)
+- `../config` → `/config/avaccess/config` (ro)
+
+For local Core (no Docker), the same paths are available via checked-in symlinks under `homeassistant/config/avaccess/`. The HA package `packages/avaccess_routing.yaml` exposes:
+
+- `input_boolean.avaccess_live_commit` (default off)
+- `shell_command.avaccess_execute_route_plan` → `avaccess/run_execute_route_plan.py`
+
+Operator inventory files (symlink to examples until real hostnames are filled):
+
+- `config/inventory.yaml` → `inventory.example.yaml`
+- `config/itach.yaml` → `itach.example.yaml`
+
+Refresh the browser Live-gate JSON after inventory edits:
+
+```bash
+.venv/bin/python scripts/avaccess/export_inventory_json.py
+```
+
+Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/avaccess/inventory.json`). Example inventories still contain `REPLACE_ME`, so Live commit stays gated off until hostnames are real.
+
 ## Operator guide — Sports Routing panel
 
 The bartender panel uses a **top chip row** to switch browse modes:
