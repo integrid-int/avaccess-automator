@@ -6,6 +6,7 @@ Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-f
 
 - **[docs/PLAN.md](docs/PLAN.md)** — architecture, preset math, Home Assistant vs alternatives, Xumo strategy
 - **[docs/HOME_ASSISTANT_CHANNELS.md](docs/HOME_ASSISTANT_CHANNELS.md)** — one-tap channel buttons and guide options
+- **[docs/HA_QUICKSTART.md](docs/HA_QUICKSTART.md)** — generate package/dashboard and run in Home Assistant
 
 ## Quick start (after inventory is filled)
 
@@ -21,3 +22,17 @@ python3 scripts/apply_preset.py --inventory config/inventory.yaml --preset 1_all
 ```
 
 Presets are applied with AVAccess UDP bulk reconnect (`255.255.255.255:5010`).
+
+## Home Assistant bundle generator
+
+```bash
+python3 scripts/generate_ha_bundle.py \
+  --inventory config/inventory.yaml \
+  --channels config/channels.yaml \
+  --out-package homeassistant/packages/avaccess_matrix.yaml \
+  --out-dashboard homeassistant/dashboards/avaccess_matrix_dashboard.yaml
+```
+
+Generated outputs:
+- package YAML with shell commands, scripts, and selectors
+- dashboard YAML with preset/program/channel buttons
