@@ -74,3 +74,32 @@ def test_validate_panels_requires_matching_custom_element_name(tmp_path: Path) -
 
     assert len(errors) == 1
     assert "does not define matching custom element" in errors[0]
+
+
+def test_validate_panels_handles_home_assistant_include_tags(tmp_path: Path) -> None:
+    config_dir = tmp_path / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_dir.joinpath("configuration.yaml").write_text(
+        "\n".join(
+            [
+                "default_config:",
+                "frontend:",
+                "  themes: !include_dir_merge_named themes",
+                "automation: !include automations.yaml",
+                "script: !include scripts.yaml",
+                "scene: !include scenes.yaml",
+                "panel_custom:",
+                "  - name: test-panel",
+                "    sidebar_title: Test Panel",
+                "    sidebar_icon: mdi:view-dashboard",
+                "    url_path: test-panel",
+                "    module_url: /local/panels/test-panel.js",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    _write_panel_asset(config_dir)
+
+    errors = validate_panels(config_dir)
+
+    assert errors == []

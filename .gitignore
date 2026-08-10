@@ -4,3 +4,6 @@ __pycache__/
 homeassistant/config/.storage/
 homeassistant/config/home-assistant_v2.db
 homeassistant/config/home-assistant.log*
+homeassistant/config/.HA_VERSION
+homeassistant/config/blueprints/
+homeassistant/config/deps/

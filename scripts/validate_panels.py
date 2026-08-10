@@ -15,6 +15,27 @@ import yaml
 REQUIRED_PANEL_FIELDS = ("name", "sidebar_title", "url_path", "module_url")
 
 
+class HomeAssistantLoader(yaml.SafeLoader):
+    """PyYAML loader that tolerates Home Assistant custom tags."""
+
+
+def _construct_home_assistant_tag(
+    loader: yaml.SafeLoader, tag_suffix: str, node: yaml.Node
+) -> object:
+    del tag_suffix
+
+    if isinstance(node, yaml.ScalarNode):
+        return loader.construct_scalar(node)
+    if isinstance(node, yaml.SequenceNode):
+        return loader.construct_sequence(node)
+    if isinstance(node, yaml.MappingNode):
+        return loader.construct_mapping(node)
+    return None
+
+
+HomeAssistantLoader.add_multi_constructor("!", _construct_home_assistant_tag)
+
+
 @dataclass
 class PanelValidationError:
     panel_name: str
@@ -31,7 +52,7 @@ def _load_configuration(configuration_path: Path) -> dict:
         )
 
     with configuration_path.open("r", encoding="utf-8") as handle:
-        data = yaml.safe_load(handle) or {}
+        data = yaml.load(handle, Loader=HomeAssistantLoader) or {}
 
     if not isinstance(data, dict):
         raise ValueError(f"Expected mapping in {configuration_path}, got {type(data)}")
