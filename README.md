@@ -4,7 +4,7 @@ Home Assistant test environment for validating the **iPad bartender Sports Routi
 
 ## Goals (aligned with AVAccess plan)
 
-This panel is designed for Home Assistant Companion on iPad and implements **Track A** of the AVAccess route planner: group/program planning with a dry-run `RoutePlan` (no live UDP/IR).
+This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner) plus **Track B** (hybrid dry-run / live IR+UDP execute when inventory validates).
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
@@ -14,11 +14,11 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
   - **Preset 3 — 9 Programs** — pick up to 9 programs; striped across `ENC-01`…`ENC-09`; unused encoder slots omitted / left unchanged
 - **Pick TVs (adhoc)** — multi-select TVs 1–35; planner claims the lowest-index free encoder (`ENC-01`…`ENC-10`); errors with **No free encoders** if none are free
-- **Send is dry-run only (Track A)** — builds a `RoutePlan`, shows the summary, and updates local occupancy; **no live UDP or IR**
-- Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Dry-run Send**
+- **Hybrid Send (Track B)** — default **Dry-run Send** builds a `RoutePlan`, shows the summary, and updates local occupancy; optional **Live Send** runs iTach IR tune then UDP reconnect when inventory is live-ready
+- Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Send**
 - Clean, large-target UI for bartender speed
 
-Track B (live UDP/IR) and Track C (EPG now/next) are out of scope for this panel revision.
+**Track C** (EPG now/next, telnet free-encoder discovery, zone mapping) remains out of scope.
 
 ## What this repository provides
 
@@ -66,7 +66,7 @@ python3 -m venv .venv
    - Panel path: `/panel-health`
    - Sidebar title: `Sports Routing`
 
-### Track B — route-plan executor mounts
+### Track B — live routing setup (operators)
 
 Canonical Python lives at `scripts/avaccess/`; device YAML at `config/`.
 
@@ -77,21 +77,72 @@ Compose binds these into the HA config tree (see `homeassistant/docker-compose.y
 
 For local Core (no Docker), the same paths are available via checked-in symlinks under `homeassistant/config/avaccess/`. The HA package `packages/avaccess_routing.yaml` exposes:
 
-- `input_boolean.avaccess_live_commit` (default off)
+- `input_boolean.avaccess_live_commit` (default **off**)
 - `shell_command.avaccess_execute_route_plan` → `avaccess/run_execute_route_plan.py`
 
-Operator inventory files (symlink to examples until real hostnames are filled):
+#### 1. Inventory hostnames
 
-- `config/inventory.yaml` → `inventory.example.yaml`
-- `config/itach.yaml` → `itach.example.yaml`
-
-Refresh the browser Live-gate JSON after inventory edits:
+Copy the striped example and replace every `REPLACE_ME` hostname for encoders (`ENC-01`…`ENC-10`) and receivers (`RX-01`…`RX-35`) you will reference:
 
 ```bash
-.venv/bin/python scripts/avaccess/export_inventory_json.py
+cp config/inventory.example.yaml config/inventory.yaml
+# edit config/inventory.yaml — real TX/RX hostnames, broadcast/port
 ```
 
-Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/avaccess/inventory.json`). Example inventories still contain `REPLACE_ME`, so Live commit stays gated off until hostnames are real.
+The repo ships `config/inventory.yaml` as a symlink to the example so Live stays gated off until you replace it with a filled file.
+
+#### 2. iTach IR codes
+
+```bash
+cp config/itach.example.yaml config/itach.yaml
+# edit config/itach.yaml — iTach host, encoder→output map, digit / OK IR codes
+```
+
+Same symlink pattern applies until real IR codes are filled.
+
+#### 3. Export inventory JSON (panel Live gate)
+
+After editing inventory YAML, refresh the browser-readable gate file:
+
+```bash
+.venv/bin/python scripts/avaccess/export_inventory_json.py \
+  --input config/inventory.yaml
+```
+
+Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/avaccess/inventory.json`). The panel fetches this on connect; Live commit stays disabled while any referenced hostname is missing or contains `REPLACE_ME`.
+
+#### 4. Dry-run vs Live toggle
+
+| Mode | How | Behavior |
+|------|-----|----------|
+| **Dry-run** (default) | Panel **Live commit** off; HA `input_boolean.avaccess_live_commit` off | Builds/summarizes `RoutePlan`, updates local occupancy only — no IR/UDP |
+| **Live** | Panel **Live commit** on **and** inventory JSON live-ready | After local apply, posts plan to `shell_command.avaccess_execute_route_plan` (`plan_b64` + `live: true`) for IR tune → UDP reconnect per slot |
+
+The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass` is available. If Live is requested but inventory is not ready, Send still applies locally and records a warning: `Live blocked: inventory not ready`.
+
+#### 5. CLI execute (offline / ops)
+
+```bash
+# Dry-run (prints IR/UDP payloads; no network) — default hybrid posture
+.venv/bin/python scripts/avaccess/execute_route_plan.py \
+  --inventory config/inventory.yaml \
+  --itach-config config/itach.yaml \
+  --plan-file /tmp/plan.json \
+  --dry-run
+
+# Live (requires inventory validation for the plan; exit 2 on preflight fail)
+.venv/bin/python scripts/avaccess/execute_route_plan.py \
+  --inventory config/inventory.yaml \
+  --itach-config config/itach.yaml \
+  --plan-b64 '<base64-RoutePlan-json>' \
+  --live
+```
+
+Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot status and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
+
+#### 6. Still out of scope (Track C)
+
+Guide now/next EPG overlay, telnet truth for free-encoder discovery, and zone mapping profiles are **not** part of Track B.
 
 ## Operator guide — Sports Routing panel
 
@@ -105,9 +156,12 @@ The bartender panel uses a **top chip row** to switch browse modes:
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
 
-### Dry-run Send (Track A)
+### Dry-run vs Live Send (Track B hybrid)
 
-Every **Dry-run Send** builds a `RoutePlan`, shows the dry-run summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser. It does **not** emit live UDP reconnects or IR tunes. Live commit is Track B.
+Every Send builds a `RoutePlan`, shows the summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser.
+
+- **Dry-run Send** (default) — occupancy only; no IR or UDP.
+- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json`); then Send calls HA `shell_command.avaccess_execute_route_plan` for live IR tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing.
 
 ### Preset 1 — ALL (one program → all TVs)
 
@@ -168,7 +222,7 @@ Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=10`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=11`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 
