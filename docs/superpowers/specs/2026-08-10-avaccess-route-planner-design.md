@@ -89,11 +89,13 @@ RoutePlan {
 2. Send → one slot: ENC-01 → TVs 1–35.
 
 **Preset 2 — 4 Programs / Preset 3 — 9 Programs**
-1. Choose group mode Preset 2 or 3.
-2. Multi-select **1..N** programs (order = slot order: 1st → ENC-01, 2nd → ENC-02, …).
-3. Send enabled when ≥1 program selected.
+1. Choose group mode Preset 2 or 3 **first** (not “one game → all TVs”).
+2. Multi-select **1..N** programs from Sports and/or Guide (order = slot order: 1st → ENC-01, 2nd → ENC-02, …).
+3. Send enabled when ≥1 program selected; cap at N (extra taps ignored or replace last—**cap and ignore**).
 4. Unused slots are omitted from the plan and left unchanged on the matrix.
 5. Dry-run summary shows each program → encoder → TV list.
+
+Content-first sport/guide browse still exists for **Preset 1** and **adhoc**. For Preset 2/3 the primary path is **group-first → multi-program picker → Send** (dual-path chip row can deep-link into that picker).
 
 **Pick TVs (adhoc)**
 1. Select any non-empty TV set.
