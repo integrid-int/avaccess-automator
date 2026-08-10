@@ -1,6 +1,7 @@
 __pycache__/
 .pytest_cache/
 .venv/
+.superpowers/
 homeassistant/config/.storage/
 homeassistant/config/home-assistant_v2.db
 homeassistant/config/home-assistant.log*
