@@ -1,0 +1,664 @@
+#!/usr/bin/env python3
+"""Generate Home Assistant package + dashboard from AVAccess configs.
+
+Usage:
+  python3 scripts/generate_ha_bundle.py \
+    --inventory config/inventory.yaml \
+    --channels config/channels.yaml \
+    --out-package homeassistant/packages/avaccess_matrix.yaml \
+    --out-dashboard homeassistant/dashboards/avaccess_matrix.yaml
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+
+def load_yaml(path: Path) -> dict[str, Any]:
+    data = yaml.safe_load(path.read_text())
+    if not isinstance(data, dict):
+        raise SystemExit(f"Expected YAML mapping in {path}")
+    return data
+
+
+def slug(value: str) -> str:
+    s = re.sub(r"[^a-zA-Z0-9]+", "_", value).strip("_").lower()
+    return s or "item"
+
+
+def resolve_presets(inventory: dict[str, Any], profile_override: str | None) -> tuple[str | None, dict[str, Any]]:
+    """Return (profile_name, presets) from inventory with backward compatibility."""
+    mapping_profiles = inventory.get("mapping_profiles")
+    if not mapping_profiles:
+        presets = inventory.get("presets")
+        if not isinstance(presets, dict) or not presets:
+            raise SystemExit("Inventory must include non-empty 'presets' or 'mapping_profiles'")
+        return None, presets
+
+    profiles = mapping_profiles.get("profiles", {})
+    if not isinstance(profiles, dict) or not profiles:
+        raise SystemExit("mapping_profiles.profiles must be a non-empty mapping")
+
+    selected = profile_override or mapping_profiles.get("active")
+    if not selected:
+        selected = next(iter(profiles))
+    if selected not in profiles:
+        available = ", ".join(profiles.keys())
+        raise SystemExit(f"Unknown profile '{selected}'. Available: {available}")
+
+    profile_data = profiles[selected]
+    presets = profile_data.get("presets", {})
+    if not isinstance(presets, dict) or not presets:
+        raise SystemExit(f"mapping_profiles.profiles.{selected}.presets must be non-empty")
+
+    return selected, presets
+
+
+def validate_channels(channels_cfg: dict[str, Any]) -> None:
+    required_keys = ("program_to_encoder", "channels")
+    for key in required_keys:
+        if key not in channels_cfg:
+            raise SystemExit(f"channels file missing required key: {key}")
+    if not isinstance(channels_cfg["channels"], dict) or not channels_cfg["channels"]:
+        raise SystemExit("channels must be a non-empty mapping")
+    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
+    if ir_transport not in {"ha_remote", "itach_tcp"}:
+        raise SystemExit("ir_transport must be 'ha_remote' or 'itach_tcp'")
+    if ir_transport == "ha_remote" and "encoder_ir_entity" not in channels_cfg:
+        raise SystemExit("channels file missing required key for ha_remote mode: encoder_ir_entity")
+
+
+def build_package(
+    inventory: dict[str, Any],
+    channels_cfg: dict[str, Any],
+    profile_override: str | None,
+    inventory_ha_path: str,
+) -> dict[str, Any]:
+    selected_profile, presets = resolve_presets(inventory, profile_override)
+    validate_channels(channels_cfg)
+
+    program_to_encoder = channels_cfg["program_to_encoder"]
+    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
+    encoder_ir_entity = channels_cfg.get("encoder_ir_entity", {})
+    channels = channels_cfg["channels"]
+    suffix_commands = channels_cfg.get("suffix_commands", ["ok"])
+    digit_delay = channels_cfg.get("digit_delay", "00:00:00.25")
+    digit_delay_ms = int(channels_cfg.get("digit_delay_ms", 250))
+    itach_config_path = str(channels_cfg.get("itach_config_path", "/config/avaccess/config/itach.yaml"))
+
+    program_keys = list(program_to_encoder.keys())
+    channel_keys = list(channels.keys())
+    if not program_keys:
+        raise SystemExit("program_to_encoder must include at least one program")
+
+    shell_command: dict[str, str] = {}
+    scripts: dict[str, Any] = {}
+
+    profile_part = f" --profile {selected_profile}" if selected_profile else ""
+    for preset_key in presets.keys():
+        preset_slug = slug(preset_key)
+        shell_name = f"avaccess_preset_{preset_slug}"
+        shell_command[shell_name] = (
+            f"python3 /config/avaccess/scripts/apply_preset.py "
+            f"--inventory {inventory_ha_path}{profile_part} --preset {preset_key}"
+        )
+        scripts[shell_name] = {
+            "alias": f"AVAccess Preset {preset_key}",
+            "mode": "single",
+            "sequence": [{"service": f"shell_command.{shell_name}"}],
+        }
+
+    shell_command["avaccess_route_targets"] = (
+        "python3 /config/avaccess/scripts/route_targets.py "
+        f"--inventory {inventory_ha_path} --encoder \"{{{{ encoder }}}}\" --targets \"{{{{ targets }}}}\""
+    )
+    if ir_transport == "itach_tcp":
+        shell_command["avaccess_itach_send_channel"] = (
+            "python3 /config/avaccess/scripts/send_xumo_ir_itach.py "
+            f"--itach-config {itach_config_path} --encoder \"{{{{ encoder }}}}\" "
+            "--digits \"{{ digits }}\" --suffix \"{{ suffix }}\" --digit-delay-ms {{ digit_delay_ms }}"
+        )
+
+    scripts["avaccess_set_program"] = {
+        "alias": "AVAccess select program",
+        "mode": "single",
+        "fields": {
+            "program": {"description": "Program key from program_to_encoder", "example": program_keys[0]}
+        },
+        "sequence": [
+            {
+                "service": "input_select.select_option",
+                "data": {"entity_id": "input_select.avaccess_program", "option": "{{ program }}"},
+            }
+        ],
+    }
+
+    tune_variables: dict[str, Any] = {
+        "program_to_encoder": program_to_encoder,
+        "channels": channels,
+        "suffix_commands": suffix_commands,
+        "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
+        "channel_key": "{{ (channel | default(states('input_select.avaccess_channel'), true)) | lower }}",
+        "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
+        "channel_number": "{{ channels[channel_key]['number'] if channel_key in channels else none }}",
+        "digit_delay": digit_delay,
+        "digit_delay_ms": digit_delay_ms,
+        "suffix_text": "{{ suffix_commands | join(',') }}",
+    }
+    if ir_transport == "ha_remote":
+        tune_variables["encoder_ir_entity"] = encoder_ir_entity
+        tune_variables["remote_entity"] = (
+            "{{ encoder_ir_entity[selected_encoder] if selected_encoder in encoder_ir_entity else none }}"
+        )
+        tune_sequence = [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ remote_entity is not none and channel_number is not none }}",
+                        "sequence": [
+                            {
+                                "repeat": {
+                                    "for_each": "{{ (channel_number | string | list) + suffix_commands }}",
+                                    "sequence": [
+                                        {
+                                            "service": "remote.send_command",
+                                            "data": {
+                                                "entity_id": "{{ remote_entity }}",
+                                                "command": "{{ repeat.item }}",
+                                            },
+                                        },
+                                        {"delay": "{{ digit_delay }}"},
+                                    ],
+                                }
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess tune failed (ha_remote); check program/channel/entity maps. "
+                                "program={{ program_key }} channel={{ channel_key }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ]
+    else:
+        tune_sequence = [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
+                        "sequence": [
+                            {
+                                "service": "shell_command.avaccess_itach_send_channel",
+                                "data": {
+                                    "encoder": "{{ selected_encoder }}",
+                                    "digits": "{{ channel_number }}",
+                                    "suffix": "{{ suffix_text }}",
+                                    "digit_delay_ms": "{{ digit_delay_ms }}",
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess tune failed (itach_tcp); check program/channel/itach maps. "
+                                "program={{ program_key }} channel={{ channel_key }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ]
+
+    scripts["avaccess_tune_channel"] = {
+        "alias": "AVAccess tune channel on Xumo",
+        "mode": "queued",
+        "fields": {
+            "program": {
+                "description": "Program key (optional; uses selected program when omitted)",
+                "example": program_keys[0],
+            },
+            "channel": {"description": "Channel key from channels map", "example": channel_keys[0]},
+        },
+        "variables": tune_variables,
+        "sequence": tune_sequence,
+    }
+
+    scripts["avaccess_tune_selected_channel"] = {
+        "alias": "AVAccess tune selected channel",
+        "mode": "single",
+        "sequence": [
+            {
+                "service": "script.avaccess_tune_channel",
+                "data": {"channel": "{{ states('input_select.avaccess_channel') }}"},
+            }
+        ],
+    }
+
+    scripts["avaccess_route_program_to_tvs"] = {
+        "alias": "AVAccess route program to TVs",
+        "mode": "single",
+        "fields": {
+            "program": {
+                "description": "Program key (optional; defaults to selected program)",
+                "example": program_keys[0],
+            },
+            "targets": {
+                "description": "Receiver IDs/hostnames list (optional; defaults to input_text)",
+                "example": "RX-01,RX-02,RX-03",
+            },
+        },
+        "variables": {
+            "program_to_encoder": program_to_encoder,
+            "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
+            "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
+            "target_list": "{{ targets | default(states('input_text.avaccess_target_rxs'), true) }}",
+        },
+        "sequence": [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ selected_encoder is not none and (target_list | string | trim) != '' }}",
+                        "sequence": [
+                            {
+                                "service": "shell_command.avaccess_route_targets",
+                                "data": {
+                                    "encoder": "{{ selected_encoder }}",
+                                    "targets": "{{ target_list }}",
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess route failed; check selected program and target TVs. "
+                                "program={{ program_key }} targets={{ target_list }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    scripts["avaccess_route_selected_program_to_tvs"] = {
+        "alias": "AVAccess route selected program to TVs",
+        "mode": "single",
+        "sequence": [{"service": "script.avaccess_route_program_to_tvs"}],
+    }
+
+    for channel_key, channel_info in channels.items():
+        ch_slug = slug(channel_key)
+        label = channel_info.get("label", channel_key)
+        scripts[f"avaccess_tune_{ch_slug}"] = {
+            "alias": f"AVAccess tune {label}",
+            "mode": "single",
+            "sequence": [
+                {
+                    "service": "input_select.select_option",
+                    "data": {"entity_id": "input_select.avaccess_channel", "option": channel_key},
+                },
+                {"service": "script.avaccess_tune_selected_channel"},
+            ],
+        }
+
+    # Optional "favorite scenes" that combine preset recall + multi-program channel tune.
+    favorites = channels_cfg.get("favorites", {})
+    if favorites and not isinstance(favorites, dict):
+        raise SystemExit("favorites must be a mapping when provided")
+    preset_delay = channels_cfg.get("favorite_preset_delay", "00:00:02")
+    preset_script_by_key = {k: f"script.avaccess_preset_{slug(k)}" for k in presets.keys()}
+    for favorite_key, favorite in favorites.items():
+        if not isinstance(favorite, dict):
+            raise SystemExit(f"favorites.{favorite_key} must be a mapping")
+        fav_slug = slug(favorite_key)
+        fav_label = favorite.get("label", favorite_key)
+        fav_preset = favorite.get("preset")
+        fav_tunes = favorite.get("tunes", [])
+        if not isinstance(fav_tunes, list):
+            raise SystemExit(f"favorites.{favorite_key}.tunes must be a list")
+
+        sequence: list[dict[str, Any]] = []
+        if fav_preset:
+            if fav_preset not in preset_script_by_key:
+                available = ", ".join(presets.keys())
+                raise SystemExit(
+                    f"favorites.{favorite_key}.preset '{fav_preset}' not found in presets ({available})"
+                )
+            sequence.append({"service": preset_script_by_key[fav_preset]})
+            sequence.append({"delay": preset_delay})
+
+        for idx, tune in enumerate(fav_tunes, 1):
+            if not isinstance(tune, dict):
+                raise SystemExit(f"favorites.{favorite_key}.tunes[{idx}] must be a mapping")
+            program = tune.get("program")
+            channel = tune.get("channel")
+            if not program or not channel:
+                raise SystemExit(
+                    f"favorites.{favorite_key}.tunes[{idx}] must include 'program' and 'channel'"
+                )
+            sequence.append(
+                {
+                    "service": "script.avaccess_tune_channel",
+                    "data": {"program": str(program).lower(), "channel": str(channel).lower()},
+                }
+            )
+            if tune.get("delay_after"):
+                sequence.append({"delay": tune["delay_after"]})
+
+        if not sequence:
+            raise SystemExit(
+                f"favorites.{favorite_key} has no actions. Define preset and/or tunes."
+            )
+
+        scripts[f"avaccess_favorite_{fav_slug}"] = {
+            "alias": f"AVAccess Favorite {fav_label}",
+            "mode": "single",
+            "sequence": sequence,
+        }
+
+    package = {
+        "input_select": {
+            "avaccess_program": {
+                "name": "AVAccess Program",
+                "options": program_keys,
+                "initial": program_keys[0],
+                "icon": "mdi:view-grid-plus",
+            },
+            "avaccess_channel": {
+                "name": "AVAccess Channel",
+                "options": channel_keys,
+                "initial": channel_keys[0],
+                "icon": "mdi:television-guide",
+            },
+        },
+        "input_text": {
+            "avaccess_target_rxs": {
+                "name": "AVAccess Target TVs",
+                "max": 255,
+                "initial": "RX-01,RX-02",
+                "icon": "mdi:television-multiple",
+            }
+        },
+        "shell_command": shell_command,
+        "script": scripts,
+    }
+    return package
+
+
+def _build_channel_buttons(
+    channels: dict[str, Any], channel_keys: list[str] | None = None, icon: str = "mdi:television-play"
+) -> list[dict[str, Any]]:
+    keys = channel_keys or list(channels.keys())
+    out: list[dict[str, Any]] = []
+    for channel_key in keys:
+        if channel_key not in channels:
+            continue
+        info = channels[channel_key]
+        ch_slug = slug(channel_key)
+        out.append(
+            {
+                "type": "button",
+                "name": info.get("label", channel_key),
+                "icon": icon,
+                "tap_action": {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
+            }
+        )
+    return out
+
+
+def _destination_cards() -> list[dict[str, Any]]:
+    return [
+        {
+            "type": "entities",
+            "title": "Destination",
+            "entities": [
+                "input_select.avaccess_program",
+                "input_select.avaccess_channel",
+                "input_text.avaccess_target_rxs",
+            ],
+        },
+        {
+            "type": "grid",
+            "title": "Route Actions",
+            "columns": 2,
+            "square": False,
+            "cards": [
+                {
+                    "type": "button",
+                    "name": "Tune Selected Program",
+                    "icon": "mdi:remote-tv",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": "script.avaccess_tune_selected_channel",
+                    },
+                },
+                {
+                    "type": "button",
+                    "name": "Route Program -> TVs",
+                    "icon": "mdi:television-multiple",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": "script.avaccess_route_selected_program_to_tvs",
+                    },
+                },
+            ],
+        },
+    ]
+
+
+def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> dict[str, Any]:
+    channels = channels_cfg["channels"]
+    program_keys = list(channels_cfg["program_to_encoder"].keys())
+
+    preset_buttons = []
+    for preset_key in presets.keys():
+        preset_slug = slug(preset_key)
+        preset_buttons.append(
+            {
+                "type": "button",
+                "name": preset_key,
+                "icon": "mdi:video-switch",
+                "tap_action": {"action": "call-service", "service": f"script.avaccess_preset_{preset_slug}"},
+            }
+        )
+
+    program_buttons = []
+    for program_key in program_keys:
+        program_buttons.append(
+            {
+                "type": "button",
+                "name": program_key,
+                "icon": "mdi:monitor-dashboard",
+                "tap_action": {
+                    "action": "call-service",
+                    "service": "script.avaccess_set_program",
+                    "data": {"program": program_key},
+                },
+            }
+        )
+
+    channel_buttons = _build_channel_buttons(channels)
+
+    favorites = channels_cfg.get("favorites", {})
+    favorite_buttons = []
+    if isinstance(favorites, dict):
+        for favorite_key, favorite in favorites.items():
+            fav_slug = slug(favorite_key)
+            fav_label = (
+                favorite.get("label", favorite_key)
+                if isinstance(favorite, dict)
+                else str(favorite_key)
+            )
+            favorite_buttons.append(
+                {
+                    "type": "button",
+                    "name": fav_label,
+                    "icon": "mdi:star",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": f"script.avaccess_favorite_{fav_slug}",
+                    },
+                }
+            )
+
+    cards: list[dict[str, Any]] = [
+        {
+            "type": "entities",
+            "title": "Active Selection",
+            "entities": [
+                "input_select.avaccess_program",
+                "input_select.avaccess_channel",
+                "input_text.avaccess_target_rxs",
+            ],
+        }
+    ]
+    if favorite_buttons:
+        cards.append(
+            {
+                "type": "grid",
+                "title": "Favorites",
+                "columns": 3,
+                "square": False,
+                "cards": favorite_buttons,
+            }
+        )
+    cards.extend(
+        [
+            {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
+            {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
+            {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
+            *_destination_cards(),
+        ]
+    )
+
+    views: list[dict[str, Any]] = [
+        {
+            "title": "AV Control",
+            "path": "av-control",
+            "icon": "mdi:video-input-component",
+            "cards": cards,
+        }
+    ]
+
+    sports_pages = channels_cfg.get("sports_pages", {})
+    if isinstance(sports_pages, dict):
+        for page_key, page_cfg in sports_pages.items():
+            if not isinstance(page_cfg, dict):
+                continue
+            page_title = str(page_cfg.get("title", page_key.upper()))
+            page_path = str(page_cfg.get("path", slug(page_key)))
+            page_icon = str(page_cfg.get("icon", "mdi:basketball"))
+            page_desc = str(page_cfg.get("description", ""))
+            page_channels = page_cfg.get("channels", [])
+            if not isinstance(page_channels, list) or not page_channels:
+                continue
+            buttons = _build_channel_buttons(channels, [str(c) for c in page_channels], icon="mdi:television-play")
+            if not buttons:
+                continue
+            page_cards: list[dict[str, Any]] = []
+            if page_desc:
+                page_cards.append({"type": "markdown", "content": f"## {page_title}\n\n{page_desc}"})
+            page_cards.append(
+                {
+                    "type": "entities",
+                    "title": "Selection",
+                    "entities": [
+                        "input_select.avaccess_program",
+                        "input_select.avaccess_channel",
+                        "input_text.avaccess_target_rxs",
+                    ],
+                }
+            )
+            page_cards.append(
+                {
+                    "type": "grid",
+                    "title": f"{page_title} Channels",
+                    "columns": 3,
+                    "square": False,
+                    "cards": buttons,
+                }
+            )
+            page_cards.extend(_destination_cards())
+            views.append(
+                {
+                    "title": page_title,
+                    "path": page_path,
+                    "icon": page_icon,
+                    "cards": page_cards,
+                }
+            )
+
+    dashboard = {"title": "AVAccess Matrix", "views": views}
+    return dashboard
+
+
+def write_yaml(path: Path, data: dict[str, Any], header: str) -> None:
+    text = yaml.safe_dump(data, sort_keys=False, width=120, allow_unicode=False)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f"{header}\n{text}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--inventory", type=Path, required=True)
+    parser.add_argument("--channels", type=Path, required=True)
+    parser.add_argument("--profile", help="Optional mapping profile override.")
+    parser.add_argument(
+        "--inventory-ha-path",
+        default="/config/avaccess/config/inventory.yaml",
+        help="Path Home Assistant should use when calling apply_preset.py",
+    )
+    parser.add_argument("--out-package", type=Path, required=True)
+    parser.add_argument("--out-dashboard", type=Path, required=True)
+    args = parser.parse_args()
+
+    inventory = load_yaml(args.inventory)
+    channels_cfg = load_yaml(args.channels)
+    selected_profile, presets = resolve_presets(inventory, args.profile)
+    package = build_package(
+        inventory=inventory,
+        channels_cfg=channels_cfg,
+        profile_override=selected_profile,
+        inventory_ha_path=args.inventory_ha_path,
+    )
+    dashboard = build_dashboard(channels_cfg=channels_cfg, presets=presets)
+
+    pkg_header = (
+        "# Generated by scripts/generate_ha_bundle.py\n"
+        "# Place under Home Assistant packages and include via packages: !include_dir_named packages\n"
+    )
+    dash_header = (
+        "# Generated by scripts/generate_ha_bundle.py\n"
+        "# Import into Lovelace (Raw configuration editor) or dashboard YAML mode\n"
+    )
+    write_yaml(args.out_package, package, pkg_header)
+    write_yaml(args.out_dashboard, dashboard, dash_header)
+    print(f"Wrote package: {args.out_package}")
+    print(f"Wrote dashboard: {args.out_dashboard}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,180 @@
+provider: spectrum
+ir_transport: itach_tcp
+itach_config_path: /config/avaccess/config/itach.yaml
+
+# Tie logical programs to encoder-connected Xumo boxes.
+program_to_encoder:
+  program_a: ENC-01
+  program_b: ENC-02
+  program_c: ENC-03
+  program_d: ENC-04
+  program_e: ENC-05
+  program_f: ENC-06
+  program_g: ENC-07
+  program_h: ENC-08
+  program_i: ENC-09
+
+# Home Assistant IR remote entities (optional fallback when ir_transport=ha_remote).
+# For ir_transport=itach_tcp these are not required.
+encoder_ir_entity:
+  ENC-01: remote.xumo_01_ir
+  ENC-02: remote.xumo_02_ir
+  ENC-03: remote.xumo_03_ir
+  ENC-04: remote.xumo_04_ir
+  ENC-05: remote.xumo_05_ir
+  ENC-06: remote.xumo_06_ir
+  ENC-07: remote.xumo_07_ir
+  ENC-08: remote.xumo_08_ir
+  ENC-09: remote.xumo_09_ir
+
+# Favorite channels used for one-tap buttons.
+channels:
+  espn:
+    number: "206"
+    label: "ESPN"
+  espn2:
+    number: "207"
+    label: "ESPN2"
+  fs1:
+    number: "400"
+    label: "FS1"
+  tnt:
+    number: "245"
+    label: "TNT"
+  fox:
+    number: "4"
+    label: "WGHP FOX (Local)"
+  cbs:
+    number: "2"
+    label: "WFMY CBS (Local)"
+  nbc:
+    number: "12"
+    label: "WXII NBC (Local)"
+  abc:
+    number: "45"
+    label: "WXLV ABC (Local)"
+  # These NFL slot numbers can be auto-updated weekly by schedule sync.
+  nfl_afternoon_game_1:
+    number: "705"
+    label: "NFL A1"
+  nfl_afternoon_game_2:
+    number: "706"
+    label: "NFL A2"
+  nfl_afternoon_game_3:
+    number: "707"
+    label: "NFL A3"
+  nfl_afternoon_game_4:
+    number: "708"
+    label: "NFL A4"
+  nfl_sunday_game_1:
+    number: "705"
+    label: "NFL S1"
+  nfl_sunday_game_2:
+    number: "706"
+    label: "NFL S2"
+  nfl_sunday_game_3:
+    number: "707"
+    label: "NFL S3"
+  nfl_sunday_game_4:
+    number: "708"
+    label: "NFL S4"
+  nfl_sunday_game_5:
+    number: "709"
+    label: "NFL S5"
+  nfl_sunday_game_6:
+    number: "710"
+    label: "NFL S6"
+  nfl_sunday_game_7:
+    number: "711"
+    label: "NFL S7"
+  nfl_sunday_game_8:
+    number: "712"
+    label: "NFL S8"
+  nfl_sunday_game_9:
+    number: "713"
+    label: "S9 NFL Slot"
+
+# Optional per-channel tail command depending on remote behavior.
+# Common values: ["ok"] or [].
+suffix_commands: ["ok"]
+
+# Favorite macros for one-tap operation:
+# - optional preset recall
+# - then one or many channel tune actions across program slots
+favorite_preset_delay: "00:00:02"
+favorites:
+  fox:
+    label: "FOX Local"
+    preset: 1_all
+    tunes:
+      - { program: program_a, channel: fox }
+
+  nfl_afternoon_games:
+    label: "NFL Afternoon Games"
+    preset: 2_four_programs
+    tunes:
+      - { program: program_a, channel: nfl_afternoon_game_1 }
+      - { program: program_b, channel: nfl_afternoon_game_2 }
+      - { program: program_c, channel: nfl_afternoon_game_3 }
+      - { program: program_d, channel: nfl_afternoon_game_4 }
+
+  all_nfl_sunday_games:
+    label: "All NFL Sunday Games"
+    preset: 3_nine_programs
+    tunes:
+      - { program: program_a, channel: nfl_sunday_game_1 }
+      - { program: program_b, channel: nfl_sunday_game_2 }
+      - { program: program_c, channel: nfl_sunday_game_3 }
+      - { program: program_d, channel: nfl_sunday_game_4 }
+      - { program: program_e, channel: nfl_sunday_game_5 }
+      - { program: program_f, channel: nfl_sunday_game_6 }
+      - { program: program_g, channel: nfl_sunday_game_7 }
+      - { program: program_h, channel: nfl_sunday_game_8 }
+      - { program: program_i, channel: nfl_sunday_game_9 }
+
+# Phase 2: Sports pages (channels can be auto-relabeled daily)
+sports_pages:
+  nfl:
+    title: NFL
+    path: nfl
+    icon: mdi:football
+    description: "Game-day channels and Sunday Ticket slots. Use Route Program -> TVs for one or many displays."
+    channels:
+      - fox
+      - cbs
+      - nfl_afternoon_game_1
+      - nfl_afternoon_game_2
+      - nfl_afternoon_game_3
+      - nfl_afternoon_game_4
+      - nfl_sunday_game_1
+      - nfl_sunday_game_2
+      - nfl_sunday_game_3
+      - nfl_sunday_game_4
+      - nfl_sunday_game_5
+      - nfl_sunday_game_6
+      - nfl_sunday_game_7
+      - nfl_sunday_game_8
+      - nfl_sunday_game_9
+  college_football:
+    title: College Football
+    path: cfb
+    icon: mdi:football-helmet
+    description: "Saturday channel set. Add conference channels as needed."
+    channels:
+      - fox
+      - abc
+      - nbc
+      - cbs
+      - espn
+      - espn2
+      - fs1
+  basketball:
+    title: Basketball
+    path: hoops
+    icon: mdi:basketball
+    description: "NBA/NCAA basket channels."
+    channels:
+      - espn
+      - espn2
+      - tnt
+      - abc
