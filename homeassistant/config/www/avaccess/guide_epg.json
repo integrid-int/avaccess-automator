@@ -1,5 +1,163 @@
 {
   "zip": "27403",
-  "generatedAt": "1970-01-01T00:00:00Z",
-  "channels": {}
+  "generatedAt": "2026-08-10T23:39:41.092627+00:00",
+  "channels": {
+    "7": {
+      "number": "7",
+      "now": {
+        "title": "Local News",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "9": {
+      "number": "9",
+      "now": null,
+      "next": null
+    },
+    "10": {
+      "number": "10",
+      "now": null,
+      "next": null
+    },
+    "11": {
+      "number": "11",
+      "now": null,
+      "next": null
+    },
+    "16": {
+      "number": "16",
+      "now": {
+        "title": "NBA: Lakers at Celtics",
+        "start": "2026-08-10T18:30:00+00:00",
+        "stop": "2026-08-10T20:00:00+00:00"
+      },
+      "next": {
+        "title": "NHL: Bruins at Maple Leafs",
+        "start": "2026-08-10T20:00:00+00:00",
+        "stop": "2026-08-10T22:00:00+00:00"
+      }
+    },
+    "17": {
+      "number": "17",
+      "now": {
+        "title": "SportsCenter",
+        "start": "2026-08-10T18:00:00+00:00",
+        "stop": "2026-08-10T19:00:00+00:00"
+      },
+      "next": {
+        "title": "College Football: Georgia vs Alabama",
+        "start": "2026-08-10T19:00:00+00:00",
+        "stop": "2026-08-10T21:00:00+00:00"
+      }
+    },
+    "38": {
+      "number": "38",
+      "now": null,
+      "next": null
+    },
+    "51": {
+      "number": "51",
+      "now": null,
+      "next": null
+    },
+    "52": {
+      "number": "52",
+      "now": null,
+      "next": null
+    },
+    "67": {
+      "number": "67",
+      "now": null,
+      "next": null
+    },
+    "302": {
+      "number": "302",
+      "now": null,
+      "next": null
+    },
+    "306": {
+      "number": "306",
+      "now": null,
+      "next": null
+    },
+    "308": {
+      "number": "308",
+      "now": null,
+      "next": null
+    },
+    "310": {
+      "number": "310",
+      "now": null,
+      "next": null
+    },
+    "312": {
+      "number": "312",
+      "now": null,
+      "next": null
+    },
+    "315": {
+      "number": "315",
+      "now": null,
+      "next": null
+    },
+    "370": {
+      "number": "370",
+      "now": null,
+      "next": null
+    }
+  },
+  "sports": {
+    "windowHours": 12,
+    "now": [
+      {
+        "id": "sport-17-2026-08-10T18:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-10T18:00:00+00:00",
+        "end": "2026-08-10T19:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-10T18:30:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "NBA: Lakers at Celtics",
+        "start": "2026-08-10T18:30:00+00:00",
+        "end": "2026-08-10T20:00:00+00:00",
+        "sportKey": "nba"
+      }
+    ],
+    "upcoming": [
+      {
+        "id": "sport-17-2026-08-10T19:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "College Football: Georgia vs Alabama",
+        "start": "2026-08-10T19:00:00+00:00",
+        "end": "2026-08-10T21:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-16-2026-08-10T20:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "NHL: Bruins at Maple Leafs",
+        "start": "2026-08-10T20:00:00+00:00",
+        "end": "2026-08-10T22:00:00+00:00",
+        "sportKey": "nhl"
+      },
+      {
+        "id": "sport-17-2026-08-10T21:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "NFL Live",
+        "start": "2026-08-10T21:00:00+00:00",
+        "end": "2026-08-10T23:00:00+00:00",
+        "sportKey": "nfl"
+      }
+    ]
+  }
 }
