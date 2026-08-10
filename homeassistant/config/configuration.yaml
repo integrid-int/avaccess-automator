@@ -1,0 +1,18 @@
+default_config:
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+panel_custom:
+  - name: panel-health
+    sidebar_title: Panel Health
+    sidebar_icon: mdi:view-dashboard-outline
+    url_path: panel-health
+    module_url: /local/panels/panel-health.js?v=1
+    require_admin: false
+    config:
+      environment: test

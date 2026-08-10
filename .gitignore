@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+.venv/
+homeassistant/config/.storage/
+homeassistant/config/home-assistant_v2.db
+homeassistant/config/home-assistant.log*
