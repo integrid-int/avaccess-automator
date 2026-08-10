@@ -42,6 +42,13 @@ test("panel shell exposes content-first destination actions and labels", () => {
   assert.match(src, /Spectrum · ZIP 27403/);
 });
 
+test("panel shell exposes TV-first content picker actions and summary", () => {
+  const src = readPanelSource();
+  assert.match(src, /data-action="next-choose-content"/);
+  assert.match(src, /data-action="send-tv-first"/);
+  assert.match(src, /Sending to TVs:/);
+});
+
 test("panel shell renders short sports chips and Spectrum ZIP guide label", () => {
   const src = readPanelSource();
   const chipLabels = Object.fromEntries(SPORTS.map((sport) => [sport.id, sport.chipTitle]));

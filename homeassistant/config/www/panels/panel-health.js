@@ -131,7 +131,7 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "open-tvs") {
-      this._setState({ screen: "browse-tvs", entryPath: "tv", destMode: "tvs" });
+      this._setState({ screen: "browse-tvs", entryPath: "tv", destMode: "presets", selectedContent: null });
       return;
     }
     if (action === "select-game") {
@@ -154,6 +154,23 @@ class PanelHealth extends HTMLElement {
       this._setState({ destMode: value === "presets" ? "presets" : "tvs" });
       return;
     }
+    if (action === "set-tv-browse-mode") {
+      this._setState({ destMode: value === "presets" ? "presets" : "tvs" });
+      return;
+    }
+    if (action === "next-choose-content") {
+      if (this._state.selectedTvs.length > 0) {
+        this._setState({ screen: "content-picker", selectedContent: null });
+      }
+      return;
+    }
+    if (action === "set-content-mode") {
+      this._setState({
+        contentMode: value === "guide" ? "guide" : "sports",
+        selectedContent: null,
+      });
+      return;
+    }
     if (action === "apply-preset") {
       this._applyPreset(value);
       return;
@@ -168,6 +185,10 @@ class PanelHealth extends HTMLElement {
     }
     if (action === "send-destination" || action === "save-route") {
       this._sendDestination();
+      return;
+    }
+    if (action === "send-tv-first") {
+      this._sendTvFirst();
       return;
     }
     if (action === "back-browse") {
@@ -198,14 +219,25 @@ class PanelHealth extends HTMLElement {
   }
 
   _selectGame(gameId) {
-    const sport = this._activeSport();
-    const game = sport.games.find((item) => item.id === gameId);
+    const game = SPORTS.flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
+      (item) => item.game.id === gameId
+    );
     if (!game) return;
+    const selectedContent = { ...game.game, kind: "game", sportId: game.sport.id };
+    if (this._state.entryPath === "tv") {
+      this._setState({
+        screen: "content-picker",
+        selectedContent,
+        sportId: game.sport.id,
+        contentMode: "sports",
+      });
+      return;
+    }
     this._setState({
       screen: "destination",
-      selectedContent: { ...game, kind: "game", sportId: sport.id },
-      selectedTvs: this._seedDestinationTvs(game.id),
-      destMode: this._seedDestinationMode(game.id),
+      selectedContent,
+      selectedTvs: this._seedDestinationTvs(game.game.id),
+      destMode: this._seedDestinationMode(game.game.id),
       contentMode: "sports",
       entryPath: "content",
     });
@@ -214,9 +246,18 @@ class PanelHealth extends HTMLElement {
   _selectChannel(channelId) {
     const channel = GUIDE_CHANNELS.find((item) => item.id === channelId);
     if (!channel) return;
+    const selectedContent = { ...channel, kind: "channel" };
+    if (this._state.entryPath === "tv") {
+      this._setState({
+        screen: "content-picker",
+        selectedContent,
+        contentMode: "guide",
+      });
+      return;
+    }
     this._setState({
       screen: "destination",
-      selectedContent: { ...channel, kind: "channel" },
+      selectedContent,
       selectedTvs: this._seedDestinationTvs(channel.id),
       destMode: this._seedDestinationMode(channel.id),
       contentMode: "guide",
@@ -258,6 +299,15 @@ class PanelHealth extends HTMLElement {
     });
     this._saveAssignments(assignments);
     this._backToBrowse();
+  }
+
+  _sendTvFirst() {
+    if (!this._state.selectedContent || this._state.selectedTvs.length === 0) return;
+    this._sendDestination();
+  }
+
+  _selectedTvsLabel() {
+    return this._state.selectedTvs.length ? this._state.selectedTvs.join(", ") : "None selected";
   }
 
   _renderChipRow() {
@@ -350,14 +400,32 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderTvsScreen() {
+    const selectedCount = this._state.selectedTvs.length;
     return `
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse TVs</p>
           <h2>Select TVs first</h2>
-          <button type="button" class="link-button" data-action="open-content-picker">Pick content next</button>
         </div>
-        ${this._renderTvGrid()}
+        <div class="mode-toggle" role="group" aria-label="TV browse mode">
+          <button type="button" class="${this._state.destMode === "presets" ? "is-active" : ""}" data-action="set-tv-browse-mode" data-value="presets">
+            Presets
+          </button>
+          <button type="button" class="${this._state.destMode === "tvs" ? "is-active" : ""}" data-action="set-tv-browse-mode" data-value="tvs">
+            Pick TVs
+          </button>
+        </div>
+        <div class="destination-body">
+          ${this._state.destMode === "presets" ? this._renderPresetChoices() : this._renderTvGrid()}
+        </div>
+        <button
+          type="button"
+          class="primary-action"
+          data-action="next-choose-content"
+          ${selectedCount === 0 ? "disabled aria-disabled=\"true\"" : ""}
+        >
+          Next: Choose content
+        </button>
       </section>
     `;
   }
@@ -404,18 +472,94 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderContentPickerScreen() {
+    const tvFirst = this._state.entryPath === "tv";
+    const sendDisabled = !this._state.selectedContent || this._state.selectedTvs.length === 0;
     return `
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Content picker</p>
           <h2>Choose the next content source</h2>
+          ${
+            tvFirst
+              ? '<button type="button" class="link-button" data-action="back-browse">Back to TVs</button>'
+              : '<button type="button" class="link-button" data-action="open-sport">Back to sports</button>'
+          }
         </div>
-        <div class="stub-grid">
-          <button type="button" data-action="open-sport" class="stub-card">Browse sports content</button>
-          <button type="button" data-action="open-guide" class="stub-card">Browse guide content</button>
-          <button type="button" data-action="open-destination" class="stub-card">Return to destination</button>
+        ${tvFirst ? `<div class="locked-summary">Sending to TVs: ${escapeHtml(this._selectedTvsLabel())}</div>` : ""}
+        <div class="mode-toggle" role="group" aria-label="Content mode">
+          <button type="button" class="${this._state.contentMode === "sports" ? "is-active" : ""}" data-action="set-content-mode" data-value="sports">
+            Sports
+          </button>
+          <button type="button" class="${this._state.contentMode === "guide" ? "is-active" : ""}" data-action="set-content-mode" data-value="guide">
+            Guide
+          </button>
         </div>
+        ${this._state.contentMode === "guide" ? this._renderGuideContentOptions() : this._renderSportsContentOptions()}
+        ${
+          tvFirst
+            ? `<button
+                type="button"
+                class="primary-action"
+                data-action="send-tv-first"
+                ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
+              >
+                Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}
+              </button>`
+            : ""
+        }
       </section>
+    `;
+  }
+
+  _renderSportsContentOptions() {
+    return `
+      <div class="content-stack">
+        ${SPORTS.map(
+          (sport) => `
+            <div class="content-section">
+              <h3>${escapeHtml(sport.title)}</h3>
+              <div class="card-grid">
+                ${sport.games
+                  .map((game) => {
+                    const selected = this._state.selectedContent?.id === game.id ? "is-selected" : "";
+                    return `
+                      <button type="button" class="content-card ${selected}" data-action="select-game" data-value="${escapeAttr(game.id)}">
+                        <span class="card-kicker">${escapeHtml(sport.chipTitle ?? sport.title)} - ${escapeHtml(game.channel)} - ${escapeHtml(game.tipoff)}</span>
+                        <strong>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</strong>
+                        <span>${this._state.entryPath === "tv" ? "Select content" : "Choose destination"}</span>
+                      </button>
+                    `;
+                  })
+                  .join("")}
+              </div>
+            </div>
+          `
+        ).join("")}
+      </div>
+    `;
+  }
+
+  _renderGuideContentOptions() {
+    const channels = filterGuideChannels(GUIDE_CHANNELS, this._state.guideQuery);
+    return `
+      <label class="search">
+        <span>Search by channel, name, or category</span>
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, Sports">
+      </label>
+      <div class="list">
+        ${channels
+          .map((channel) => {
+            const selected = this._state.selectedContent?.id === channel.id ? "is-selected" : "";
+            return `
+              <button type="button" class="guide-row ${selected}" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
+                <b>${escapeHtml(channel.number)}</b>
+                <span>${escapeHtml(channel.name)}</span>
+                <em>${escapeHtml(channel.category)}</em>
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
     `;
   }
 
@@ -431,7 +575,7 @@ class PanelHealth extends HTMLElement {
             const assignment = getAssignmentForTv(this._assignments, tv);
             const selected = this._state.selectedTvs.includes(tv) ? "is-selected" : "";
             const assigned = assignment ? "is-assigned" : "";
-            const label = assignment ? `${tv}: ${assignment.label}` : `TV ${tv}`;
+            const label = assignment ? `TV ${tv}: ${assignment.label}` : `TV ${tv}`;
             return `
               <button
                 type="button"
@@ -440,7 +584,8 @@ class PanelHealth extends HTMLElement {
                 data-value="${tv}"
                 title="${escapeAttr(label)}"
               >
-                ${tv}
+                <span class="tv-number">${tv}</span>
+                ${assignment ? `<span class="tv-occupancy">${escapeHtml(assignment.label)}</span>` : ""}
               </button>
             `;
           })
@@ -615,6 +760,12 @@ class PanelHealth extends HTMLElement {
           margin: 6px 0;
         }
 
+        .content-card.is-selected,
+        .guide-row.is-selected {
+          border-color: var(--cyan);
+          box-shadow: inset 0 0 0 2px var(--cyan);
+        }
+
         .card-kicker {
           color: var(--cyan);
           font-size: 0.78rem;
@@ -645,6 +796,15 @@ class PanelHealth extends HTMLElement {
         .list {
           display: grid;
           gap: 8px;
+        }
+
+        .content-stack {
+          display: grid;
+          gap: 16px;
+        }
+
+        .content-section h3 {
+          margin: 0 0 8px;
         }
 
         .guide-row {
@@ -685,6 +845,16 @@ class PanelHealth extends HTMLElement {
           color: white;
         }
 
+        .locked-summary {
+          background: #eef2f7;
+          border: 1px solid #d1d5db;
+          border-radius: var(--radius-md);
+          color: var(--graphite);
+          font-weight: 900;
+          margin-bottom: 12px;
+          padding: 12px;
+        }
+
         .preset-chip b,
         .preset-chip span {
           display: block;
@@ -703,13 +873,20 @@ class PanelHealth extends HTMLElement {
         }
 
         .tv {
+          align-items: center;
           aspect-ratio: 1;
           background: #eef2f7;
           border: 0;
           border-radius: var(--radius-sm);
           color: var(--text);
           cursor: pointer;
+          display: flex;
+          flex-direction: column;
           font-weight: 900;
+          justify-content: center;
+          min-width: 0;
+          overflow: hidden;
+          padding: 4px;
         }
 
         .tv.is-assigned:not(.is-selected) {
@@ -721,6 +898,20 @@ class PanelHealth extends HTMLElement {
           color: white;
         }
 
+        .tv-occupancy {
+          color: #374151;
+          font-size: 0.58rem;
+          font-weight: 800;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .tv.is-selected .tv-occupancy {
+          color: rgba(255, 255, 255, 0.82);
+        }
+
         .primary-action {
           background: var(--cyan);
           border-radius: var(--radius-md);
@@ -728,6 +919,11 @@ class PanelHealth extends HTMLElement {
           font-weight: 900;
           padding: 14px 18px;
           width: 100%;
+        }
+
+        .primary-action[disabled] {
+          background: #9ca3af;
+          cursor: not-allowed;
         }
 
         @media (max-width: 760px) {
