@@ -66,6 +66,12 @@ test("panel shell renders short sports chips and Spectrum ZIP guide label", () =
   assert.match(src, /Spectrum · ZIP \$\{escapeHtml\(SPECTRUM_ZIP\)\} · Xumo/);
 });
 
+test("panel shell tracks selectedPresetId for TV-first preset send", () => {
+  const src = readPanelSource();
+  assert.match(src, /selectedPresetId/);
+  assert.match(src, /resolveSendPresetId/);
+});
+
 test("panel shell keeps radii at token scale and avoids amber assignment accents", () => {
   const src = readPanelSource();
   const radiusValues = [...src.matchAll(/border-radius:\s*([^;]+);/g)].map((match) => match[1]);

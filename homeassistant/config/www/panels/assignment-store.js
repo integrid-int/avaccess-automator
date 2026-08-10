@@ -28,6 +28,17 @@ export function applyAssignment(assignments, route) {
   return next;
 }
 
+export function resolveSendPresetId({ destMode, selectedPresetId, selectedTvs, presets }) {
+  if (destMode !== "presets") return null;
+  if (selectedPresetId) return selectedPresetId;
+  const sorted = [...selectedTvs].sort((a, b) => a - b);
+  return presets.find((preset) => sameTvs(preset.tvs, sorted))?.id ?? null;
+}
+
+function sameTvs(left, right) {
+  return left.length === right.length && left.every((tv, index) => tv === right[index]);
+}
+
 export function getAssignmentForTv(assignments, tv) {
   for (const [routeId, assignment] of Object.entries(assignments)) {
     if (assignment.tvs.includes(tv)) return { routeId, ...assignment };

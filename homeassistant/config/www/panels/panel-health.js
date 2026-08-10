@@ -3,6 +3,7 @@ import {
   createEmptyAssignments,
   getAssignmentForTv,
   loadAssignments,
+  resolveSendPresetId,
   saveAssignments,
 } from "./assignment-store.js";
 import {
@@ -22,6 +23,7 @@ const DEFAULT_STATE = {
   guideQuery: "",
   selectedContent: null,
   selectedTvs: [],
+  selectedPresetId: null,
   destMode: "presets",
   contentMode: "sports",
   entryPath: "content",
@@ -131,7 +133,13 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "open-tvs") {
-      this._setState({ screen: "browse-tvs", entryPath: "tv", destMode: "presets", selectedContent: null });
+      this._setState({
+        screen: "browse-tvs",
+        entryPath: "tv",
+        destMode: "presets",
+        selectedContent: null,
+        selectedPresetId: null,
+      });
       return;
     }
     if (action === "select-game") {
@@ -151,11 +159,19 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "set-dest-mode") {
-      this._setState({ destMode: value === "presets" ? "presets" : "tvs" });
+      const destMode = value === "presets" ? "presets" : "tvs";
+      this._setState({
+        destMode,
+        selectedPresetId: destMode === "presets" ? this._state.selectedPresetId : null,
+      });
       return;
     }
     if (action === "set-tv-browse-mode") {
-      this._setState({ destMode: value === "presets" ? "presets" : "tvs" });
+      const destMode = value === "presets" ? "presets" : "tvs";
+      this._setState({
+        destMode,
+        selectedPresetId: destMode === "presets" ? this._state.selectedPresetId : null,
+      });
       return;
     }
     if (action === "next-choose-content") {
@@ -180,7 +196,7 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "clear-tvs") {
-      this._setState({ selectedTvs: [] });
+      this._setState({ selectedTvs: [], selectedPresetId: null });
       return;
     }
     if (action === "send-destination" || action === "save-route") {
@@ -218,6 +234,10 @@ class PanelHealth extends HTMLElement {
     return assignment.presetId ? "presets" : "tvs";
   }
 
+  _seedDestinationPresetId(routeId) {
+    return this._assignments[routeId]?.presetId ?? null;
+  }
+
   _selectGame(gameId) {
     const game = SPORTS.flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
       (item) => item.game.id === gameId
@@ -237,6 +257,7 @@ class PanelHealth extends HTMLElement {
       screen: "destination",
       selectedContent,
       selectedTvs: this._seedDestinationTvs(game.game.id),
+      selectedPresetId: this._seedDestinationPresetId(game.game.id),
       destMode: this._seedDestinationMode(game.game.id),
       contentMode: "sports",
       entryPath: "content",
@@ -259,6 +280,7 @@ class PanelHealth extends HTMLElement {
       screen: "destination",
       selectedContent,
       selectedTvs: this._seedDestinationTvs(channel.id),
+      selectedPresetId: this._seedDestinationPresetId(channel.id),
       destMode: this._seedDestinationMode(channel.id),
       contentMode: "guide",
       entryPath: "content",
@@ -268,7 +290,7 @@ class PanelHealth extends HTMLElement {
   _applyPreset(presetId) {
     const preset = PRESETS.find((item) => item.id === presetId);
     if (!preset) return;
-    this._setState({ selectedTvs: [...preset.tvs], destMode: "presets" });
+    this._setState({ selectedTvs: [...preset.tvs], selectedPresetId: presetId, destMode: "presets" });
   }
 
   _toggleTv(tv) {
@@ -276,7 +298,11 @@ class PanelHealth extends HTMLElement {
     const selected = new Set(this._state.selectedTvs);
     if (selected.has(tv)) selected.delete(tv);
     else selected.add(tv);
-    this._setState({ selectedTvs: Array.from(selected).sort((a, b) => a - b), destMode: "tvs" });
+    this._setState({
+      selectedTvs: Array.from(selected).sort((a, b) => a - b),
+      selectedPresetId: null,
+      destMode: "tvs",
+    });
   }
 
   _backToBrowse() {
@@ -294,7 +320,12 @@ class PanelHealth extends HTMLElement {
       sportId: content.sportId,
       label: this._selectedContentLabel(),
       channel: content.channel ?? content.number,
-      presetId: this._state.destMode === "presets" ? PRESETS.find((preset) => sameTvs(preset.tvs, selectedTvs))?.id : null,
+      presetId: resolveSendPresetId({
+        destMode: this._state.destMode,
+        selectedPresetId: this._state.selectedPresetId,
+        selectedTvs,
+        presets: PRESETS,
+      }),
       tvs: selectedTvs,
     });
     this._saveAssignments(assignments);
@@ -954,10 +985,6 @@ class PanelHealth extends HTMLElement {
       </div>
     `;
   }
-}
-
-function sameTvs(left, right) {
-  return left.length === right.length && left.every((tv, index) => tv === right[index]);
 }
 
 function escapeHtml(value) {
