@@ -431,21 +431,46 @@ def apply_slots(
     picked_numbers: list[str],
     fallback_numbers: list[str],
     label_prefix: str,
+    picked_labels: list[str] | None = None,
+    fallback_labels: list[str] | None = None,
 ) -> list[tuple[str, str, str]]:
     changes: list[tuple[str, str, str]] = []
     values = picked_numbers + fallback_numbers
     values = values[:count]
+    label_values = (picked_labels or []) + (fallback_labels or [])
+    label_values = label_values[:count]
     while len(values) < count:
         values.append("")
+    while len(label_values) < count:
+        label_values.append("")
     for idx in range(1, count + 1):
         key = f"{prefix}_{idx}"
         entry = ensure_channel_entry(channels_cfg, key, f"{label_prefix} {idx}")
         old = str(entry.get("number", ""))
         new = str(values[idx - 1])
         entry["number"] = new
+        new_label = str(label_values[idx - 1]).strip()
+        if new_label:
+            entry["label"] = new_label
         if old != new:
             changes.append((key, old, new))
     return changes
+
+
+def _compact_matchup_text(title: str, subtitle: str) -> str:
+    cand = subtitle.strip() or title.strip()
+    if not cand:
+        return "NFL Game"
+    cand = re.sub(r"\s+", " ", cand)
+    if len(cand) > 34:
+        cand = cand[:31].rstrip() + "..."
+    return cand
+
+
+def candidate_label(candidate: Candidate, slot_prefix: str, slot_index: int) -> str:
+    class_short = "LCL" if candidate.channel_class == "local" else "ST"
+    game = _compact_matchup_text(candidate.title, candidate.subtitle)
+    return f"{slot_prefix}{slot_index} {game} ({class_short} {candidate.channel_number})"
 
 
 def build_class_priority(sync_cfg: dict[str, Any]) -> dict[str, int]:
@@ -527,6 +552,10 @@ def main() -> None:
 
     fallback_afternoon = [str(v) for v in sync_cfg.get("fallback_afternoon_numbers", [])]
     fallback_sunday = [str(v) for v in sync_cfg.get("fallback_sunday_numbers", [])]
+    fallback_afternoon_labels = [f"NFL A{i} (Fallback {n})" for i, n in enumerate(fallback_afternoon, 1)]
+    fallback_sunday_labels = [f"NFL S{i} (Fallback {n})" for i, n in enumerate(fallback_sunday, 1)]
+    afternoon_labels = [candidate_label(c, "A", i) for i, c in enumerate(afternoon_selected, 1)]
+    sunday_labels = [candidate_label(c, "S", i) for i, c in enumerate(sunday_selected, 1)]
 
     changes: list[tuple[str, str, str]] = []
     changes.extend(
@@ -537,6 +566,8 @@ def main() -> None:
             picked_numbers=afternoon_numbers,
             fallback_numbers=fallback_afternoon,
             label_prefix="NFL A",
+            picked_labels=afternoon_labels,
+            fallback_labels=fallback_afternoon_labels,
         )
     )
     changes.extend(
@@ -547,6 +578,8 @@ def main() -> None:
             picked_numbers=sunday_numbers,
             fallback_numbers=fallback_sunday,
             label_prefix="NFL S",
+            picked_labels=sunday_labels,
+            fallback_labels=fallback_sunday_labels,
         )
     )
 

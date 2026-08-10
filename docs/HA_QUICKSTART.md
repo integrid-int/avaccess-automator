@@ -26,6 +26,7 @@ Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
 - `config/channels.yaml` → program→encoder mapping, IR entities, favorite channels, and favorite macros
 - `config/schedule_sync.yaml` (optional) → weekly auto-update + blackout-aware channel selection (ZIP 27403)
+- `config/channels.yaml` `sports_pages:` section → defines NFL/NCAA/NBA tabs in dashboard
 
 ## 3) Generate HA package + dashboard YAML
 
@@ -60,8 +61,10 @@ Use one of these approaches:
 After restart you should see:
 - scripts `script.avaccess_preset_*`
 - scripts `script.avaccess_tune_*`
+- scripts `script.avaccess_route_*`
 - `input_select.avaccess_program`
 - `input_select.avaccess_channel`
+- `input_text.avaccess_target_rxs`
 
 ## 7) iPad operation flow
 
@@ -74,8 +77,15 @@ Or use one-tap favorites:
 - **NFL Afternoon Games** (Preset 2 + 4 program tunes)
 - **All NFL Sunday Games** (Preset 3 + 9 program tunes)
 
+Phase 2 routing flow (one/many TVs):
+1. Pick channel from sport page or control page
+2. Pick program (`input_select.avaccess_program`)
+3. Set target TVs in `input_text.avaccess_target_rxs` (example: `RX-01,RX-02,RX-08`)
+4. Tap **Route Program -> TVs**
+
 For automated weekly NFL channel updates, see:
 - `docs/WEEKLY_SCHEDULE_SYNC.md`
+- `docs/PHASE2_SPORTS_PAGES.md`
 
 Optional maintenance shell commands (used by the pretty Settings tab buttons):
 

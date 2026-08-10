@@ -30,15 +30,27 @@ channels:
   espn:
     number: "206"
     label: "ESPN"
+  espn2:
+    number: "207"
+    label: "ESPN2"
+  fs1:
+    number: "400"
+    label: "FS1"
   tnt:
     number: "245"
     label: "TNT"
   fox:
     number: "4"
-    label: "FOX"
+    label: "WGHP FOX (Local)"
   cbs:
     number: "2"
-    label: "CBS"
+    label: "WFMY CBS (Local)"
+  nbc:
+    number: "12"
+    label: "WXII NBC (Local)"
+  abc:
+    number: "45"
+    label: "WXLV ABC (Local)"
   # These NFL slot numbers can be auto-updated weekly by schedule sync.
   nfl_afternoon_game_1:
     number: "705"
@@ -78,7 +90,7 @@ channels:
     label: "NFL S8"
   nfl_sunday_game_9:
     number: "713"
-    label: "NFL S9"
+    label: "S9 NFL Slot"
 
 # Optional per-channel tail command depending on remote behavior.
 # Common values: ["ok"] or [].
@@ -90,7 +102,7 @@ suffix_commands: ["ok"]
 favorite_preset_delay: "00:00:02"
 favorites:
   fox:
-    label: "FOX"
+    label: "FOX Local"
     preset: 1_all
     tunes:
       - { program: program_a, channel: fox }
@@ -117,3 +129,50 @@ favorites:
       - { program: program_g, channel: nfl_sunday_game_7 }
       - { program: program_h, channel: nfl_sunday_game_8 }
       - { program: program_i, channel: nfl_sunday_game_9 }
+
+# Phase 2: Sports pages (channels can be auto-relabeled daily)
+sports_pages:
+  nfl:
+    title: NFL
+    path: nfl
+    icon: mdi:football
+    description: "Game-day channels and Sunday Ticket slots. Use Route Program -> TVs for one or many displays."
+    channels:
+      - fox
+      - cbs
+      - nfl_afternoon_game_1
+      - nfl_afternoon_game_2
+      - nfl_afternoon_game_3
+      - nfl_afternoon_game_4
+      - nfl_sunday_game_1
+      - nfl_sunday_game_2
+      - nfl_sunday_game_3
+      - nfl_sunday_game_4
+      - nfl_sunday_game_5
+      - nfl_sunday_game_6
+      - nfl_sunday_game_7
+      - nfl_sunday_game_8
+      - nfl_sunday_game_9
+  college_football:
+    title: College Football
+    path: cfb
+    icon: mdi:football-helmet
+    description: "Saturday channel set. Add conference channels as needed."
+    channels:
+      - fox
+      - abc
+      - nbc
+      - cbs
+      - espn
+      - espn2
+      - fs1
+  basketball:
+    title: Basketball
+    path: hoops
+    icon: mdi:basketball
+    description: "NBA/NCAA basket channels."
+    channels:
+      - espn
+      - espn2
+      - tnt
+      - abc

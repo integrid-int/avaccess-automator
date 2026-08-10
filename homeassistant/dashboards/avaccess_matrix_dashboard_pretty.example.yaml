@@ -23,6 +23,8 @@ views:
             name: Active Program
           - entity: input_select.avaccess_channel
             name: Active Channel
+          - entity: input_text.avaccess_target_rxs
+            name: Target TVs (RX IDs)
 
       - type: grid
         title: Favorites
@@ -224,6 +226,177 @@ views:
         content: >
           _Tip: Keep favorites at the top for operators. Use the full channel matrix only when
           customizing individual games._
+
+      - type: entities
+        title: Destination Routing
+        entities:
+          - entity: input_select.avaccess_program
+            name: Program to Route
+          - entity: input_text.avaccess_target_rxs
+            name: Target TVs (comma-separated)
+      - type: grid
+        title: Route Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Tune Selected Program
+            icon: mdi:remote-tv
+            tap_action:
+              action: call-service
+              service: script.avaccess_tune_selected_channel
+          - type: button
+            name: Route Program -> TVs
+            icon: mdi:television-multiple
+            tap_action:
+              action: call-service
+              service: script.avaccess_route_selected_program_to_tvs
+
+  - title: NFL
+    path: nfl
+    icon: mdi:football
+    badges: []
+    cards:
+      - type: markdown
+        content: >
+          ## NFL
+
+          Sunday lineup page. Channel slot labels can be refreshed daily/weekly from guide sync.
+      - type: entities
+        title: Selection
+        entities:
+          - input_select.avaccess_program
+          - input_select.avaccess_channel
+          - input_text.avaccess_target_rxs
+      - type: grid
+        title: NFL Channels
+        columns: 3
+        square: false
+        cards:
+          - type: button
+            name: WGHP FOX (Local)
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_fox }
+          - type: button
+            name: WFMY CBS (Local)
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_cbs }
+          - type: button
+            name: NFL A1
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_1 }
+          - type: button
+            name: NFL A2
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_2 }
+          - type: button
+            name: NFL A3
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_3 }
+          - type: button
+            name: NFL A4
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_afternoon_game_4 }
+          - type: button
+            name: NFL S1
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_1 }
+          - type: button
+            name: NFL S2
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_2 }
+          - type: button
+            name: NFL S3
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_3 }
+          - type: button
+            name: NFL S4
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_4 }
+          - type: button
+            name: NFL S5
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_5 }
+          - type: button
+            name: NFL S6
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_6 }
+          - type: button
+            name: NFL S7
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_7 }
+          - type: button
+            name: NFL S8
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_8 }
+          - type: button
+            name: NFL S9
+            icon: mdi:football
+            tap_action: { action: call-service, service: script.avaccess_tune_nfl_sunday_game_9 }
+      - type: grid
+        title: Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Tune Selected Program
+            icon: mdi:remote-tv
+            tap_action:
+              action: call-service
+              service: script.avaccess_tune_selected_channel
+          - type: button
+            name: Route Program -> TVs
+            icon: mdi:television-multiple
+            tap_action:
+              action: call-service
+              service: script.avaccess_route_selected_program_to_tvs
+
+  - title: Basketball
+    path: hoops
+    icon: mdi:basketball
+    badges: []
+    cards:
+      - type: markdown
+        content: >
+          ## Basketball
+
+          Quick page for national basketball channels.
+      - type: entities
+        title: Selection
+        entities:
+          - input_select.avaccess_program
+          - input_select.avaccess_channel
+          - input_text.avaccess_target_rxs
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          - type: button
+            name: ESPN
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_espn }
+          - type: button
+            name: ESPN2
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_espn2 }
+          - type: button
+            name: TNT
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_tnt }
+          - type: button
+            name: FS1
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_fs1 }
+          - type: button
+            name: ABC
+            icon: mdi:television-play
+            tap_action: { action: call-service, service: script.avaccess_tune_abc }
+      - type: button
+        name: Route Program -> TVs
+        icon: mdi:television-multiple
+        tap_action:
+          action: call-service
+          service: script.avaccess_route_selected_program_to_tvs
 
   - title: Guide
     path: guide

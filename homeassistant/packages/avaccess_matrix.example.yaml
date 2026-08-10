@@ -20,9 +20,13 @@ input_select:
     name: AVAccess Channel
     options:
     - espn
+    - espn2
+    - fs1
     - tnt
     - fox
     - cbs
+    - nbc
+    - abc
     - nfl_afternoon_game_1
     - nfl_afternoon_game_2
     - nfl_afternoon_game_3
@@ -38,6 +42,12 @@ input_select:
     - nfl_sunday_game_9
     initial: espn
     icon: mdi:television-guide
+input_text:
+  avaccess_target_rxs:
+    name: AVAccess Target TVs
+    max: 255
+    initial: RX-01,RX-02
+    icon: mdi:television-multiple
 shell_command:
   avaccess_preset_1_all: python3 /config/avaccess/scripts/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
     --profile numeric_v1 --preset 1_all
@@ -45,6 +55,8 @@ shell_command:
     --profile numeric_v1 --preset 2_four_programs
   avaccess_preset_3_nine_programs: python3 /config/avaccess/scripts/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
     --profile numeric_v1 --preset 3_nine_programs
+  avaccess_route_targets: python3 /config/avaccess/scripts/route_targets.py --inventory /config/avaccess/config/inventory.yaml
+    --encoder "{{ encoder }}" --targets "{{ targets }}"
 script:
   avaccess_preset_1_all:
     alias: AVAccess Preset 1_all
@@ -84,7 +96,7 @@ script:
         description: Channel key from channels map
         example: espn
     variables:
-      program_to_encoder:
+      program_to_encoder: &id001
         program_a: ENC-01
         program_b: ENC-02
         program_c: ENC-03
@@ -108,15 +120,27 @@ script:
         espn:
           number: '206'
           label: ESPN
+        espn2:
+          number: '207'
+          label: ESPN2
+        fs1:
+          number: '400'
+          label: FS1
         tnt:
           number: '245'
           label: TNT
         fox:
           number: '4'
-          label: FOX
+          label: WGHP FOX (Local)
         cbs:
           number: '2'
-          label: CBS
+          label: WFMY CBS (Local)
+        nbc:
+          number: '12'
+          label: WXII NBC (Local)
+        abc:
+          number: '45'
+          label: WXLV ABC (Local)
         nfl_afternoon_game_1:
           number: '705'
           label: NFL A1
@@ -155,7 +179,7 @@ script:
           label: NFL S8
         nfl_sunday_game_9:
           number: '713'
-          label: NFL S9
+          label: S9 NFL Slot
       suffix_commands:
       - ok
       program_key: '{{ (program | default(states(''input_select.avaccess_program''), true)) | lower }}'
@@ -188,6 +212,40 @@ script:
     - service: script.avaccess_tune_channel
       data:
         channel: '{{ states(''input_select.avaccess_channel'') }}'
+  avaccess_route_program_to_tvs:
+    alias: AVAccess route program to TVs
+    mode: single
+    fields:
+      program:
+        description: Program key (optional; defaults to selected program)
+        example: program_a
+      targets:
+        description: Receiver IDs/hostnames list (optional; defaults to input_text)
+        example: RX-01,RX-02,RX-03
+    variables:
+      program_to_encoder: *id001
+      program_key: '{{ (program | default(states(''input_select.avaccess_program''), true)) | lower }}'
+      selected_encoder: '{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}'
+      target_list: '{{ targets | default(states(''input_text.avaccess_target_rxs''), true) }}'
+    sequence:
+    - choose:
+      - conditions: '{{ selected_encoder is not none and (target_list | string | trim) != '''' }}'
+        sequence:
+        - service: shell_command.avaccess_route_targets
+          data:
+            encoder: '{{ selected_encoder }}'
+            targets: '{{ target_list }}'
+      default:
+      - service: system_log.write
+        data:
+          level: warning
+          message: AVAccess route failed; check selected program and target TVs. program={{ program_key }} targets={{ target_list
+            }}
+  avaccess_route_selected_program_to_tvs:
+    alias: AVAccess route selected program to TVs
+    mode: single
+    sequence:
+    - service: script.avaccess_route_program_to_tvs
   avaccess_tune_espn:
     alias: AVAccess tune ESPN
     mode: single
@@ -196,6 +254,24 @@ script:
       data:
         entity_id: input_select.avaccess_channel
         option: espn
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_espn2:
+    alias: AVAccess tune ESPN2
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: espn2
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_fs1:
+    alias: AVAccess tune FS1
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: fs1
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_tnt:
     alias: AVAccess tune TNT
@@ -207,7 +283,7 @@ script:
         option: tnt
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_fox:
-    alias: AVAccess tune FOX
+    alias: AVAccess tune WGHP FOX (Local)
     mode: single
     sequence:
     - service: input_select.select_option
@@ -216,13 +292,31 @@ script:
         option: fox
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_cbs:
-    alias: AVAccess tune CBS
+    alias: AVAccess tune WFMY CBS (Local)
     mode: single
     sequence:
     - service: input_select.select_option
       data:
         entity_id: input_select.avaccess_channel
         option: cbs
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_nbc:
+    alias: AVAccess tune WXII NBC (Local)
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: nbc
+    - service: script.avaccess_tune_selected_channel
+  avaccess_tune_abc:
+    alias: AVAccess tune WXLV ABC (Local)
+    mode: single
+    sequence:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.avaccess_channel
+        option: abc
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_nfl_afternoon_game_1:
     alias: AVAccess tune NFL A1
@@ -333,7 +427,7 @@ script:
         option: nfl_sunday_game_8
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_nfl_sunday_game_9:
-    alias: AVAccess tune NFL S9
+    alias: AVAccess tune S9 NFL Slot
     mode: single
     sequence:
     - service: input_select.select_option
@@ -342,7 +436,7 @@ script:
         option: nfl_sunday_game_9
     - service: script.avaccess_tune_selected_channel
   avaccess_favorite_fox:
-    alias: AVAccess Favorite FOX
+    alias: AVAccess Favorite FOX Local
     mode: single
     sequence:
     - service: script.avaccess_preset_1_all

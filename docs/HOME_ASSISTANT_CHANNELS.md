@@ -71,3 +71,16 @@ This is ideal for weekly game-day operation: update only the NFL channel numbers
 
 For blackout-aware weekly automation (local channel preferred over Sunday Ticket when both carry the same game), see:
 - `docs/WEEKLY_SCHEDULE_SYNC.md`
+
+## 7) Phase 2: route to one or many TVs
+
+Generated package includes:
+- `input_text.avaccess_target_rxs` (comma-separated receiver IDs, e.g. `RX-01,RX-02,RX-10`)
+- `script.avaccess_route_selected_program_to_tvs`
+
+Flow:
+1. Select/tune the source program  
+2. Enter target TVs  
+3. Run route script to push that program to those TVs only
+
+This enables sports-page workflows where you can send the same game to a full preset or to ad-hoc subsets of TVs.

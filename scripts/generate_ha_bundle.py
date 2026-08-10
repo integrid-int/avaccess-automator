@@ -105,6 +105,11 @@ def build_package(
             "sequence": [{"service": f"shell_command.{shell_name}"}],
         }
 
+    shell_command["avaccess_route_targets"] = (
+        "python3 /config/avaccess/scripts/route_targets.py "
+        f"--inventory {inventory_ha_path} --encoder \"{{{{ encoder }}}}\" --targets \"{{{{ targets }}}}\""
+    )
+
     scripts["avaccess_set_program"] = {
         "alias": "AVAccess select program",
         "mode": "single",
@@ -192,6 +197,63 @@ def build_package(
         ],
     }
 
+    scripts["avaccess_route_program_to_tvs"] = {
+        "alias": "AVAccess route program to TVs",
+        "mode": "single",
+        "fields": {
+            "program": {
+                "description": "Program key (optional; defaults to selected program)",
+                "example": program_keys[0],
+            },
+            "targets": {
+                "description": "Receiver IDs/hostnames list (optional; defaults to input_text)",
+                "example": "RX-01,RX-02,RX-03",
+            },
+        },
+        "variables": {
+            "program_to_encoder": program_to_encoder,
+            "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
+            "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
+            "target_list": "{{ targets | default(states('input_text.avaccess_target_rxs'), true) }}",
+        },
+        "sequence": [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ selected_encoder is not none and (target_list | string | trim) != '' }}",
+                        "sequence": [
+                            {
+                                "service": "shell_command.avaccess_route_targets",
+                                "data": {
+                                    "encoder": "{{ selected_encoder }}",
+                                    "targets": "{{ target_list }}",
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess route failed; check selected program and target TVs. "
+                                "program={{ program_key }} targets={{ target_list }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    scripts["avaccess_route_selected_program_to_tvs"] = {
+        "alias": "AVAccess route selected program to TVs",
+        "mode": "single",
+        "sequence": [{"service": "script.avaccess_route_program_to_tvs"}],
+    }
+
     for channel_key, channel_info in channels.items():
         ch_slug = slug(channel_key)
         label = channel_info.get("label", channel_key)
@@ -277,10 +339,79 @@ def build_package(
                 "icon": "mdi:television-guide",
             },
         },
+        "input_text": {
+            "avaccess_target_rxs": {
+                "name": "AVAccess Target TVs",
+                "max": 255,
+                "initial": "RX-01,RX-02",
+                "icon": "mdi:television-multiple",
+            }
+        },
         "shell_command": shell_command,
         "script": scripts,
     }
     return package
+
+
+def _build_channel_buttons(
+    channels: dict[str, Any], channel_keys: list[str] | None = None, icon: str = "mdi:television-play"
+) -> list[dict[str, Any]]:
+    keys = channel_keys or list(channels.keys())
+    out: list[dict[str, Any]] = []
+    for channel_key in keys:
+        if channel_key not in channels:
+            continue
+        info = channels[channel_key]
+        ch_slug = slug(channel_key)
+        out.append(
+            {
+                "type": "button",
+                "name": info.get("label", channel_key),
+                "icon": icon,
+                "tap_action": {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
+            }
+        )
+    return out
+
+
+def _destination_cards() -> list[dict[str, Any]]:
+    return [
+        {
+            "type": "entities",
+            "title": "Destination",
+            "entities": [
+                "input_select.avaccess_program",
+                "input_select.avaccess_channel",
+                "input_text.avaccess_target_rxs",
+            ],
+        },
+        {
+            "type": "grid",
+            "title": "Route Actions",
+            "columns": 2,
+            "square": False,
+            "cards": [
+                {
+                    "type": "button",
+                    "name": "Tune Selected Program",
+                    "icon": "mdi:remote-tv",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": "script.avaccess_tune_selected_channel",
+                    },
+                },
+                {
+                    "type": "button",
+                    "name": "Route Program -> TVs",
+                    "icon": "mdi:television-multiple",
+                    "tap_action": {
+                        "action": "call-service",
+                        "service": "script.avaccess_route_selected_program_to_tvs",
+                    },
+                },
+            ],
+        },
+    ]
 
 
 def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> dict[str, Any]:
@@ -314,17 +445,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
             }
         )
 
-    channel_buttons = []
-    for channel_key, info in channels.items():
-        ch_slug = slug(channel_key)
-        channel_buttons.append(
-            {
-                "type": "button",
-                "name": info.get("label", channel_key),
-                "icon": "mdi:television-play",
-                "tap_action": {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
-            }
-        )
+    channel_buttons = _build_channel_buttons(channels)
 
     favorites = channels_cfg.get("favorites", {})
     favorite_buttons = []
@@ -352,7 +473,11 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
         {
             "type": "entities",
             "title": "Active Selection",
-            "entities": ["input_select.avaccess_program", "input_select.avaccess_channel"],
+            "entities": [
+                "input_select.avaccess_program",
+                "input_select.avaccess_channel",
+                "input_text.avaccess_target_rxs",
+            ],
         }
     ]
     if favorite_buttons:
@@ -370,20 +495,68 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
             {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
             {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
             {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
+            *_destination_cards(),
         ]
     )
 
-    dashboard = {
-        "title": "AVAccess Matrix",
-        "views": [
-            {
-                "title": "AV Control",
-                "path": "av-control",
-                "icon": "mdi:video-input-component",
-                "cards": cards,
-            }
-        ],
-    }
+    views: list[dict[str, Any]] = [
+        {
+            "title": "AV Control",
+            "path": "av-control",
+            "icon": "mdi:video-input-component",
+            "cards": cards,
+        }
+    ]
+
+    sports_pages = channels_cfg.get("sports_pages", {})
+    if isinstance(sports_pages, dict):
+        for page_key, page_cfg in sports_pages.items():
+            if not isinstance(page_cfg, dict):
+                continue
+            page_title = str(page_cfg.get("title", page_key.upper()))
+            page_path = str(page_cfg.get("path", slug(page_key)))
+            page_icon = str(page_cfg.get("icon", "mdi:basketball"))
+            page_desc = str(page_cfg.get("description", ""))
+            page_channels = page_cfg.get("channels", [])
+            if not isinstance(page_channels, list) or not page_channels:
+                continue
+            buttons = _build_channel_buttons(channels, [str(c) for c in page_channels], icon="mdi:television-play")
+            if not buttons:
+                continue
+            page_cards: list[dict[str, Any]] = []
+            if page_desc:
+                page_cards.append({"type": "markdown", "content": f"## {page_title}\n\n{page_desc}"})
+            page_cards.append(
+                {
+                    "type": "entities",
+                    "title": "Selection",
+                    "entities": [
+                        "input_select.avaccess_program",
+                        "input_select.avaccess_channel",
+                        "input_text.avaccess_target_rxs",
+                    ],
+                }
+            )
+            page_cards.append(
+                {
+                    "type": "grid",
+                    "title": f"{page_title} Channels",
+                    "columns": 3,
+                    "square": False,
+                    "cards": buttons,
+                }
+            )
+            page_cards.extend(_destination_cards())
+            views.append(
+                {
+                    "title": page_title,
+                    "path": page_path,
+                    "icon": page_icon,
+                    "cards": page_cards,
+                }
+            )
+
+    dashboard = {"title": "AVAccess Matrix", "views": views}
     return dashboard
 
 

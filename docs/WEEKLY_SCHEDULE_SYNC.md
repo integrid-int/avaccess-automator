@@ -5,6 +5,7 @@ This adds automatic weekly updates for:
 - `nfl_sunday_game_1..9`
 
 using XMLTV guide data and local blackout preference rules.
+It also refreshes slot labels (matchup + local/ticket class) so sport pages can reflect current games.
 
 ## Why this matters for ZIP 27403
 
