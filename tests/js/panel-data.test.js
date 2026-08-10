@@ -27,3 +27,14 @@ test("presets expose 1_all / 2_four_programs / 3_nine_programs", () => {
     ["1_all", "2_four_programs", "3_nine_programs"]
   );
 });
+
+test("presets expose programCapacity and stripeCount for groups", () => {
+  const byId = Object.fromEntries(PRESETS.map((p) => [p.id, p]));
+  assert.equal(byId["1_all"].programCapacity, 1);
+  assert.equal(byId["1_all"].stripeCount, null);
+  assert.equal(byId["2_four_programs"].programCapacity, 4);
+  assert.equal(byId["2_four_programs"].stripeCount, 4);
+  assert.equal(byId["3_nine_programs"].programCapacity, 9);
+  assert.equal(byId["3_nine_programs"].stripeCount, 9);
+  assert.equal(byId["2_four_programs"].blocks, undefined);
+});
