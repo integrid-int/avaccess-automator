@@ -172,7 +172,7 @@ cp config/guide_epg.example.yaml config/guide_epg.yaml
 # equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
 ```
 
-Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s Spectrum/Xumo number maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next.
+Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s Spectrum/Xumo number maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
 #### 2. Build / refresh `guide_epg.json`
 

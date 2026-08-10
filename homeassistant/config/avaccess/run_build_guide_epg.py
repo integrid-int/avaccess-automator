@@ -7,11 +7,13 @@ Docker compose mounts:
 
 Local Core (no mounts): resolves repo-root scripts/ and config/ via parents,
 or uses checked-in symlinks under this directory when present.
+
+Note: this directory's ``scripts`` symlink/mount points at ``scripts/avaccess``,
+so it must not remain on ``sys.path`` or ``import scripts`` loads the wrong tree.
 """
 
 from __future__ import annotations
 
-import runpy
 import sys
 import types
 from pathlib import Path
@@ -27,6 +29,12 @@ def _repo_root() -> Path | None:
     if marker.is_file():
         return candidate
     return None
+
+
+def _drop_here_from_sys_path() -> None:
+    """Remove this wrapper's directory so avaccess/scripts cannot shadow ``scripts``."""
+    here = HERE.resolve()
+    sys.path[:] = [p for p in sys.path if not p or Path(p).resolve() != here]
 
 
 def _ensure_scripts_avaccess_package(scripts_dir: Path) -> None:
@@ -47,16 +55,17 @@ def _ensure_scripts_avaccess_package(scripts_dir: Path) -> None:
             mod.__path__ = paths  # type: ignore[attr-defined]
 
 
-def resolve_builder() -> Path:
+def _prepare_import() -> None:
+    _drop_here_from_sys_path()
     repo = _repo_root()
     if repo is not None:
         sys.path.insert(0, str(repo))
-        return repo / "scripts" / "avaccess" / "build_guide_epg.py"
+        return
 
-    mounted = HERE / "scripts" / "build_guide_epg.py"
-    if mounted.is_file():
-        _ensure_scripts_avaccess_package(mounted.parent)
-        return mounted
+    mounted = HERE / "scripts"
+    if (mounted / "build_guide_epg.py").is_file():
+        _ensure_scripts_avaccess_package(mounted.resolve())
+        return
 
     raise SystemExit(
         "build_guide_epg.py not found; expected repo scripts/avaccess or "
@@ -91,10 +100,11 @@ def _inject_default_args(argv: list[str]) -> list[str]:
 
 def main(argv: list[str] | None = None) -> None:
     args = list(sys.argv[1:] if argv is None else argv)
-    target = resolve_builder()
+    _prepare_import()
     forwarded = _inject_default_args(args)
-    sys.argv = [str(target), *forwarded]
-    runpy.run_path(str(target), run_name="__main__")
+    from scripts.avaccess.build_guide_epg import main as builder_main
+
+    raise SystemExit(builder_main(forwarded))
 
 
 if __name__ == "__main__":
