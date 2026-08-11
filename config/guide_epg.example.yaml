@@ -4,6 +4,10 @@
 #   python3 scripts/avaccess/build_guide_epg.py \
 #     --config config/guide_epg.yaml \
 #     --out homeassistant/config/www/avaccess/guide_epg.json
+#
+# Schedule scraper (ESPN scoreboards) → match teams onto EPG sports titles:
+#   python3 scripts/avaccess/pull_sports_schedule.py
+#   # then rebuild guide_epg.json
 
 timezone: America/New_York
 zip_code: "27403"
@@ -16,28 +20,18 @@ source:
   file: tests/fixtures/guide_sample.xmltv
   compression: none
 
-# Used to resolve sports-category channel numbers/names when sports_channel_numbers omitted.
+# Used to resolve sports-category channel numbers/names and auto-map XMLTV ids
+# by normalized display-name when channel_number_map entries are empty.
 lineup_file: config/spectrum_lineup_27403.json
+
+# Optional scraped league schedule (from pull_sports_schedule.py).
+sports_schedule_file: config/sports_schedule.json
 
 sports_window_hours: 12
 
-# Spectrum guide number → XMLTV channel id(s). First matching programmes win.
-# Numbers match Greensboro Gold/Platinum snapshot (ESPN=17, ESPN2=16, locals 7/9/10/11).
+# Explicit Spectrum number → XMLTV channel id(s). Empty lists still allow
+# auto-match from lineup name ↔ XMLTV <display-name> when unique.
 channel_number_map:
-  "7": ["fox.example"]        # stub: map WXLV/local as needed
-  "9": []                     # WFMY CBS
-  "10": []                    # WGHP FOX
-  "11": []                    # WXII NBC
-  "16": ["espn2.example"]     # ESPN2
-  "17": ["espn.example"]      # ESPN
-  "38": []                    # NBC Sports
-  "51": []                    # FanDuel Sports Network South-Carolinas
-  "52": []                    # Golf Channel
-  "67": []                    # FanDuel Sports Network Southeast
-  "302": []                   # ESPNews
-  "306": []                   # MLB Network
-  "308": []                   # NBA TV
-  "310": []                   # NFL Network
-  "312": []                   # NHL Network
-  "315": []                   # CBS Sports Network
-  "370": []                   # ESPNU
+  "16": ["espn2.example"]
+  "17": ["espn.example"]
+  "306": ["mlb.example"]

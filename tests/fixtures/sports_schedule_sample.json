@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-08-10T18:00:00+00:00",
+  "source": "fixture",
+  "games": [
+    {
+      "id": "sched-mlb-1",
+      "sportKey": "mlb",
+      "away": "New York Yankees",
+      "home": "Boston Red Sox",
+      "title": "New York Yankees at Boston Red Sox",
+      "start": "2026-08-10T23:05:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nba-1",
+      "sportKey": "nba",
+      "away": "Los Angeles Lakers",
+      "home": "Boston Celtics",
+      "title": "Los Angeles Lakers at Boston Celtics",
+      "start": "2026-08-10T18:30:00+00:00",
+      "end": null,
+      "status": "STATUS_IN_PROGRESS"
+    }
+  ],
+  "errors": []
+}

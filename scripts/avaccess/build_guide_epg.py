@@ -30,20 +30,85 @@ _NFL_RE = re.compile(
 _CFB_RE = re.compile(r"college football|\bncaa football\b", re.I)
 _NBA_RE = re.compile(r"\bnba\b", re.I)
 _NHL_RE = re.compile(r"\bnhl\b", re.I)
+_MLB_RE = re.compile(r"\bmlb\b|major league baseball", re.I)
+_WNBA_RE = re.compile(r"\bwnba\b", re.I)
+_NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
 
 
 def classify_sport_key(title: str) -> str:
-    """Map an EPG title to a Sports tab key."""
+    """Map an EPG/schedule title to a Sports tab key."""
     text = str(title or "")
     if _NFL_RE.search(text):
         return "nfl"
     if _CFB_RE.search(text):
         return "cfb"
+    if _WNBA_RE.search(text):
+        return "wnba"
     if _NBA_RE.search(text):
         return "nba"
     if _NHL_RE.search(text):
         return "nhl"
+    if _MLB_RE.search(text):
+        return "mlb"
     return "other"
+
+
+def normalize_channel_name(name: str) -> str:
+    """Normalize channel labels for XMLTV ↔ Spectrum matching."""
+    text = str(name or "").lower().strip()
+    text = text.replace("&", " and ")
+    text = _NON_ALNUM_RE.sub("", text)
+    for prefix in ("the", "hd", "uhd", "east", "west"):
+        if text.startswith(prefix) and len(text) > len(prefix) + 2:
+            # strip trailing east/west variants only when whole-token style
+            pass
+    for suffix in ("hd", "uhd", "dtv", "tv"):
+        if text.endswith(suffix) and len(text) > len(suffix) + 2:
+            text = text[: -len(suffix)]
+    return text
+
+
+def auto_map_xmltv_ids(
+    lineup_channels: list[dict[str, Any]],
+    xmltv_channels: dict[str, list[str]],
+    explicit_map: dict[str, Any],
+) -> dict[str, list[str]]:
+    """Merge explicit number→xmltv ids with unique display-name matches."""
+    name_to_ids: dict[str, list[str]] = {}
+    for xml_id, names in xmltv_channels.items():
+        for name in names:
+            key = normalize_channel_name(name)
+            if not key:
+                continue
+            name_to_ids.setdefault(key, []).append(xml_id)
+
+    resolved: dict[str, list[str]] = {}
+    for number, xmltv_ids in explicit_map.items():
+        number_s = str(number)
+        if isinstance(xmltv_ids, str):
+            ids = [xmltv_ids] if xmltv_ids else []
+        elif isinstance(xmltv_ids, list):
+            ids = [str(i) for i in xmltv_ids if str(i).strip()]
+        else:
+            raise ValueError(
+                f"channel_number_map[{number_s!r}] must be a string or list of ids"
+            )
+        if ids:
+            resolved[number_s] = ids
+
+    for ch in lineup_channels:
+        number_s = str(ch.get("number", "")).strip()
+        if not number_s or number_s in resolved:
+            continue
+        key = normalize_channel_name(str(ch.get("name") or ""))
+        matches = name_to_ids.get(key) or []
+        # Unique match only — avoid ambiguous networks.
+        unique = sorted(set(matches))
+        if len(unique) == 1:
+            resolved[number_s] = unique
+        else:
+            resolved.setdefault(number_s, [])
+    return resolved
 
 
 def _iso(moment: dt.datetime | None) -> str | None:
@@ -92,32 +157,109 @@ def _select_now_next(
     return current, upcoming
 
 
+def _resolve_path(raw: str | Path, config_path: Path | None = None) -> Path:
+    path = Path(str(raw))
+    if path.is_absolute():
+        return path
+    candidates = [ROOT / path]
+    if config_path is not None:
+        candidates.insert(0, config_path.parent / path)
+    return next((p for p in candidates if p.is_file()), candidates[0])
+
+
+def _load_lineup_channels(
+    cfg: dict[str, Any], config_path: Path | None = None
+) -> list[dict[str, Any]]:
+    lineup_path = cfg.get("lineup_file")
+    if not lineup_path:
+        return []
+    path = _resolve_path(lineup_path, config_path)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return list(data.get("channels") or [])
+
+
 def _load_lineup_sports(
     cfg: dict[str, Any], config_path: Path | None = None
 ) -> dict[str, str]:
     """Return channelNumber → name for sports-category lineup rows."""
     explicit = cfg.get("sports_channel_numbers")
     names: dict[str, str] = {}
-    lineup_path = cfg.get("lineup_file")
-    if lineup_path:
-        path = Path(str(lineup_path))
-        if not path.is_absolute():
-            candidates = [ROOT / path]
-            if config_path is not None:
-                candidates.insert(0, config_path.parent / path)
-            path = next((p for p in candidates if p.is_file()), candidates[0])
-        data = json.loads(path.read_text(encoding="utf-8"))
-        for ch in data.get("channels") or []:
-            if str(ch.get("category", "")).lower() != "sports":
-                continue
-            number = str(ch.get("number", "")).strip()
-            if not number:
-                continue
-            names[number] = str(ch.get("name") or number)
+    for ch in _load_lineup_channels(cfg, config_path=config_path):
+        if str(ch.get("category", "")).lower() != "sports":
+            continue
+        number = str(ch.get("number", "")).strip()
+        if not number:
+            continue
+        names[number] = str(ch.get("name") or number)
     if isinstance(explicit, list) and explicit:
         allowed = [str(n) for n in explicit]
         names = {n: names.get(n, n) for n in allowed}
     return names
+
+
+def _load_sports_schedule(
+    cfg: dict[str, Any], config_path: Path | None = None
+) -> list[dict[str, Any]]:
+    raw = cfg.get("sports_schedule_file")
+    if not raw:
+        return []
+    path = _resolve_path(raw, config_path)
+    if not path.is_file():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    games = data.get("games") if isinstance(data, dict) else data
+    return list(games or [])
+
+
+def match_schedule_to_epg(
+    schedule_games: list[dict[str, Any]],
+    sports_block: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Attach EPG channel numbers to scraped games when titles overlap."""
+    epg_items = list(sports_block.get("now") or []) + list(
+        sports_block.get("upcoming") or []
+    )
+    matched: list[dict[str, Any]] = []
+    for game in schedule_games:
+        away = str(game.get("away") or "").strip()
+        home = str(game.get("home") or "").strip()
+        title = str(game.get("title") or f"{away} at {home}").strip()
+        sport_key = str(game.get("sportKey") or classify_sport_key(title))
+        hit = None
+        for item in epg_items:
+            epg_title = str(item.get("title") or "")
+            epg_l = epg_title.lower()
+            if away and home and away.lower() in epg_l and home.lower() in epg_l:
+                hit = item
+                break
+            # Short team nickname tokens (last word) as fallback.
+            away_tok = away.split()[-1].lower() if away else ""
+            home_tok = home.split()[-1].lower() if home else ""
+            if (
+                away_tok
+                and home_tok
+                and len(away_tok) > 3
+                and len(home_tok) > 3
+                and away_tok in epg_l
+                and home_tok in epg_l
+            ):
+                hit = item
+                break
+        row = {
+            "id": str(game.get("id") or f"sched-{sport_key}-{away}-{home}"),
+            "channelNumber": hit.get("channelNumber") if hit else None,
+            "channelName": hit.get("channelName") if hit else None,
+            "title": title,
+            "away": away,
+            "home": home,
+            "start": game.get("start") or (hit.get("start") if hit else None),
+            "end": game.get("end") or (hit.get("end") if hit else None),
+            "sportKey": sport_key,
+            "matched": bool(hit),
+            "source": "schedule",
+        }
+        matched.append(row)
+    return matched
 
 
 def _sport_item(*, number: str, name: str, program: Program) -> dict[str, Any]:
@@ -193,7 +335,7 @@ def build_guide_epg(
         raise ValueError("config.source must be a mapping with file or url")
 
     xml_bytes = fetch_xmltv_bytes(source)
-    _channels, programs = parse_xmltv(xml_bytes, tz)
+    xmltv_channels, programs = parse_xmltv(xml_bytes, tz)
 
     by_channel: dict[str, list[Program]] = {}
     for prog in programs:
@@ -203,18 +345,26 @@ def build_guide_epg(
     if not isinstance(number_map, dict):
         raise ValueError("config.channel_number_map must be a mapping")
 
-    out_channels: dict[str, Any] = {}
-    programs_by_number: dict[str, list[Program]] = {}
+    lineup_channels = _load_lineup_channels(cfg, config_path=config_path)
+    resolved_map = auto_map_xmltv_ids(lineup_channels, xmltv_channels, number_map)
+    # Keep explicit-only numbers even when lineup_file is absent.
     for number, xmltv_ids in number_map.items():
         number_s = str(number)
-        if isinstance(xmltv_ids, str):
-            ids = [xmltv_ids]
-        elif isinstance(xmltv_ids, list):
-            ids = [str(i) for i in xmltv_ids]
-        else:
-            raise ValueError(
-                f"channel_number_map[{number_s!r}] must be a string or list of ids"
-            )
+        if number_s not in resolved_map:
+            if isinstance(xmltv_ids, str):
+                resolved_map[number_s] = [xmltv_ids] if xmltv_ids else []
+            elif isinstance(xmltv_ids, list):
+                resolved_map[number_s] = [str(i) for i in xmltv_ids if str(i).strip()]
+
+    # Ensure every lineup channel appears in the EPG payload (null now/next if unmapped).
+    for ch in lineup_channels:
+        number_s = str(ch.get("number", "")).strip()
+        if number_s:
+            resolved_map.setdefault(number_s, [])
+
+    out_channels: dict[str, Any] = {}
+    programs_by_number: dict[str, list[Program]] = {}
+    for number_s, ids in resolved_map.items():
         channel_programs: list[Program] = []
         for ch_id in ids:
             channel_programs.extend(by_channel.get(ch_id, []))
@@ -234,12 +384,16 @@ def build_guide_epg(
         now=now,
         window_hours=window_hours,
     )
+    schedule_games = _load_sports_schedule(cfg, config_path=config_path)
+    if schedule_games:
+        sports["schedule"] = match_schedule_to_epg(schedule_games, sports)
 
     return {
         "zip": str(cfg.get("zip_code", "")),
         "generatedAt": now.astimezone(dt.timezone.utc).isoformat(),
         "channels": out_channels,
         "sports": sports,
+        "mappedChannelCount": sum(1 for ids in resolved_map.values() if ids),
     }
 
 

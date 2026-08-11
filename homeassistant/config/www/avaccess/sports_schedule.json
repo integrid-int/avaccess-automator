@@ -1,0 +1,1207 @@
+{
+  "generatedAt": "2026-08-11T00:02:50.310574+00:00",
+  "source": "espn-site-api",
+  "games": [
+    {
+      "id": "sched-mlb-401816469",
+      "sportKey": "mlb",
+      "away": "Boston Red Sox",
+      "home": "Toronto Blue Jays",
+      "title": "Boston Red Sox at Toronto Blue Jays",
+      "start": "2026-08-10T23:07Z",
+      "end": null,
+      "status": "STATUS_IN_PROGRESS"
+    },
+    {
+      "id": "sched-mlb-401816470",
+      "sportKey": "mlb",
+      "away": "New York Mets",
+      "home": "Atlanta Braves",
+      "title": "New York Mets at Atlanta Braves",
+      "start": "2026-08-10T23:15Z",
+      "end": null,
+      "status": "STATUS_IN_PROGRESS"
+    },
+    {
+      "id": "sched-mlb-401816471",
+      "sportKey": "mlb",
+      "away": "Baltimore Orioles",
+      "home": "Minnesota Twins",
+      "title": "Baltimore Orioles at Minnesota Twins",
+      "start": "2026-08-10T23:40Z",
+      "end": null,
+      "status": "STATUS_IN_PROGRESS"
+    },
+    {
+      "id": "sched-mlb-401816472",
+      "sportKey": "mlb",
+      "away": "Philadelphia Phillies",
+      "home": "St. Louis Cardinals",
+      "title": "Philadelphia Phillies at St. Louis Cardinals",
+      "start": "2026-08-10T23:45Z",
+      "end": null,
+      "status": "STATUS_IN_PROGRESS"
+    },
+    {
+      "id": "sched-mlb-401816478",
+      "sportKey": "mlb",
+      "away": "Texas Rangers",
+      "home": "Los Angeles Angels",
+      "title": "Texas Rangers at Los Angeles Angels",
+      "start": "2026-08-11T01:38Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-mlb-401816473",
+      "sportKey": "mlb",
+      "away": "Colorado Rockies",
+      "home": "Arizona Diamondbacks",
+      "title": "Colorado Rockies at Arizona Diamondbacks",
+      "start": "2026-08-11T01:40Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-mlb-401816476",
+      "sportKey": "mlb",
+      "away": "Milwaukee Brewers",
+      "home": "San Diego Padres",
+      "title": "Milwaukee Brewers at San Diego Padres",
+      "start": "2026-08-11T01:40Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-mlb-401816477",
+      "sportKey": "mlb",
+      "away": "Tampa Bay Rays",
+      "home": "Athletics",
+      "title": "Tampa Bay Rays at Athletics Athletics",
+      "start": "2026-08-11T01:40Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-mlb-401816474",
+      "sportKey": "mlb",
+      "away": "Houston Astros",
+      "home": "San Francisco Giants",
+      "title": "Houston Astros at San Francisco Giants",
+      "start": "2026-08-11T01:45Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-mlb-401816475",
+      "sportKey": "mlb",
+      "away": "Kansas City Royals",
+      "home": "Los Angeles Dodgers",
+      "title": "Kansas City Royals at Los Angeles Dodgers",
+      "start": "2026-08-11T02:10Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nba-401902644",
+      "sportKey": "nba",
+      "away": "Miami Heat",
+      "home": "Toronto Raptors",
+      "title": "Miami Heat at Toronto Raptors",
+      "start": "2026-10-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401881922",
+      "sportKey": "nhl",
+      "away": "Montreal Canadiens",
+      "home": "Toronto Maple Leafs",
+      "title": "Montreal Canadiens at Toronto Maple Leafs",
+      "start": "2026-09-19T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401881923",
+      "sportKey": "nhl",
+      "away": "Toronto Maple Leafs",
+      "home": "Montreal Canadiens",
+      "title": "Toronto Maple Leafs at Montreal Canadiens",
+      "start": "2026-09-19T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401886427",
+      "sportKey": "nhl",
+      "away": "Dallas Stars",
+      "home": "St. Louis Blues",
+      "title": "Dallas Stars at St. Louis Blues",
+      "start": "2026-09-19T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401878099",
+      "sportKey": "nhl",
+      "away": "Winnipeg Jets",
+      "home": "Edmonton Oilers",
+      "title": "Winnipeg Jets at Edmonton Oilers",
+      "start": "2026-09-20T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401886258",
+      "sportKey": "nhl",
+      "away": "Chicago Blackhawks",
+      "home": "Minnesota Wild",
+      "title": "Chicago Blackhawks at Minnesota Wild",
+      "start": "2026-09-20T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401879412",
+      "sportKey": "nhl",
+      "away": "Vegas Golden Knights",
+      "home": "Los Angeles Kings",
+      "title": "Vegas Golden Knights at Los Angeles Kings",
+      "start": "2026-09-20T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nhl-401879652",
+      "sportKey": "nhl",
+      "away": "Vancouver Canucks",
+      "home": "Seattle Kraken",
+      "title": "Vancouver Canucks at Seattle Kraken",
+      "start": "2026-09-20T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-nfl-401873271",
+      "sportKey": "nfl",
+      "away": "Carolina Panthers",
+      "home": "Arizona Cardinals",
+      "title": "Carolina Panthers at Arizona Cardinals",
+      "start": "2026-08-07T00:00Z",
+      "end": null,
+      "status": "STATUS_FINAL"
+    },
+    {
+      "id": "sched-wnba-401857132",
+      "sportKey": "wnba",
+      "away": "Toronto Tempo",
+      "home": "Atlanta Dream",
+      "title": "Toronto Tempo at Atlanta Dream",
+      "start": "2026-08-11T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-wnba-401857133",
+      "sportKey": "wnba",
+      "away": "Chicago Sky",
+      "home": "Seattle Storm",
+      "title": "Chicago Sky at Seattle Storm",
+      "start": "2026-08-11T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856766",
+      "sportKey": "cfb",
+      "away": "North Carolina Tar Heels",
+      "home": "TCU Horned Frogs",
+      "title": "North Carolina Tar Heels at TCU Horned Frogs",
+      "start": "2026-08-29T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864494",
+      "sportKey": "cfb",
+      "away": "San Jos\u00e9 State Spartans",
+      "home": "USC Trojans",
+      "title": "San Jos\u00e9 State Spartans at USC Trojans",
+      "start": "2026-08-29T19:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858202",
+      "sportKey": "cfb",
+      "away": "NC State Wolfpack",
+      "home": "Virginia Cavaliers",
+      "title": "NC State Wolfpack at Virginia Cavaliers",
+      "start": "2026-08-29T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864577",
+      "sportKey": "cfb",
+      "away": "Jacksonville State Gamecocks",
+      "home": "North Dakota State Bison",
+      "title": "Jacksonville State Gamecocks at North Dakota State Bison",
+      "start": "2026-08-29T21:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866408",
+      "sportKey": "cfb",
+      "away": "Sacramento State Hornets",
+      "home": "Eastern Michigan Eagles",
+      "title": "Sacramento State Hornets at Eastern Michigan Eagles",
+      "start": "2026-08-29T22:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858201",
+      "sportKey": "cfb",
+      "away": "Hawai'i Rainbow Warriors",
+      "home": "Stanford Cardinal",
+      "title": "Hawai'i Rainbow Warriors at Stanford Cardinal",
+      "start": "2026-08-29T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864570",
+      "sportKey": "cfb",
+      "away": "New Mexico State Aggies",
+      "home": "Florida State Seminoles",
+      "title": "New Mexico State Aggies at Florida State Seminoles",
+      "start": "2026-08-29T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862693",
+      "sportKey": "cfb",
+      "away": "Memphis Tigers",
+      "home": "UNLV Rebels",
+      "title": "Memphis Tigers at UNLV Rebels",
+      "start": "2026-08-30T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858423",
+      "sportKey": "cfb",
+      "away": "Massachusetts Minutemen",
+      "home": "Rutgers Scarlet Knights",
+      "title": "Massachusetts Minutemen at Rutgers Scarlet Knights",
+      "start": "2026-09-03T22:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856767",
+      "sportKey": "cfb",
+      "away": "Bethune-Cookman Wildcats",
+      "home": "UCF Knights",
+      "title": "Bethune-Cookman Wildcats at UCF Knights",
+      "start": "2026-09-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858204",
+      "sportKey": "cfb",
+      "away": "Akron Zips",
+      "home": "Wake Forest Demon Deacons",
+      "title": "Akron Zips at Wake Forest Demon Deacons",
+      "start": "2026-09-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864424",
+      "sportKey": "cfb",
+      "away": "Merrimack Warriors",
+      "home": "Delaware Blue Hens",
+      "title": "Merrimack Warriors at Delaware Blue Hens",
+      "start": "2026-09-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864425",
+      "sportKey": "cfb",
+      "away": "West Georgia Wolves",
+      "home": "Kennesaw State Owls",
+      "title": "West Georgia Wolves at Kennesaw State Owls",
+      "start": "2026-09-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866409",
+      "sportKey": "cfb",
+      "away": "UAlbany Great Danes",
+      "home": "Buffalo Bulls",
+      "title": "UAlbany Great Danes at Buffalo Bulls",
+      "start": "2026-09-03T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856663",
+      "sportKey": "cfb",
+      "away": "Arkansas-Pine Bluff Golden Lions",
+      "home": "Missouri Tigers",
+      "title": "Arkansas-Pine Bluff Golden Lions at Missouri Tigers",
+      "start": "2026-09-04T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856776",
+      "sportKey": "cfb",
+      "away": "Colorado Buffaloes",
+      "home": "Georgia Tech Yellow Jackets",
+      "title": "Colorado Buffaloes at Georgia Tech Yellow Jackets",
+      "start": "2026-09-04T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858422",
+      "sportKey": "cfb",
+      "away": "Eastern Illinois Panthers",
+      "home": "Minnesota Golden Gophers",
+      "title": "Eastern Illinois Panthers at Minnesota Golden Gophers",
+      "start": "2026-09-04T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856768",
+      "sportKey": "cfb",
+      "away": "Idaho Vandals",
+      "home": "Utah Utes",
+      "title": "Idaho Vandals at Utah Utes",
+      "start": "2026-09-04T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858424",
+      "sportKey": "cfb",
+      "away": "UAB Blazers",
+      "home": "Illinois Fighting Illini",
+      "title": "UAB Blazers at Illinois Fighting Illini",
+      "start": "2026-09-04T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864495",
+      "sportKey": "cfb",
+      "away": "San Jos\u00e9 State Spartans",
+      "home": "Eastern Michigan Eagles",
+      "title": "San Jos\u00e9 State Spartans at Eastern Michigan Eagles",
+      "start": "2026-09-04T22:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858435",
+      "sportKey": "cfb",
+      "away": "Indiana State Sycamores",
+      "home": "Purdue Boilermakers",
+      "title": "Indiana State Sycamores at Purdue Boilermakers",
+      "start": "2026-09-04T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866623",
+      "sportKey": "cfb",
+      "away": "North Carolina A&T Aggies",
+      "home": "Georgia State Panthers",
+      "title": "North Carolina A&T Aggies at Georgia State Panthers",
+      "start": "2026-09-04T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856664",
+      "sportKey": "cfb",
+      "away": "UTEP Miners",
+      "home": "Oklahoma Sooners",
+      "title": "UTEP Miners at Oklahoma Sooners",
+      "start": "2026-09-05T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856769",
+      "sportKey": "cfb",
+      "away": "Long Island University Sharks",
+      "home": "Kansas Jayhawks",
+      "title": "Long Island University Sharks at Kansas Jayhawks",
+      "start": "2026-09-05T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858429",
+      "sportKey": "cfb",
+      "away": "Toledo Rockets",
+      "home": "Michigan State Spartans",
+      "title": "Toledo Rockets at Michigan State Spartans",
+      "start": "2026-09-05T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858206",
+      "sportKey": "cfb",
+      "away": "Miami Hurricanes",
+      "home": "Stanford Cardinal",
+      "title": "Miami Hurricanes at Stanford Cardinal",
+      "start": "2026-09-05T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858436",
+      "sportKey": "cfb",
+      "away": "Fresno State Bulldogs",
+      "home": "USC Trojans",
+      "title": "Fresno State Bulldogs at USC Trojans",
+      "start": "2026-09-05T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856634",
+      "sportKey": "cfb",
+      "away": "East Carolina Pirates",
+      "home": "Alabama Crimson Tide",
+      "title": "East Carolina Pirates at Alabama Crimson Tide",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856778",
+      "sportKey": "cfb",
+      "away": "Oregon State Beavers",
+      "home": "Houston Cougars",
+      "title": "Oregon State Beavers at Houston Cougars",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856780",
+      "sportKey": "cfb",
+      "away": "Coastal Carolina Chanticleers",
+      "home": "West Virginia Mountaineers",
+      "title": "Coastal Carolina Chanticleers at West Virginia Mountaineers",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858208",
+      "sportKey": "cfb",
+      "away": "New Hampshire Wildcats",
+      "home": "Syracuse Orange",
+      "title": "New Hampshire Wildcats at Syracuse Orange",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858425",
+      "sportKey": "cfb",
+      "away": "North Texas Mean Green",
+      "home": "Indiana Hoosiers",
+      "title": "North Texas Mean Green at Indiana Hoosiers",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858430",
+      "sportKey": "cfb",
+      "away": "Ohio Bobcats",
+      "home": "Nebraska Cornhuskers",
+      "title": "Ohio Bobcats at Nebraska Cornhuskers",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401861962",
+      "sportKey": "cfb",
+      "away": "Lafayette Leopards",
+      "home": "UConn Huskies",
+      "title": "Lafayette Leopards at UConn Huskies",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862701",
+      "sportKey": "cfb",
+      "away": "Bryant Bulldogs",
+      "home": "Army Black Knights",
+      "title": "Bryant Bulldogs at Army Black Knights",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866410",
+      "sportKey": "cfb",
+      "away": "Tarleton State Texans",
+      "home": "Bowling Green Falcons",
+      "title": "Tarleton State Texans at Bowling Green Falcons",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401869960",
+      "sportKey": "cfb",
+      "away": "Liberty Flames",
+      "home": "James Madison Dukes",
+      "title": "Liberty Flames at James Madison Dukes",
+      "start": "2026-09-05T16:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858207",
+      "sportKey": "cfb",
+      "away": "Miami (OH) RedHawks",
+      "home": "Pittsburgh Panthers",
+      "title": "Miami (OH) RedHawks at Pittsburgh Panthers",
+      "start": "2026-09-05T16:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858432",
+      "sportKey": "cfb",
+      "away": "Ball State Cardinals",
+      "home": "Ohio State Buckeyes",
+      "title": "Ball State Cardinals at Ohio State Buckeyes",
+      "start": "2026-09-05T16:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856665",
+      "sportKey": "cfb",
+      "away": "Kent State Golden Flashes",
+      "home": "South Carolina Gamecocks",
+      "title": "Kent State Golden Flashes at South Carolina Gamecocks",
+      "start": "2026-09-05T16:45Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856659",
+      "sportKey": "cfb",
+      "away": "Youngstown State Penguins",
+      "home": "Kentucky Wildcats",
+      "title": "Youngstown State Penguins at Kentucky Wildcats",
+      "start": "2026-09-05T17:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856779",
+      "sportKey": "cfb",
+      "away": "Southeast Missouri State Redhawks",
+      "home": "Iowa State Cyclones",
+      "title": "Southeast Missouri State Redhawks at Iowa State Cyclones",
+      "start": "2026-09-05T17:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864496",
+      "sportKey": "cfb",
+      "away": "Duquesne Dukes",
+      "home": "Air Force Falcons",
+      "title": "Duquesne Dukes at Air Force Falcons",
+      "start": "2026-09-05T17:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862698",
+      "sportKey": "cfb",
+      "away": "Rhode Island Rams",
+      "home": "Temple Owls",
+      "title": "Rhode Island Rams at Temple Owls",
+      "start": "2026-09-05T18:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856658",
+      "sportKey": "cfb",
+      "away": "Tennessee State Tigers",
+      "home": "Georgia Bulldogs",
+      "title": "Tennessee State Tigers at Georgia Bulldogs",
+      "start": "2026-09-05T19:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856636",
+      "sportKey": "cfb",
+      "away": "Baylor Bears",
+      "home": "Auburn Tigers",
+      "title": "Baylor Bears at Auburn Tigers",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856666",
+      "sportKey": "cfb",
+      "away": "Furman Paladins",
+      "home": "Tennessee Volunteers",
+      "title": "Furman Paladins at Tennessee Volunteers",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856667",
+      "sportKey": "cfb",
+      "away": "Texas State Bobcats",
+      "home": "Texas Longhorns",
+      "title": "Texas State Bobcats at Texas Longhorns",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856777",
+      "sportKey": "cfb",
+      "away": "Boston College Eagles",
+      "home": "Cincinnati Bearcats",
+      "title": "Boston College Eagles at Cincinnati Bearcats",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858209",
+      "sportKey": "cfb",
+      "away": "Tulane Green Wave",
+      "home": "Duke Blue Devils",
+      "title": "Tulane Green Wave at Duke Blue Devils",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858433",
+      "sportKey": "cfb",
+      "away": "Boise State Broncos",
+      "home": "Oregon Ducks",
+      "title": "Boise State Broncos at Oregon Ducks",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858434",
+      "sportKey": "cfb",
+      "away": "Marshall Thundering Herd",
+      "home": "Penn State Nittany Lions",
+      "title": "Marshall Thundering Herd at Penn State Nittany Lions",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862694",
+      "sportKey": "cfb",
+      "away": "The Citadel Bulldogs",
+      "home": "Charlotte 49ers",
+      "title": "The Citadel Bulldogs at Charlotte 49ers",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862696",
+      "sportKey": "cfb",
+      "away": "Towson Tigers",
+      "home": "Navy Midshipmen",
+      "title": "Towson Tigers at Navy Midshipmen",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862700",
+      "sportKey": "cfb",
+      "away": "UT Rio Grande Valley Vaqueros",
+      "home": "UTSA Roadrunners",
+      "title": "UT Rio Grande Valley Vaqueros at UTSA Roadrunners",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864499",
+      "sportKey": "cfb",
+      "away": "Fordham Rams",
+      "home": "North Dakota State Bison",
+      "title": "Fordham Rams at North Dakota State Bison",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866627",
+      "sportKey": "cfb",
+      "away": "Maine Black Bears",
+      "home": "App State Mountaineers",
+      "title": "Maine Black Bears at App State Mountaineers",
+      "start": "2026-09-05T19:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856772",
+      "sportKey": "cfb",
+      "away": "Oklahoma State Cowboys",
+      "home": "Tulsa Golden Hurricane",
+      "title": "Oklahoma State Cowboys at Tulsa Golden Hurricane",
+      "start": "2026-09-05T19:45Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856635",
+      "sportKey": "cfb",
+      "away": "North Alabama Lions",
+      "home": "Arkansas Razorbacks",
+      "title": "North Alabama Lions at Arkansas Razorbacks",
+      "start": "2026-09-05T20:15Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858426",
+      "sportKey": "cfb",
+      "away": "Northern Illinois Huskies",
+      "home": "Iowa Hawkeyes",
+      "title": "Northern Illinois Huskies at Iowa Hawkeyes",
+      "start": "2026-09-05T20:15Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401868356",
+      "sportKey": "cfb",
+      "away": "Alcorn State Braves",
+      "home": "Southern Miss Golden Eagles",
+      "title": "Alcorn State Braves at Southern Miss Golden Eagles",
+      "start": "2026-09-05T21:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401860878",
+      "sportKey": "cfb",
+      "away": "Wyoming Cowboys",
+      "home": "Colorado State Rams",
+      "title": "Wyoming Cowboys at Colorado State Rams",
+      "start": "2026-09-05T22:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401867973",
+      "sportKey": "cfb",
+      "away": "Norfolk State Spartans",
+      "home": "Old Dominion Monarchs",
+      "title": "Norfolk State Spartans at Old Dominion Monarchs",
+      "start": "2026-09-05T22:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856668",
+      "sportKey": "cfb",
+      "away": "Missouri State Bears",
+      "home": "Texas A&M Aggies",
+      "title": "Missouri State Bears at Texas A&M Aggies",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856669",
+      "sportKey": "cfb",
+      "away": "Austin Peay Governors",
+      "home": "Vanderbilt Commodores",
+      "title": "Austin Peay Governors at Vanderbilt Commodores",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856770",
+      "sportKey": "cfb",
+      "away": "Abilene Christian Wildcats",
+      "home": "Texas Tech Red Raiders",
+      "title": "Abilene Christian Wildcats at Texas Tech Red Raiders",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856771",
+      "sportKey": "cfb",
+      "away": "Nicholls Colonels",
+      "home": "Kansas State Wildcats",
+      "title": "Nicholls Colonels at Kansas State Wildcats",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401860880",
+      "sportKey": "cfb",
+      "away": "Idaho State Bengals",
+      "home": "Utah State Aggies",
+      "title": "Idaho State Bengals at Utah State Aggies",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862695",
+      "sportKey": "cfb",
+      "away": "Arkansas State Red Wolves",
+      "home": "Memphis Tigers",
+      "title": "Arkansas State Red Wolves at Memphis Tigers",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862697",
+      "sportKey": "cfb",
+      "away": "Houston Christian Huskies",
+      "home": "Rice Owls",
+      "title": "Houston Christian Huskies at Rice Owls",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401862699",
+      "sportKey": "cfb",
+      "away": "Florida International Panthers",
+      "home": "South Florida Bulls",
+      "title": "Florida International Panthers at South Florida Bulls",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401867866",
+      "sportKey": "cfb",
+      "away": "Murray State Racers",
+      "home": "Middle Tennessee Blue Raiders",
+      "title": "Murray State Racers at Middle Tennessee Blue Raiders",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401868140",
+      "sportKey": "cfb",
+      "away": "Eastern Kentucky Colonels",
+      "home": "Jacksonville State Gamecocks",
+      "title": "Eastern Kentucky Colonels at Jacksonville State Gamecocks",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401868170",
+      "sportKey": "cfb",
+      "away": "Charleston Southern Buccaneers",
+      "home": "Georgia Southern Eagles",
+      "title": "Charleston Southern Buccaneers at Georgia Southern Eagles",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401868316",
+      "sportKey": "cfb",
+      "away": "SE Louisiana Lions",
+      "home": "South Alabama Jaguars",
+      "title": "SE Louisiana Lions at South Alabama Jaguars",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401870763",
+      "sportKey": "cfb",
+      "away": "Sam Houston Bearkats",
+      "home": "Troy Trojans",
+      "title": "Sam Houston Bearkats at Troy Trojans",
+      "start": "2026-09-05T23:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856660",
+      "sportKey": "cfb",
+      "away": "Clemson Tigers",
+      "home": "LSU Tigers",
+      "title": "Clemson Tigers at LSU Tigers",
+      "start": "2026-09-05T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856662",
+      "sportKey": "cfb",
+      "away": "UL Monroe Warhawks",
+      "home": "Mississippi State Bulldogs",
+      "title": "UL Monroe Warhawks at Mississippi State Bulldogs",
+      "start": "2026-09-05T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858211",
+      "sportKey": "cfb",
+      "away": "VMI Keydets",
+      "home": "Virginia Tech Hokies",
+      "title": "VMI Keydets at Virginia Tech Hokies",
+      "start": "2026-09-05T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858428",
+      "sportKey": "cfb",
+      "away": "Western Michigan Broncos",
+      "home": "Michigan Wolverines",
+      "title": "Western Michigan Broncos at Michigan Wolverines",
+      "start": "2026-09-05T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401869129",
+      "sportKey": "cfb",
+      "away": "Northwestern State Demons",
+      "home": "Louisiana Tech Bulldogs",
+      "title": "Northwestern State Demons at Louisiana Tech Bulldogs",
+      "start": "2026-09-05T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856637",
+      "sportKey": "cfb",
+      "away": "Florida Atlantic Owls",
+      "home": "Florida Gators",
+      "title": "Florida Atlantic Owls at Florida Gators",
+      "start": "2026-09-05T23:45Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856775",
+      "sportKey": "cfb",
+      "away": "Utah Tech Trailblazers",
+      "home": "BYU Cougars",
+      "title": "Utah Tech Trailblazers at BYU Cougars",
+      "start": "2026-09-06T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858427",
+      "sportKey": "cfb",
+      "away": "Hampton Pirates",
+      "home": "Maryland Terrapins",
+      "title": "Hampton Pirates at Maryland Terrapins",
+      "start": "2026-09-06T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858431",
+      "sportKey": "cfb",
+      "away": "South Dakota State Jackrabbits",
+      "home": "Northwestern Wildcats",
+      "title": "South Dakota State Jackrabbits at Northwestern Wildcats",
+      "start": "2026-09-06T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401869142",
+      "sportKey": "cfb",
+      "away": "Lamar Cardinals",
+      "home": "Louisiana Ragin' Cajuns",
+      "title": "Lamar Cardinals at Louisiana Ragin' Cajuns",
+      "start": "2026-09-06T00:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856774",
+      "sportKey": "cfb",
+      "away": "Morgan State Bears",
+      "home": "Arizona State Sun Devils",
+      "title": "Morgan State Bears at Arizona State Sun Devils",
+      "start": "2026-09-06T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401870790",
+      "sportKey": "cfb",
+      "away": "Mercyhurst Lakers",
+      "home": "New Mexico State Aggies",
+      "title": "Mercyhurst Lakers at New Mexico State Aggies",
+      "start": "2026-09-06T01:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856773",
+      "sportKey": "cfb",
+      "away": "Northern Arizona Lumberjacks",
+      "home": "Arizona Wildcats",
+      "title": "Northern Arizona Lumberjacks at Arizona Wildcats",
+      "start": "2026-09-06T01:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401860879",
+      "sportKey": "cfb",
+      "away": "Portland State Vikings",
+      "home": "San Diego State Aztecs",
+      "title": "Portland State Vikings at San Diego State Aztecs",
+      "start": "2026-09-06T01:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864497",
+      "sportKey": "cfb",
+      "away": "UNLV Rebels",
+      "home": "Hawai'i Rainbow Warriors",
+      "title": "UNLV Rebels at Hawai'i Rainbow Warriors",
+      "start": "2026-09-06T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864498",
+      "sportKey": "cfb",
+      "away": "Central Michigan Chippewas",
+      "home": "New Mexico Lobos",
+      "title": "Central Michigan Chippewas at New Mexico Lobos",
+      "start": "2026-09-06T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401866411",
+      "sportKey": "cfb",
+      "away": "Mississippi Valley State Delta Devils",
+      "home": "Sacramento State Hornets",
+      "title": "Mississippi Valley State Delta Devils at Sacramento State Hornets",
+      "start": "2026-09-06T02:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858210",
+      "sportKey": "cfb",
+      "away": "UCLA Bruins",
+      "home": "California Golden Bears",
+      "title": "UCLA Bruins at California Golden Bears",
+      "start": "2026-09-06T02:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401864432",
+      "sportKey": "cfb",
+      "away": "Western Kentucky Hilltoppers",
+      "home": "Nevada Wolf Pack",
+      "title": "Western Kentucky Hilltoppers at Nevada Wolf Pack",
+      "start": "2026-09-06T02:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858437",
+      "sportKey": "cfb",
+      "away": "Washington State Cougars",
+      "home": "Washington Huskies",
+      "title": "Washington State Cougars at Washington Huskies",
+      "start": "2026-09-06T20:00Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401856661",
+      "sportKey": "cfb",
+      "away": "Louisville Cardinals",
+      "home": "Ole Miss Rebels",
+      "title": "Louisville Cardinals at Ole Miss Rebels",
+      "start": "2026-09-06T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858438",
+      "sportKey": "cfb",
+      "away": "Wisconsin Badgers",
+      "home": "Notre Dame Fighting Irish",
+      "title": "Wisconsin Badgers at Notre Dame Fighting Irish",
+      "start": "2026-09-06T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    },
+    {
+      "id": "sched-cfb-401858212",
+      "sportKey": "cfb",
+      "away": "SMU Mustangs",
+      "home": "Florida State Seminoles",
+      "title": "SMU Mustangs at Florida State Seminoles",
+      "start": "2026-09-07T23:30Z",
+      "end": null,
+      "status": "STATUS_SCHEDULED"
+    }
+  ],
+  "errors": []
+}

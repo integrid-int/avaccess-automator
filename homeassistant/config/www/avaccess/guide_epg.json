@@ -1,35 +1,11 @@
 {
   "zip": "27403",
-  "generatedAt": "2026-08-10T23:39:41.092627+00:00",
+  "generatedAt": "2026-08-11T00:03:03.665996+00:00",
   "channels": {
-    "7": {
-      "number": "7",
-      "now": {
-        "title": "Local News",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
-      },
-      "next": null
-    },
-    "9": {
-      "number": "9",
-      "now": null,
-      "next": null
-    },
-    "10": {
-      "number": "10",
-      "now": null,
-      "next": null
-    },
-    "11": {
-      "number": "11",
-      "now": null,
-      "next": null
-    },
     "16": {
       "number": "16",
       "now": {
-        "title": "NBA: Lakers at Celtics",
+        "title": "NBA: Los Angeles Lakers at Boston Celtics",
         "start": "2026-08-10T18:30:00+00:00",
         "stop": "2026-08-10T20:00:00+00:00"
       },
@@ -52,9 +28,245 @@
         "stop": "2026-08-10T21:00:00+00:00"
       }
     },
+    "306": {
+      "number": "306",
+      "now": null,
+      "next": {
+        "title": "MLB: New York Yankees at Boston Red Sox",
+        "start": "2026-08-10T22:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
+    },
+    "3": {
+      "number": "3",
+      "now": null,
+      "next": null
+    },
+    "4": {
+      "number": "4",
+      "now": null,
+      "next": null
+    },
+    "6": {
+      "number": "6",
+      "now": null,
+      "next": null
+    },
+    "7": {
+      "number": "7",
+      "now": {
+        "title": "WXLV Local News",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "9": {
+      "number": "9",
+      "now": {
+        "title": "WFMY Local News",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "10": {
+      "number": "10",
+      "now": {
+        "title": "WGHP Local News",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "11": {
+      "number": "11",
+      "now": {
+        "title": "WXII Local News",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "12": {
+      "number": "12",
+      "now": null,
+      "next": null
+    },
+    "14": {
+      "number": "14",
+      "now": null,
+      "next": null
+    },
+    "15": {
+      "number": "15",
+      "now": null,
+      "next": null
+    },
+    "18": {
+      "number": "18",
+      "now": null,
+      "next": null
+    },
+    "20": {
+      "number": "20",
+      "now": null,
+      "next": null
+    },
+    "21": {
+      "number": "21",
+      "now": {
+        "title": "Movie Night",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "22": {
+      "number": "22",
+      "now": null,
+      "next": null
+    },
+    "23": {
+      "number": "23",
+      "now": null,
+      "next": null
+    },
+    "24": {
+      "number": "24",
+      "now": null,
+      "next": null
+    },
+    "25": {
+      "number": "25",
+      "now": null,
+      "next": null
+    },
+    "26": {
+      "number": "26",
+      "now": null,
+      "next": null
+    },
+    "27": {
+      "number": "27",
+      "now": null,
+      "next": null
+    },
+    "28": {
+      "number": "28",
+      "now": null,
+      "next": null
+    },
+    "29": {
+      "number": "29",
+      "now": null,
+      "next": null
+    },
+    "30": {
+      "number": "30",
+      "now": null,
+      "next": null
+    },
+    "31": {
+      "number": "31",
+      "now": null,
+      "next": null
+    },
+    "32": {
+      "number": "32",
+      "now": null,
+      "next": null
+    },
+    "33": {
+      "number": "33",
+      "now": null,
+      "next": null
+    },
+    "34": {
+      "number": "34",
+      "now": {
+        "title": "CNN Newsroom",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "35": {
+      "number": "35",
+      "now": null,
+      "next": null
+    },
+    "36": {
+      "number": "36",
+      "now": null,
+      "next": null
+    },
+    "37": {
+      "number": "37",
+      "now": null,
+      "next": null
+    },
     "38": {
       "number": "38",
       "now": null,
+      "next": null
+    },
+    "39": {
+      "number": "39",
+      "now": null,
+      "next": null
+    },
+    "40": {
+      "number": "40",
+      "now": {
+        "title": "Fox News Primetime",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
+      "next": null
+    },
+    "41": {
+      "number": "41",
+      "now": null,
+      "next": null
+    },
+    "43": {
+      "number": "43",
+      "now": null,
+      "next": null
+    },
+    "44": {
+      "number": "44",
+      "now": null,
+      "next": null
+    },
+    "45": {
+      "number": "45",
+      "now": null,
+      "next": null
+    },
+    "46": {
+      "number": "46",
+      "now": null,
+      "next": null
+    },
+    "48": {
+      "number": "48",
+      "now": null,
+      "next": null
+    },
+    "49": {
+      "number": "49",
+      "now": null,
+      "next": null
+    },
+    "50": {
+      "number": "50",
+      "now": {
+        "title": "WWE Raw",
+        "start": "2026-08-10T17:00:00+00:00",
+        "stop": "2026-08-10T23:00:00+00:00"
+      },
       "next": null
     },
     "51": {
@@ -67,8 +279,398 @@
       "now": null,
       "next": null
     },
+    "53": {
+      "number": "53",
+      "now": null,
+      "next": null
+    },
+    "54": {
+      "number": "54",
+      "now": null,
+      "next": null
+    },
+    "55": {
+      "number": "55",
+      "now": null,
+      "next": null
+    },
+    "57": {
+      "number": "57",
+      "now": null,
+      "next": null
+    },
+    "59": {
+      "number": "59",
+      "now": null,
+      "next": null
+    },
+    "60": {
+      "number": "60",
+      "now": null,
+      "next": null
+    },
+    "61": {
+      "number": "61",
+      "now": null,
+      "next": null
+    },
+    "62": {
+      "number": "62",
+      "now": null,
+      "next": null
+    },
+    "63": {
+      "number": "63",
+      "now": null,
+      "next": null
+    },
+    "64": {
+      "number": "64",
+      "now": null,
+      "next": null
+    },
+    "65": {
+      "number": "65",
+      "now": null,
+      "next": null
+    },
+    "66": {
+      "number": "66",
+      "now": null,
+      "next": null
+    },
     "67": {
       "number": "67",
+      "now": null,
+      "next": null
+    },
+    "70": {
+      "number": "70",
+      "now": null,
+      "next": null
+    },
+    "71": {
+      "number": "71",
+      "now": null,
+      "next": null
+    },
+    "72": {
+      "number": "72",
+      "now": null,
+      "next": null
+    },
+    "73": {
+      "number": "73",
+      "now": null,
+      "next": null
+    },
+    "76": {
+      "number": "76",
+      "now": null,
+      "next": null
+    },
+    "78": {
+      "number": "78",
+      "now": null,
+      "next": null
+    },
+    "79": {
+      "number": "79",
+      "now": null,
+      "next": null
+    },
+    "80": {
+      "number": "80",
+      "now": null,
+      "next": null
+    },
+    "81": {
+      "number": "81",
+      "now": null,
+      "next": null
+    },
+    "86": {
+      "number": "86",
+      "now": null,
+      "next": null
+    },
+    "87": {
+      "number": "87",
+      "now": null,
+      "next": null
+    },
+    "98": {
+      "number": "98",
+      "now": null,
+      "next": null
+    },
+    "109": {
+      "number": "109",
+      "now": null,
+      "next": null
+    },
+    "110": {
+      "number": "110",
+      "now": null,
+      "next": null
+    },
+    "119": {
+      "number": "119",
+      "now": null,
+      "next": null
+    },
+    "124": {
+      "number": "124",
+      "now": null,
+      "next": null
+    },
+    "128": {
+      "number": "128",
+      "now": null,
+      "next": null
+    },
+    "130": {
+      "number": "130",
+      "now": null,
+      "next": null
+    },
+    "131": {
+      "number": "131",
+      "now": null,
+      "next": null
+    },
+    "133": {
+      "number": "133",
+      "now": null,
+      "next": null
+    },
+    "134": {
+      "number": "134",
+      "now": null,
+      "next": null
+    },
+    "135": {
+      "number": "135",
+      "now": null,
+      "next": null
+    },
+    "136": {
+      "number": "136",
+      "now": null,
+      "next": null
+    },
+    "137": {
+      "number": "137",
+      "now": null,
+      "next": null
+    },
+    "140": {
+      "number": "140",
+      "now": null,
+      "next": null
+    },
+    "141": {
+      "number": "141",
+      "now": null,
+      "next": null
+    },
+    "144": {
+      "number": "144",
+      "now": null,
+      "next": null
+    },
+    "151": {
+      "number": "151",
+      "now": null,
+      "next": null
+    },
+    "159": {
+      "number": "159",
+      "now": null,
+      "next": null
+    },
+    "161": {
+      "number": "161",
+      "now": null,
+      "next": null
+    },
+    "163": {
+      "number": "163",
+      "now": null,
+      "next": null
+    },
+    "165": {
+      "number": "165",
+      "now": null,
+      "next": null
+    },
+    "169": {
+      "number": "169",
+      "now": null,
+      "next": null
+    },
+    "173": {
+      "number": "173",
+      "now": null,
+      "next": null
+    },
+    "174": {
+      "number": "174",
+      "now": null,
+      "next": null
+    },
+    "175": {
+      "number": "175",
+      "now": null,
+      "next": null
+    },
+    "176": {
+      "number": "176",
+      "now": null,
+      "next": null
+    },
+    "177": {
+      "number": "177",
+      "now": null,
+      "next": null
+    },
+    "179": {
+      "number": "179",
+      "now": null,
+      "next": null
+    },
+    "182": {
+      "number": "182",
+      "now": null,
+      "next": null
+    },
+    "184": {
+      "number": "184",
+      "now": null,
+      "next": null
+    },
+    "185": {
+      "number": "185",
+      "now": null,
+      "next": null
+    },
+    "187": {
+      "number": "187",
+      "now": null,
+      "next": null
+    },
+    "188": {
+      "number": "188",
+      "now": null,
+      "next": null
+    },
+    "189": {
+      "number": "189",
+      "now": null,
+      "next": null
+    },
+    "194": {
+      "number": "194",
+      "now": null,
+      "next": null
+    },
+    "207": {
+      "number": "207",
+      "now": null,
+      "next": null
+    },
+    "209": {
+      "number": "209",
+      "now": null,
+      "next": null
+    },
+    "210": {
+      "number": "210",
+      "now": null,
+      "next": null
+    },
+    "216": {
+      "number": "216",
+      "now": null,
+      "next": null
+    },
+    "222": {
+      "number": "222",
+      "now": null,
+      "next": null
+    },
+    "224": {
+      "number": "224",
+      "now": null,
+      "next": null
+    },
+    "226": {
+      "number": "226",
+      "now": null,
+      "next": null
+    },
+    "227": {
+      "number": "227",
+      "now": null,
+      "next": null
+    },
+    "253": {
+      "number": "253",
+      "now": null,
+      "next": null
+    },
+    "254": {
+      "number": "254",
+      "now": null,
+      "next": null
+    },
+    "255": {
+      "number": "255",
+      "now": null,
+      "next": null
+    },
+    "256": {
+      "number": "256",
+      "now": null,
+      "next": null
+    },
+    "262": {
+      "number": "262",
+      "now": null,
+      "next": null
+    },
+    "263": {
+      "number": "263",
+      "now": null,
+      "next": null
+    },
+    "265": {
+      "number": "265",
+      "now": null,
+      "next": null
+    },
+    "266": {
+      "number": "266",
+      "now": null,
+      "next": null
+    },
+    "286": {
+      "number": "286",
+      "now": null,
+      "next": null
+    },
+    "291": {
+      "number": "291",
+      "now": null,
+      "next": null
+    },
+    "295": {
+      "number": "295",
+      "now": null,
+      "next": null
+    },
+    "297": {
+      "number": "297",
       "now": null,
       "next": null
     },
@@ -77,8 +679,8 @@
       "now": null,
       "next": null
     },
-    "306": {
-      "number": "306",
+    "307": {
+      "number": "307",
       "now": null,
       "next": null
     },
@@ -87,8 +689,18 @@
       "now": null,
       "next": null
     },
+    "309": {
+      "number": "309",
+      "now": null,
+      "next": null
+    },
     "310": {
       "number": "310",
+      "now": null,
+      "next": null
+    },
+    "311": {
+      "number": "311",
       "now": null,
       "next": null
     },
@@ -102,8 +714,513 @@
       "now": null,
       "next": null
     },
+    "316": {
+      "number": "316",
+      "now": null,
+      "next": null
+    },
+    "330": {
+      "number": "330",
+      "now": null,
+      "next": null
+    },
+    "331": {
+      "number": "331",
+      "now": null,
+      "next": null
+    },
+    "339": {
+      "number": "339",
+      "now": null,
+      "next": null
+    },
     "370": {
       "number": "370",
+      "now": null,
+      "next": null
+    },
+    "372": {
+      "number": "372",
+      "now": null,
+      "next": null
+    },
+    "373": {
+      "number": "373",
+      "now": null,
+      "next": null
+    },
+    "374": {
+      "number": "374",
+      "now": null,
+      "next": null
+    },
+    "382": {
+      "number": "382",
+      "now": null,
+      "next": null
+    },
+    "384": {
+      "number": "384",
+      "now": null,
+      "next": null
+    },
+    "385": {
+      "number": "385",
+      "now": null,
+      "next": null
+    },
+    "388": {
+      "number": "388",
+      "now": null,
+      "next": null
+    },
+    "392": {
+      "number": "392",
+      "now": null,
+      "next": null
+    },
+    "400": {
+      "number": "400",
+      "now": null,
+      "next": null
+    },
+    "401": {
+      "number": "401",
+      "now": null,
+      "next": null
+    },
+    "402": {
+      "number": "402",
+      "now": null,
+      "next": null
+    },
+    "403": {
+      "number": "403",
+      "now": null,
+      "next": null
+    },
+    "406": {
+      "number": "406",
+      "now": null,
+      "next": null
+    },
+    "408": {
+      "number": "408",
+      "now": null,
+      "next": null
+    },
+    "413": {
+      "number": "413",
+      "now": null,
+      "next": null
+    },
+    "416": {
+      "number": "416",
+      "now": null,
+      "next": null
+    },
+    "417": {
+      "number": "417",
+      "now": null,
+      "next": null
+    },
+    "419": {
+      "number": "419",
+      "now": null,
+      "next": null
+    },
+    "440": {
+      "number": "440",
+      "now": null,
+      "next": null
+    },
+    "442": {
+      "number": "442",
+      "now": null,
+      "next": null
+    },
+    "443": {
+      "number": "443",
+      "now": null,
+      "next": null
+    },
+    "444": {
+      "number": "444",
+      "now": null,
+      "next": null
+    },
+    "461": {
+      "number": "461",
+      "now": null,
+      "next": null
+    },
+    "463": {
+      "number": "463",
+      "now": null,
+      "next": null
+    },
+    "464": {
+      "number": "464",
+      "now": null,
+      "next": null
+    },
+    "465": {
+      "number": "465",
+      "now": null,
+      "next": null
+    },
+    "468": {
+      "number": "468",
+      "now": null,
+      "next": null
+    },
+    "469": {
+      "number": "469",
+      "now": null,
+      "next": null
+    },
+    "470": {
+      "number": "470",
+      "now": null,
+      "next": null
+    },
+    "472": {
+      "number": "472",
+      "now": null,
+      "next": null
+    },
+    "474": {
+      "number": "474",
+      "now": null,
+      "next": null
+    },
+    "481": {
+      "number": "481",
+      "now": null,
+      "next": null
+    },
+    "484": {
+      "number": "484",
+      "now": null,
+      "next": null
+    },
+    "511": {
+      "number": "511",
+      "now": null,
+      "next": null
+    },
+    "512": {
+      "number": "512",
+      "now": null,
+      "next": null
+    },
+    "513": {
+      "number": "513",
+      "now": null,
+      "next": null
+    },
+    "515": {
+      "number": "515",
+      "now": null,
+      "next": null
+    },
+    "516": {
+      "number": "516",
+      "now": null,
+      "next": null
+    },
+    "517": {
+      "number": "517",
+      "now": null,
+      "next": null
+    },
+    "531": {
+      "number": "531",
+      "now": null,
+      "next": null
+    },
+    "532": {
+      "number": "532",
+      "now": null,
+      "next": null
+    },
+    "533": {
+      "number": "533",
+      "now": null,
+      "next": null
+    },
+    "536": {
+      "number": "536",
+      "now": null,
+      "next": null
+    },
+    "537": {
+      "number": "537",
+      "now": null,
+      "next": null
+    },
+    "551": {
+      "number": "551",
+      "now": null,
+      "next": null
+    },
+    "552": {
+      "number": "552",
+      "now": null,
+      "next": null
+    },
+    "553": {
+      "number": "553",
+      "now": null,
+      "next": null
+    },
+    "554": {
+      "number": "554",
+      "now": null,
+      "next": null
+    },
+    "555": {
+      "number": "555",
+      "now": null,
+      "next": null
+    },
+    "556": {
+      "number": "556",
+      "now": null,
+      "next": null
+    },
+    "557": {
+      "number": "557",
+      "now": null,
+      "next": null
+    },
+    "558": {
+      "number": "558",
+      "now": null,
+      "next": null
+    },
+    "571": {
+      "number": "571",
+      "now": null,
+      "next": null
+    },
+    "572": {
+      "number": "572",
+      "now": null,
+      "next": null
+    },
+    "581": {
+      "number": "581",
+      "now": null,
+      "next": null
+    },
+    "582": {
+      "number": "582",
+      "now": null,
+      "next": null
+    },
+    "583": {
+      "number": "583",
+      "now": null,
+      "next": null
+    },
+    "584": {
+      "number": "584",
+      "now": null,
+      "next": null
+    },
+    "585": {
+      "number": "585",
+      "now": null,
+      "next": null
+    },
+    "586": {
+      "number": "586",
+      "now": null,
+      "next": null
+    },
+    "595": {
+      "number": "595",
+      "now": null,
+      "next": null
+    },
+    "597": {
+      "number": "597",
+      "now": null,
+      "next": null
+    },
+    "598": {
+      "number": "598",
+      "now": null,
+      "next": null
+    },
+    "599": {
+      "number": "599",
+      "now": null,
+      "next": null
+    },
+    "602": {
+      "number": "602",
+      "now": null,
+      "next": null
+    },
+    "603": {
+      "number": "603",
+      "now": null,
+      "next": null
+    },
+    "604": {
+      "number": "604",
+      "now": null,
+      "next": null
+    },
+    "605": {
+      "number": "605",
+      "now": null,
+      "next": null
+    },
+    "606": {
+      "number": "606",
+      "now": null,
+      "next": null
+    },
+    "607": {
+      "number": "607",
+      "now": null,
+      "next": null
+    },
+    "608": {
+      "number": "608",
+      "now": null,
+      "next": null
+    },
+    "620": {
+      "number": "620",
+      "now": null,
+      "next": null
+    },
+    "621": {
+      "number": "621",
+      "now": null,
+      "next": null
+    },
+    "622": {
+      "number": "622",
+      "now": null,
+      "next": null
+    },
+    "623": {
+      "number": "623",
+      "now": null,
+      "next": null
+    },
+    "625": {
+      "number": "625",
+      "now": null,
+      "next": null
+    },
+    "627": {
+      "number": "627",
+      "now": null,
+      "next": null
+    },
+    "632": {
+      "number": "632",
+      "now": null,
+      "next": null
+    },
+    "633": {
+      "number": "633",
+      "now": null,
+      "next": null
+    },
+    "640": {
+      "number": "640",
+      "now": null,
+      "next": null
+    },
+    "827": {
+      "number": "827",
+      "now": null,
+      "next": null
+    },
+    "898": {
+      "number": "898",
+      "now": null,
+      "next": null
+    },
+    "1240": {
+      "number": "1240",
+      "now": null,
+      "next": null
+    },
+    "1241": {
+      "number": "1241",
+      "now": null,
+      "next": null
+    },
+    "1245": {
+      "number": "1245",
+      "now": null,
+      "next": null
+    },
+    "1250": {
+      "number": "1250",
+      "now": null,
+      "next": null
+    },
+    "1255": {
+      "number": "1255",
+      "now": null,
+      "next": null
+    },
+    "1260": {
+      "number": "1260",
+      "now": null,
+      "next": null
+    },
+    "1261": {
+      "number": "1261",
+      "now": null,
+      "next": null
+    },
+    "1265": {
+      "number": "1265",
+      "now": null,
+      "next": null
+    },
+    "1266": {
+      "number": "1266",
+      "now": null,
+      "next": null
+    },
+    "1275": {
+      "number": "1275",
+      "now": null,
+      "next": null
+    },
+    "1276": {
+      "number": "1276",
+      "now": null,
+      "next": null
+    },
+    "1277": {
+      "number": "1277",
+      "now": null,
+      "next": null
+    },
+    "1404": {
+      "number": "1404",
+      "now": null,
+      "next": null
+    },
+    "1575": {
+      "number": "1575",
+      "now": null,
+      "next": null
+    },
+    "1581": {
+      "number": "1581",
       "now": null,
       "next": null
     }
@@ -124,7 +1241,7 @@
         "id": "sport-16-2026-08-10T18:30:00+00:00",
         "channelNumber": "16",
         "channelName": "ESPN2",
-        "title": "NBA: Lakers at Celtics",
+        "title": "NBA: Los Angeles Lakers at Boston Celtics",
         "start": "2026-08-10T18:30:00+00:00",
         "end": "2026-08-10T20:00:00+00:00",
         "sportKey": "nba"
@@ -157,7 +1274,1579 @@
         "start": "2026-08-10T21:00:00+00:00",
         "end": "2026-08-10T23:00:00+00:00",
         "sportKey": "nfl"
+      },
+      {
+        "id": "sport-306-2026-08-10T22:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "MLB: New York Yankees at Boston Red Sox",
+        "start": "2026-08-10T22:00:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "mlb"
+      }
+    ],
+    "schedule": [
+      {
+        "id": "sched-mlb-401816469",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Boston Red Sox at Toronto Blue Jays",
+        "away": "Boston Red Sox",
+        "home": "Toronto Blue Jays",
+        "start": "2026-08-10T23:07Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816470",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "New York Mets at Atlanta Braves",
+        "away": "New York Mets",
+        "home": "Atlanta Braves",
+        "start": "2026-08-10T23:15Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816471",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Baltimore Orioles at Minnesota Twins",
+        "away": "Baltimore Orioles",
+        "home": "Minnesota Twins",
+        "start": "2026-08-10T23:40Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816472",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Philadelphia Phillies at St. Louis Cardinals",
+        "away": "Philadelphia Phillies",
+        "home": "St. Louis Cardinals",
+        "start": "2026-08-10T23:45Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816478",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Texas Rangers at Los Angeles Angels",
+        "away": "Texas Rangers",
+        "home": "Los Angeles Angels",
+        "start": "2026-08-11T01:38Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816473",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Colorado Rockies at Arizona Diamondbacks",
+        "away": "Colorado Rockies",
+        "home": "Arizona Diamondbacks",
+        "start": "2026-08-11T01:40Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816476",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Milwaukee Brewers at San Diego Padres",
+        "away": "Milwaukee Brewers",
+        "home": "San Diego Padres",
+        "start": "2026-08-11T01:40Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816477",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Tampa Bay Rays at Athletics Athletics",
+        "away": "Tampa Bay Rays",
+        "home": "Athletics",
+        "start": "2026-08-11T01:40Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816474",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Houston Astros at San Francisco Giants",
+        "away": "Houston Astros",
+        "home": "San Francisco Giants",
+        "start": "2026-08-11T01:45Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-401816475",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Kansas City Royals at Los Angeles Dodgers",
+        "away": "Kansas City Royals",
+        "home": "Los Angeles Dodgers",
+        "start": "2026-08-11T02:10Z",
+        "end": null,
+        "sportKey": "mlb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nba-401902644",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Miami Heat at Toronto Raptors",
+        "away": "Miami Heat",
+        "home": "Toronto Raptors",
+        "start": "2026-10-03T23:00Z",
+        "end": null,
+        "sportKey": "nba",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401881922",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Montreal Canadiens at Toronto Maple Leafs",
+        "away": "Montreal Canadiens",
+        "home": "Toronto Maple Leafs",
+        "start": "2026-09-19T23:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401881923",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Toronto Maple Leafs at Montreal Canadiens",
+        "away": "Toronto Maple Leafs",
+        "home": "Montreal Canadiens",
+        "start": "2026-09-19T23:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401886427",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Dallas Stars at St. Louis Blues",
+        "away": "Dallas Stars",
+        "home": "St. Louis Blues",
+        "start": "2026-09-19T23:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401878099",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Winnipeg Jets at Edmonton Oilers",
+        "away": "Winnipeg Jets",
+        "home": "Edmonton Oilers",
+        "start": "2026-09-20T00:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401886258",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Chicago Blackhawks at Minnesota Wild",
+        "away": "Chicago Blackhawks",
+        "home": "Minnesota Wild",
+        "start": "2026-09-20T00:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401879412",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Vegas Golden Knights at Los Angeles Kings",
+        "away": "Vegas Golden Knights",
+        "home": "Los Angeles Kings",
+        "start": "2026-09-20T01:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-401879652",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Vancouver Canucks at Seattle Kraken",
+        "away": "Vancouver Canucks",
+        "home": "Seattle Kraken",
+        "start": "2026-09-20T02:00Z",
+        "end": null,
+        "sportKey": "nhl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nfl-401873271",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Carolina Panthers at Arizona Cardinals",
+        "away": "Carolina Panthers",
+        "home": "Arizona Cardinals",
+        "start": "2026-08-07T00:00Z",
+        "end": null,
+        "sportKey": "nfl",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-wnba-401857132",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Toronto Tempo at Atlanta Dream",
+        "away": "Toronto Tempo",
+        "home": "Atlanta Dream",
+        "start": "2026-08-11T00:00Z",
+        "end": null,
+        "sportKey": "wnba",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-wnba-401857133",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Chicago Sky at Seattle Storm",
+        "away": "Chicago Sky",
+        "home": "Seattle Storm",
+        "start": "2026-08-11T02:00Z",
+        "end": null,
+        "sportKey": "wnba",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856766",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "North Carolina Tar Heels at TCU Horned Frogs",
+        "away": "North Carolina Tar Heels",
+        "home": "TCU Horned Frogs",
+        "start": "2026-08-29T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864494",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "San Jos\u00e9 State Spartans at USC Trojans",
+        "away": "San Jos\u00e9 State Spartans",
+        "home": "USC Trojans",
+        "start": "2026-08-29T19:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858202",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "NC State Wolfpack at Virginia Cavaliers",
+        "away": "NC State Wolfpack",
+        "home": "Virginia Cavaliers",
+        "start": "2026-08-29T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864577",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Jacksonville State Gamecocks at North Dakota State Bison",
+        "away": "Jacksonville State Gamecocks",
+        "home": "North Dakota State Bison",
+        "start": "2026-08-29T21:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866408",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Sacramento State Hornets at Eastern Michigan Eagles",
+        "away": "Sacramento State Hornets",
+        "home": "Eastern Michigan Eagles",
+        "start": "2026-08-29T22:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858201",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Hawai'i Rainbow Warriors at Stanford Cardinal",
+        "away": "Hawai'i Rainbow Warriors",
+        "home": "Stanford Cardinal",
+        "start": "2026-08-29T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864570",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "New Mexico State Aggies at Florida State Seminoles",
+        "away": "New Mexico State Aggies",
+        "home": "Florida State Seminoles",
+        "start": "2026-08-29T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862693",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Memphis Tigers at UNLV Rebels",
+        "away": "Memphis Tigers",
+        "home": "UNLV Rebels",
+        "start": "2026-08-30T02:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858423",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Massachusetts Minutemen at Rutgers Scarlet Knights",
+        "away": "Massachusetts Minutemen",
+        "home": "Rutgers Scarlet Knights",
+        "start": "2026-09-03T22:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856767",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Bethune-Cookman Wildcats at UCF Knights",
+        "away": "Bethune-Cookman Wildcats",
+        "home": "UCF Knights",
+        "start": "2026-09-03T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858204",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Akron Zips at Wake Forest Demon Deacons",
+        "away": "Akron Zips",
+        "home": "Wake Forest Demon Deacons",
+        "start": "2026-09-03T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864424",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Merrimack Warriors at Delaware Blue Hens",
+        "away": "Merrimack Warriors",
+        "home": "Delaware Blue Hens",
+        "start": "2026-09-03T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864425",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "West Georgia Wolves at Kennesaw State Owls",
+        "away": "West Georgia Wolves",
+        "home": "Kennesaw State Owls",
+        "start": "2026-09-03T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866409",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UAlbany Great Danes at Buffalo Bulls",
+        "away": "UAlbany Great Danes",
+        "home": "Buffalo Bulls",
+        "start": "2026-09-03T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856663",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Arkansas-Pine Bluff Golden Lions at Missouri Tigers",
+        "away": "Arkansas-Pine Bluff Golden Lions",
+        "home": "Missouri Tigers",
+        "start": "2026-09-04T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856776",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Colorado Buffaloes at Georgia Tech Yellow Jackets",
+        "away": "Colorado Buffaloes",
+        "home": "Georgia Tech Yellow Jackets",
+        "start": "2026-09-04T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858422",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Eastern Illinois Panthers at Minnesota Golden Gophers",
+        "away": "Eastern Illinois Panthers",
+        "home": "Minnesota Golden Gophers",
+        "start": "2026-09-04T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856768",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Idaho Vandals at Utah Utes",
+        "away": "Idaho Vandals",
+        "home": "Utah Utes",
+        "start": "2026-09-04T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858424",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UAB Blazers at Illinois Fighting Illini",
+        "away": "UAB Blazers",
+        "home": "Illinois Fighting Illini",
+        "start": "2026-09-04T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864495",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "San Jos\u00e9 State Spartans at Eastern Michigan Eagles",
+        "away": "San Jos\u00e9 State Spartans",
+        "home": "Eastern Michigan Eagles",
+        "start": "2026-09-04T22:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858435",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Indiana State Sycamores at Purdue Boilermakers",
+        "away": "Indiana State Sycamores",
+        "home": "Purdue Boilermakers",
+        "start": "2026-09-04T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866623",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "North Carolina A&T Aggies at Georgia State Panthers",
+        "away": "North Carolina A&T Aggies",
+        "home": "Georgia State Panthers",
+        "start": "2026-09-04T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856664",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UTEP Miners at Oklahoma Sooners",
+        "away": "UTEP Miners",
+        "home": "Oklahoma Sooners",
+        "start": "2026-09-05T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856769",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Long Island University Sharks at Kansas Jayhawks",
+        "away": "Long Island University Sharks",
+        "home": "Kansas Jayhawks",
+        "start": "2026-09-05T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858429",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Toledo Rockets at Michigan State Spartans",
+        "away": "Toledo Rockets",
+        "home": "Michigan State Spartans",
+        "start": "2026-09-05T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858206",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Miami Hurricanes at Stanford Cardinal",
+        "away": "Miami Hurricanes",
+        "home": "Stanford Cardinal",
+        "start": "2026-09-05T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858436",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Fresno State Bulldogs at USC Trojans",
+        "away": "Fresno State Bulldogs",
+        "home": "USC Trojans",
+        "start": "2026-09-05T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856634",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "East Carolina Pirates at Alabama Crimson Tide",
+        "away": "East Carolina Pirates",
+        "home": "Alabama Crimson Tide",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856778",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Oregon State Beavers at Houston Cougars",
+        "away": "Oregon State Beavers",
+        "home": "Houston Cougars",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856780",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Coastal Carolina Chanticleers at West Virginia Mountaineers",
+        "away": "Coastal Carolina Chanticleers",
+        "home": "West Virginia Mountaineers",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858208",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "New Hampshire Wildcats at Syracuse Orange",
+        "away": "New Hampshire Wildcats",
+        "home": "Syracuse Orange",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858425",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "North Texas Mean Green at Indiana Hoosiers",
+        "away": "North Texas Mean Green",
+        "home": "Indiana Hoosiers",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858430",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Ohio Bobcats at Nebraska Cornhuskers",
+        "away": "Ohio Bobcats",
+        "home": "Nebraska Cornhuskers",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401861962",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Lafayette Leopards at UConn Huskies",
+        "away": "Lafayette Leopards",
+        "home": "UConn Huskies",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862701",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Bryant Bulldogs at Army Black Knights",
+        "away": "Bryant Bulldogs",
+        "home": "Army Black Knights",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866410",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Tarleton State Texans at Bowling Green Falcons",
+        "away": "Tarleton State Texans",
+        "home": "Bowling Green Falcons",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401869960",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Liberty Flames at James Madison Dukes",
+        "away": "Liberty Flames",
+        "home": "James Madison Dukes",
+        "start": "2026-09-05T16:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858207",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Miami (OH) RedHawks at Pittsburgh Panthers",
+        "away": "Miami (OH) RedHawks",
+        "home": "Pittsburgh Panthers",
+        "start": "2026-09-05T16:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858432",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Ball State Cardinals at Ohio State Buckeyes",
+        "away": "Ball State Cardinals",
+        "home": "Ohio State Buckeyes",
+        "start": "2026-09-05T16:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856665",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Kent State Golden Flashes at South Carolina Gamecocks",
+        "away": "Kent State Golden Flashes",
+        "home": "South Carolina Gamecocks",
+        "start": "2026-09-05T16:45Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856659",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Youngstown State Penguins at Kentucky Wildcats",
+        "away": "Youngstown State Penguins",
+        "home": "Kentucky Wildcats",
+        "start": "2026-09-05T17:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856779",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Southeast Missouri State Redhawks at Iowa State Cyclones",
+        "away": "Southeast Missouri State Redhawks",
+        "home": "Iowa State Cyclones",
+        "start": "2026-09-05T17:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864496",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Duquesne Dukes at Air Force Falcons",
+        "away": "Duquesne Dukes",
+        "home": "Air Force Falcons",
+        "start": "2026-09-05T17:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862698",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Rhode Island Rams at Temple Owls",
+        "away": "Rhode Island Rams",
+        "home": "Temple Owls",
+        "start": "2026-09-05T18:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856658",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Tennessee State Tigers at Georgia Bulldogs",
+        "away": "Tennessee State Tigers",
+        "home": "Georgia Bulldogs",
+        "start": "2026-09-05T19:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856636",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Baylor Bears at Auburn Tigers",
+        "away": "Baylor Bears",
+        "home": "Auburn Tigers",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856666",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Furman Paladins at Tennessee Volunteers",
+        "away": "Furman Paladins",
+        "home": "Tennessee Volunteers",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856667",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Texas State Bobcats at Texas Longhorns",
+        "away": "Texas State Bobcats",
+        "home": "Texas Longhorns",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856777",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Boston College Eagles at Cincinnati Bearcats",
+        "away": "Boston College Eagles",
+        "home": "Cincinnati Bearcats",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858209",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Tulane Green Wave at Duke Blue Devils",
+        "away": "Tulane Green Wave",
+        "home": "Duke Blue Devils",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858433",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Boise State Broncos at Oregon Ducks",
+        "away": "Boise State Broncos",
+        "home": "Oregon Ducks",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858434",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Marshall Thundering Herd at Penn State Nittany Lions",
+        "away": "Marshall Thundering Herd",
+        "home": "Penn State Nittany Lions",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862694",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "The Citadel Bulldogs at Charlotte 49ers",
+        "away": "The Citadel Bulldogs",
+        "home": "Charlotte 49ers",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862696",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Towson Tigers at Navy Midshipmen",
+        "away": "Towson Tigers",
+        "home": "Navy Midshipmen",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862700",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UT Rio Grande Valley Vaqueros at UTSA Roadrunners",
+        "away": "UT Rio Grande Valley Vaqueros",
+        "home": "UTSA Roadrunners",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864499",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Fordham Rams at North Dakota State Bison",
+        "away": "Fordham Rams",
+        "home": "North Dakota State Bison",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866627",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Maine Black Bears at App State Mountaineers",
+        "away": "Maine Black Bears",
+        "home": "App State Mountaineers",
+        "start": "2026-09-05T19:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856772",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Oklahoma State Cowboys at Tulsa Golden Hurricane",
+        "away": "Oklahoma State Cowboys",
+        "home": "Tulsa Golden Hurricane",
+        "start": "2026-09-05T19:45Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856635",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "North Alabama Lions at Arkansas Razorbacks",
+        "away": "North Alabama Lions",
+        "home": "Arkansas Razorbacks",
+        "start": "2026-09-05T20:15Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858426",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Northern Illinois Huskies at Iowa Hawkeyes",
+        "away": "Northern Illinois Huskies",
+        "home": "Iowa Hawkeyes",
+        "start": "2026-09-05T20:15Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401868356",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Alcorn State Braves at Southern Miss Golden Eagles",
+        "away": "Alcorn State Braves",
+        "home": "Southern Miss Golden Eagles",
+        "start": "2026-09-05T21:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401860878",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Wyoming Cowboys at Colorado State Rams",
+        "away": "Wyoming Cowboys",
+        "home": "Colorado State Rams",
+        "start": "2026-09-05T22:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401867973",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Norfolk State Spartans at Old Dominion Monarchs",
+        "away": "Norfolk State Spartans",
+        "home": "Old Dominion Monarchs",
+        "start": "2026-09-05T22:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856668",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Missouri State Bears at Texas A&M Aggies",
+        "away": "Missouri State Bears",
+        "home": "Texas A&M Aggies",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856669",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Austin Peay Governors at Vanderbilt Commodores",
+        "away": "Austin Peay Governors",
+        "home": "Vanderbilt Commodores",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856770",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Abilene Christian Wildcats at Texas Tech Red Raiders",
+        "away": "Abilene Christian Wildcats",
+        "home": "Texas Tech Red Raiders",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856771",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Nicholls Colonels at Kansas State Wildcats",
+        "away": "Nicholls Colonels",
+        "home": "Kansas State Wildcats",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401860880",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Idaho State Bengals at Utah State Aggies",
+        "away": "Idaho State Bengals",
+        "home": "Utah State Aggies",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862695",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Arkansas State Red Wolves at Memphis Tigers",
+        "away": "Arkansas State Red Wolves",
+        "home": "Memphis Tigers",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862697",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Houston Christian Huskies at Rice Owls",
+        "away": "Houston Christian Huskies",
+        "home": "Rice Owls",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401862699",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Florida International Panthers at South Florida Bulls",
+        "away": "Florida International Panthers",
+        "home": "South Florida Bulls",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401867866",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Murray State Racers at Middle Tennessee Blue Raiders",
+        "away": "Murray State Racers",
+        "home": "Middle Tennessee Blue Raiders",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401868140",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Eastern Kentucky Colonels at Jacksonville State Gamecocks",
+        "away": "Eastern Kentucky Colonels",
+        "home": "Jacksonville State Gamecocks",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401868170",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Charleston Southern Buccaneers at Georgia Southern Eagles",
+        "away": "Charleston Southern Buccaneers",
+        "home": "Georgia Southern Eagles",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401868316",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "SE Louisiana Lions at South Alabama Jaguars",
+        "away": "SE Louisiana Lions",
+        "home": "South Alabama Jaguars",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401870763",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Sam Houston Bearkats at Troy Trojans",
+        "away": "Sam Houston Bearkats",
+        "home": "Troy Trojans",
+        "start": "2026-09-05T23:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856660",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Clemson Tigers at LSU Tigers",
+        "away": "Clemson Tigers",
+        "home": "LSU Tigers",
+        "start": "2026-09-05T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856662",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UL Monroe Warhawks at Mississippi State Bulldogs",
+        "away": "UL Monroe Warhawks",
+        "home": "Mississippi State Bulldogs",
+        "start": "2026-09-05T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858211",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "VMI Keydets at Virginia Tech Hokies",
+        "away": "VMI Keydets",
+        "home": "Virginia Tech Hokies",
+        "start": "2026-09-05T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858428",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Western Michigan Broncos at Michigan Wolverines",
+        "away": "Western Michigan Broncos",
+        "home": "Michigan Wolverines",
+        "start": "2026-09-05T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401869129",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Northwestern State Demons at Louisiana Tech Bulldogs",
+        "away": "Northwestern State Demons",
+        "home": "Louisiana Tech Bulldogs",
+        "start": "2026-09-05T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856637",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Florida Atlantic Owls at Florida Gators",
+        "away": "Florida Atlantic Owls",
+        "home": "Florida Gators",
+        "start": "2026-09-05T23:45Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856775",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Utah Tech Trailblazers at BYU Cougars",
+        "away": "Utah Tech Trailblazers",
+        "home": "BYU Cougars",
+        "start": "2026-09-06T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858427",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Hampton Pirates at Maryland Terrapins",
+        "away": "Hampton Pirates",
+        "home": "Maryland Terrapins",
+        "start": "2026-09-06T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858431",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "South Dakota State Jackrabbits at Northwestern Wildcats",
+        "away": "South Dakota State Jackrabbits",
+        "home": "Northwestern Wildcats",
+        "start": "2026-09-06T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401869142",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Lamar Cardinals at Louisiana Ragin' Cajuns",
+        "away": "Lamar Cardinals",
+        "home": "Louisiana Ragin' Cajuns",
+        "start": "2026-09-06T00:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856774",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Morgan State Bears at Arizona State Sun Devils",
+        "away": "Morgan State Bears",
+        "home": "Arizona State Sun Devils",
+        "start": "2026-09-06T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401870790",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Mercyhurst Lakers at New Mexico State Aggies",
+        "away": "Mercyhurst Lakers",
+        "home": "New Mexico State Aggies",
+        "start": "2026-09-06T01:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856773",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Northern Arizona Lumberjacks at Arizona Wildcats",
+        "away": "Northern Arizona Lumberjacks",
+        "home": "Arizona Wildcats",
+        "start": "2026-09-06T01:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401860879",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Portland State Vikings at San Diego State Aztecs",
+        "away": "Portland State Vikings",
+        "home": "San Diego State Aztecs",
+        "start": "2026-09-06T01:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864497",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UNLV Rebels at Hawai'i Rainbow Warriors",
+        "away": "UNLV Rebels",
+        "home": "Hawai'i Rainbow Warriors",
+        "start": "2026-09-06T02:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864498",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Central Michigan Chippewas at New Mexico Lobos",
+        "away": "Central Michigan Chippewas",
+        "home": "New Mexico Lobos",
+        "start": "2026-09-06T02:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401866411",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Mississippi Valley State Delta Devils at Sacramento State Hornets",
+        "away": "Mississippi Valley State Delta Devils",
+        "home": "Sacramento State Hornets",
+        "start": "2026-09-06T02:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858210",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "UCLA Bruins at California Golden Bears",
+        "away": "UCLA Bruins",
+        "home": "California Golden Bears",
+        "start": "2026-09-06T02:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401864432",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Western Kentucky Hilltoppers at Nevada Wolf Pack",
+        "away": "Western Kentucky Hilltoppers",
+        "home": "Nevada Wolf Pack",
+        "start": "2026-09-06T02:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858437",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Washington State Cougars at Washington Huskies",
+        "away": "Washington State Cougars",
+        "home": "Washington Huskies",
+        "start": "2026-09-06T20:00Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401856661",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Louisville Cardinals at Ole Miss Rebels",
+        "away": "Louisville Cardinals",
+        "home": "Ole Miss Rebels",
+        "start": "2026-09-06T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858438",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "Wisconsin Badgers at Notre Dame Fighting Irish",
+        "away": "Wisconsin Badgers",
+        "home": "Notre Dame Fighting Irish",
+        "start": "2026-09-06T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-401858212",
+        "channelNumber": null,
+        "channelName": null,
+        "title": "SMU Mustangs at Florida State Seminoles",
+        "away": "SMU Mustangs",
+        "home": "Florida State Seminoles",
+        "start": "2026-09-07T23:30Z",
+        "end": null,
+        "sportKey": "cfb",
+        "matched": false,
+        "source": "schedule"
       }
     ]
-  }
+  },
+  "mappedChannelCount": 11
 }

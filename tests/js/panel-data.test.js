@@ -17,7 +17,7 @@ import {
 test("spectrum zip is 27403 and sports tabs are EPG filters", () => {
   assert.equal(SPECTRUM_ZIP, "27403");
   const ids = SPORTS.map((s) => s.id);
-  assert.deepEqual(ids, ["all", "nfl", "cfb", "nba", "nhl", "other"]);
+  assert.deepEqual(ids, ["all", "nfl", "cfb", "nba", "nhl", "mlb", "wnba", "other"]);
   assert.ok(GUIDE_CHANNELS.length >= 100);
   assert.ok(GUIDE_CHANNELS.some((c) => c.number === "17" && c.name === "ESPN"));
   assert.ok(!GUIDE_CHANNELS.some((c) => /music choice/i.test(c.name)));

@@ -192,11 +192,13 @@ cp config/guide_epg.example.yaml config/guide_epg.yaml
 
 Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so Spectrum numbers (from the lineup snapshot — e.g. ESPN **17**, ESPN2 **16**) map to XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. `lineup_file` + `sports_window_hours` drive the Sports Now/Upcoming block. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
-#### 2. Build / refresh `guide_epg.json`
-
-CLI (from repo root):
+#### 2. Pull league schedules (scraper) then build `guide_epg.json`
 
 ```bash
+# Live ESPN scoreboards → config/sports_schedule.json
+.venv/bin/python scripts/avaccess/pull_sports_schedule.py
+
+# XMLTV now/next for the full lineup (auto name-match) + schedule↔EPG match
 .venv/bin/python scripts/avaccess/build_guide_epg.py \
   --config config/guide_epg.yaml \
   --out homeassistant/config/www/avaccess/guide_epg.json
@@ -223,18 +225,18 @@ Optional hourly refresh (example — add to `automations.yaml` or a package if d
 
 #### 3. Stale feed and banner
 
-The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sport chips are unchanged.
+The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sports chips read the same feed’s `sports` block (schedule + Now/Upcoming).
 
-The checked-in default `guide_epg.json` uses a stale `generatedAt` so the degrade banner is obvious until you run the builder.
+Sparse now/next usually means the XMLTV feed only covers some networks, or names did not uniquely auto-match — point `source` at a full Greensboro XMLTV and rebuild. The checked-in default may be a demo/fixture build.
 
 ## Operator guide — Sports Routing panel
 
 The bartender panel uses a **top chip row** to switch browse modes:
 
-`NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
+`All · NFL · CFB · NBA · NHL · MLB · WNBA · Other · Guide · TVs`
 
-- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Sport chips** — scraped league schedules (ESPN scoreboards via `pull_sports_schedule.py`) plus EPG Now/Upcoming. Schedule games are tunable only when team names match an EPG sports title.
+- **Guide** — full Spectrum Gold dial for ZIP **27403** (category chips + search). Now/next fills for channels whose XMLTV ids are mapped explicitly or auto-matched by display-name. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.

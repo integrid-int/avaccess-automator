@@ -59,6 +59,8 @@ test("panel shell renders short sports chips and Spectrum ZIP guide label", () =
     cfb: "CFB",
     nba: "NBA",
     nhl: "NHL",
+    mlb: "MLB",
+    wnba: "WNBA",
     other: "Other",
   });
   assert.equal(SPECTRUM_ZIP, "27403");

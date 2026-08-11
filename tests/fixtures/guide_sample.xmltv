@@ -3,7 +3,15 @@
 <tv>
   <channel id="espn.example"><display-name>ESPN</display-name></channel>
   <channel id="espn2.example"><display-name>ESPN2</display-name></channel>
-  <channel id="fox.example"><display-name>WGHP</display-name></channel>
+  <channel id="mlb.example"><display-name>MLB Network</display-name></channel>
+  <channel id="cnn.example"><display-name>CNN</display-name></channel>
+  <channel id="foxnews.example"><display-name>Fox News</display-name></channel>
+  <channel id="usa.example"><display-name>USA Network</display-name></channel>
+  <channel id="tnt.example"><display-name>TNT</display-name></channel>
+  <channel id="wfmy.example"><display-name>wfmy</display-name></channel>
+  <channel id="wghp.example"><display-name>wghp</display-name></channel>
+  <channel id="wxii.example"><display-name>wxii</display-name></channel>
+  <channel id="wxlv.example"><display-name>wxlv</display-name></channel>
   <programme start="20260810180000 +0000" stop="20260810190000 +0000" channel="espn.example">
     <title>SportsCenter</title>
   </programme>
@@ -14,12 +22,36 @@
     <title>NFL Live</title>
   </programme>
   <programme start="20260810183000 +0000" stop="20260810200000 +0000" channel="espn2.example">
-    <title>NBA: Lakers at Celtics</title>
+    <title>NBA: Los Angeles Lakers at Boston Celtics</title>
   </programme>
   <programme start="20260810200000 +0000" stop="20260810220000 +0000" channel="espn2.example">
     <title>NHL: Bruins at Maple Leafs</title>
   </programme>
-  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="fox.example">
-    <title>Local News</title>
+  <programme start="20260810220000 +0000" stop="20260811010000 +0000" channel="mlb.example">
+    <title>MLB: New York Yankees at Boston Red Sox</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="cnn.example">
+    <title>CNN Newsroom</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="foxnews.example">
+    <title>Fox News Primetime</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="usa.example">
+    <title>WWE Raw</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="tnt.example">
+    <title>Movie Night</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="wfmy.example">
+    <title>WFMY Local News</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="wghp.example">
+    <title>WGHP Local News</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="wxii.example">
+    <title>WXII Local News</title>
+  </programme>
+  <programme start="20260810170000 +0000" stop="20260810230000 +0000" channel="wxlv.example">
+    <title>WXLV Local News</title>
   </programme>
 </tv>

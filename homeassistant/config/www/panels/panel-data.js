@@ -1,4 +1,4 @@
-import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=15";
+import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=16";
 
 export const SPECTRUM_ZIP = "27403";
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";
@@ -56,13 +56,15 @@ export const PRESETS = [
   },
 ];
 
-/** Sports chips are EPG title filters — no seed games. */
+/** Sports chips filter schedule/EPG games (no hard-coded seed matchups). */
 export const SPORTS = [
   { id: "all", title: "All sports", chipTitle: "All", icon: "" },
   { id: "nfl", title: "NFL", chipTitle: "NFL", icon: "" },
   { id: "cfb", title: "College Football", chipTitle: "CFB", icon: "" },
   { id: "nba", title: "NBA", chipTitle: "NBA", icon: "" },
   { id: "nhl", title: "NHL", chipTitle: "NHL", icon: "" },
+  { id: "mlb", title: "MLB", chipTitle: "MLB", icon: "" },
+  { id: "wnba", title: "WNBA", chipTitle: "WNBA", icon: "" },
   { id: "other", title: "Other", chipTitle: "Other", icon: "" },
 ];
 
@@ -165,15 +167,39 @@ function normalizeSportItem(item, bucket) {
   };
 }
 
+function normalizeScheduleItem(item) {
+  const channelNumber = item.channelNumber != null ? String(item.channelNumber) : "";
+  return {
+    id: item.id,
+    kind: "game",
+    source: "schedule",
+    title: item.title || `${item.away || ""} at ${item.home || ""}`.trim(),
+    channel: item.channelName || channelNumber || "No EPG match",
+    channelNumber,
+    channelName: item.channelName || "",
+    tipoff: formatSportTime(item.start),
+    start: item.start,
+    end: item.end,
+    sportKey: item.sportKey || "other",
+    bucket: "schedule",
+    matched: Boolean(item.matched && channelNumber),
+    away: item.away || item.title || "",
+    home: item.home || "",
+    awayLogo: "",
+    homeLogo: "",
+  };
+}
+
 export function sportsFromEpg(feed, nowMs = Date.now()) {
   if (!isGuideEpgFresh(feed, nowMs) || !feed?.sports) {
-    return { available: false, now: [], upcoming: [] };
+    return { available: false, now: [], upcoming: [], schedule: [] };
   }
   const now = (feed.sports.now || []).map((item) => normalizeSportItem(item, "now"));
   const upcoming = (feed.sports.upcoming || []).map((item) =>
     normalizeSportItem(item, "upcoming")
   );
-  return { available: true, now, upcoming };
+  const schedule = (feed.sports.schedule || []).map((item) => normalizeScheduleItem(item));
+  return { available: true, now, upcoming, schedule };
 }
 
 export function filterSportsByTab(items, sportKey) {
@@ -183,6 +209,11 @@ export function filterSportsByTab(items, sportKey) {
 }
 
 export function allSportsItems(feed, nowMs = Date.now()) {
-  const { available, now, upcoming } = sportsFromEpg(feed, nowMs);
-  return { available, items: [...now, ...upcoming] };
+  const { available, now, upcoming, schedule } = sportsFromEpg(feed, nowMs);
+  // Prefer schedule rows for league tabs; keep EPG now/upcoming for Other/All.
+  const byId = new Map();
+  for (const item of [...schedule, ...now, ...upcoming]) {
+    if (!byId.has(item.id)) byId.set(item.id, item);
+  }
+  return { available, items: [...byId.values()] };
 }

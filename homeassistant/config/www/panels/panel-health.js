@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=15";
+} from "./assignment-store.js?v=16";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -24,8 +24,8 @@ import {
   mergeGuideWithEpg,
   range,
   sportsFromEpg,
-} from "./panel-data.js?v=15";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=15";
+} from "./panel-data.js?v=16";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=16";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -71,6 +71,8 @@ class PanelHealth extends HTMLElement {
     this._assignments = createEmptyAssignments();
     this._boundClick = this._onClick.bind(this);
     this._boundInput = this._onInput.bind(this);
+    this._boundFocusOut = this._onFocusOut.bind(this);
+    this._guideSearchCaret = null;
     this._eventsBound = false;
     this._inventoryLiveReady = false;
     this._inventoryLoaded = false;
@@ -87,11 +89,14 @@ class PanelHealth extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     this._syncLiveCommitFromHass();
+    // HA pushes hass updates frequently; avoid wiping Guide search focus.
+    if (this._isGuideSearchFocused()) return;
     this.render();
   }
 
   set panel(panelConfig) {
     this._panel = panelConfig;
+    if (this._isGuideSearchFocused()) return;
     this.render();
   }
 
@@ -100,6 +105,7 @@ class PanelHealth extends HTMLElement {
     if (!this._eventsBound) {
       this.addEventListener("click", this._boundClick);
       this.addEventListener("input", this._boundInput);
+      this.addEventListener("focusout", this._boundFocusOut);
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
@@ -114,6 +120,7 @@ class PanelHealth extends HTMLElement {
     if (this._eventsBound) {
       this.removeEventListener("click", this._boundClick);
       this.removeEventListener("input", this._boundInput);
+      this.removeEventListener("focusout", this._boundFocusOut);
       this._eventsBound = false;
     }
     if (this._guideEpgTimer) {
@@ -198,13 +205,17 @@ class PanelHealth extends HTMLElement {
   }
 
   _sportsFeedState() {
-    const { available, now, upcoming } = sportsFromEpg(this.guideEpg);
+    const { available, now, upcoming, schedule } = sportsFromEpg(this.guideEpg);
     const sportId = this._state.sportId || "all";
+    const sched = filterSportsByTab(schedule || [], sportId);
+    const nowF = filterSportsByTab(now, sportId);
+    const upF = filterSportsByTab(upcoming, sportId);
     return {
       sportsAvailable: available,
-      now: filterSportsByTab(now, sportId),
-      upcoming: filterSportsByTab(upcoming, sportId),
-      items: filterSportsByTab([...now, ...upcoming], sportId),
+      now: nowF,
+      upcoming: upF,
+      schedule: sched,
+      items: filterSportsByTab([...(schedule || []), ...now, ...upcoming], sportId),
     };
   }
 
@@ -268,14 +279,24 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  _isGuideSearchFocused() {
+    const input = this.querySelector?.('[data-action="guide-search"]');
+    // Prefer :focus — document.activeElement is often the HA shadow host.
+    if (input?.matches?.(":focus")) return true;
+    return Boolean(this._guideSearchCaret);
+  }
+
   _captureGuideSearchCaret() {
-    const active = this.querySelector?.('[data-action="guide-search"]');
-    if (!active || document.activeElement !== active) return null;
-    return {
-      value: active.value,
-      start: active.selectionStart,
-      end: active.selectionEnd,
-    };
+    const input = this.querySelector?.('[data-action="guide-search"]');
+    if (!input) return this._guideSearchCaret ?? null;
+    if (input.matches?.(":focus") || this._guideSearchCaret) {
+      return {
+        value: input.value,
+        start: input.selectionStart,
+        end: input.selectionEnd,
+      };
+    }
+    return null;
   }
 
   _restoreGuideSearchCaret(snapshot) {
@@ -290,6 +311,7 @@ class PanelHealth extends HTMLElement {
     } catch {
       // Some input types reject selection ranges; focus alone is enough.
     }
+    this._guideSearchCaret = snapshot;
   }
 
   _routeBadgeHtml(routeId) {
@@ -306,21 +328,29 @@ class PanelHealth extends HTMLElement {
     { kicker, selected = false, cta = "Choose destination", action = "select-game" } = {}
   ) {
     const selectedClass = selected ? "is-selected" : "";
-    const actionAttr = action === "toggle-program" ? 'data-action="toggle-program"' : 'data-action="select-game"';
+    const tunable = Boolean(game.channelNumber);
+    const actionAttr = tunable
+      ? action === "toggle-program"
+        ? 'data-action="toggle-program"'
+        : 'data-action="select-game"'
+      : "";
     const title = game.title || `${game.away || ""} @ ${game.home || ""}`.trim();
     const channelLabel = game.channelNumber
       ? `${game.channelNumber} ${game.channelName || game.channel || ""}`.trim()
-      : String(game.channel || "");
+      : "No EPG channel match";
+    const metaCta = tunable ? cta : "No EPG channel match";
     return `
-      <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}">
-        <span class="card-kicker">${escapeHtml(kicker || `${channelLabel} - ${game.tipoff || ""}`)}</span>
+      <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}" ${
+        tunable ? "" : "disabled aria-disabled=\"true\""
+      }>
+        <span class="card-kicker">${escapeHtml(kicker || `${channelLabel} · ${game.tipoff || ""}`)}</span>
         <span class="matchup epg-title">
           <span class="team">
             <span>${escapeHtml(title)}</span>
           </span>
         </span>
         <span class="card-meta">
-          <span>${escapeHtml(cta)}</span>
+          <span>${escapeHtml(metaCta)}</span>
           ${this._routeBadgeHtml(game.id)}
         </span>
       </button>
@@ -477,8 +507,23 @@ class PanelHealth extends HTMLElement {
   _onInput(event) {
     const target = event.target;
     if (target?.dataset?.action === "guide-search") {
+      this._guideSearchCaret = {
+        value: target.value,
+        start: target.selectionStart,
+        end: target.selectionEnd,
+      };
       this._setState({ guideQuery: target.value });
     }
+  }
+
+  _onFocusOut(event) {
+    const target = event.target;
+    if (target?.dataset?.action !== "guide-search") return;
+    // Clear after the new focus settles so HA hass updates can render again.
+    queueMicrotask(() => {
+      const input = this.querySelector?.('[data-action="guide-search"]');
+      if (!input?.matches?.(":focus")) this._guideSearchCaret = null;
+    });
   }
 
   _browseScreenForContent() {
@@ -864,7 +909,16 @@ class PanelHealth extends HTMLElement {
 
   _renderSportScreen() {
     const sport = this._activeSport();
-    const { sportsAvailable, now, upcoming, items } = this._sportsFeedState();
+    const { sportsAvailable, now, upcoming, schedule, items } = this._sportsFeedState();
+    const renderGrid = (games, kickerFn) =>
+      `<div class="card-grid">${games
+        .map((game) =>
+          this._renderGameCard(game, {
+            kicker: kickerFn(game),
+            cta: "Choose destination",
+          })
+        )
+        .join("")}</div>`;
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -877,27 +931,30 @@ class PanelHealth extends HTMLElement {
             : this._guideUnavailableBannerHtml(false)
         }
         ${
+          schedule.length
+            ? `<div class="content-section"><h3>Schedule</h3>${renderGrid(
+                schedule,
+                (game) =>
+                  game.channelNumber
+                    ? `${game.channelNumber} ${game.channelName} · ${game.tipoff || "TBD"}`
+                    : `Unmatched · ${game.tipoff || "TBD"}`
+              )}</div>`
+            : ""
+        }
+        ${
           now.length
-            ? `<div class="content-section"><h3>Now</h3><div class="card-grid">${now
-                .map((game) =>
-                  this._renderGameCard(game, {
-                    kicker: `${game.channelNumber} ${game.channelName} · Now`,
-                    cta: "Choose destination",
-                  })
-                )
-                .join("")}</div></div>`
+            ? `<div class="content-section"><h3>On now (EPG)</h3>${renderGrid(
+                now,
+                (game) => `${game.channelNumber} ${game.channelName} · Now`
+              )}</div>`
             : ""
         }
         ${
           upcoming.length
-            ? `<div class="content-section"><h3>Upcoming</h3><div class="card-grid">${upcoming
-                .map((game) =>
-                  this._renderGameCard(game, {
-                    kicker: `${game.channelNumber} ${game.channelName} · ${game.tipoff}`,
-                    cta: "Choose destination",
-                  })
-                )
-                .join("")}</div></div>`
+            ? `<div class="content-section"><h3>Upcoming (EPG)</h3>${renderGrid(
+                upcoming,
+                (game) => `${game.channelNumber} ${game.channelName} · ${game.tipoff}`
+              )}</div>`
             : ""
         }
       </section>
