@@ -8,3 +8,9 @@ homeassistant/config/home-assistant.log*
 homeassistant/config/.HA_VERSION
 homeassistant/config/blueprints/
 homeassistant/config/deps/
+
+# Schedules Direct secrets + generated guide cache
+config/schedules_direct.yaml
+config/cache/
+*.xmltv
+!tests/fixtures/*.xmltv

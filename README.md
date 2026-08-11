@@ -192,10 +192,20 @@ cp config/guide_epg.example.yaml config/guide_epg.yaml
 
 Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so Spectrum numbers (from the lineup snapshot — e.g. ESPN **17**, ESPN2 **16**) map to XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. `lineup_file` + `sports_window_hours` drive the Sports Now/Upcoming block. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
-#### 2. Pull league schedules (scraper) then build `guide_epg.json`
+#### 2. Pull Schedules Direct (recommended) + optional league schedules
 
 ```bash
-# Live ESPN scoreboards → config/sports_schedule.json
+# Secrets (never commit):
+export SD_USERNAME='your-sd-username'
+export SD_PASSWORD='your-sd-password'
+
+cp config/schedules_direct.example.yaml config/schedules_direct.yaml
+# Discovers/adds Greensboro Charter Spectrum Cable (USA-NC32529-X) if needed
+.venv/bin/python scripts/avaccess/pull_schedules_direct.py \
+  --config config/schedules_direct.yaml \
+  --write-lineup-id
+
+# Optional: ESPN scoreboards for Sports schedule matching
 .venv/bin/python scripts/avaccess/pull_sports_schedule.py
 
 # XMLTV now/next for the full lineup (auto name-match) + schedule↔EPG match
@@ -203,6 +213,8 @@ Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `chann
   --config config/guide_epg.yaml \
   --out homeassistant/config/www/avaccess/guide_epg.json
 ```
+
+`guide_epg.example.yaml` defaults `source.file` to `config/cache/schedules_direct.xmltv` (gitignored cache).
 
 From Home Assistant (Developer Tools → Actions, or automation):
 

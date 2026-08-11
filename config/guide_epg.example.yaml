@@ -1,37 +1,31 @@
 # XMLTV → guide_epg.json builder config (ZIP 27403 Spectrum Gold / TV Platinum).
-# Copy to config/guide_epg.yaml and point source at your XMLTV feed.
 #
-#   python3 scripts/avaccess/build_guide_epg.py \
-#     --config config/guide_epg.yaml \
+# Schedules Direct (recommended):
+#   export SD_USERNAME=... SD_PASSWORD=...
+#   cp config/schedules_direct.example.yaml config/schedules_direct.yaml
+#   python3 scripts/avaccess/pull_schedules_direct.py --config config/schedules_direct.yaml --write-lineup-id
+#   python3 scripts/avaccess/build_guide_epg.py --config config/guide_epg.yaml \
 #     --out homeassistant/config/www/avaccess/guide_epg.json
 #
 # Schedule scraper (ESPN scoreboards) → match teams onto EPG sports titles:
 #   python3 scripts/avaccess/pull_sports_schedule.py
-#   # then rebuild guide_epg.json
 
 timezone: America/New_York
 zip_code: "27403"
 
-# Local fixture for offline tests/demos. Prefer url + compression for operators:
-# source:
-#   url: "https://example.invalid/xmltv.xml.gz"
-#   compression: gzip
+# Prefer Schedules Direct cache when present; fall back to local fixture for offline tests.
 source:
-  file: tests/fixtures/guide_sample.xmltv
+  file: config/cache/schedules_direct.xmltv
   compression: none
+# Offline fallback:
+# source:
+#   file: tests/fixtures/guide_sample.xmltv
+#   compression: none
 
-# Used to resolve sports-category channel numbers/names and auto-map XMLTV ids
-# by normalized display-name when channel_number_map entries are empty.
 lineup_file: config/spectrum_lineup_27403.json
-
-# Optional scraped league schedule (from pull_sports_schedule.py).
 sports_schedule_file: config/sports_schedule.json
-
 sports_window_hours: 12
 
-# Explicit Spectrum number → XMLTV channel id(s). Empty lists still allow
-# auto-match from lineup name ↔ XMLTV <display-name> when unique.
-channel_number_map:
-  "16": ["espn2.example"]
-  "17": ["espn.example"]
-  "306": ["mlb.example"]
+# Optional overrides. Empty / omitted numbers are auto-matched from XMLTV
+# <display-name> onto spectrum_lineup_27403.json names when unique.
+channel_number_map: {}

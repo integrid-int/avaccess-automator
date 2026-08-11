@@ -1,46 +1,19 @@
 {
   "zip": "27403",
-  "generatedAt": "2026-08-11T00:03:03.665996+00:00",
+  "generatedAt": "2026-08-11T00:18:06.824699+00:00",
   "channels": {
-    "16": {
-      "number": "16",
-      "now": {
-        "title": "NBA: Los Angeles Lakers at Boston Celtics",
-        "start": "2026-08-10T18:30:00+00:00",
-        "stop": "2026-08-10T20:00:00+00:00"
-      },
-      "next": {
-        "title": "NHL: Bruins at Maple Leafs",
-        "start": "2026-08-10T20:00:00+00:00",
-        "stop": "2026-08-10T22:00:00+00:00"
-      }
-    },
-    "17": {
-      "number": "17",
-      "now": {
-        "title": "SportsCenter",
-        "start": "2026-08-10T18:00:00+00:00",
-        "stop": "2026-08-10T19:00:00+00:00"
-      },
-      "next": {
-        "title": "College Football: Georgia vs Alabama",
-        "start": "2026-08-10T19:00:00+00:00",
-        "stop": "2026-08-10T21:00:00+00:00"
-      }
-    },
-    "306": {
-      "number": "306",
-      "now": null,
-      "next": {
-        "title": "MLB: New York Yankees at Boston Red Sox",
-        "start": "2026-08-10T22:00:00+00:00",
-        "stop": "2026-08-11T01:00:00+00:00"
-      }
-    },
     "3": {
       "number": "3",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "All American",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Penn & Teller: Fool Us",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "4": {
       "number": "4",
@@ -49,49 +22,81 @@
     },
     "6": {
       "number": "6",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "TCT Today",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Joyce Meyer Enjoying Everyday Life",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "7": {
       "number": "7",
       "now": {
-        "title": "WXLV Local News",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "Dancing With the Stars: The Next Pro",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "Who Wants to Be a Millionaire",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "9": {
       "number": "9",
       "now": {
-        "title": "WFMY Local News",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "The Neighborhood",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "The Neighborhood",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "10": {
       "number": "10",
       "now": {
-        "title": "WGHP Local News",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "The 1% Club",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:02:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "The Quiz With Balls",
+        "start": "2026-08-11T01:02:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "11": {
       "number": "11",
       "now": {
-        "title": "WXII Local News",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "American Ninja Warrior",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "The Wall",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "12": {
       "number": "12",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Chicago P.D.",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Chicago P.D.",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "14": {
       "number": "14",
@@ -100,42 +105,104 @@
     },
     "15": {
       "number": "15",
+      "now": {
+        "title": "Dateline",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Law & Order: Special Victims Unit",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
+    },
+    "16": {
+      "number": "16",
+      "now": {
+        "title": "Official Visit with Rece Davis",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "College Football Live",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
+    },
+    "17": {
+      "number": "17",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Little League Baseball",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "18": {
       "number": "18",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Cast Away",
+        "start": "2026-08-11T01:30:00+00:00",
+        "stop": "2026-08-11T05:00:00+00:00"
+      }
     },
     "20": {
       "number": "20",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Somebody Knows Something",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "21": {
       "number": "21",
-      "now": {
-        "title": "Movie Night",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
-      },
-      "next": null
+      "now": null,
+      "next": {
+        "title": "The Librarians: The Next Chapter",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "22": {
       "number": "22",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "BIG3 Basketball",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "BIG3 Basketball",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "23": {
       "number": "23",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Big Bang Theory",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The Big Bang Theory",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "24": {
       "number": "24",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Con Air",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:30:00+00:00"
+      },
+      "next": {
+        "title": "Gone in 60 Seconds",
+        "start": "2026-08-11T02:30:00+00:00",
+        "stop": "2026-08-11T05:00:00+00:00"
+      }
     },
     "25": {
       "number": "25",
@@ -149,13 +216,29 @@
     },
     "27": {
       "number": "27",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Ridiculousness",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Ridiculousness",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "28": {
       "number": "28",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Live PD: Greatest Shifts",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Live PD: Greatest Shifts",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:01:00+00:00"
+      }
     },
     "29": {
       "number": "29",
@@ -164,47 +247,99 @@
     },
     "30": {
       "number": "30",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Shark Tank",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Shark Tank",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "31": {
       "number": "31",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Forensic Files",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Forensic Files",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "32": {
       "number": "32",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Big Bang Theory",
+        "start": "2026-08-11T02:38:00+00:00",
+        "stop": "2026-08-11T03:15:00+00:00"
+      }
     },
     "33": {
       "number": "33",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Dr. Pimple Popper: Breaking Out",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Dr. Pimple Popper: Breaking Out",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:03:00+00:00"
+      }
     },
     "34": {
       "number": "34",
       "now": {
-        "title": "CNN Newsroom",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "Anderson Cooper 360",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "The Source With Kaitlan Collins",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "35": {
       "number": "35",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Reba",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:34:00+00:00"
+      },
+      "next": {
+        "title": "Reba",
+        "start": "2026-08-11T00:34:00+00:00",
+        "stop": "2026-08-11T01:08:00+00:00"
+      }
     },
     "36": {
       "number": "36",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Malcolm X",
+        "start": "2026-08-11T03:00:00+00:00",
+        "stop": "2026-08-11T07:30:00+00:00"
+      }
     },
     "37": {
       "number": "37",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Office",
+        "start": "2026-08-11T00:10:00+00:00",
+        "stop": "2026-08-11T00:45:00+00:00"
+      },
+      "next": {
+        "title": "The Office",
+        "start": "2026-08-11T00:45:00+00:00",
+        "stop": "2026-08-11T01:20:00+00:00"
+      }
     },
     "38": {
       "number": "38",
@@ -213,47 +348,91 @@
     },
     "39": {
       "number": "39",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "C-SPAN Primetime",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Campaign 2026",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:01:00+00:00"
+      }
     },
     "40": {
       "number": "40",
-      "now": {
-        "title": "Fox News Primetime",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
-      },
+      "now": null,
       "next": null
     },
     "41": {
       "number": "41",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Super Bowl XXVII Champions: The 1992 Dallas Cowboys",
+        "start": "2026-08-11T01:30:00+00:00",
+        "stop": "2026-08-11T02:30:00+00:00"
+      }
     },
     "43": {
       "number": "43",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Below Deck Mediterranean",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "The McBee Dynasty: Real American Cowboys",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:31:00+00:00"
+      }
     },
     "44": {
       "number": "44",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "90 Day: The Last Resort",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:01:00+00:00"
+      },
+      "next": {
+        "title": "Little Singles",
+        "start": "2026-08-11T01:01:00+00:00",
+        "stop": "2026-08-11T02:01:00+00:00"
+      }
     },
     "45": {
       "number": "45",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Insidious: Chapter 2",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:30:00+00:00"
+      }
     },
     "46": {
       "number": "46",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Two and a Half Men",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Two and a Half Men",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "48": {
       "number": "48",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Bob's Burgers",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Family Guy",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "49": {
       "number": "49",
@@ -263,11 +442,15 @@
     "50": {
       "number": "50",
       "now": {
-        "title": "WWE Raw",
-        "start": "2026-08-10T17:00:00+00:00",
-        "stop": "2026-08-10T23:00:00+00:00"
+        "title": "Law & Order: Special Victims Unit",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
       },
-      "next": null
+      "next": {
+        "title": "Law & Order: Special Victims Unit",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "51": {
       "number": "51",
@@ -276,53 +459,129 @@
     },
     "52": {
       "number": "52",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "U.S. Open Epics",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "PGA Tour Golf",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T05:30:00+00:00"
+      }
     },
     "53": {
       "number": "53",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "History's Greatest Mysteries",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "History's Greatest Mysteries",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:03:00+00:00"
+      }
     },
     "54": {
       "number": "54",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "PAW Patrol",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "PAW Patrol",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "55": {
       "number": "55",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "My Lottery Dream Home",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "My Lottery Dream Home",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "57": {
       "number": "57",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Your Cheatin' Heart",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Where the Boys Are",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "59": {
       "number": "59",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "All in With Chris Hayes",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "The Rachel Maddow Show",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "60": {
       "number": "60",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Thor: Love and Thunder",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:30:00+00:00"
+      }
     },
     "61": {
       "number": "61",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "90s Nation",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "House of Pop",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "62": {
       "number": "62",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Everybody Loves Raymond",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Everybody Loves Raymond",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "63": {
       "number": "63",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Alaskan Bush People",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Alaskan Bush People",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "64": {
       "number": "64",
@@ -331,28 +590,68 @@
     },
     "65": {
       "number": "65",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Pitmasters",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Pitmasters",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "66": {
       "number": "66",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Journey Home",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "EWTN News Nightly",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "67": {
       "number": "67",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Fight Sports: Boxing",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Diggin' Deep",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "70": {
       "number": "70",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Snapped",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Snapped",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "71": {
       "number": "71",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Criminal Minds",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Criminal Minds",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "72": {
       "number": "72",
@@ -361,33 +660,77 @@
     },
     "73": {
       "number": "73",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Descendants: Wicked Wonderland",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:45:00+00:00"
+      },
+      "next": {
+        "title": "Phineas and Ferb",
+        "start": "2026-08-11T01:45:00+00:00",
+        "stop": "2026-08-11T02:10:00+00:00"
+      }
     },
     "76": {
       "number": "76",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Fear Thy Neighbor",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "A Killer Among Friends",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "78": {
       "number": "78",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Nelly Knows Mysteries",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Murder, She Wrote",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "79": {
       "number": "79",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The China Connection",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "80": {
       "number": "80",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Iron Resurrection Refueled",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Iron Resurrection Refueled",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "81": {
       "number": "81",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Legends & Lies: The Real West",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Legends & Lies: The Real West",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "86": {
       "number": "86",
@@ -396,8 +739,16 @@
     },
     "87": {
       "number": "87",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Vincent Apple Skin Health Support",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Elite Gemstone Jewelry Finds",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "98": {
       "number": "98",
@@ -406,28 +757,68 @@
     },
     "109": {
       "number": "109",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Family Guy",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Family Guy",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "110": {
       "number": "110",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Fifth Element",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      },
+      "next": {
+        "title": "Law & Order",
+        "start": "2026-08-11T03:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "119": {
       "number": "119",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Auction Hunters",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Auction Hunters",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "124": {
       "number": "124",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Rookie",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "The Rookie",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "128": {
       "number": "128",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Cops Reloaded",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Cops Reloaded",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "130": {
       "number": "130",
@@ -441,18 +832,42 @@
     },
     "133": {
       "number": "133",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Forged in Fire",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Forged in Fire",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "134": {
       "number": "134",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Storage Wars",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Storage Wars",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "135": {
       "number": "135",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Lakefront Bargain Hunt",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Lakefront Bargain Hunt",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "136": {
       "number": "136",
@@ -461,13 +876,29 @@
     },
     "137": {
       "number": "137",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "60 Days In",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "60 Days In",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "140": {
       "number": "140",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "American Titans",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "American Titans",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "141": {
       "number": "141",
@@ -486,18 +917,42 @@
     },
     "159": {
       "number": "159",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Shawn's Fall Fashion Essentials",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "IHKWIP -- Handbags & Accessories",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "161": {
       "number": "161",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Maine Cabin Masters: All Inn",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Maine Cabin Masters: All Inn",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "163": {
       "number": "163",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Kitchen Nightmares",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Kitchen Nightmares",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "165": {
       "number": "165",
@@ -507,67 +962,163 @@
     "169": {
       "number": "169",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Michael Jackson: Chase the Truth",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "173": {
       "number": "173",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "America's Funniest Home Videos",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "America's Funniest Home Videos",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "174": {
       "number": "174",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Little Women: LA",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Little Women: LA",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "175": {
       "number": "175",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Law & Order",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Law & Order",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "176": {
       "number": "176",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Health & Wellness",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "The Real Deal with Adam",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "177": {
       "number": "177",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Wall",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Press Your Luck",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "179": {
       "number": "179",
       "now": null,
-      "next": null
+      "next": {
+        "title": "RuPaul's Drag Race",
+        "start": "2026-08-11T00:40:00+00:00",
+        "stop": "2026-08-11T01:44:00+00:00"
+      }
     },
     "182": {
       "number": "182",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Under His Influence",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:30:00+00:00"
+      },
+      "next": {
+        "title": "Ms. Pat Settles It",
+        "start": "2026-08-11T02:30:00+00:00",
+        "stop": "2026-08-11T03:07:00+00:00"
+      }
     },
     "184": {
       "number": "184",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Fatal Attraction",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Fatal Attraction",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "185": {
       "number": "185",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Steve Harvey Show",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The Steve Harvey Show",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "187": {
       "number": "187",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Hope Street",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Murdoch Mysteries",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "188": {
       "number": "188",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Warehouse Sale",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      },
+      "next": {
+        "title": "Brand Sale",
+        "start": "2026-08-11T04:00:00+00:00",
+        "stop": "2026-08-11T06:00:00+00:00"
+      }
     },
     "189": {
       "number": "189",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Parkers",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The Parkers",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "194": {
       "number": "194",
@@ -577,7 +1128,11 @@
     "207": {
       "number": "207",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Bloomberg: The China Show",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "209": {
       "number": "209",
@@ -591,13 +1146,29 @@
     },
     "216": {
       "number": "216",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Anderson Cooper 360",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "The Source With Kaitlan Collins",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "222": {
       "number": "222",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Finnerty",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Greg Kelly Reports",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "224": {
       "number": "224",
@@ -607,22 +1178,46 @@
     "226": {
       "number": "226",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Public Affairs Events",
+        "start": "2026-08-11T00:42:00+00:00",
+        "stop": "2026-08-11T02:28:00+00:00"
+      }
     },
     "227": {
       "number": "227",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "America 250",
+        "start": "2026-08-11T00:11:00+00:00",
+        "stop": "2026-08-11T01:38:00+00:00"
+      },
+      "next": {
+        "title": "America 250",
+        "start": "2026-08-11T01:38:00+00:00",
+        "stop": "2026-08-11T01:50:00+00:00"
+      }
     },
     "253": {
       "number": "253",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Scooby-Doo Show",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The Flintstones",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "254": {
       "number": "254",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Bluey",
+        "start": "2026-08-11T00:20:00+00:00",
+        "stop": "2026-08-11T00:50:00+00:00"
+      }
     },
     "255": {
       "number": "255",
@@ -631,23 +1226,47 @@
     },
     "256": {
       "number": "256",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Little Learners Lounge",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Little Learners Lounge",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "262": {
       "number": "262",
       "now": null,
-      "next": null
+      "next": {
+        "title": "SpongeBob SquarePants",
+        "start": "2026-08-11T00:21:00+00:00",
+        "stop": "2026-08-11T00:47:00+00:00"
+      }
     },
     "263": {
       "number": "263",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Thundermans: Undercover",
+        "start": "2026-08-11T00:09:00+00:00",
+        "stop": "2026-08-11T00:36:00+00:00"
+      },
+      "next": {
+        "title": "The Thundermans: Undercover",
+        "start": "2026-08-11T00:36:00+00:00",
+        "stop": "2026-08-11T01:03:00+00:00"
+      }
     },
     "265": {
       "number": "265",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Even Stevens",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "266": {
       "number": "266",
@@ -656,13 +1275,29 @@
     },
     "286": {
       "number": "286",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Epic.Awesome.Videos",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Epic.Awesome.Videos",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "291": {
       "number": "291",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Wrist Check Pod",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "DJ Drama's Gangsta Grillz Podcast",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "295": {
       "number": "295",
@@ -671,13 +1306,38 @@
     },
     "297": {
       "number": "297",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Flipping Farms",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The American Rancher",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "302": {
       "number": "302",
+      "now": {
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "College Football Live",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
+    },
+    "306": {
+      "number": "306",
       "now": null,
-      "next": null
+      "next": {
+        "title": "MLB Big Inning",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "307": {
       "number": "307",
@@ -686,8 +1346,16 @@
     },
     "308": {
       "number": "308",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Hardwood Classics",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "WNBA Playback",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T03:30:00+00:00"
+      }
     },
     "309": {
       "number": "309",
@@ -696,23 +1364,43 @@
     },
     "310": {
       "number": "310",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Inside Training Camp",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      },
+      "next": {
+        "title": "The Insiders",
+        "start": "2026-08-11T03:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "311": {
       "number": "311",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Every Sunday Afternoon",
+        "start": "2026-08-11T04:00:00+00:00",
+        "stop": "2026-08-11T12:00:00+00:00"
+      }
     },
     "312": {
       "number": "312",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Inside the NBHL",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "315": {
       "number": "315",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Poker Night in America",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "316": {
       "number": "316",
@@ -737,7 +1425,11 @@
     "370": {
       "number": "370",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Not So Fast, My Friend: A Lee Corso Special",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "372": {
       "number": "372",
@@ -756,13 +1448,25 @@
     },
     "382": {
       "number": "382",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "B1G Today",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "384": {
       "number": "384",
       "now": null,
-      "next": null
+      "next": {
+        "title": "SEC Now",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "385": {
       "number": "385",
@@ -791,8 +1495,16 @@
     },
     "402": {
       "number": "402",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Racers Unchained",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "2026 World Rally Championship Highlights",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "403": {
       "number": "403",
@@ -802,17 +1514,33 @@
     "406": {
       "number": "406",
       "now": null,
-      "next": null
+      "next": {
+        "title": "ATP/WTA Tennis",
+        "start": "2026-08-11T03:00:00+00:00",
+        "stop": "2026-08-11T10:00:00+00:00"
+      }
     },
     "408": {
       "number": "408",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Meateater Roasts",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "The Fishmonger",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "413": {
       "number": "413",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Live Racing! Night Cap",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "416": {
       "number": "416",
@@ -821,23 +1549,47 @@
     },
     "417": {
       "number": "417",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Bentonville Bike Fest",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      },
+      "next": {
+        "title": "FEI Eventing Nations Cup",
+        "start": "2026-08-11T01:30:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "419": {
       "number": "419",
       "now": null,
-      "next": null
+      "next": {
+        "title": "CONCACAF U-20 Championship Soccer",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "440": {
       "number": "440",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "B\u00e9isbol MLB",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Ahora o nunca",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "442": {
       "number": "442",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Total Sports 360",
+        "start": "2026-08-11T02:30:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "443": {
       "number": "443",
@@ -846,33 +1598,77 @@
     },
     "444": {
       "number": "444",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "L\u00ednea de cuatro",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Faitelson sin censura",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "461": {
       "number": "461",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Gunsmoke",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Gunsmoke",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "463": {
       "number": "463",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Gospel Truth with Andrew Wommack",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Joni Table Talk",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "464": {
       "number": "464",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Praise",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Takeaways With Kirk Cameron",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "465": {
       "number": "465",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Lark Rise to Candleford",
+        "start": "2026-08-11T00:03:00+00:00",
+        "stop": "2026-08-11T01:03:00+00:00"
+      },
+      "next": {
+        "title": "Malory Towers",
+        "start": "2026-08-11T01:03:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "468": {
       "number": "468",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Western Sports Roundup",
+        "start": "2026-08-11T01:30:00+00:00",
+        "stop": "2026-08-11T02:30:00+00:00"
+      }
     },
     "469": {
       "number": "469",
@@ -882,7 +1678,11 @@
     "470": {
       "number": "470",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Message of the Cross",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "472": {
       "number": "472",
@@ -896,18 +1696,42 @@
     },
     "481": {
       "number": "481",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "La-Z-Boy",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Linens to Live",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "484": {
       "number": "484",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Big Deals. Little Time",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Coin Collector",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "511": {
       "number": "511",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "House of the Dragon",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:15:00+00:00"
+      },
+      "next": {
+        "title": "Life, Larry and the Pursuit of Unhappiness",
+        "start": "2026-08-11T01:15:00+00:00",
+        "stop": "2026-08-11T01:52:00+00:00"
+      }
     },
     "512": {
       "number": "512",
@@ -917,27 +1741,51 @@
     "513": {
       "number": "513",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Batman v Superman: Dawn of Justice",
+        "start": "2026-08-11T01:24:00+00:00",
+        "stop": "2026-08-11T03:56:00+00:00"
+      }
     },
     "515": {
       "number": "515",
       "now": null,
-      "next": null
+      "next": {
+        "title": "No Hard Feelings",
+        "start": "2026-08-11T01:09:00+00:00",
+        "stop": "2026-08-11T02:55:00+00:00"
+      }
     },
     "516": {
       "number": "516",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Equalizer 2",
+        "start": "2026-08-11T01:21:00+00:00",
+        "stop": "2026-08-11T03:22:00+00:00"
+      }
     },
     "517": {
       "number": "517",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "La casa del drag\u00f3n",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:15:00+00:00"
+      },
+      "next": {
+        "title": "Life, Larry and the Pursuit of Unhappiness",
+        "start": "2026-08-11T01:15:00+00:00",
+        "stop": "2026-08-11T01:52:00+00:00"
+      }
     },
     "531": {
       "number": "531",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Maze Runner: The Death Cure",
+        "start": "2026-08-11T01:08:00+00:00",
+        "stop": "2026-08-11T03:32:00+00:00"
+      }
     },
     "532": {
       "number": "532",
@@ -947,22 +1795,42 @@
     "533": {
       "number": "533",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The 33",
+        "start": "2026-08-11T00:56:00+00:00",
+        "stop": "2026-08-11T03:04:00+00:00"
+      }
     },
     "536": {
       "number": "536",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Maze Runner: The Death Cure",
+        "start": "2026-08-11T01:08:00+00:00",
+        "stop": "2026-08-11T03:32:00+00:00"
+      }
     },
     "537": {
       "number": "537",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Dim Sum Funeral",
+        "start": "2026-08-11T01:13:00+00:00",
+        "stop": "2026-08-11T02:50:00+00:00"
+      }
     },
     "551": {
       "number": "551",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Lioness",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "American Assassin",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:00:00+00:00"
+      }
     },
     "552": {
       "number": "552",
@@ -972,117 +1840,257 @@
     "553": {
       "number": "553",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Dutchman",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:35:00+00:00"
+      }
     },
     "554": {
       "number": "554",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Saint",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Top Gun",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "555": {
       "number": "555",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Brave the Dark",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Machine Gun Preacher",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:10:00+00:00"
+      }
     },
     "556": {
       "number": "556",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "City of God",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:15:00+00:00"
+      },
+      "next": {
+        "title": "City of Men",
+        "start": "2026-08-11T02:15:00+00:00",
+        "stop": "2026-08-11T04:05:00+00:00"
+      }
     },
     "557": {
       "number": "557",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Time Traveler's Wife",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Daniela Forever",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:00:00+00:00"
+      }
     },
     "558": {
       "number": "558",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Where the Wild Things Are",
+        "start": "2026-08-11T00:10:00+00:00",
+        "stop": "2026-08-11T01:55:00+00:00"
+      },
+      "next": {
+        "title": "The Spiderwick Chronicles",
+        "start": "2026-08-11T01:55:00+00:00",
+        "stop": "2026-08-11T03:35:00+00:00"
+      }
     },
     "571": {
       "number": "571",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Last Vegas",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:45:00+00:00"
+      },
+      "next": {
+        "title": "Rat Race",
+        "start": "2026-08-11T01:45:00+00:00",
+        "stop": "2026-08-11T03:40:00+00:00"
+      }
     },
     "572": {
       "number": "572",
       "now": null,
-      "next": null
+      "next": {
+        "title": "An Officer and a Gentleman",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:05:00+00:00"
+      }
     },
     "581": {
       "number": "581",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Power Book III: Raising Kanan",
+        "start": "2026-08-11T01:10:00+00:00",
+        "stop": "2026-08-11T02:10:00+00:00"
+      }
     },
     "582": {
       "number": "582",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Power Book III: Raising Kanan",
+        "start": "2026-08-11T00:01:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Fightland",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:53:00+00:00"
+      }
     },
     "583": {
       "number": "583",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Power Book III: Raising Kanan",
+        "start": "2026-08-11T01:21:00+00:00",
+        "stop": "2026-08-11T02:20:00+00:00"
+      }
     },
     "584": {
       "number": "584",
       "now": null,
-      "next": null
+      "next": {
+        "title": "My Best Friend",
+        "start": "2026-08-11T01:11:00+00:00",
+        "stop": "2026-08-11T02:51:00+00:00"
+      }
     },
     "585": {
       "number": "585",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Bonjour tristesse",
+        "start": "2026-08-11T02:01:00+00:00",
+        "stop": "2026-08-11T03:52:00+00:00"
+      }
     },
     "586": {
       "number": "586",
       "now": null,
-      "next": null
+      "next": {
+        "title": "27 Dresses",
+        "start": "2026-08-11T01:37:00+00:00",
+        "stop": "2026-08-11T03:29:00+00:00"
+      }
     },
     "595": {
       "number": "595",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Westies",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:55:00+00:00"
+      },
+      "next": {
+        "title": "Billy the Kid",
+        "start": "2026-08-11T00:55:00+00:00",
+        "stop": "2026-08-11T01:45:00+00:00"
+      }
     },
     "597": {
       "number": "597",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Italian Job",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:55:00+00:00"
+      },
+      "next": {
+        "title": "The Saint",
+        "start": "2026-08-11T01:55:00+00:00",
+        "stop": "2026-08-11T03:55:00+00:00"
+      }
     },
     "598": {
       "number": "598",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Fury",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:15:00+00:00"
+      },
+      "next": {
+        "title": "Platoon",
+        "start": "2026-08-11T02:15:00+00:00",
+        "stop": "2026-08-11T04:15:00+00:00"
+      }
     },
     "599": {
       "number": "599",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Clue",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:40:00+00:00"
+      },
+      "next": {
+        "title": "Crocodile Dundee",
+        "start": "2026-08-11T01:40:00+00:00",
+        "stop": "2026-08-11T03:20:00+00:00"
+      }
     },
     "602": {
       "number": "602",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Think Like a Man",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:06:00+00:00"
+      }
     },
     "603": {
       "number": "603",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Ginger Snaps II: Unleashed",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:35:00+00:00"
+      },
+      "next": {
+        "title": "Ginger Snaps Back: The Beginning",
+        "start": "2026-08-11T01:35:00+00:00",
+        "stop": "2026-08-11T03:10:00+00:00"
+      }
     },
     "604": {
       "number": "604",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Why Do Fools Fall in Love",
+        "start": "2026-08-11T01:01:00+00:00",
+        "stop": "2026-08-11T02:58:00+00:00"
+      }
     },
     "605": {
       "number": "605",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Shutter Island",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T03:19:00+00:00"
+      }
     },
     "606": {
       "number": "606",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Enough",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:56:00+00:00"
+      }
     },
     "607": {
       "number": "607",
@@ -1107,32 +2115,72 @@
     "622": {
       "number": "622",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Critic",
+        "start": "2026-08-11T00:44:00+00:00",
+        "stop": "2026-08-11T02:26:00+00:00"
+      }
     },
     "623": {
       "number": "623",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Lovely Bones",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:15:00+00:00"
+      },
+      "next": {
+        "title": "The Gambler",
+        "start": "2026-08-11T02:15:00+00:00",
+        "stop": "2026-08-11T04:10:00+00:00"
+      }
     },
     "625": {
       "number": "625",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "NCIS",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "NCIS",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "627": {
       "number": "627",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Everybody Loves Raymond",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:30:00+00:00"
+      },
+      "next": {
+        "title": "Everybody Loves Raymond",
+        "start": "2026-08-11T00:30:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "632": {
       "number": "632",
       "now": null,
-      "next": null
+      "next": {
+        "title": "The Banshees of Inisherin",
+        "start": "2026-08-11T01:25:00+00:00",
+        "stop": "2026-08-11T03:45:00+00:00"
+      }
     },
     "633": {
       "number": "633",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "The Westies",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:55:00+00:00"
+      },
+      "next": {
+        "title": "Billy the Kid",
+        "start": "2026-08-11T00:55:00+00:00",
+        "stop": "2026-08-11T01:45:00+00:00"
+      }
     },
     "640": {
       "number": "640",
@@ -1147,7 +2195,11 @@
     "898": {
       "number": "898",
       "now": null,
-      "next": null
+      "next": {
+        "title": "Caso cerrado",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "1240": {
       "number": "1240",
@@ -1171,8 +2223,16 @@
     },
     "1255": {
       "number": "1255",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Heartland Homicide",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "Homicide Hunter: Lt. Joe Kenda",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "1260": {
       "number": "1260",
@@ -1201,18 +2261,42 @@
     },
     "1276": {
       "number": "1276",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "D.I. Ray",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "D.I. Ray",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      }
     },
     "1277": {
       "number": "1277",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Reel South",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      },
+      "next": {
+        "title": "North Carolina Weekend",
+        "start": "2026-08-11T01:00:00+00:00",
+        "stop": "2026-08-11T01:30:00+00:00"
+      }
     },
     "1404": {
       "number": "1404",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Phoenix Morning Express",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T00:57:00+00:00"
+      },
+      "next": {
+        "title": "Phoenix Weather Forecast",
+        "start": "2026-08-11T00:57:00+00:00",
+        "stop": "2026-08-11T01:00:00+00:00"
+      }
     },
     "1575": {
       "number": "1575",
@@ -1221,1632 +2305,1950 @@
     },
     "1581": {
       "number": "1581",
-      "now": null,
-      "next": null
+      "now": {
+        "title": "Mare fuori",
+        "start": "2026-08-11T00:00:00+00:00",
+        "stop": "2026-08-11T02:00:00+00:00"
+      },
+      "next": {
+        "title": "Filorosso",
+        "start": "2026-08-11T02:00:00+00:00",
+        "stop": "2026-08-11T04:30:00+00:00"
+      }
     }
   },
   "sports": {
     "windowHours": 12,
     "now": [
       {
-        "id": "sport-17-2026-08-10T18:00:00+00:00",
-        "channelNumber": "17",
-        "channelName": "ESPN",
-        "title": "SportsCenter",
-        "start": "2026-08-10T18:00:00+00:00",
-        "end": "2026-08-10T19:00:00+00:00",
+        "id": "sport-16-2026-08-11T00:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "Official Visit with Rece Davis",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T00:30:00+00:00",
         "sportKey": "other"
       },
       {
-        "id": "sport-16-2026-08-10T18:30:00+00:00",
-        "channelNumber": "16",
-        "channelName": "ESPN2",
-        "title": "NBA: Los Angeles Lakers at Boston Celtics",
-        "start": "2026-08-10T18:30:00+00:00",
-        "end": "2026-08-10T20:00:00+00:00",
-        "sportKey": "nba"
+        "id": "sport-52-2026-08-11T00:00:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "U.S. Open Epics",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T00:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Fight Sports: Boxing",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T00:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T00:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T00:00:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "Hardwood Classics",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T00:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "Inside Training Camp",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T00:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Today",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T00:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T00:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "Racers Unchained",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T00:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Meateater Roasts",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T00:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T00:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Bentonville Bike Fest",
+        "start": "2026-08-11T00:00:00+00:00",
+        "end": "2026-08-11T01:30:00+00:00",
+        "sportKey": "other"
       }
     ],
     "upcoming": [
       {
-        "id": "sport-17-2026-08-10T19:00:00+00:00",
-        "channelNumber": "17",
-        "channelName": "ESPN",
-        "title": "College Football: Georgia vs Alabama",
-        "start": "2026-08-10T19:00:00+00:00",
-        "end": "2026-08-10T21:00:00+00:00",
+        "id": "sport-16-2026-08-11T00:30:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "College Football Live",
+        "start": "2026-08-11T00:30:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
         "sportKey": "cfb"
       },
       {
-        "id": "sport-16-2026-08-10T20:00:00+00:00",
-        "channelNumber": "16",
-        "channelName": "ESPN2",
-        "title": "NHL: Bruins at Maple Leafs",
-        "start": "2026-08-10T20:00:00+00:00",
-        "end": "2026-08-10T22:00:00+00:00",
-        "sportKey": "nhl"
+        "id": "sport-302-2026-08-11T00:30:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "College Football Live",
+        "start": "2026-08-11T00:30:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "cfb"
       },
       {
-        "id": "sport-17-2026-08-10T21:00:00+00:00",
+        "id": "sport-382-2026-08-11T00:30:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T00:30:00+00:00",
+        "end": "2026-08-11T01:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T00:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Now",
+        "start": "2026-08-11T00:30:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T00:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "The Fishmonger",
+        "start": "2026-08-11T00:30:00+00:00",
+        "end": "2026-08-11T01:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T01:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "2026 World Series of Poker",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T01:00:00+00:00",
         "channelNumber": "17",
         "channelName": "ESPN",
+        "title": "Little League Baseball",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T01:00:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "PGA Tour Golf",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T01:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "The Domonique Foxworth Show",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T01:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "MLB Big Inning",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "mlb"
+      },
+      {
+        "id": "sport-312-2026-08-11T01:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Inside the NBHL",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T01:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T01:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "Poker Night in America",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T01:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "Not So Fast, My Friend: A Lee Corso Special",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T01:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Now",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T01:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T01:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 World Rally Championship Highlights",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T01:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Gone Again With Carter Andrews",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-413-2026-08-11T01:00:00+00:00",
+        "channelNumber": "413",
+        "channelName": "FanDuel TV",
+        "title": "Live Racing! Night Cap",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T01:00:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "CONCACAF U-20 Championship Soccer",
+        "start": "2026-08-11T01:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T01:30:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Becoming Wild",
+        "start": "2026-08-11T01:30:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T01:30:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Today",
+        "start": "2026-08-11T01:30:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T01:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Now",
+        "start": "2026-08-11T01:30:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T01:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "FEI Eventing Nations Cup",
+        "start": "2026-08-11T01:30:00+00:00",
+        "end": "2026-08-11T02:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T01:30:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Western Sports Roundup",
+        "start": "2026-08-11T01:30:00+00:00",
+        "end": "2026-08-11T02:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T02:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "2026 World Series of Poker",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T02:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Diggin' Deep",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T02:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T02:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T02:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "MLB Baseball",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "mlb"
+      },
+      {
+        "id": "sport-308-2026-08-11T02:00:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "WNBA Playback",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:30:00+00:00",
+        "sportKey": "wnba"
+      },
+      {
+        "id": "sport-312-2026-08-11T02:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Top 20 Wings Right Now",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T02:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "Poker Night in America",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T02:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "College Football",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-382-2026-08-11T02:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T02:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Now",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T02:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T02:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 RallyX Highlights",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T02:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Wild Fish Masterclass With Mike Robinson",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T02:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T02:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "The Knockout Room",
+        "start": "2026-08-11T02:00:00+00:00",
+        "end": "2026-08-11T02:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T02:30:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "College Football Live",
+        "start": "2026-08-11T02:30:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-384-2026-08-11T02:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T02:30:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T02:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Feast by Fire",
+        "start": "2026-08-11T02:30:00+00:00",
+        "end": "2026-08-11T03:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T02:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "ONE Friday Fights 152",
+        "start": "2026-08-11T02:30:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T02:30:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Cowtown Rodeo Xtreme Bulls",
+        "start": "2026-08-11T02:30:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T03:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
         "title": "NFL Live",
-        "start": "2026-08-10T21:00:00+00:00",
-        "end": "2026-08-10T23:00:00+00:00",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
         "sportKey": "nfl"
       },
       {
-        "id": "sport-306-2026-08-10T22:00:00+00:00",
+        "id": "sport-17-2026-08-11T03:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T03:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Diggin' Deep",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T03:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T03:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T03:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "The Insiders",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T03:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Top 20 Defensemen Right Now",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T03:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "Poker Night in America",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T03:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T03:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T03:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "Racers Unchained",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-406-2026-08-11T03:00:00+00:00",
+        "channelNumber": "406",
+        "channelName": "Tennis Channel",
+        "title": "ATP/WTA Tennis",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T03:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Meateater Roasts",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T03:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T03:00:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "Football Nation",
+        "start": "2026-08-11T03:00:00+00:00",
+        "end": "2026-08-11T03:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T03:30:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "College Football Live",
+        "start": "2026-08-11T03:30:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-308-2026-08-11T03:30:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "WNBA Shot Clock: Games of the Night",
+        "start": "2026-08-11T03:30:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "wnba"
+      },
+      {
+        "id": "sport-408-2026-08-11T03:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "The Fishmonger",
+        "start": "2026-08-11T03:30:00+00:00",
+        "end": "2026-08-11T04:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T03:30:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "Onesoccer Match Night",
+        "start": "2026-08-11T03:30:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T04:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "College Football Live",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-17-2026-08-11T04:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T04:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "SEC State of Mind",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T04:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "World of X Games",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T04:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "Inside Training Camp",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-311-2026-08-11T04:00:00+00:00",
+        "channelNumber": "311",
+        "channelName": "NFL RedZone",
+        "title": "Every Sunday Afternoon",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T04:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "NHL Hockey",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "nhl"
+      },
+      {
+        "id": "sport-315-2026-08-11T04:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T04:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Today",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T04:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T04:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T04:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 World Rally Championship Highlights",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T04:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Gone Again With Carter Andrews",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-413-2026-08-11T04:00:00+00:00",
+        "channelNumber": "413",
+        "channelName": "FanDuel TV",
+        "title": "Live Racing! International",
+        "start": "2026-08-11T04:00:00+00:00",
+        "end": "2026-08-11T16:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T04:30:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "SEC Storied",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T04:30:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Simms Complete",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T04:30:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "Basketcast",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T04:30:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T04:30:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Mini Matches",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T05:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T04:30:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Lea County Fair & PRCA Rodeo",
+        "start": "2026-08-11T04:30:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T05:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T05:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Bleav in Rams",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T05:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "X Games",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T05:00:00+00:00",
         "channelNumber": "306",
         "channelName": "MLB Network",
-        "title": "MLB: New York Yankees at Boston Red Sox",
-        "start": "2026-08-10T22:00:00+00:00",
-        "end": "2026-08-11T01:00:00+00:00",
-        "sportKey": "mlb"
-      }
-    ],
-    "schedule": [
-      {
-        "id": "sched-mlb-401816469",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Boston Red Sox at Toronto Blue Jays",
-        "away": "Boston Red Sox",
-        "home": "Toronto Blue Jays",
-        "start": "2026-08-10T23:07Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816470",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "New York Mets at Atlanta Braves",
-        "away": "New York Mets",
-        "home": "Atlanta Braves",
-        "start": "2026-08-10T23:15Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816471",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Baltimore Orioles at Minnesota Twins",
-        "away": "Baltimore Orioles",
-        "home": "Minnesota Twins",
-        "start": "2026-08-10T23:40Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816472",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Philadelphia Phillies at St. Louis Cardinals",
-        "away": "Philadelphia Phillies",
-        "home": "St. Louis Cardinals",
-        "start": "2026-08-10T23:45Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816478",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Texas Rangers at Los Angeles Angels",
-        "away": "Texas Rangers",
-        "home": "Los Angeles Angels",
-        "start": "2026-08-11T01:38Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816473",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Colorado Rockies at Arizona Diamondbacks",
-        "away": "Colorado Rockies",
-        "home": "Arizona Diamondbacks",
-        "start": "2026-08-11T01:40Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816476",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Milwaukee Brewers at San Diego Padres",
-        "away": "Milwaukee Brewers",
-        "home": "San Diego Padres",
-        "start": "2026-08-11T01:40Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816477",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Tampa Bay Rays at Athletics Athletics",
-        "away": "Tampa Bay Rays",
-        "home": "Athletics",
-        "start": "2026-08-11T01:40Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816474",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Houston Astros at San Francisco Giants",
-        "away": "Houston Astros",
-        "home": "San Francisco Giants",
-        "start": "2026-08-11T01:45Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-mlb-401816475",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Kansas City Royals at Los Angeles Dodgers",
-        "away": "Kansas City Royals",
-        "home": "Los Angeles Dodgers",
-        "start": "2026-08-11T02:10Z",
-        "end": null,
-        "sportKey": "mlb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nba-401902644",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Miami Heat at Toronto Raptors",
-        "away": "Miami Heat",
-        "home": "Toronto Raptors",
-        "start": "2026-10-03T23:00Z",
-        "end": null,
-        "sportKey": "nba",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401881922",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Montreal Canadiens at Toronto Maple Leafs",
-        "away": "Montreal Canadiens",
-        "home": "Toronto Maple Leafs",
-        "start": "2026-09-19T23:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401881923",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Toronto Maple Leafs at Montreal Canadiens",
-        "away": "Toronto Maple Leafs",
-        "home": "Montreal Canadiens",
-        "start": "2026-09-19T23:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401886427",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Dallas Stars at St. Louis Blues",
-        "away": "Dallas Stars",
-        "home": "St. Louis Blues",
-        "start": "2026-09-19T23:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401878099",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Winnipeg Jets at Edmonton Oilers",
-        "away": "Winnipeg Jets",
-        "home": "Edmonton Oilers",
-        "start": "2026-09-20T00:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401886258",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Chicago Blackhawks at Minnesota Wild",
-        "away": "Chicago Blackhawks",
-        "home": "Minnesota Wild",
-        "start": "2026-09-20T00:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401879412",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Vegas Golden Knights at Los Angeles Kings",
-        "away": "Vegas Golden Knights",
-        "home": "Los Angeles Kings",
-        "start": "2026-09-20T01:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nhl-401879652",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Vancouver Canucks at Seattle Kraken",
-        "away": "Vancouver Canucks",
-        "home": "Seattle Kraken",
-        "start": "2026-09-20T02:00Z",
-        "end": null,
-        "sportKey": "nhl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-nfl-401873271",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Carolina Panthers at Arizona Cardinals",
-        "away": "Carolina Panthers",
-        "home": "Arizona Cardinals",
-        "start": "2026-08-07T00:00Z",
-        "end": null,
-        "sportKey": "nfl",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-wnba-401857132",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Toronto Tempo at Atlanta Dream",
-        "away": "Toronto Tempo",
-        "home": "Atlanta Dream",
-        "start": "2026-08-11T00:00Z",
-        "end": null,
-        "sportKey": "wnba",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-wnba-401857133",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Chicago Sky at Seattle Storm",
-        "away": "Chicago Sky",
-        "home": "Seattle Storm",
-        "start": "2026-08-11T02:00Z",
-        "end": null,
-        "sportKey": "wnba",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856766",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "North Carolina Tar Heels at TCU Horned Frogs",
-        "away": "North Carolina Tar Heels",
-        "home": "TCU Horned Frogs",
-        "start": "2026-08-29T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864494",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "San Jos\u00e9 State Spartans at USC Trojans",
-        "away": "San Jos\u00e9 State Spartans",
-        "home": "USC Trojans",
-        "start": "2026-08-29T19:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858202",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "NC State Wolfpack at Virginia Cavaliers",
-        "away": "NC State Wolfpack",
-        "home": "Virginia Cavaliers",
-        "start": "2026-08-29T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864577",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Jacksonville State Gamecocks at North Dakota State Bison",
-        "away": "Jacksonville State Gamecocks",
-        "home": "North Dakota State Bison",
-        "start": "2026-08-29T21:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866408",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Sacramento State Hornets at Eastern Michigan Eagles",
-        "away": "Sacramento State Hornets",
-        "home": "Eastern Michigan Eagles",
-        "start": "2026-08-29T22:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858201",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Hawai'i Rainbow Warriors at Stanford Cardinal",
-        "away": "Hawai'i Rainbow Warriors",
-        "home": "Stanford Cardinal",
-        "start": "2026-08-29T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864570",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "New Mexico State Aggies at Florida State Seminoles",
-        "away": "New Mexico State Aggies",
-        "home": "Florida State Seminoles",
-        "start": "2026-08-29T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862693",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Memphis Tigers at UNLV Rebels",
-        "away": "Memphis Tigers",
-        "home": "UNLV Rebels",
-        "start": "2026-08-30T02:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858423",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Massachusetts Minutemen at Rutgers Scarlet Knights",
-        "away": "Massachusetts Minutemen",
-        "home": "Rutgers Scarlet Knights",
-        "start": "2026-09-03T22:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856767",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Bethune-Cookman Wildcats at UCF Knights",
-        "away": "Bethune-Cookman Wildcats",
-        "home": "UCF Knights",
-        "start": "2026-09-03T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858204",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Akron Zips at Wake Forest Demon Deacons",
-        "away": "Akron Zips",
-        "home": "Wake Forest Demon Deacons",
-        "start": "2026-09-03T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864424",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Merrimack Warriors at Delaware Blue Hens",
-        "away": "Merrimack Warriors",
-        "home": "Delaware Blue Hens",
-        "start": "2026-09-03T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864425",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "West Georgia Wolves at Kennesaw State Owls",
-        "away": "West Georgia Wolves",
-        "home": "Kennesaw State Owls",
-        "start": "2026-09-03T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866409",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UAlbany Great Danes at Buffalo Bulls",
-        "away": "UAlbany Great Danes",
-        "home": "Buffalo Bulls",
-        "start": "2026-09-03T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856663",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Arkansas-Pine Bluff Golden Lions at Missouri Tigers",
-        "away": "Arkansas-Pine Bluff Golden Lions",
-        "home": "Missouri Tigers",
-        "start": "2026-09-04T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856776",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Colorado Buffaloes at Georgia Tech Yellow Jackets",
-        "away": "Colorado Buffaloes",
-        "home": "Georgia Tech Yellow Jackets",
-        "start": "2026-09-04T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858422",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Eastern Illinois Panthers at Minnesota Golden Gophers",
-        "away": "Eastern Illinois Panthers",
-        "home": "Minnesota Golden Gophers",
-        "start": "2026-09-04T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856768",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Idaho Vandals at Utah Utes",
-        "away": "Idaho Vandals",
-        "home": "Utah Utes",
-        "start": "2026-09-04T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858424",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UAB Blazers at Illinois Fighting Illini",
-        "away": "UAB Blazers",
-        "home": "Illinois Fighting Illini",
-        "start": "2026-09-04T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864495",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "San Jos\u00e9 State Spartans at Eastern Michigan Eagles",
-        "away": "San Jos\u00e9 State Spartans",
-        "home": "Eastern Michigan Eagles",
-        "start": "2026-09-04T22:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858435",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Indiana State Sycamores at Purdue Boilermakers",
-        "away": "Indiana State Sycamores",
-        "home": "Purdue Boilermakers",
-        "start": "2026-09-04T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866623",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "North Carolina A&T Aggies at Georgia State Panthers",
-        "away": "North Carolina A&T Aggies",
-        "home": "Georgia State Panthers",
-        "start": "2026-09-04T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856664",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UTEP Miners at Oklahoma Sooners",
-        "away": "UTEP Miners",
-        "home": "Oklahoma Sooners",
-        "start": "2026-09-05T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856769",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Long Island University Sharks at Kansas Jayhawks",
-        "away": "Long Island University Sharks",
-        "home": "Kansas Jayhawks",
-        "start": "2026-09-05T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858429",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Toledo Rockets at Michigan State Spartans",
-        "away": "Toledo Rockets",
-        "home": "Michigan State Spartans",
-        "start": "2026-09-05T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858206",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Miami Hurricanes at Stanford Cardinal",
-        "away": "Miami Hurricanes",
-        "home": "Stanford Cardinal",
-        "start": "2026-09-05T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858436",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Fresno State Bulldogs at USC Trojans",
-        "away": "Fresno State Bulldogs",
-        "home": "USC Trojans",
-        "start": "2026-09-05T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856634",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "East Carolina Pirates at Alabama Crimson Tide",
-        "away": "East Carolina Pirates",
-        "home": "Alabama Crimson Tide",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856778",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Oregon State Beavers at Houston Cougars",
-        "away": "Oregon State Beavers",
-        "home": "Houston Cougars",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856780",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Coastal Carolina Chanticleers at West Virginia Mountaineers",
-        "away": "Coastal Carolina Chanticleers",
-        "home": "West Virginia Mountaineers",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858208",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "New Hampshire Wildcats at Syracuse Orange",
-        "away": "New Hampshire Wildcats",
-        "home": "Syracuse Orange",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858425",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "North Texas Mean Green at Indiana Hoosiers",
-        "away": "North Texas Mean Green",
-        "home": "Indiana Hoosiers",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858430",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Ohio Bobcats at Nebraska Cornhuskers",
-        "away": "Ohio Bobcats",
-        "home": "Nebraska Cornhuskers",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401861962",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Lafayette Leopards at UConn Huskies",
-        "away": "Lafayette Leopards",
-        "home": "UConn Huskies",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862701",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Bryant Bulldogs at Army Black Knights",
-        "away": "Bryant Bulldogs",
-        "home": "Army Black Knights",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866410",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Tarleton State Texans at Bowling Green Falcons",
-        "away": "Tarleton State Texans",
-        "home": "Bowling Green Falcons",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401869960",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Liberty Flames at James Madison Dukes",
-        "away": "Liberty Flames",
-        "home": "James Madison Dukes",
-        "start": "2026-09-05T16:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858207",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Miami (OH) RedHawks at Pittsburgh Panthers",
-        "away": "Miami (OH) RedHawks",
-        "home": "Pittsburgh Panthers",
-        "start": "2026-09-05T16:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858432",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Ball State Cardinals at Ohio State Buckeyes",
-        "away": "Ball State Cardinals",
-        "home": "Ohio State Buckeyes",
-        "start": "2026-09-05T16:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856665",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Kent State Golden Flashes at South Carolina Gamecocks",
-        "away": "Kent State Golden Flashes",
-        "home": "South Carolina Gamecocks",
-        "start": "2026-09-05T16:45Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856659",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Youngstown State Penguins at Kentucky Wildcats",
-        "away": "Youngstown State Penguins",
-        "home": "Kentucky Wildcats",
-        "start": "2026-09-05T17:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856779",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Southeast Missouri State Redhawks at Iowa State Cyclones",
-        "away": "Southeast Missouri State Redhawks",
-        "home": "Iowa State Cyclones",
-        "start": "2026-09-05T17:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864496",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Duquesne Dukes at Air Force Falcons",
-        "away": "Duquesne Dukes",
-        "home": "Air Force Falcons",
-        "start": "2026-09-05T17:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862698",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Rhode Island Rams at Temple Owls",
-        "away": "Rhode Island Rams",
-        "home": "Temple Owls",
-        "start": "2026-09-05T18:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856658",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Tennessee State Tigers at Georgia Bulldogs",
-        "away": "Tennessee State Tigers",
-        "home": "Georgia Bulldogs",
-        "start": "2026-09-05T19:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856636",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Baylor Bears at Auburn Tigers",
-        "away": "Baylor Bears",
-        "home": "Auburn Tigers",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856666",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Furman Paladins at Tennessee Volunteers",
-        "away": "Furman Paladins",
-        "home": "Tennessee Volunteers",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856667",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Texas State Bobcats at Texas Longhorns",
-        "away": "Texas State Bobcats",
-        "home": "Texas Longhorns",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856777",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Boston College Eagles at Cincinnati Bearcats",
-        "away": "Boston College Eagles",
-        "home": "Cincinnati Bearcats",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858209",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Tulane Green Wave at Duke Blue Devils",
-        "away": "Tulane Green Wave",
-        "home": "Duke Blue Devils",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858433",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Boise State Broncos at Oregon Ducks",
-        "away": "Boise State Broncos",
-        "home": "Oregon Ducks",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858434",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Marshall Thundering Herd at Penn State Nittany Lions",
-        "away": "Marshall Thundering Herd",
-        "home": "Penn State Nittany Lions",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862694",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "The Citadel Bulldogs at Charlotte 49ers",
-        "away": "The Citadel Bulldogs",
-        "home": "Charlotte 49ers",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862696",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Towson Tigers at Navy Midshipmen",
-        "away": "Towson Tigers",
-        "home": "Navy Midshipmen",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862700",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UT Rio Grande Valley Vaqueros at UTSA Roadrunners",
-        "away": "UT Rio Grande Valley Vaqueros",
-        "home": "UTSA Roadrunners",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864499",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Fordham Rams at North Dakota State Bison",
-        "away": "Fordham Rams",
-        "home": "North Dakota State Bison",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866627",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Maine Black Bears at App State Mountaineers",
-        "away": "Maine Black Bears",
-        "home": "App State Mountaineers",
-        "start": "2026-09-05T19:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856772",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Oklahoma State Cowboys at Tulsa Golden Hurricane",
-        "away": "Oklahoma State Cowboys",
-        "home": "Tulsa Golden Hurricane",
-        "start": "2026-09-05T19:45Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856635",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "North Alabama Lions at Arkansas Razorbacks",
-        "away": "North Alabama Lions",
-        "home": "Arkansas Razorbacks",
-        "start": "2026-09-05T20:15Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858426",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Northern Illinois Huskies at Iowa Hawkeyes",
-        "away": "Northern Illinois Huskies",
-        "home": "Iowa Hawkeyes",
-        "start": "2026-09-05T20:15Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401868356",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Alcorn State Braves at Southern Miss Golden Eagles",
-        "away": "Alcorn State Braves",
-        "home": "Southern Miss Golden Eagles",
-        "start": "2026-09-05T21:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401860878",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Wyoming Cowboys at Colorado State Rams",
-        "away": "Wyoming Cowboys",
-        "home": "Colorado State Rams",
-        "start": "2026-09-05T22:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401867973",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Norfolk State Spartans at Old Dominion Monarchs",
-        "away": "Norfolk State Spartans",
-        "home": "Old Dominion Monarchs",
-        "start": "2026-09-05T22:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856668",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Missouri State Bears at Texas A&M Aggies",
-        "away": "Missouri State Bears",
-        "home": "Texas A&M Aggies",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856669",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Austin Peay Governors at Vanderbilt Commodores",
-        "away": "Austin Peay Governors",
-        "home": "Vanderbilt Commodores",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856770",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Abilene Christian Wildcats at Texas Tech Red Raiders",
-        "away": "Abilene Christian Wildcats",
-        "home": "Texas Tech Red Raiders",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856771",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Nicholls Colonels at Kansas State Wildcats",
-        "away": "Nicholls Colonels",
-        "home": "Kansas State Wildcats",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401860880",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Idaho State Bengals at Utah State Aggies",
-        "away": "Idaho State Bengals",
-        "home": "Utah State Aggies",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862695",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Arkansas State Red Wolves at Memphis Tigers",
-        "away": "Arkansas State Red Wolves",
-        "home": "Memphis Tigers",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862697",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Houston Christian Huskies at Rice Owls",
-        "away": "Houston Christian Huskies",
-        "home": "Rice Owls",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401862699",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Florida International Panthers at South Florida Bulls",
-        "away": "Florida International Panthers",
-        "home": "South Florida Bulls",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401867866",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Murray State Racers at Middle Tennessee Blue Raiders",
-        "away": "Murray State Racers",
-        "home": "Middle Tennessee Blue Raiders",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401868140",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Eastern Kentucky Colonels at Jacksonville State Gamecocks",
-        "away": "Eastern Kentucky Colonels",
-        "home": "Jacksonville State Gamecocks",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401868170",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Charleston Southern Buccaneers at Georgia Southern Eagles",
-        "away": "Charleston Southern Buccaneers",
-        "home": "Georgia Southern Eagles",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401868316",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "SE Louisiana Lions at South Alabama Jaguars",
-        "away": "SE Louisiana Lions",
-        "home": "South Alabama Jaguars",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401870763",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Sam Houston Bearkats at Troy Trojans",
-        "away": "Sam Houston Bearkats",
-        "home": "Troy Trojans",
-        "start": "2026-09-05T23:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856660",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Clemson Tigers at LSU Tigers",
-        "away": "Clemson Tigers",
-        "home": "LSU Tigers",
-        "start": "2026-09-05T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856662",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UL Monroe Warhawks at Mississippi State Bulldogs",
-        "away": "UL Monroe Warhawks",
-        "home": "Mississippi State Bulldogs",
-        "start": "2026-09-05T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858211",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "VMI Keydets at Virginia Tech Hokies",
-        "away": "VMI Keydets",
-        "home": "Virginia Tech Hokies",
-        "start": "2026-09-05T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858428",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Western Michigan Broncos at Michigan Wolverines",
-        "away": "Western Michigan Broncos",
-        "home": "Michigan Wolverines",
-        "start": "2026-09-05T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401869129",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Northwestern State Demons at Louisiana Tech Bulldogs",
-        "away": "Northwestern State Demons",
-        "home": "Louisiana Tech Bulldogs",
-        "start": "2026-09-05T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856637",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Florida Atlantic Owls at Florida Gators",
-        "away": "Florida Atlantic Owls",
-        "home": "Florida Gators",
-        "start": "2026-09-05T23:45Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856775",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Utah Tech Trailblazers at BYU Cougars",
-        "away": "Utah Tech Trailblazers",
-        "home": "BYU Cougars",
-        "start": "2026-09-06T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858427",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Hampton Pirates at Maryland Terrapins",
-        "away": "Hampton Pirates",
-        "home": "Maryland Terrapins",
-        "start": "2026-09-06T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858431",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "South Dakota State Jackrabbits at Northwestern Wildcats",
-        "away": "South Dakota State Jackrabbits",
-        "home": "Northwestern Wildcats",
-        "start": "2026-09-06T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401869142",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Lamar Cardinals at Louisiana Ragin' Cajuns",
-        "away": "Lamar Cardinals",
-        "home": "Louisiana Ragin' Cajuns",
-        "start": "2026-09-06T00:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856774",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Morgan State Bears at Arizona State Sun Devils",
-        "away": "Morgan State Bears",
-        "home": "Arizona State Sun Devils",
-        "start": "2026-09-06T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401870790",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Mercyhurst Lakers at New Mexico State Aggies",
-        "away": "Mercyhurst Lakers",
-        "home": "New Mexico State Aggies",
-        "start": "2026-09-06T01:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856773",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Northern Arizona Lumberjacks at Arizona Wildcats",
-        "away": "Northern Arizona Lumberjacks",
-        "home": "Arizona Wildcats",
-        "start": "2026-09-06T01:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401860879",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Portland State Vikings at San Diego State Aztecs",
-        "away": "Portland State Vikings",
-        "home": "San Diego State Aztecs",
-        "start": "2026-09-06T01:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864497",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UNLV Rebels at Hawai'i Rainbow Warriors",
-        "away": "UNLV Rebels",
-        "home": "Hawai'i Rainbow Warriors",
-        "start": "2026-09-06T02:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864498",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Central Michigan Chippewas at New Mexico Lobos",
-        "away": "Central Michigan Chippewas",
-        "home": "New Mexico Lobos",
-        "start": "2026-09-06T02:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401866411",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Mississippi Valley State Delta Devils at Sacramento State Hornets",
-        "away": "Mississippi Valley State Delta Devils",
-        "home": "Sacramento State Hornets",
-        "start": "2026-09-06T02:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858210",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "UCLA Bruins at California Golden Bears",
-        "away": "UCLA Bruins",
-        "home": "California Golden Bears",
-        "start": "2026-09-06T02:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401864432",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Western Kentucky Hilltoppers at Nevada Wolf Pack",
-        "away": "Western Kentucky Hilltoppers",
-        "home": "Nevada Wolf Pack",
-        "start": "2026-09-06T02:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858437",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Washington State Cougars at Washington Huskies",
-        "away": "Washington State Cougars",
-        "home": "Washington Huskies",
-        "start": "2026-09-06T20:00Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401856661",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Louisville Cardinals at Ole Miss Rebels",
-        "away": "Louisville Cardinals",
-        "home": "Ole Miss Rebels",
-        "start": "2026-09-06T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858438",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "Wisconsin Badgers at Notre Dame Fighting Irish",
-        "away": "Wisconsin Badgers",
-        "home": "Notre Dame Fighting Irish",
-        "start": "2026-09-06T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
-      },
-      {
-        "id": "sched-cfb-401858212",
-        "channelNumber": null,
-        "channelName": null,
-        "title": "SMU Mustangs at Florida State Seminoles",
-        "away": "SMU Mustangs",
-        "home": "Florida State Seminoles",
-        "start": "2026-09-07T23:30Z",
-        "end": null,
-        "sportKey": "cfb",
-        "matched": false,
-        "source": "schedule"
+        "title": "Quick Pitch",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T05:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T05:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "College Football",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-384-2026-08-11T05:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T05:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 RallyX Highlights",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T05:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Wild Fish Masterclass With Mike Robinson",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T05:00:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Mini Matches",
+        "start": "2026-08-11T05:00:00+00:00",
+        "end": "2026-08-11T05:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T05:30:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "PGA Tour Golf",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T05:30:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Bleav in Chargers",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T05:30:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "Chasing History",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T05:30:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T06:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T05:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "College Football",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-408-2026-08-11T05:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Feast by Fire",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T05:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Track Cycling",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T07:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T05:30:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Mini Matches",
+        "start": "2026-08-11T05:30:00+00:00",
+        "end": "2026-08-11T06:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T06:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "30 for 30",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T06:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T06:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "United Fight Alliance",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T06:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T06:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T06:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T06:00:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "Hardwood Classics",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T06:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "NHL Hockey",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "nhl"
+      },
+      {
+        "id": "sport-315-2026-08-11T06:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T06:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 Ferrari Challenge North America Highlights",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T06:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Meateater Roasts",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T06:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T06:00:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Mini Matches",
+        "start": "2026-08-11T06:00:00+00:00",
+        "end": "2026-08-11T06:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T06:30:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "College Football Live",
+        "start": "2026-08-11T06:30:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-382-2026-08-11T06:30:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Today",
+        "start": "2026-08-11T06:30:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T06:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "The Fishmonger",
+        "start": "2026-08-11T06:30:00+00:00",
+        "end": "2026-08-11T07:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T06:30:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Premiership Football",
+        "start": "2026-08-11T06:30:00+00:00",
+        "end": "2026-08-11T09:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T07:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T07:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "United Fight Alliance",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T07:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Professional Cuesports League (PCL)",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T07:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T07:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "Inside Training Camp",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T07:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T07:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T07:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "Road to Glory",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T07:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Gone Again With Carter Andrews",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T07:00:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Pikes Peak or Bust Rodeo",
+        "start": "2026-08-11T07:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T07:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Relieve your foot pain with WalkFit!",
+        "start": "2026-08-11T07:30:00+00:00",
+        "end": "2026-08-11T08:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T08:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "2026 World Series of Poker",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T08:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T08:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Fight Sports: Boxing",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T08:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Major League Table Tennis",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T08:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T08:00:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "NBA Playback",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "nba"
+      },
+      {
+        "id": "sport-312-2026-08-11T08:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "NHL Hockey",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "nhl"
+      },
+      {
+        "id": "sport-315-2026-08-11T08:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T08:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "College Football Live",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T08:30:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-382-2026-08-11T08:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T08:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Rewind",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T08:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 Trans Am Highlights",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T08:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Wild Fish Masterclass With Mike Robinson",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T08:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T08:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Paid Programming",
+        "start": "2026-08-11T08:00:00+00:00",
+        "end": "2026-08-11T08:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T08:30:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "To Be Announced",
+        "start": "2026-08-11T08:30:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T08:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Feast by Fire",
+        "start": "2026-08-11T08:30:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T08:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Relieve your foot pain with WalkFit!",
+        "start": "2026-08-11T08:30:00+00:00",
+        "end": "2026-08-11T09:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T09:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "2026 World Series of Poker",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T09:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T09:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "Overreaction Monday",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T09:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T09:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-315-2026-08-11T09:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "PGA Tour Classic",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T09:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "College Football Live",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T09:30:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-382-2026-08-11T09:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T09:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 RallyX Highlights",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T09:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Meateater Roasts",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T09:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T09:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Relieve your foot pain with WalkFit!",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T09:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T09:00:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Ogden Pioneer Days",
+        "start": "2026-08-11T09:00:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T09:30:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "College Football Live",
+        "start": "2026-08-11T09:30:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "cfb"
+      },
+      {
+        "id": "sport-370-2026-08-11T09:30:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "ACC Huddle",
+        "start": "2026-08-11T09:30:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T09:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "The Fishmonger",
+        "start": "2026-08-11T09:30:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T09:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Paid Programming",
+        "start": "2026-08-11T09:30:00+00:00",
+        "end": "2026-08-11T10:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-419-2026-08-11T09:30:00+00:00",
+        "channelNumber": "419",
+        "channelName": "Fox Soccer Plus",
+        "title": "AFL Premiership Football",
+        "start": "2026-08-11T09:30:00+00:00",
+        "end": "2026-08-11T12:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T10:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "Unsportsmanlike with Evan, Canty and Michelle",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T10:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T10:00:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "The Golf Fix",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T10:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T10:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "Diggin' Deep",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T10:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "30 for 30",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T10:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T10:00:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "WNBA Playback",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:30:00+00:00",
+        "sportKey": "wnba"
+      },
+      {
+        "id": "sport-310-2026-08-11T10:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "The Insiders",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T10:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "NHL Hockey",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "nhl"
+      },
+      {
+        "id": "sport-315-2026-08-11T10:00:00+00:00",
+        "channelNumber": "315",
+        "channelName": "CBS Sports Network",
+        "title": "Boomer and Gio",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-370-2026-08-11T10:00:00+00:00",
+        "channelNumber": "370",
+        "channelName": "ESPNU",
+        "title": "Unsportsmanlike with Evan, Canty and Michelle",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T10:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "Men's College Soccer",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T10:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T10:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T10:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 Madera Racing",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-406-2026-08-11T10:00:00+00:00",
+        "channelNumber": "406",
+        "channelName": "Tennis Channel",
+        "title": "ATP/WTA Tennis",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T21:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T10:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Bill Dance Outdoors",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T10:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T10:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Paid Programming",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T10:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T10:00:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Farms of America",
+        "start": "2026-08-11T10:00:00+00:00",
+        "end": "2026-08-11T10:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T10:30:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "HotelPlannerTour Series H/L",
+        "start": "2026-08-11T10:30:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T10:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T10:30:00+00:00",
+        "end": "2026-08-11T11:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T10:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Ultimate Match Fishing",
+        "start": "2026-08-11T10:30:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T10:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Paid Programming",
+        "start": "2026-08-11T10:30:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T10:30:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Farms of America",
+        "start": "2026-08-11T10:30:00+00:00",
+        "end": "2026-08-11T11:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T11:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "SportsCenter",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T11:00:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "The Big Swing With Jimmy Roberts",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-67-2026-08-11T11:00:00+00:00",
+        "channelNumber": "67",
+        "channelName": "FanDuel Sports Network Southeast",
+        "title": "VSiN by the Books",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T11:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T11:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "The Insiders",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T11:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "2026 Trans Am Highlights",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T11:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Shooting USA",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T11:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T11:00:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "Paid Programming",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T11:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T11:00:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Nopalea",
+        "start": "2026-08-11T11:00:00+00:00",
+        "end": "2026-08-11T11:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-308-2026-08-11T11:30:00+00:00",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "WNBA Shot Clock: Games of the Week",
+        "start": "2026-08-11T11:30:00+00:00",
+        "end": "2026-08-11T13:30:00+00:00",
+        "sportKey": "wnba"
+      },
+      {
+        "id": "sport-384-2026-08-11T11:30:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "Marty & McGee",
+        "start": "2026-08-11T11:30:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T11:30:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "American Rifleman TV",
+        "start": "2026-08-11T11:30:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-417-2026-08-11T11:30:00+00:00",
+        "channelNumber": "417",
+        "channelName": "beIN Sports",
+        "title": "X-Games Reaction Sports",
+        "start": "2026-08-11T11:30:00+00:00",
+        "end": "2026-08-11T12:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T11:30:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Farms of America",
+        "start": "2026-08-11T11:30:00+00:00",
+        "end": "2026-08-11T12:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-16-2026-08-11T12:00:00+00:00",
+        "channelNumber": "16",
+        "channelName": "ESPN2",
+        "title": "SportsCenter",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-17-2026-08-11T12:00:00+00:00",
+        "channelNumber": "17",
+        "channelName": "ESPN",
+        "title": "Get Up",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-52-2026-08-11T12:00:00+00:00",
+        "channelNumber": "52",
+        "channelName": "Golf Channel",
+        "title": "5 Clubs With Gary Williams",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-302-2026-08-11T12:00:00+00:00",
+        "channelNumber": "302",
+        "channelName": "ESPNews",
+        "title": "30 for 30",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-306-2026-08-11T12:00:00+00:00",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "Quick Pitch",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-310-2026-08-11T12:00:00+00:00",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "Good Morning Football",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T14:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-311-2026-08-11T12:00:00+00:00",
+        "channelNumber": "311",
+        "channelName": "NFL RedZone",
+        "title": "Every Sunday Afternoon",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T20:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-312-2026-08-11T12:00:00+00:00",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Top 20 Wings Right Now",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-382-2026-08-11T12:00:00+00:00",
+        "channelNumber": "382",
+        "channelName": "Big Ten Network",
+        "title": "B1G Football Training Camp",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-384-2026-08-11T12:00:00+00:00",
+        "channelNumber": "384",
+        "channelName": "SEC Network",
+        "title": "SEC Now",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T12:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-402-2026-08-11T12:00:00+00:00",
+        "channelNumber": "402",
+        "channelName": "RACER Network",
+        "title": "Racers Unchained",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T13:00:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-408-2026-08-11T12:00:00+00:00",
+        "channelNumber": "408",
+        "channelName": "Outdoor Channel",
+        "title": "Offroad Odyssey",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T12:30:00+00:00",
+        "sportKey": "other"
+      },
+      {
+        "id": "sport-468-2026-08-11T12:00:00+00:00",
+        "channelNumber": "468",
+        "channelName": "Cowboy Channel",
+        "title": "Farms of America",
+        "start": "2026-08-11T12:00:00+00:00",
+        "end": "2026-08-11T12:30:00+00:00",
+        "sportKey": "other"
       }
     ]
   },
-  "mappedChannelCount": 11
+  "mappedChannelCount": 168
 }
