@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=17";
+} from "./assignment-store.js?v=18";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -19,13 +19,12 @@ import {
   allSportsItems,
   filterGuideByCategory,
   filterGuideChannels,
-  filterSportsByTab,
   guideCategories,
   mergeGuideWithEpg,
   range,
-  sportsFromEpg,
-} from "./panel-data.js?v=17";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=17";
+  sportsItemsForTab,
+} from "./panel-data.js?v=18";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=18";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -205,17 +204,17 @@ class PanelHealth extends HTMLElement {
   }
 
   _sportsFeedState() {
-    const { available, now, upcoming, schedule } = sportsFromEpg(this.guideEpg);
     const sportId = this._state.sportId || "all";
-    const sched = filterSportsByTab(schedule || [], sportId);
-    const nowF = filterSportsByTab(now, sportId);
-    const upF = filterSportsByTab(upcoming, sportId);
+    const { available, now, upcoming, schedule, items } = sportsItemsForTab(
+      this.guideEpg,
+      sportId
+    );
     return {
       sportsAvailable: available,
-      now: nowF,
-      upcoming: upF,
-      schedule: sched,
-      items: filterSportsByTab([...(schedule || []), ...now, ...upcoming], sportId),
+      now,
+      upcoming,
+      schedule,
+      items,
     };
   }
 
@@ -932,18 +931,23 @@ class PanelHealth extends HTMLElement {
         }
         ${
           schedule.length
-            ? `<div class="content-section"><h3>Schedule</h3>${renderGrid(
+            ? `<div class="content-section"><h3>Games</h3>${renderGrid(
                 schedule,
-                (game) =>
-                  game.channelNumber
-                    ? `${game.channelNumber} ${game.channelName} · ${game.tipoff || "TBD"}`
-                    : `Unmatched · ${game.tipoff || "TBD"}`
+                (game) => {
+                  const net = (game.broadcasts || []).slice(0, 2).join("/");
+                  if (game.channelNumber) {
+                    return `${game.channelNumber} ${game.channelName}${
+                      net ? ` · ${net}` : ""
+                    } · ${game.tipoff || "TBD"}`;
+                  }
+                  return `No channel match${net ? ` · ${net}` : ""} · ${game.tipoff || "TBD"}`;
+                }
               )}</div>`
             : ""
         }
         ${
           now.length
-            ? `<div class="content-section"><h3>On now (EPG)</h3>${renderGrid(
+            ? `<div class="content-section"><h3>On now (EPG fallback)</h3>${renderGrid(
                 now,
                 (game) => `${game.channelNumber} ${game.channelName} · Now`
               )}</div>`
@@ -951,7 +955,7 @@ class PanelHealth extends HTMLElement {
         }
         ${
           upcoming.length
-            ? `<div class="content-section"><h3>Upcoming (EPG)</h3>${renderGrid(
+            ? `<div class="content-section"><h3>Upcoming (EPG fallback)</h3>${renderGrid(
                 upcoming,
                 (game) => `${game.channelNumber} ${game.channelName} · ${game.tipoff}`
               )}</div>`

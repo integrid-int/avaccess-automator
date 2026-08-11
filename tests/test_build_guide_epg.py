@@ -4,6 +4,7 @@ from scripts.avaccess.build_guide_epg import (
     build_guide_epg,
     classify_sport_key,
     map_xmltv_ids_by_number,
+    match_broadcast_to_channel,
     match_schedule_to_epg,
     normalize_channel_name,
 )
@@ -71,9 +72,28 @@ def test_build_guide_epg_now_next_and_auto_map_lineup():
     sports = out["sports"]
     assert any("Lakers" in i["title"] for i in sports["now"])
     assert "schedule" in sports
-    mlb = next(i for i in sports["schedule"] if i["sportKey"] == "mlb")
+    mlb = next(i for i in sports["schedule"] if i["id"] == "sched-mlb-1")
     assert mlb["matched"] is True
     assert mlb["channelNumber"] == "306"
+    assert mlb["matchVia"] == "broadcast"
+    wnba = next(i for i in sports["schedule"] if i["sportKey"] == "wnba")
+    assert wnba["matched"] is True
+    assert wnba["channelNumber"] == "300"  # prefer HD ESPN dial
+
+
+def test_match_broadcast_to_channel_prefers_sports_hd():
+    lineup = [
+        {"number": "17", "name": "ESPN", "category": "Sports"},
+        {"number": "300", "name": "ESPN", "category": "Sports"},
+        {"number": "40", "name": "Fox News Channel", "category": "News"},
+        {"number": "400", "name": "FS1", "category": "Sports"},
+    ]
+    hit = match_broadcast_to_channel(["ESPN"], lineup)
+    assert hit["channelNumber"] == "300"
+    fs1 = match_broadcast_to_channel(["FS1"], lineup)
+    assert fs1["channelNumber"] == "400"
+    # Do not map bare FOX onto Fox News.
+    assert match_broadcast_to_channel(["FOX"], lineup) is None
 
 
 def test_match_schedule_to_epg_team_names():

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-10T18:00:00+00:00",
+  "generatedAt": "2026-08-11T00:00:00+00:00",
   "source": "fixture",
   "games": [
     {
@@ -10,7 +10,19 @@
       "title": "New York Yankees at Boston Red Sox",
       "start": "2026-08-10T23:05:00+00:00",
       "end": null,
-      "status": "STATUS_SCHEDULED"
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["MLB Network"]
+    },
+    {
+      "id": "sched-mlb-2",
+      "sportKey": "mlb",
+      "away": "Los Angeles Dodgers",
+      "home": "San Diego Padres",
+      "title": "Los Angeles Dodgers at San Diego Padres",
+      "start": "2026-08-11T02:10:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["ESPN"]
     },
     {
       "id": "sched-nba-1",
@@ -20,7 +32,52 @@
       "title": "Los Angeles Lakers at Boston Celtics",
       "start": "2026-08-10T18:30:00+00:00",
       "end": null,
-      "status": "STATUS_IN_PROGRESS"
+      "status": "STATUS_IN_PROGRESS",
+      "broadcasts": ["NBA TV"]
+    },
+    {
+      "id": "sched-wnba-1",
+      "sportKey": "wnba",
+      "away": "Las Vegas Aces",
+      "home": "New York Liberty",
+      "title": "Las Vegas Aces at New York Liberty",
+      "start": "2026-08-11T23:30:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["ESPN", "ABC"]
+    },
+    {
+      "id": "sched-nfl-1",
+      "sportKey": "nfl",
+      "away": "Green Bay Packers",
+      "home": "Chicago Bears",
+      "title": "Green Bay Packers at Chicago Bears",
+      "start": "2026-08-16T00:00:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["NFL Network"]
+    },
+    {
+      "id": "sched-cfb-1",
+      "sportKey": "cfb",
+      "away": "Georgia Bulldogs",
+      "home": "Clemson Tigers",
+      "title": "Georgia Bulldogs at Clemson Tigers",
+      "start": "2026-08-30T19:30:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["ACC Network"]
+    },
+    {
+      "id": "sched-nhl-1",
+      "sportKey": "nhl",
+      "away": "Boston Bruins",
+      "home": "Toronto Maple Leafs",
+      "title": "Boston Bruins at Toronto Maple Leafs",
+      "start": "2026-10-08T23:00:00+00:00",
+      "end": null,
+      "status": "STATUS_SCHEDULED",
+      "broadcasts": ["NHL Network"]
     }
   ],
   "errors": []

@@ -1,4 +1,4 @@
-import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=17";
+import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=18";
 
 export const SPECTRUM_ZIP = "27403";
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";
@@ -169,12 +169,15 @@ function normalizeSportItem(item, bucket) {
 
 function normalizeScheduleItem(item) {
   const channelNumber = item.channelNumber != null ? String(item.channelNumber) : "";
+  const broadcasts = Array.isArray(item.broadcasts)
+    ? item.broadcasts.map((b) => String(b)).filter(Boolean)
+    : [];
   return {
     id: item.id,
     kind: "game",
     source: "schedule",
     title: item.title || `${item.away || ""} at ${item.home || ""}`.trim(),
-    channel: item.channelName || channelNumber || "No EPG match",
+    channel: item.channelName || channelNumber || "No channel match",
     channelNumber,
     channelName: item.channelName || "",
     tipoff: formatSportTime(item.start),
@@ -183,6 +186,7 @@ function normalizeScheduleItem(item) {
     sportKey: item.sportKey || "other",
     bucket: "schedule",
     matched: Boolean(item.matched && channelNumber),
+    broadcasts,
     away: item.away || item.title || "",
     home: item.home || "",
     awayLogo: "",
@@ -208,12 +212,58 @@ export function filterSportsByTab(items, sportKey) {
   return items.filter((item) => item.sportKey === key);
 }
 
-export function allSportsItems(feed, nowMs = Date.now()) {
+/**
+ * League chips (NFL/MLB/…) list ESPN schedule games matched to channels.
+ * Generic Sports-category EPG dump is only used for Other, or as fallback
+ * when the schedule feed is empty for that league.
+ */
+export function sportsItemsForTab(feed, sportKey, nowMs = Date.now()) {
   const { available, now, upcoming, schedule } = sportsFromEpg(feed, nowMs);
-  // Prefer schedule rows for league tabs; keep EPG now/upcoming for Other/All.
-  const byId = new Map();
-  for (const item of [...schedule, ...now, ...upcoming]) {
-    if (!byId.has(item.id)) byId.set(item.id, item);
+  const key = String(sportKey || "all");
+  const sched = filterSportsByTab(schedule || [], key);
+
+  if (key === "other") {
+    const nowF = filterSportsByTab(now, "other");
+    const upF = filterSportsByTab(upcoming, "other");
+    return {
+      available,
+      schedule: [],
+      now: nowF,
+      upcoming: upF,
+      items: [...nowF, ...upF],
+    };
   }
-  return { available, items: [...byId.values()] };
+
+  if (key !== "all") {
+    if (sched.length) {
+      return { available, schedule: sched, now: [], upcoming: [], items: sched };
+    }
+    // Fallback: classified EPG rows when ESPN schedule missing.
+    const nowF = filterSportsByTab(now, key);
+    const upF = filterSportsByTab(upcoming, key);
+    return {
+      available,
+      schedule: [],
+      now: nowF,
+      upcoming: upF,
+      items: [...nowF, ...upF],
+    };
+  }
+
+  // All sports: schedule games first; fall back to EPG only if no schedule.
+  if (sched.length) {
+    return { available, schedule: sched, now: [], upcoming: [], items: sched };
+  }
+  return {
+    available,
+    schedule: [],
+    now,
+    upcoming,
+    items: [...now, ...upcoming],
+  };
+}
+
+export function allSportsItems(feed, nowMs = Date.now()) {
+  const { available, items } = sportsItemsForTab(feed, "all", nowMs);
+  return { available, items };
 }

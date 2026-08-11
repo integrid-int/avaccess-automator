@@ -1,6 +1,6 @@
 {
   "zip": "27403",
-  "generatedAt": "2026-08-11T00:21:41.828701+00:00",
+  "generatedAt": "2026-08-11T00:26:30.560266+00:00",
   "channels": {
     "1": {
       "number": "1",
@@ -10047,6 +10047,128 @@
         "start": "2026-08-11T12:00:00+00:00",
         "end": "2026-08-11T12:30:00+00:00",
         "sportKey": "other"
+      }
+    ],
+    "schedule": [
+      {
+        "id": "sched-mlb-1",
+        "channelNumber": "306",
+        "channelName": "MLB Network",
+        "title": "New York Yankees at Boston Red Sox",
+        "away": "New York Yankees",
+        "home": "Boston Red Sox",
+        "start": "2026-08-10T23:05:00+00:00",
+        "end": null,
+        "sportKey": "mlb",
+        "broadcasts": [
+          "MLB Network"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-mlb-2",
+        "channelNumber": "300",
+        "channelName": "ESPN",
+        "title": "Los Angeles Dodgers at San Diego Padres",
+        "away": "Los Angeles Dodgers",
+        "home": "San Diego Padres",
+        "start": "2026-08-11T02:10:00+00:00",
+        "end": null,
+        "sportKey": "mlb",
+        "broadcasts": [
+          "ESPN"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nba-1",
+        "channelNumber": "308",
+        "channelName": "NBA TV",
+        "title": "Los Angeles Lakers at Boston Celtics",
+        "away": "Los Angeles Lakers",
+        "home": "Boston Celtics",
+        "start": "2026-08-10T18:30:00+00:00",
+        "end": null,
+        "sportKey": "nba",
+        "broadcasts": [
+          "NBA TV"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-wnba-1",
+        "channelNumber": "300",
+        "channelName": "ESPN",
+        "title": "Las Vegas Aces at New York Liberty",
+        "away": "Las Vegas Aces",
+        "home": "New York Liberty",
+        "start": "2026-08-11T23:30:00+00:00",
+        "end": null,
+        "sportKey": "wnba",
+        "broadcasts": [
+          "ESPN",
+          "ABC"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nfl-1",
+        "channelNumber": "310",
+        "channelName": "NFL Network",
+        "title": "Green Bay Packers at Chicago Bears",
+        "away": "Green Bay Packers",
+        "home": "Chicago Bears",
+        "start": "2026-08-16T00:00:00+00:00",
+        "end": null,
+        "sportKey": "nfl",
+        "broadcasts": [
+          "NFL Network"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-cfb-1",
+        "channelNumber": "388",
+        "channelName": "ACC Network",
+        "title": "Georgia Bulldogs at Clemson Tigers",
+        "away": "Georgia Bulldogs",
+        "home": "Clemson Tigers",
+        "start": "2026-08-30T19:30:00+00:00",
+        "end": null,
+        "sportKey": "cfb",
+        "broadcasts": [
+          "ACC Network"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
+      },
+      {
+        "id": "sched-nhl-1",
+        "channelNumber": "312",
+        "channelName": "NHL Network",
+        "title": "Boston Bruins at Toronto Maple Leafs",
+        "away": "Boston Bruins",
+        "home": "Toronto Maple Leafs",
+        "start": "2026-10-08T23:00:00+00:00",
+        "end": null,
+        "sportKey": "nhl",
+        "broadcasts": [
+          "NHL Network"
+        ],
+        "matched": true,
+        "matchVia": "broadcast",
+        "source": "schedule"
       }
     ]
   },

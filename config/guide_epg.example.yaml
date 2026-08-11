@@ -7,8 +7,12 @@
 #   python3 scripts/avaccess/build_guide_epg.py --config config/guide_epg.yaml \
 #     --out homeassistant/config/www/avaccess/guide_epg.json
 #
-# Schedule scraper (ESPN scoreboards) → match teams onto EPG sports titles:
+# ESPN scoreboards → match games to Spectrum channels (broadcast network, then EPG title):
 #   python3 scripts/avaccess/pull_sports_schedule.py
+#   python3 scripts/avaccess/build_guide_epg.py --config config/guide_epg.yaml \
+#     --out homeassistant/config/www/avaccess/guide_epg.json
+# Offline demo fixture:
+#   python3 scripts/avaccess/pull_sports_schedule.py --from-json tests/fixtures/sports_schedule_sample.json
 
 timezone: America/New_York
 zip_code: "27403"

@@ -246,51 +246,226 @@ def _load_sports_schedule(
     return list(games or [])
 
 
+# ESPN / guide broadcast labels → substrings that appear in Spectrum channel names.
+_BROADCAST_ALIASES: dict[str, tuple[str, ...]] = {
+    "espn": ("espn",),
+    "espn2": ("espn2",),
+    "espnu": ("espnu",),
+    "espnews": ("espnews",),
+    "espn deportes": ("espn deportes",),
+    "fs1": ("fs1", "fox sports 1"),
+    "fs2": ("fs2", "fox sports 2"),
+    "fox": ("fox",),
+    "fox sports": ("fs1", "fox sports"),
+    "mlb network": ("mlb network",),
+    "mlb net": ("mlb network",),
+    "mlbn": ("mlb network",),
+    "nba tv": ("nba tv",),
+    "nbatv": ("nba tv",),
+    "nfl network": ("nfl network",),
+    "nfln": ("nfl network",),
+    "nfl redzone": ("nfl redzone",),
+    "nhl network": ("nhl network",),
+    "cbs sports network": ("cbs sports network",),
+    "cbssn": ("cbs sports network",),
+    "tnt": ("tnt",),
+    "tbs": ("tbs",),
+    "trutv": ("trutv", "tru tv"),
+    "usa network": ("usa network",),
+    "usa": ("usa network",),
+    "abc": ("abc",),
+    "cbs": ("cbs",),
+    "nbc": ("nbc",),
+    "acc network": ("acc network",),
+    "accn": ("acc network",),
+    "sec network": ("sec network",),
+    "secn": ("sec network",),
+    "big ten network": ("big ten network",),
+    "btn": ("big ten network",),
+    "golf channel": ("golf channel",),
+    "fanduel sports network": ("fanduel sports network",),
+    "fanduel sports": ("fanduel sports network",),
+    "bally sports": ("fanduel sports network",),
+}
+
+
+def _broadcast_keys(label: str) -> list[str]:
+    text = str(label or "").strip().lower()
+    if not text:
+        return []
+    keys = [text]
+    # ESPN often uses "ESPN/ABC" style compounds.
+    for part in re.split(r"[/,|+]", text):
+        part = part.strip()
+        if part and part not in keys:
+            keys.append(part)
+    return keys
+
+
+def match_broadcast_to_channel(
+    broadcasts: list[str],
+    lineup_channels: list[dict[str, Any]],
+) -> dict[str, str] | None:
+    """Map ESPN broadcast labels onto a Spectrum dial channel."""
+    if not broadcasts or not lineup_channels:
+        return None
+
+    needles: list[str] = []
+    for label in broadcasts:
+        for key in _broadcast_keys(label):
+            aliases = _BROADCAST_ALIASES.get(key)
+            if aliases:
+                needles.extend(aliases)
+            else:
+                needles.append(key)
+    # De-dupe preserving order.
+    seen_n: set[str] = set()
+    ordered_needles: list[str] = []
+    for n in needles:
+        if n in seen_n:
+            continue
+        seen_n.add(n)
+        ordered_needles.append(n)
+    if not ordered_needles:
+        return None
+
+    # Streaming-only labels we cannot tune.
+    streaming = {
+        "espn+",
+        "espn plus",
+        "peacock",
+        "mlb.tv",
+        "nba league pass",
+        "nhl.tv",
+        "paramount+",
+        "amazon",
+        "prime video",
+        "apple tv",
+        "netflix",
+        "youtube",
+        "max",
+        "fubo",
+        "hulu",
+    }
+
+    candidates: list[tuple[int, int, str, str]] = []
+    for ch in lineup_channels:
+        number = str(ch.get("number") or "").strip()
+        name = str(ch.get("name") or "").strip()
+        if not number or not name:
+            continue
+        norm = normalize_channel_name(name)
+        name_l = name.lower()
+        category = str(ch.get("category") or "").lower()
+        for needle in ordered_needles:
+            if needle in streaming:
+                continue
+            needle_norm = normalize_channel_name(needle)
+            if not needle_norm:
+                continue
+            # Avoid "fox" matching "Fox News" / "Fox Business".
+            if needle_norm == "fox" and (
+                "news" in name_l or "business" in name_l or "deportes" in name_l
+            ):
+                continue
+            if needle_norm == "espn" and "espn" in norm and any(
+                x in norm for x in ("espn2", "espnu", "espnews", "espndeportes")
+            ):
+                continue
+            if needle_norm not in norm and needle not in name_l:
+                continue
+            sports_bonus = 0 if category == "sports" else 1
+            # Prefer HD sports dial (300+) over low dual-feeds.
+            try:
+                num_i = int(number)
+            except ValueError:
+                num_i = 10**9
+            dial_rank = 0 if 300 <= num_i < 500 else 1 if num_i < 100 else 2
+            candidates.append((sports_bonus, dial_rank, number, name))
+            break
+
+    if not candidates:
+        return None
+    candidates.sort(key=lambda row: (row[0], row[1], int(row[2]) if row[2].isdigit() else 10**9))
+    _bonus, _rank, number, name = candidates[0]
+    return {"channelNumber": number, "channelName": name}
+
+
+def _match_teams_in_epg(
+    away: str,
+    home: str,
+    epg_items: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    for item in epg_items:
+        epg_title = str(item.get("title") or "")
+        epg_l = epg_title.lower()
+        if away and home and away.lower() in epg_l and home.lower() in epg_l:
+            return item
+        away_tok = away.split()[-1].lower() if away else ""
+        home_tok = home.split()[-1].lower() if home else ""
+        if (
+            away_tok
+            and home_tok
+            and len(away_tok) > 3
+            and len(home_tok) > 3
+            and away_tok in epg_l
+            and home_tok in epg_l
+        ):
+            return item
+    return None
+
+
 def match_schedule_to_epg(
     schedule_games: list[dict[str, Any]],
     sports_block: dict[str, Any],
+    lineup_channels: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Attach EPG channel numbers to scraped games when titles overlap."""
+    """Attach Spectrum channel numbers to scraped games.
+
+    Match order:
+    1) ESPN broadcast network → lineup channel name
+    2) Away/home team names overlapping EPG sports titles
+    """
     epg_items = list(sports_block.get("now") or []) + list(
         sports_block.get("upcoming") or []
     )
+    lineup = list(lineup_channels or [])
     matched: list[dict[str, Any]] = []
     for game in schedule_games:
         away = str(game.get("away") or "").strip()
         home = str(game.get("home") or "").strip()
         title = str(game.get("title") or f"{away} at {home}").strip()
         sport_key = str(game.get("sportKey") or classify_sport_key(title))
-        hit = None
-        for item in epg_items:
-            epg_title = str(item.get("title") or "")
-            epg_l = epg_title.lower()
-            if away and home and away.lower() in epg_l and home.lower() in epg_l:
-                hit = item
-                break
-            # Short team nickname tokens (last word) as fallback.
-            away_tok = away.split()[-1].lower() if away else ""
-            home_tok = home.split()[-1].lower() if home else ""
-            if (
-                away_tok
-                and home_tok
-                and len(away_tok) > 3
-                and len(home_tok) > 3
-                and away_tok in epg_l
-                and home_tok in epg_l
-            ):
-                hit = item
-                break
+        broadcasts = [str(b) for b in (game.get("broadcasts") or []) if str(b).strip()]
+        channel_number = None
+        channel_name = None
+        match_via = None
+
+        broadcast_hit = match_broadcast_to_channel(broadcasts, lineup)
+        if broadcast_hit:
+            channel_number = broadcast_hit["channelNumber"]
+            channel_name = broadcast_hit["channelName"]
+            match_via = "broadcast"
+        else:
+            hit = _match_teams_in_epg(away, home, epg_items)
+            if hit:
+                channel_number = hit.get("channelNumber")
+                channel_name = hit.get("channelName")
+                match_via = "epg_title"
+
         row = {
             "id": str(game.get("id") or f"sched-{sport_key}-{away}-{home}"),
-            "channelNumber": hit.get("channelNumber") if hit else None,
-            "channelName": hit.get("channelName") if hit else None,
+            "channelNumber": channel_number,
+            "channelName": channel_name,
             "title": title,
             "away": away,
             "home": home,
-            "start": game.get("start") or (hit.get("start") if hit else None),
-            "end": game.get("end") or (hit.get("end") if hit else None),
+            "start": game.get("start"),
+            "end": game.get("end"),
             "sportKey": sport_key,
-            "matched": bool(hit),
+            "broadcasts": broadcasts,
+            "matched": bool(channel_number),
+            "matchVia": match_via,
             "source": "schedule",
         }
         matched.append(row)
@@ -421,7 +596,11 @@ def build_guide_epg(
     )
     schedule_games = _load_sports_schedule(cfg, config_path=config_path)
     if schedule_games:
-        sports["schedule"] = match_schedule_to_epg(schedule_games, sports)
+        sports["schedule"] = match_schedule_to_epg(
+            schedule_games, sports, lineup_channels=lineup_channels
+        )
+    else:
+        sports["schedule"] = []
 
     return {
         "zip": str(cfg.get("zip_code", "")),

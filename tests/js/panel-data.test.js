@@ -12,6 +12,7 @@ import {
   isGuideEpgFresh,
   sportsFromEpg,
   filterSportsByTab,
+  sportsItemsForTab,
 } from "../../homeassistant/config/www/panels/panel-data.js";
 
 test("spectrum zip is 27403 and sports tabs are EPG filters", () => {
@@ -121,6 +122,62 @@ test("sportsFromEpg reads now/upcoming and filters by tab", () => {
   assert.equal(filterSportsByTab([...now, ...upcoming], "cfb").length, 1);
   assert.equal(filterSportsByTab([...now, ...upcoming], "nfl").length, 0);
   assert.equal(sportsFromEpg(null, nowMs).available, false);
+});
+
+test("sportsItemsForTab prefers ESPN schedule over Sports EPG dump", () => {
+  const nowMs = Date.parse("2026-08-10T18:30:00Z");
+  const feed = {
+    generatedAt: "2026-08-10T18:00:00Z",
+    sports: {
+      schedule: [
+        {
+          id: "sched-mlb-1",
+          channelNumber: "306",
+          channelName: "MLB Network",
+          title: "Yankees at Red Sox",
+          away: "Yankees",
+          home: "Red Sox",
+          start: "2026-08-10T23:05:00+00:00",
+          sportKey: "mlb",
+          matched: true,
+          broadcasts: ["MLB Network"],
+        },
+      ],
+      now: [
+        {
+          id: "sport-17-a",
+          channelNumber: "17",
+          channelName: "ESPN",
+          title: "SportsCenter",
+          start: "2026-08-10T18:00:00+00:00",
+          sportKey: "other",
+        },
+      ],
+      upcoming: [
+        {
+          id: "sport-306-b",
+          channelNumber: "306",
+          channelName: "MLB Network",
+          title: "MLB Tonight",
+          start: "2026-08-10T22:00:00+00:00",
+          sportKey: "mlb",
+        },
+      ],
+    },
+  };
+  const mlb = sportsItemsForTab(feed, "mlb", nowMs);
+  assert.equal(mlb.schedule.length, 1);
+  assert.equal(mlb.now.length, 0);
+  assert.equal(mlb.upcoming.length, 0);
+  assert.equal(mlb.items[0].id, "sched-mlb-1");
+
+  const all = sportsItemsForTab(feed, "all", nowMs);
+  assert.equal(all.items.length, 1);
+  assert.equal(all.items[0].source, "schedule");
+
+  const other = sportsItemsForTab(feed, "other", nowMs);
+  assert.equal(other.items.length, 1);
+  assert.equal(other.items[0].title, "SportsCenter");
 });
 
 test("filterGuideChannels matches now/next titles", () => {
