@@ -6,9 +6,8 @@ Home Assistant test environment for validating the **iPad bartender Sports Routi
 
 This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner), **Track B** (hybrid dry-run / live IR+UDP execute when inventory validates), and **Track C** Guide now/next EPG overlay from XMLTV.
 
-- Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
-- Each game shows **team logos + team names**
-- **Spectrum channel guide** for ZIP **27403** (Spectrum / Xumo tune numbers and labels) with optional **now/next** titles from `guide_epg.json`
+- Sports chips filter **EPG-derived** Now/Upcoming programmes on Spectrum sports channels (All / NFL / CFB / NBA / NHL / Other)
+- **Spectrum Gold (TV Platinum) channel guide** for ZIP **27403** — full dial, music excluded — with optional **now/next** titles from `guide_epg.json`
 - **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
@@ -150,17 +149,36 @@ Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot `status` / `er
 
 Telnet truth for free-encoder discovery and zone mapping profiles are **not** part of Track B (or Track C Guide EPG).
 
-### Track C — Guide EPG now/next (operators)
+### Spectrum Gold lineup + Track C Guide/Sports EPG (operators)
 
-Track C overlays **now/next** program titles on the fixed ZIP **27403** Guide lineup. It does **not** change Live routing, `RoutePlan`, Send, or encoder logic.
+The Guide uses the **full Spectrum Gold** dial for ZIP **27403** (mapped from the public tvchannelsguide **TV Platinum** column; music channels excluded). Sports lists come from the same `guide_epg.json` feed (no league APIs, no demo seed games).
 
-Canonical builder: `scripts/avaccess/build_guide_epg.py`. Config: `config/guide_epg.yaml`. Output served as `/local/avaccess/guide_epg.json`.
+This does **not** change Live routing, `RoutePlan`, Send, or encoder logic.
+
+| Artifact | Path |
+|----------|------|
+| Lineup snapshot | `config/spectrum_lineup_27403.json` (+ `/local/avaccess/spectrum_lineup_27403.json`) |
+| Panel channel module | `homeassistant/config/www/panels/spectrum-lineup-data.js` |
+| EPG builder | `scripts/avaccess/build_guide_epg.py` |
+| EPG config | `config/guide_epg.yaml` |
+| Served EPG | `/local/avaccess/guide_epg.json` |
 
 Compose already mounts `../config` → `/config/avaccess/config` and `../scripts/avaccess` → `/config/avaccess/scripts`. The HA package `packages/avaccess_guide.yaml` exposes:
 
 - `shell_command.avaccess_refresh_guide_epg` → `avaccess/run_build_guide_epg.py`
 
-#### 1. Guide EPG config
+#### 1. Refresh Spectrum lineup (infrequent)
+
+Live HTML pulls may be Cloudflare-blocked; use a saved markdown dump of the Greensboro page (or the committed fixture):
+
+```bash
+.venv/bin/python scripts/avaccess/pull_spectrum_lineup.py \
+  --from-markdown tests/fixtures/spectrum_greensboro_tvchannelsguide.md
+```
+
+This rewrites the JSON snapshot and regenerates `spectrum-lineup-data.js`. Validate with `--check`.
+
+#### 2. Guide EPG config
 
 The repo ships `config/guide_epg.yaml` as a **symlink** to `guide_epg.example.yaml`. Remove it (or use `--remove-destination`) before copying so `cp` does not follow the symlink and overwrite the example:
 
@@ -172,17 +190,31 @@ cp config/guide_epg.example.yaml config/guide_epg.yaml
 # equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
 ```
 
-Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s Spectrum/Xumo number maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
+Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so Spectrum numbers (from the lineup snapshot — e.g. ESPN **17**, ESPN2 **16**) map to XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. `lineup_file` + `sports_window_hours` drive the Sports Now/Upcoming block. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
-#### 2. Build / refresh `guide_epg.json`
-
-CLI (from repo root):
+#### 2. Pull Schedules Direct (recommended) + optional league schedules
 
 ```bash
+# Secrets (never commit):
+export SD_USERNAME='your-sd-username'
+export SD_PASSWORD='your-sd-password'
+
+cp config/schedules_direct.example.yaml config/schedules_direct.yaml
+# Discovers/adds Greensboro Charter Spectrum Cable (USA-NC32529-X) if needed
+.venv/bin/python scripts/avaccess/pull_schedules_direct.py \
+  --config config/schedules_direct.yaml \
+  --write-lineup-id
+
+# Optional: ESPN scoreboards for Sports schedule matching
+.venv/bin/python scripts/avaccess/pull_sports_schedule.py
+
+# XMLTV now/next for the full lineup (auto name-match) + schedule↔EPG match
 .venv/bin/python scripts/avaccess/build_guide_epg.py \
   --config config/guide_epg.yaml \
   --out homeassistant/config/www/avaccess/guide_epg.json
 ```
+
+`guide_epg.example.yaml` defaults `source.file` to `config/cache/schedules_direct.xmltv` (gitignored cache).
 
 From Home Assistant (Developer Tools → Actions, or automation):
 
@@ -205,18 +237,18 @@ Optional hourly refresh (example — add to `automations.yaml` or a package if d
 
 #### 3. Stale feed and banner
 
-The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sport chips are unchanged.
+The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sports chips read the same feed’s `sports` block (schedule + Now/Upcoming).
 
-The checked-in default `guide_epg.json` uses a stale `generatedAt` so the degrade banner is obvious until you run the builder.
+Sparse now/next usually means the XMLTV feed only covers some networks, or names did not uniquely auto-match — point `source` at a full Greensboro XMLTV and rebuild. The checked-in default may be a demo/fixture build.
 
 ## Operator guide — Sports Routing panel
 
 The bartender panel uses a **top chip row** to switch browse modes:
 
-`NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
+`All · NFL · CFB · NBA · NHL · MLB · WNBA · Other · Guide · TVs`
 
-- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Sport chips** — scraped league schedules (ESPN scoreboards via `pull_sports_schedule.py`) plus EPG Now/Upcoming. Schedule games are tunable only when team names match an EPG sports title.
+- **Guide** — Schedules Direct Spectrum cable dial for ZIP **27403** (channel numbers/names from SD; music excluded). Now/next attaches by dial number. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.

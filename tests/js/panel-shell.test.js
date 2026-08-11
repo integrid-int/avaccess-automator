@@ -12,8 +12,8 @@ function readPanelSource() {
 
 test("panel shell imports store/data and defines panel-health once", () => {
   const src = readPanelSource();
-  assert.match(src, /from\s+["']\.\/assignment-store\.js["']/);
-  assert.match(src, /from\s+["']\.\/panel-data\.js["']/);
+  assert.match(src, /from\s+["']\.\/assignment-store\.js(?:\?v=\d+)?["']/);
+  assert.match(src, /from\s+["']\.\/panel-data\.js(?:\?v=\d+)?["']/);
   assert.match(src, /customElements\.get\(["']panel-health["']\)/);
   assert.match(src, /#0e7490/);
   assert.match(src, /browse-tvs/);
@@ -54,16 +54,20 @@ test("panel shell renders short sports chips and Spectrum ZIP guide label", () =
   const chipLabels = Object.fromEntries(SPORTS.map((sport) => [sport.id, sport.chipTitle]));
 
   assert.deepEqual(chipLabels, {
+    all: "All",
     nfl: "NFL",
     cfb: "CFB",
     nba: "NBA",
     nhl: "NHL",
     mlb: "MLB",
     wnba: "WNBA",
+    other: "Other",
   });
   assert.equal(SPECTRUM_ZIP, "27403");
   assert.match(src, /item\.chipTitle\s*\?\?\s*item\.title/);
   assert.match(src, /Spectrum · ZIP \$\{escapeHtml\(SPECTRUM_ZIP\)\} · Xumo/);
+  assert.match(src, /set-guide-category/);
+  assert.match(src, /sportsFromEpg/);
 });
 
 test("panel shell tracks selectedPresetId for TV-first preset send", () => {
@@ -93,11 +97,9 @@ test("panel shell brands AVAccess Sports Routing and drops stub content picker",
   assert.doesNotMatch(src, /Graphite routing shell/);
 });
 
-test("panel shell renders logos, route badges, and restores guide search focus", () => {
+test("panel shell renders EPG sport cards, route badges, and restores guide search focus", () => {
   const src = readPanelSource();
-  assert.match(src, /awayLogo/);
-  assert.match(src, /homeLogo/);
-  assert.match(src, /team-logo/);
+  assert.match(src, /epg-title/);
   assert.match(src, /route-badge/);
   assert.match(src, /_captureGuideSearchCaret/);
   assert.match(src, /_restoreGuideSearchCaret/);
