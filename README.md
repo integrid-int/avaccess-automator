@@ -248,7 +248,7 @@ The bartender panel uses a **top chip row** to switch browse modes:
 `All · NFL · CFB · NBA · NHL · MLB · WNBA · Other · Guide · TVs`
 
 - **Sport chips** — scraped league schedules (ESPN scoreboards via `pull_sports_schedule.py`) plus EPG Now/Upcoming. Schedule games are tunable only when team names match an EPG sports title.
-- **Guide** — full Spectrum Gold dial for ZIP **27403** (category chips + search). Now/next fills for channels whose XMLTV ids are mapped explicitly or auto-matched by display-name. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Guide** — Schedules Direct Spectrum cable dial for ZIP **27403** (channel numbers/names from SD; music excluded). Now/next attaches by dial number. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.

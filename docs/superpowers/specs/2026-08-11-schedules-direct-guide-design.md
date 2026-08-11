@@ -17,7 +17,9 @@ Pull live Greensboro Spectrum listings from a Schedules Direct account into XMLT
 | Config | `config/schedules_direct.yaml` (gitignored); example committed |
 | Lineup | Auto-discover Charter Spectrum Cable for ZIP 27403; prefer `USA-NC32529-X` |
 | Add lineup | `PUT /lineups/{id}` if not on account |
-| Downstream | Unchanged `build_guide_epg.py` + name auto-map |
+| Channel SoT | SD lineup map → `spectrum_lineup_27403.json` + panel JS (not tvchannelsguide) |
+| EPG attach | Dial **number** from XMLTV display-name (name match only as fallback) |
+| Downstream | `build_guide_epg.py` consumes SD XMLTV + SD lineup |
 
 ## Operator flow
 

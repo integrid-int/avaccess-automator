@@ -1,1647 +1,4681 @@
 {
   "zip": "27403",
-  "package": "gold",
-  "packageColumn": "TV Platinum",
-  "source": "tests/fixtures/spectrum_greensboro_tvchannelsguide.md",
-  "generatedAt": "2026-08-10T23:36:49.830443+00:00",
+  "package": "spectrum-cable",
+  "packageColumn": "Schedules Direct",
+  "source": "schedulesdirect:USA-NC32529-X",
+  "lineupId": "USA-NC32529-X",
+  "generatedAt": "2026-08-11T00:21:41.750036+00:00",
   "channels": [
+    {
+      "id": "ch-1",
+      "number": "1",
+      "name": "Local News",
+      "callsign": "NEWS",
+      "category": "News",
+      "music": false,
+      "stationId": "22580"
+    },
+    {
+      "id": "ch-2",
+      "number": "2",
+      "name": "Educational Access - EDAC002",
+      "callsign": "EDAC002",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22116"
+    },
     {
       "id": "ch-3",
       "number": "3",
-      "name": "wcwg",
-      "category": "Local",
-      "music": false
+      "name": "WCWG",
+      "callsign": "WCWG",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14568"
     },
     {
       "id": "ch-4",
       "number": "4",
-      "name": "WUNC (PBS)",
-      "category": "Local",
-      "music": false
+      "name": "WUNL",
+      "callsign": "WUNL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11946"
     },
     {
       "id": "ch-6",
       "number": "6",
-      "name": "wlxi",
-      "category": "Local",
-      "music": false
+      "name": "WLXI",
+      "callsign": "WLXI",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11662"
     },
     {
       "id": "ch-7",
       "number": "7",
-      "name": "wxlv",
-      "category": "Local",
-      "music": false
+      "name": "WXLV",
+      "callsign": "WXLV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11734"
+    },
+    {
+      "id": "ch-8",
+      "number": "8",
+      "name": "Public Access - PUAC008",
+      "callsign": "PUAC008",
+      "category": "Cable",
+      "music": false,
+      "stationId": "23483"
     },
     {
       "id": "ch-9",
       "number": "9",
-      "name": "wfmy",
-      "category": "Local",
-      "music": false
+      "name": "WFMY",
+      "callsign": "WFMY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11442"
     },
     {
       "id": "ch-10",
       "number": "10",
-      "name": "wghp",
-      "category": "Local",
-      "music": false
+      "name": "WGHP",
+      "callsign": "WGHP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11470"
     },
     {
       "id": "ch-11",
       "number": "11",
-      "name": "wxii",
-      "category": "Local",
-      "music": false
+      "name": "WXII",
+      "callsign": "WXII",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11994"
     },
     {
       "id": "ch-12",
       "number": "12",
-      "name": "wgpx",
-      "category": "Local",
-      "music": false
+      "name": "WGPX",
+      "callsign": "WGPX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11257"
+    },
+    {
+      "id": "ch-13",
+      "number": "13",
+      "name": "Government Access - GOAC013",
+      "callsign": "GOAC013",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22226"
     },
     {
       "id": "ch-14",
       "number": "14",
-      "name": "Spectrum News 1",
+      "name": "Spectrum News 1 (Carolinas) - Greensboro",
+      "callsign": "SN1GBO",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "55784"
     },
     {
       "id": "ch-15",
       "number": "15",
-      "name": "wmyv",
-      "category": "Local",
-      "music": false
+      "name": "WMYV",
+      "callsign": "WMYV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11469"
     },
     {
       "id": "ch-16",
       "number": "16",
       "name": "ESPN2",
+      "callsign": "ESPN2",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "12444"
     },
     {
       "id": "ch-17",
       "number": "17",
       "name": "ESPN",
+      "callsign": "ESPN",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "10179"
     },
     {
       "id": "ch-18",
       "number": "18",
       "name": "Paramount Network",
-      "category": "Entertainment",
-      "music": false
-    },
-    {
-      "id": "ch-20",
-      "number": "20",
-      "name": "Freeform",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "PAR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11163"
     },
     {
       "id": "ch-21",
       "number": "21",
       "name": "TNT",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "TNT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11164"
     },
     {
       "id": "ch-22",
       "number": "22",
       "name": "BET",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "BET",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10051"
     },
     {
       "id": "ch-23",
       "number": "23",
       "name": "TBS",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "TBS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11867"
     },
     {
       "id": "ch-24",
       "number": "24",
       "name": "AMC",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "AMC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10021"
     },
     {
       "id": "ch-25",
       "number": "25",
-      "name": "Discovery",
-      "category": "Documentary",
-      "music": false
+      "name": "Discovery Channel",
+      "callsign": "DSC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11150"
     },
     {
       "id": "ch-26",
       "number": "26",
-      "name": "Weather Channel",
+      "name": "The Weather Channel",
+      "callsign": "WEATH",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "11187"
     },
     {
       "id": "ch-27",
       "number": "27",
-      "name": "MTV",
-      "category": "Entertainment",
-      "music": false
+      "name": "MTV - Music Television",
+      "callsign": "MTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10986"
     },
     {
       "id": "ch-28",
       "number": "28",
       "name": "A&E",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "AETV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10035"
     },
     {
       "id": "ch-29",
       "number": "29",
-      "name": "National Geographic",
-      "category": "Documentary",
-      "music": false
+      "name": "National Geographic USA",
+      "callsign": "NGC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "24959"
     },
     {
       "id": "ch-30",
       "number": "30",
       "name": "CNBC",
+      "callsign": "CNBC",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "10139"
     },
     {
       "id": "ch-31",
       "number": "31",
       "name": "HLN",
-      "category": "News",
-      "music": false
+      "callsign": "HLN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10145"
     },
     {
       "id": "ch-32",
       "number": "32",
       "name": "Nickelodeon",
+      "callsign": "NIK",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "11006"
     },
     {
       "id": "ch-33",
       "number": "33",
       "name": "Lifetime",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "LIFE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10918"
     },
     {
       "id": "ch-34",
       "number": "34",
-      "name": "CNN",
+      "name": "Cable News Network",
+      "callsign": "CNN",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "10142"
     },
     {
       "id": "ch-35",
       "number": "35",
       "name": "CMT",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "CMTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10138"
     },
     {
       "id": "ch-36",
       "number": "36",
       "name": "VH1",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "VH1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11218"
     },
     {
       "id": "ch-37",
       "number": "37",
       "name": "Comedy Central",
-      "category": "Entertainment",
-      "music": false
-    },
-    {
-      "id": "ch-38",
-      "number": "38",
-      "name": "NBC Sports",
-      "category": "Sports",
-      "music": false
+      "callsign": "COMEDY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10149"
     },
     {
       "id": "ch-39",
       "number": "39",
-      "name": "C-SPAN",
-      "category": "News",
-      "music": false
+      "name": "CSPAN",
+      "callsign": "CSPAN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10161"
     },
     {
       "id": "ch-40",
       "number": "40",
-      "name": "Fox News",
+      "name": "Fox News Channel",
+      "callsign": "FNC",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "16374"
     },
     {
       "id": "ch-41",
       "number": "41",
       "name": "truTV",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "TRUTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10153"
     },
     {
       "id": "ch-43",
       "number": "43",
       "name": "Bravo",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "BRAVO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10057"
     },
     {
       "id": "ch-44",
       "number": "44",
       "name": "TLC",
-      "category": "Lifestyle",
-      "music": false
+      "callsign": "TLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11158"
     },
     {
       "id": "ch-45",
       "number": "45",
-      "name": "Syfy",
-      "category": "Entertainment",
-      "music": false
+      "name": "SYFY",
+      "callsign": "SYFY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11097"
     },
     {
       "id": "ch-46",
       "number": "46",
-      "name": "E!",
-      "category": "Entertainment",
-      "music": false
+      "name": "E! Entertainment Television",
+      "callsign": "E",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10989"
     },
     {
       "id": "ch-48",
       "number": "48",
       "name": "Cartoon Network",
+      "callsign": "TOON",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "12131"
     },
     {
       "id": "ch-49",
       "number": "49",
       "name": "Hallmark Channel",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "HALL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11221"
     },
     {
       "id": "ch-50",
       "number": "50",
       "name": "USA Network",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "USA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11207"
     },
     {
       "id": "ch-51",
       "number": "51",
-      "name": "FanDuel Sports Network South-Carolinas",
+      "name": "FanDuel Sports Network South HD- North Carolina W.",
+      "callsign": "FDSCR4H",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "64971"
     },
     {
       "id": "ch-52",
       "number": "52",
       "name": "Golf Channel",
+      "callsign": "GOLF",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "14899"
     },
     {
       "id": "ch-53",
       "number": "53",
       "name": "History",
-      "category": "Documentary",
-      "music": false
+      "callsign": "HISTORY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14771"
     },
     {
       "id": "ch-54",
       "number": "54",
       "name": "Nick Jr",
+      "callsign": "NICJR",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "19211"
     },
     {
       "id": "ch-55",
       "number": "55",
-      "name": "HGTV",
-      "category": "Lifestyle",
-      "music": false
+      "name": "Home & Garden Television",
+      "callsign": "HGTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14902"
+    },
+    {
+      "id": "ch-56",
+      "number": "56",
+      "name": "Univision Network",
+      "callsign": "UNI",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11118"
     },
     {
       "id": "ch-57",
       "number": "57",
-      "name": "TCM",
-      "category": "Entertainment",
-      "music": false
+      "name": "Turner Classic Movies",
+      "callsign": "TCM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12852"
+    },
+    {
+      "id": "ch-58",
+      "number": "58",
+      "name": "Gemporia",
+      "callsign": "GEMP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72305"
     },
     {
       "id": "ch-59",
       "number": "59",
       "name": "MS NOW",
-      "category": "News",
-      "music": false
+      "callsign": "MSNOW",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16300"
     },
     {
       "id": "ch-60",
       "number": "60",
       "name": "FX",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "FX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14321"
     },
     {
       "id": "ch-61",
       "number": "61",
       "name": "MTV Classic",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "MTVCLAS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22561"
     },
     {
       "id": "ch-62",
       "number": "62",
       "name": "TV Land",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "TVLAND",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16123"
     },
     {
       "id": "ch-63",
       "number": "63",
       "name": "Animal Planet",
-      "category": "Documentary",
-      "music": false
+      "callsign": "APL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16331"
     },
     {
       "id": "ch-64",
       "number": "64",
-      "name": "Discovery Life",
-      "category": "Documentary",
-      "music": false
+      "name": "Discovery Life Channel",
+      "callsign": "DLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16125"
     },
     {
       "id": "ch-65",
       "number": "65",
       "name": "Food Network",
-      "category": "Lifestyle",
-      "music": false
+      "callsign": "FOOD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12574"
     },
     {
       "id": "ch-66",
       "number": "66",
-      "name": "Eternal Word Television Network",
-      "category": "Religious",
-      "music": false
+      "name": "Time Warner Greensboro IPG INSP/EWTN",
+      "callsign": "INEW1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "21499"
     },
     {
       "id": "ch-67",
       "number": "67",
-      "name": "FanDuel Sports Network Southeast",
+      "name": "FanDuel Sports Network Southeast HD",
+      "callsign": "FDSEN2H",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "70015"
+    },
+    {
+      "id": "ch-69",
+      "number": "69",
+      "name": "TW Greensboro Shop Zeal 8",
+      "callsign": "TWZEAL8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "91665"
     },
     {
       "id": "ch-70",
       "number": "70",
-      "name": "Oxygen",
-      "category": "Entertainment",
-      "music": false
+      "name": "Oxygen True Crime",
+      "callsign": "OXYGEN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "21484"
     },
     {
       "id": "ch-71",
       "number": "71",
       "name": "WE tv",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "WE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16409"
     },
     {
       "id": "ch-72",
       "number": "72",
-      "name": "Lifetime Movie Network",
-      "category": "Entertainment",
-      "music": false
+      "name": "LMN",
+      "callsign": "LMN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18480"
     },
     {
       "id": "ch-73",
       "number": "73",
       "name": "Disney Channel",
+      "callsign": "DISN",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "10171"
     },
     {
       "id": "ch-76",
       "number": "76",
       "name": "Investigation Discovery",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "ID",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16615"
     },
     {
       "id": "ch-78",
       "number": "78",
       "name": "Hallmark Mystery",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "HMYS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "61522"
     },
     {
       "id": "ch-79",
       "number": "79",
       "name": "CNBC World",
+      "callsign": "CNBCWLD",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "26849"
     },
     {
       "id": "ch-80",
       "number": "80",
-      "name": "DISCOVERY TURBO TV",
-      "category": "Xumo",
-      "music": false
+      "name": "DISCOVERY TURBO HD",
+      "callsign": "MTHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31046"
     },
     {
       "id": "ch-81",
       "number": "81",
       "name": "Fox Business",
-      "category": "News",
-      "music": false
-    },
-    {
-      "id": "ch-86",
-      "number": "86",
-      "name": "Gem Shopping Network",
-      "category": "Shopping",
-      "music": false
+      "callsign": "FBN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "58649"
     },
     {
       "id": "ch-87",
       "number": "87",
       "name": "Shop LC",
-      "category": "Shopping",
-      "music": false
+      "callsign": "SHOPLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "56032"
     },
     {
       "id": "ch-98",
       "number": "98",
-      "name": "NewsNation",
+      "name": "NewsNation SD",
+      "callsign": "NWSNTSD",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "91097"
+    },
+    {
+      "id": "ch-100",
+      "number": "100",
+      "name": "Primetime On Demand",
+      "callsign": "PTIMEDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "62601"
+    },
+    {
+      "id": "ch-101",
+      "number": "101",
+      "name": "USA Network",
+      "callsign": "USA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11207"
+    },
+    {
+      "id": "ch-102",
+      "number": "102",
+      "name": "A&E",
+      "callsign": "AETV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10035"
+    },
+    {
+      "id": "ch-103",
+      "number": "103",
+      "name": "TNT",
+      "callsign": "TNT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11164"
+    },
+    {
+      "id": "ch-104",
+      "number": "104",
+      "name": "TBS",
+      "callsign": "TBS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11867"
+    },
+    {
+      "id": "ch-105",
+      "number": "105",
+      "name": "AMC",
+      "callsign": "AMC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10021"
+    },
+    {
+      "id": "ch-106",
+      "number": "106",
+      "name": "Discovery Channel",
+      "callsign": "DSC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11150"
+    },
+    {
+      "id": "ch-107",
+      "number": "107",
+      "name": "History",
+      "callsign": "HISTORY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14771"
+    },
+    {
+      "id": "ch-108",
+      "number": "108",
+      "name": "FX",
+      "callsign": "FX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14321"
     },
     {
       "id": "ch-109",
       "number": "109",
-      "name": "FXX",
-      "category": "Entertainment",
-      "music": false
+      "name": "FXX HD",
+      "callsign": "FXXHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66379"
     },
     {
       "id": "ch-110",
       "number": "110",
       "name": "BBC America",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "BBCA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18332"
+    },
+    {
+      "id": "ch-111",
+      "number": "111",
+      "name": "SYFY",
+      "callsign": "SYFY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11097"
+    },
+    {
+      "id": "ch-112",
+      "number": "112",
+      "name": "truTV",
+      "callsign": "TRUTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10153"
+    },
+    {
+      "id": "ch-113",
+      "number": "113",
+      "name": "Comedy Central",
+      "callsign": "COMEDY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10149"
+    },
+    {
+      "id": "ch-115",
+      "number": "115",
+      "name": "National Geographic Wild HD",
+      "callsign": "NGWIHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67331"
+    },
+    {
+      "id": "ch-116",
+      "number": "116",
+      "name": "Paramount Network",
+      "callsign": "PAR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11163"
+    },
+    {
+      "id": "ch-117",
+      "number": "117",
+      "name": "VH1",
+      "callsign": "VH1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11218"
+    },
+    {
+      "id": "ch-118",
+      "number": "118",
+      "name": "MTV - Music Television",
+      "callsign": "MTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10986"
     },
     {
       "id": "ch-119",
       "number": "119",
-      "name": "MTV2",
-      "category": "Entertainment",
-      "music": false
+      "name": "MTV2: Music Television",
+      "callsign": "MTV2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16361"
+    },
+    {
+      "id": "ch-120",
+      "number": "120",
+      "name": "MTV Classic",
+      "callsign": "MTVCLAS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22561"
+    },
+    {
+      "id": "ch-121",
+      "number": "121",
+      "name": "TV Land",
+      "callsign": "TVLAND",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16123"
+    },
+    {
+      "id": "ch-122",
+      "number": "122",
+      "name": "Freeform HD",
+      "callsign": "FREFMHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "59615"
+    },
+    {
+      "id": "ch-123",
+      "number": "123",
+      "name": "Hallmark Channel HD",
+      "callsign": "HALLHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66268"
     },
     {
       "id": "ch-124",
       "number": "124",
-      "name": "UP TV",
-      "category": "Entertainment",
-      "music": false
+      "name": "UPtv",
+      "callsign": "UP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "44940"
+    },
+    {
+      "id": "ch-126",
+      "number": "126",
+      "name": "NewsNation SD",
+      "callsign": "NWSNTSD",
+      "category": "News",
+      "music": false,
+      "stationId": "91097"
+    },
+    {
+      "id": "ch-127",
+      "number": "127",
+      "name": "Hallmark Family",
+      "callsign": "HFM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "105723"
     },
     {
       "id": "ch-128",
       "number": "128",
-      "name": "REELZ",
-      "category": "Entertainment",
-      "music": false
+      "name": "ReelzChannel",
+      "callsign": "REELZ",
+      "category": "Cable",
+      "music": false,
+      "stationId": "52199"
+    },
+    {
+      "id": "ch-129",
+      "number": "129",
+      "name": "National Geographic USA",
+      "callsign": "NGC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "24959"
     },
     {
       "id": "ch-130",
       "number": "130",
-      "name": "Nat Geo Wild",
-      "category": "Documentary",
-      "music": false
+      "name": "A Wealth of Entertainment HD",
+      "callsign": "AWEHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "45438"
     },
     {
       "id": "ch-131",
       "number": "131",
-      "name": "Smithsonian Channel",
-      "category": "Documentary",
-      "music": false
+      "name": "Smithsonian Network",
+      "callsign": "SMITH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "65799"
+    },
+    {
+      "id": "ch-132",
+      "number": "132",
+      "name": "Animal Planet",
+      "callsign": "APL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16331"
     },
     {
       "id": "ch-133",
       "number": "133",
-      "name": "VICE",
-      "category": "Entertainment",
-      "music": false
+      "name": "Vice",
+      "callsign": "VICE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18822"
     },
     {
       "id": "ch-134",
       "number": "134",
       "name": "FYI",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "FYISD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16834"
     },
     {
       "id": "ch-135",
       "number": "135",
       "name": "Destination America",
-      "category": "Documentary",
-      "music": false
+      "callsign": "DEST",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16617"
     },
     {
       "id": "ch-136",
       "number": "136",
-      "name": "Science Channel",
-      "category": "Documentary",
-      "music": false
+      "name": "Science",
+      "callsign": "SCIENCE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16616"
     },
     {
       "id": "ch-137",
       "number": "137",
       "name": "Crime + Investigation",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "CIN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "48543"
+    },
+    {
+      "id": "ch-138",
+      "number": "138",
+      "name": "Investigation Discovery",
+      "callsign": "ID",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16615"
+    },
+    {
+      "id": "ch-139",
+      "number": "139",
+      "name": "EarthX",
+      "callsign": "EARTHX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "126128"
     },
     {
       "id": "ch-140",
       "number": "140",
       "name": "American Heroes Channel",
-      "category": "Documentary",
-      "music": false
+      "callsign": "AHC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18284"
     },
     {
-      "id": "ch-141",
-      "number": "141",
-      "name": "Military History Channel",
-      "category": "Documentary",
-      "music": false
+      "id": "ch-145",
+      "number": "145",
+      "name": "Envoy TV",
+      "callsign": "ENVOYTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "192894"
     },
     {
-      "id": "ch-144",
-      "number": "144",
-      "name": "Fusion",
-      "category": "Entertainment",
-      "music": false
+      "id": "ch-147",
+      "number": "147",
+      "name": "ChimeTV",
+      "callsign": "CHIMETV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "131889"
     },
     {
       "id": "ch-151",
       "number": "151",
-      "name": "Heroes & Icons",
-      "category": "Entertainment",
-      "music": false
+      "name": "Heroes & Icons Network",
+      "callsign": "HEROICN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "90401"
+    },
+    {
+      "id": "ch-153",
+      "number": "153",
+      "name": "Local Look Today",
+      "callsign": "LNLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "183475"
+    },
+    {
+      "id": "ch-155",
+      "number": "155",
+      "name": "Start TV Network",
+      "callsign": "STARTTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "109454"
+    },
+    {
+      "id": "ch-156",
+      "number": "156",
+      "name": "Story",
+      "callsign": "STRY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "122968"
     },
     {
       "id": "ch-159",
       "number": "159",
       "name": "QVC",
-      "category": "Shopping",
-      "music": false
+      "callsign": "QVC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11069"
+    },
+    {
+      "id": "ch-160",
+      "number": "160",
+      "name": "Home & Garden Television",
+      "callsign": "HGTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14902"
     },
     {
       "id": "ch-161",
       "number": "161",
       "name": "Magnolia Network",
-      "category": "Lifestyle",
-      "music": false
+      "callsign": "MAGN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18544"
+    },
+    {
+      "id": "ch-162",
+      "number": "162",
+      "name": "Food Network",
+      "callsign": "FOOD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12574"
     },
     {
       "id": "ch-163",
       "number": "163",
       "name": "Cooking Channel",
-      "category": "Lifestyle",
-      "music": false
+      "callsign": "COOK",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30156"
     },
     {
       "id": "ch-165",
       "number": "165",
-      "name": "Travel Channel",
-      "category": "Lifestyle",
-      "music": false
+      "name": "The Travel Channel",
+      "callsign": "TRAV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11180"
+    },
+    {
+      "id": "ch-166",
+      "number": "166",
+      "name": "TLC",
+      "callsign": "TLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11158"
+    },
+    {
+      "id": "ch-167",
+      "number": "167",
+      "name": "Bravo",
+      "callsign": "BRAVO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10057"
+    },
+    {
+      "id": "ch-168",
+      "number": "168",
+      "name": "E! Entertainment Television",
+      "callsign": "E",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10989"
     },
     {
       "id": "ch-169",
       "number": "169",
       "name": "Fuse",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "FUSE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14929"
+    },
+    {
+      "id": "ch-170",
+      "number": "170",
+      "name": "Lifetime",
+      "callsign": "LIFE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10918"
+    },
+    {
+      "id": "ch-171",
+      "number": "171",
+      "name": "Oxygen True Crime",
+      "callsign": "OXYGEN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "21484"
+    },
+    {
+      "id": "ch-172",
+      "number": "172",
+      "name": "WE tv",
+      "callsign": "WE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16409"
     },
     {
       "id": "ch-173",
       "number": "173",
-      "name": "OWN",
-      "category": "Entertainment",
-      "music": false
+      "name": "Oprah Winfrey Network",
+      "callsign": "OWN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "70387"
     },
     {
       "id": "ch-174",
       "number": "174",
       "name": "Lifetime Real Women",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "LRW",
+      "category": "Cable",
+      "music": false,
+      "stationId": "29612"
     },
     {
       "id": "ch-175",
       "number": "175",
-      "name": "Pop",
-      "category": "Entertainment",
-      "music": false
+      "name": "POP",
+      "callsign": "POPSD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16715"
     },
     {
       "id": "ch-176",
       "number": "176",
-      "name": "HSN",
-      "category": "Shopping",
-      "music": false
+      "name": "Home Shopping Network",
+      "callsign": "HSN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10269"
     },
     {
       "id": "ch-177",
       "number": "177",
       "name": "Game Show Network",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "GSN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14909"
+    },
+    {
+      "id": "ch-178",
+      "number": "178",
+      "name": "STELLAR TV",
+      "callsign": "STELLAR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "130088"
     },
     {
       "id": "ch-179",
       "number": "179",
       "name": "Logo",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "LOGO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "46762"
+    },
+    {
+      "id": "ch-180",
+      "number": "180",
+      "name": "Discovery Life Channel",
+      "callsign": "DLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16125"
+    },
+    {
+      "id": "ch-181",
+      "number": "181",
+      "name": "BET",
+      "callsign": "BET",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10051"
     },
     {
       "id": "ch-182",
       "number": "182",
       "name": "BET Her",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "BHER",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14897"
+    },
+    {
+      "id": "ch-183",
+      "number": "183",
+      "name": "The Africa Channel",
+      "callsign": "AFRCA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "47472"
     },
     {
       "id": "ch-184",
       "number": "184",
-      "name": "TV One",
-      "category": "Entertainment",
-      "music": false
+      "name": "TV ONE",
+      "callsign": "TVONE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "35513"
     },
     {
       "id": "ch-185",
       "number": "185",
       "name": "ASPiRE",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "ASPRE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "76126"
     },
     {
       "id": "ch-187",
       "number": "187",
       "name": "Ovation",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "OVATION",
+      "category": "Cable",
+      "music": false,
+      "stationId": "15807"
     },
     {
       "id": "ch-188",
       "number": "188",
       "name": "Jewelry Television",
-      "category": "Shopping",
-      "music": false
+      "callsign": "JTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16604"
     },
     {
       "id": "ch-189",
       "number": "189",
       "name": "Cleo TV",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "CLEO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "110288"
     },
     {
-      "id": "ch-194",
-      "number": "194",
-      "name": "ShopHQ",
-      "category": "Shopping",
-      "music": false
+      "id": "ch-190",
+      "number": "190",
+      "name": "Cars TV",
+      "callsign": "CARSTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71302"
+    },
+    {
+      "id": "ch-191",
+      "number": "191",
+      "name": "Justice Central HD",
+      "callsign": "JUST",
+      "category": "Cable",
+      "music": false,
+      "stationId": "78850"
+    },
+    {
+      "id": "ch-192",
+      "number": "192",
+      "name": "Pets TV",
+      "callsign": "PETSTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71297"
+    },
+    {
+      "id": "ch-193",
+      "number": "193",
+      "name": "Recipe TV",
+      "callsign": "RECIPE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71294"
+    },
+    {
+      "id": "ch-195",
+      "number": "195",
+      "name": "QVC3",
+      "callsign": "QVC3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "101260"
+    },
+    {
+      "id": "ch-196",
+      "number": "196",
+      "name": "Comedy.TV HD",
+      "callsign": "CMDTVHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "82470"
+    },
+    {
+      "id": "ch-198",
+      "number": "198",
+      "name": "AccuWeather HD",
+      "callsign": "ACUWTHH",
+      "category": "News",
+      "music": false,
+      "stationId": "91994"
+    },
+    {
+      "id": "ch-200",
+      "number": "200",
+      "name": "Local News",
+      "callsign": "NEWS",
+      "category": "News",
+      "music": false,
+      "stationId": "22580"
+    },
+    {
+      "id": "ch-201",
+      "number": "201",
+      "name": "Cable News Network",
+      "callsign": "CNN",
+      "category": "News",
+      "music": false,
+      "stationId": "10142"
+    },
+    {
+      "id": "ch-202",
+      "number": "202",
+      "name": "Fox News Channel",
+      "callsign": "FNC",
+      "category": "News",
+      "music": false,
+      "stationId": "16374"
+    },
+    {
+      "id": "ch-203",
+      "number": "203",
+      "name": "MS NOW",
+      "callsign": "MSNOW",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16300"
+    },
+    {
+      "id": "ch-204",
+      "number": "204",
+      "name": "HLN",
+      "callsign": "HLN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10145"
+    },
+    {
+      "id": "ch-205",
+      "number": "205",
+      "name": "CNBC",
+      "callsign": "CNBC",
+      "category": "News",
+      "music": false,
+      "stationId": "10139"
+    },
+    {
+      "id": "ch-206",
+      "number": "206",
+      "name": "Fox Business",
+      "callsign": "FBN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "58649"
     },
     {
       "id": "ch-207",
       "number": "207",
       "name": "Bloomberg Business Television",
+      "callsign": "BLOOM",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "14755"
+    },
+    {
+      "id": "ch-208",
+      "number": "208",
+      "name": "CNBC World",
+      "callsign": "CNBCWLD",
+      "category": "News",
+      "music": false,
+      "stationId": "26849"
     },
     {
       "id": "ch-209",
       "number": "209",
-      "name": "BBC News",
+      "name": "BBC News (North America)",
+      "callsign": "BBCWDNA",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "89542"
     },
     {
       "id": "ch-210",
       "number": "210",
-      "name": "i24 News",
+      "name": "i24 News English",
+      "callsign": "I24NWEN",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "87376"
+    },
+    {
+      "id": "ch-211",
+      "number": "211",
+      "name": "The Weather Channel",
+      "callsign": "WEATH",
+      "category": "News",
+      "music": false,
+      "stationId": "11187"
+    },
+    {
+      "id": "ch-215",
+      "number": "215",
+      "name": "Spectrum Noticias NYC",
+      "callsign": "SNNNYC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "33844"
     },
     {
       "id": "ch-216",
       "number": "216",
       "name": "CNN International",
+      "callsign": "CNNI",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "10146"
+    },
+    {
+      "id": "ch-221",
+      "number": "221",
+      "name": "Cheddar",
+      "callsign": "CHDDRHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "109332"
     },
     {
       "id": "ch-222",
       "number": "222",
-      "name": "Newsmax",
+      "name": "Newsmax TV",
+      "callsign": "NEWSMX",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "87925"
     },
     {
-      "id": "ch-224",
-      "number": "224",
-      "name": "Scripps News",
+      "id": "ch-223",
+      "number": "223",
+      "name": "One America News Network HD",
+      "callsign": "OANHD",
       "category": "News",
-      "music": false
+      "music": false,
+      "stationId": "83953"
+    },
+    {
+      "id": "ch-225",
+      "number": "225",
+      "name": "CSPAN",
+      "callsign": "CSPAN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10161"
     },
     {
       "id": "ch-226",
       "number": "226",
-      "name": "C-SPAN 2",
-      "category": "News",
-      "music": false
+      "name": "CSPAN2",
+      "callsign": "CSPAN2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10162"
     },
     {
       "id": "ch-227",
       "number": "227",
-      "name": "C-SPAN 3",
-      "category": "News",
-      "music": false
+      "name": "CSPAN3",
+      "callsign": "CSPAN3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "17665"
+    },
+    {
+      "id": "ch-250",
+      "number": "250",
+      "name": "KIDS (Kids Channel) On Demand",
+      "callsign": "KIDSDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "34351"
+    },
+    {
+      "id": "ch-251",
+      "number": "251",
+      "name": "Disney Channel",
+      "callsign": "DISN",
+      "category": "Kids",
+      "music": false,
+      "stationId": "10171"
     },
     {
       "id": "ch-253",
       "number": "253",
       "name": "Boomerang",
+      "callsign": "BOOM",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "21883"
     },
     {
       "id": "ch-254",
       "number": "254",
-      "name": "Disney Junior",
+      "name": "Disney Junior HD",
+      "callsign": "DJCHHD",
       "category": "Kids",
-      "music": false
-    },
-    {
-      "id": "ch-255",
-      "number": "255",
-      "name": "Universal Kids",
-      "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "74885"
     },
     {
       "id": "ch-256",
       "number": "256",
-      "name": "Baby First TV",
+      "name": "BabyFirst TV",
+      "callsign": "BABY1",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "50338"
+    },
+    {
+      "id": "ch-257",
+      "number": "257",
+      "name": "Nick Jr",
+      "callsign": "NICJR",
+      "category": "Kids",
+      "music": false,
+      "stationId": "19211"
+    },
+    {
+      "id": "ch-258",
+      "number": "258",
+      "name": "Nickelodeon",
+      "callsign": "NIK",
+      "category": "Kids",
+      "music": false,
+      "stationId": "11006"
     },
     {
       "id": "ch-262",
       "number": "262",
       "name": "Nicktoons",
-      "category": "Kids",
-      "music": false
+      "callsign": "NIKTON",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30420"
     },
     {
       "id": "ch-263",
       "number": "263",
-      "name": "TeenNick",
+      "name": "Teen Nick",
+      "callsign": "TNCK",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "59036"
+    },
+    {
+      "id": "ch-264",
+      "number": "264",
+      "name": "Cartoon Network",
+      "callsign": "TOON",
+      "category": "Kids",
+      "music": false,
+      "stationId": "12131"
     },
     {
       "id": "ch-265",
       "number": "265",
-      "name": "Disney XD",
+      "name": "Disney XD HD",
+      "callsign": "DXDHD",
       "category": "Kids",
-      "music": false
+      "music": false,
+      "stationId": "60006"
     },
     {
       "id": "ch-266",
       "number": "266",
-      "name": "Discovery Family",
-      "category": "Documentary",
-      "music": false
+      "name": "Discovery Family Channel",
+      "callsign": "DFC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16618"
+    },
+    {
+      "id": "ch-285",
+      "number": "285",
+      "name": "Music On Demand",
+      "callsign": "MSCDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31596"
     },
     {
       "id": "ch-286",
       "number": "286",
-      "name": "MTV Live",
-      "category": "Entertainment",
-      "music": false
+      "name": "MTVLIVE",
+      "callsign": "MTVLIVE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "49141"
+    },
+    {
+      "id": "ch-287",
+      "number": "287",
+      "name": "BET Jams",
+      "callsign": "BETJ",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30419"
+    },
+    {
+      "id": "ch-288",
+      "number": "288",
+      "name": "Nick Music",
+      "callsign": "NMZK",
+      "category": "Kids",
+      "music": false,
+      "stationId": "30418"
     },
     {
       "id": "ch-291",
       "number": "291",
-      "name": "Revolt",
-      "category": "Entertainment",
-      "music": false
+      "name": "REVOLT",
+      "callsign": "RVLT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "83097"
+    },
+    {
+      "id": "ch-292",
+      "number": "292",
+      "name": "FM",
+      "callsign": "FM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18262"
+    },
+    {
+      "id": "ch-293",
+      "number": "293",
+      "name": "CMT",
+      "callsign": "CMTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10138"
     },
     {
       "id": "ch-295",
       "number": "295",
-      "name": "GAC Family",
-      "category": "Entertainment",
-      "music": false
+      "name": "Great American Family",
+      "callsign": "GFAM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16062"
     },
     {
       "id": "ch-297",
       "number": "297",
       "name": "RFD TV",
-      "category": "Lifestyle",
-      "music": false
+      "callsign": "RFDTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "25148"
+    },
+    {
+      "id": "ch-300",
+      "number": "300",
+      "name": "ESPN",
+      "callsign": "ESPN",
+      "category": "Sports",
+      "music": false,
+      "stationId": "10179"
+    },
+    {
+      "id": "ch-301",
+      "number": "301",
+      "name": "ESPN2",
+      "callsign": "ESPN2",
+      "category": "Sports",
+      "music": false,
+      "stationId": "12444"
     },
     {
       "id": "ch-302",
       "number": "302",
-      "name": "ESPNews",
+      "name": "ESPNEWS",
+      "callsign": "ESPNEWS",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "16485"
     },
     {
       "id": "ch-306",
       "number": "306",
       "name": "MLB Network",
+      "callsign": "MLBN",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "62079"
     },
     {
       "id": "ch-307",
       "number": "307",
-      "name": "MLB Strike Zone",
+      "name": "MLB Network Strike Zone",
+      "callsign": "MLBNSZ",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "75219"
     },
     {
       "id": "ch-308",
       "number": "308",
       "name": "NBA TV",
+      "callsign": "NBATV",
       "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-309",
-      "number": "309",
-      "name": "BravesVision",
-      "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "32281"
     },
     {
       "id": "ch-310",
       "number": "310",
       "name": "NFL Network",
+      "callsign": "NFLNET",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "34710"
     },
     {
       "id": "ch-311",
       "number": "311",
       "name": "NFL RedZone",
+      "callsign": "NFLNRZ",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "65024"
     },
     {
       "id": "ch-312",
       "number": "312",
       "name": "NHL Network",
+      "callsign": "NHLNET",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "58570"
     },
     {
       "id": "ch-315",
       "number": "315",
       "name": "CBS Sports Network",
+      "callsign": "CBSSN",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "16365"
     },
     {
-      "id": "ch-316",
-      "number": "316",
-      "name": "Olympic Channel",
+      "id": "ch-318",
+      "number": "318",
+      "name": "FanDuel Sports Network South HD- North Carolina W.",
+      "callsign": "FDSCR4H",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "64971"
+    },
+    {
+      "id": "ch-319",
+      "number": "319",
+      "name": "FanDuel Sports Network Southeast HD",
+      "callsign": "FDSEN2H",
+      "category": "Sports",
+      "music": false,
+      "stationId": "70015"
+    },
+    {
+      "id": "ch-324",
+      "number": "324",
+      "name": "FanDuel Sports Network Extra HD",
+      "callsign": "FSENC3H",
+      "category": "Sports",
+      "music": false,
+      "stationId": "107533"
+    },
+    {
+      "id": "ch-326",
+      "number": "326",
+      "name": "Special Events 2",
+      "callsign": "SPLEVT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73807"
     },
     {
       "id": "ch-330",
       "number": "330",
-      "name": "Spectrum SportsNet",
+      "name": "Spectrum SportsNet National HD",
+      "callsign": "SPCTSN",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "77423"
     },
     {
       "id": "ch-331",
       "number": "331",
-      "name": "Spectrum SportsNet LA",
+      "name": "Spectrum SportsNet LA Blackout HD",
+      "callsign": "SPTSNLA",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "87107"
     },
     {
       "id": "ch-339",
       "number": "339",
-      "name": "YES Network",
-      "category": "Sports",
-      "music": false
+      "name": "YES Network National Feed HD",
+      "callsign": "YESNATD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "63558"
+    },
+    {
+      "id": "ch-342",
+      "number": "342",
+      "name": "New England Sports Network National HD",
+      "callsign": "NESNATH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67518"
     },
     {
       "id": "ch-370",
       "number": "370",
       "name": "ESPNU",
+      "callsign": "ESPNU",
       "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-372",
-      "number": "372",
-      "name": "Stadium College Sports Atlantic",
-      "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-373",
-      "number": "373",
-      "name": "Stadium College Sports Central",
-      "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-374",
-      "number": "374",
-      "name": "Stadium College Sports Pacific",
-      "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "45654"
     },
     {
       "id": "ch-382",
       "number": "382",
       "name": "Big Ten Network",
+      "callsign": "BIGTEN",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "56783"
     },
     {
       "id": "ch-384",
       "number": "384",
       "name": "SEC Network",
+      "callsign": "SEC",
       "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-385",
-      "number": "385",
-      "name": "SEC Network Alternate",
-      "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "89535"
     },
     {
       "id": "ch-388",
       "number": "388",
-      "name": "BTN Extra 1",
+      "name": "ACC Network",
+      "callsign": "ACC",
       "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-392",
-      "number": "392",
-      "name": "ESPN College Extra",
-      "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "111871"
     },
     {
       "id": "ch-400",
       "number": "400",
-      "name": "Fox Sports 1",
+      "name": "FS1",
+      "callsign": "FS1",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "82541"
     },
     {
       "id": "ch-401",
       "number": "401",
-      "name": "FOX Sports 2",
+      "name": "FS2",
+      "callsign": "FS2",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "33178"
     },
     {
       "id": "ch-402",
       "number": "402",
       "name": "RACER Network",
-      "category": "Sports",
-      "music": false
+      "callsign": "RACER",
+      "category": "Cable",
+      "music": false,
+      "stationId": "45169"
     },
     {
       "id": "ch-403",
       "number": "403",
-      "name": "Motor Trend",
-      "category": "Documentary",
-      "music": false
+      "name": "DISCOVERY TURBO HD",
+      "callsign": "MTHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31046"
+    },
+    {
+      "id": "ch-405",
+      "number": "405",
+      "name": "Golf Channel",
+      "callsign": "GOLF",
+      "category": "Sports",
+      "music": false,
+      "stationId": "14899"
     },
     {
       "id": "ch-406",
       "number": "406",
       "name": "Tennis Channel",
+      "callsign": "TENNIS",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "33395"
     },
     {
       "id": "ch-408",
       "number": "408",
       "name": "Outdoor Channel",
+      "callsign": "OUTD",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "14776"
     },
     {
       "id": "ch-413",
       "number": "413",
       "name": "FanDuel TV",
+      "callsign": "FDUELTV",
       "category": "Sports",
-      "music": false
-    },
-    {
-      "id": "ch-416",
-      "number": "416",
-      "name": "GOL TV",
-      "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "21345"
     },
     {
       "id": "ch-417",
       "number": "417",
       "name": "beIN Sports",
+      "callsign": "BEINS1",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "76942"
     },
     {
       "id": "ch-419",
       "number": "419",
       "name": "Fox Soccer Plus",
-      "category": "Sports",
-      "music": false
+      "callsign": "FSP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66879"
     },
     {
       "id": "ch-440",
       "number": "440",
       "name": "ESPN Deportes",
-      "category": "Spanish",
-      "music": false
+      "callsign": "ESPND",
+      "category": "Sports",
+      "music": false,
+      "stationId": "25595"
     },
     {
       "id": "ch-442",
       "number": "442",
       "name": "Fox Deportes",
-      "category": "Spanish",
-      "music": false
+      "callsign": "FXDEP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "15377"
     },
     {
       "id": "ch-443",
       "number": "443",
-      "name": "beIN Sports Spanish",
+      "name": "beIN Sports En Espa\u00f1ol",
+      "callsign": "BEINSES",
       "category": "Sports",
-      "music": false
+      "music": false,
+      "stationId": "76943"
     },
     {
       "id": "ch-444",
       "number": "444",
       "name": "TUDN",
-      "category": "Spanish",
-      "music": false
+      "callsign": "TUDNU",
+      "category": "Cable",
+      "music": false,
+      "stationId": "75176"
+    },
+    {
+      "id": "ch-460",
+      "number": "460",
+      "name": "Eternal Word Television Network",
+      "callsign": "EWTN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10183"
     },
     {
       "id": "ch-461",
       "number": "461",
       "name": "INSP",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "INSP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11066"
     },
     {
       "id": "ch-463",
       "number": "463",
       "name": "Daystar Television Network",
-      "category": "Religious",
-      "music": false
+      "callsign": "DYSTR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "19026"
     },
     {
       "id": "ch-464",
       "number": "464",
       "name": "Trinity Broadcasting Network",
-      "category": "Religious",
-      "music": false
+      "callsign": "TBN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14767"
     },
     {
       "id": "ch-465",
       "number": "465",
       "name": "BYU-TV",
-      "category": "International",
-      "music": false
+      "callsign": "BYUTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "21855"
     },
     {
       "id": "ch-468",
       "number": "468",
       "name": "Cowboy Channel",
-      "category": "Sports",
-      "music": false
+      "callsign": "COWBOY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10188"
     },
     {
       "id": "ch-469",
       "number": "469",
-      "name": "Jewish Life Television",
-      "category": "Religious",
-      "music": false
+      "name": "Jewish Life TV",
+      "callsign": "JLTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "60165"
     },
     {
       "id": "ch-470",
       "number": "470",
       "name": "SonLife Broadcasting Network",
-      "category": "Religious",
-      "music": false
+      "callsign": "SBND",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67676"
     },
     {
-      "id": "ch-472",
-      "number": "472",
-      "name": "TBN Inspire",
-      "category": "Religious",
-      "music": false
+      "id": "ch-475",
+      "number": "475",
+      "name": "QVC3",
+      "callsign": "QVC3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "101260"
     },
     {
-      "id": "ch-474",
-      "number": "474",
-      "name": "Impact TV Network",
-      "category": "International",
-      "music": false
+      "id": "ch-476",
+      "number": "476",
+      "name": "ShopZeal 6",
+      "callsign": "SHOPZ6",
+      "category": "Cable",
+      "music": false,
+      "stationId": "82423"
+    },
+    {
+      "id": "ch-477",
+      "number": "477",
+      "name": "Family Entertainment Television",
+      "callsign": "FETV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73413"
+    },
+    {
+      "id": "ch-478",
+      "number": "478",
+      "name": "Local Access- Shop Zeal 8",
+      "callsign": "SHOPZ8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "91086"
     },
     {
       "id": "ch-481",
       "number": "481",
       "name": "QVC2",
-      "category": "Shopping",
-      "music": false
+      "callsign": "QVC2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "82682"
+    },
+    {
+      "id": "ch-482",
+      "number": "482",
+      "name": "Shop Zeal 1",
+      "callsign": "SHOPZ1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "68756"
     },
     {
       "id": "ch-484",
       "number": "484",
       "name": "HSN2",
-      "category": "Shopping",
-      "music": false
+      "callsign": "HSN2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10270"
+    },
+    {
+      "id": "ch-485",
+      "number": "485",
+      "name": "Shop Zeal 3",
+      "callsign": "SHOPZ3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71524"
+    },
+    {
+      "id": "ch-486",
+      "number": "486",
+      "name": "Shop Zeal 4",
+      "callsign": "SHOPZ4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71511"
+    },
+    {
+      "id": "ch-488",
+      "number": "488",
+      "name": "Shop Zeal 5",
+      "callsign": "SHOPZ5",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71503"
+    },
+    {
+      "id": "ch-489",
+      "number": "489",
+      "name": "Love",
+      "callsign": "LOVE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "71533"
+    },
+    {
+      "id": "ch-490",
+      "number": "490",
+      "name": "GEMS",
+      "callsign": "GEMSSD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26643"
+    },
+    {
+      "id": "ch-492",
+      "number": "492",
+      "name": "Shop LC",
+      "callsign": "SHOPLC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "56032"
+    },
+    {
+      "id": "ch-495",
+      "number": "495",
+      "name": "SonLife Broadcasting Network",
+      "callsign": "SBND",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67676"
+    },
+    {
+      "id": "ch-507",
+      "number": "507",
+      "name": "Kids and Teens On Demand",
+      "callsign": "KDTNDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "47187"
+    },
+    {
+      "id": "ch-508",
+      "number": "508",
+      "name": "Free Movies On Demand",
+      "callsign": "FRMVDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "49934"
+    },
+    {
+      "id": "ch-509",
+      "number": "509",
+      "name": "Movie Trailers On Demand",
+      "callsign": "MVTRDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "49742"
+    },
+    {
+      "id": "ch-510",
+      "number": "510",
+      "name": "HBO on Demand",
+      "callsign": "HBODM",
+      "category": "Premium",
+      "music": false,
+      "stationId": "38589"
     },
     {
       "id": "ch-511",
       "number": "511",
       "name": "HBO",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "HBO",
+      "category": "Premium",
+      "music": false,
+      "stationId": "10240"
     },
     {
       "id": "ch-512",
       "number": "512",
       "name": "HBO Hits",
+      "callsign": "HBOHTS",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "10241"
     },
     {
       "id": "ch-513",
       "number": "513",
       "name": "HBO Drama",
+      "callsign": "HBODRMA",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "10243"
     },
     {
       "id": "ch-515",
       "number": "515",
       "name": "HBO Comedy",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "HBOC",
+      "category": "Premium",
+      "music": false,
+      "stationId": "18429"
     },
     {
       "id": "ch-516",
       "number": "516",
       "name": "HBO Movies",
+      "callsign": "HBOMOV",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "18431"
     },
     {
       "id": "ch-517",
       "number": "517",
       "name": "HBO Latino",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "HBOLAT",
+      "category": "Premium",
+      "music": false,
+      "stationId": "24553"
+    },
+    {
+      "id": "ch-518",
+      "number": "518",
+      "name": "HBO (Pacific)",
+      "callsign": "HBOP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "10244"
+    },
+    {
+      "id": "ch-519",
+      "number": "519",
+      "name": "HBO Hits",
+      "callsign": "HBOHTP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "10242"
+    },
+    {
+      "id": "ch-524",
+      "number": "524",
+      "name": "HBO Latino (Pacific)",
+      "callsign": "HBOLATP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "24575"
+    },
+    {
+      "id": "ch-530",
+      "number": "530",
+      "name": "Cinemax On Demand",
+      "callsign": "MAXDM",
+      "category": "Premium",
+      "music": false,
+      "stationId": "31571"
     },
     {
       "id": "ch-531",
       "number": "531",
       "name": "Cinemax",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "MAX",
+      "category": "Premium",
+      "music": false,
+      "stationId": "10120"
     },
     {
       "id": "ch-532",
       "number": "532",
-      "name": "MoreMAX",
+      "name": "Cinemax Hits",
+      "callsign": "CINEHIT",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "10121"
     },
     {
       "id": "ch-533",
       "number": "533",
       "name": "Cinemax Action",
+      "callsign": "CINACT",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "18433"
     },
     {
       "id": "ch-536",
       "number": "536",
       "name": "Cinemax Spanish",
+      "callsign": "CMAX",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "25623"
     },
     {
       "id": "ch-537",
       "number": "537",
       "name": "Cinemax Classics",
+      "callsign": "CINECLS",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "25620"
+    },
+    {
+      "id": "ch-539",
+      "number": "539",
+      "name": "Cinemax (Pacific)",
+      "callsign": "MAXP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "12508"
+    },
+    {
+      "id": "ch-550",
+      "number": "550",
+      "name": "Paramount+ with Showtime On Demand",
+      "callsign": "SHOWDM",
+      "category": "Premium",
+      "music": false,
+      "stationId": "32026"
     },
     {
       "id": "ch-551",
       "number": "551",
       "name": "Paramount+ with Showtime",
+      "callsign": "PARSHO",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "11115"
     },
     {
       "id": "ch-552",
       "number": "552",
-      "name": "Showtime 2",
-      "category": "Entertainment",
-      "music": false
+      "name": "SHO 2",
+      "callsign": "SHO2",
+      "category": "Premium",
+      "music": false,
+      "stationId": "11116"
     },
     {
       "id": "ch-553",
       "number": "553",
-      "name": "SHO x BET",
+      "name": "Showtime Showcase",
+      "callsign": "SHOCSE",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "16153"
     },
     {
       "id": "ch-554",
       "number": "554",
       "name": "Showtime Extreme",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "SHOWX",
+      "category": "Premium",
+      "music": false,
+      "stationId": "18086"
     },
     {
       "id": "ch-555",
       "number": "555",
-      "name": "Showtime Showcase",
+      "name": "SHO x BET",
+      "callsign": "SHOBET",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "20622"
     },
     {
       "id": "ch-556",
       "number": "556",
       "name": "Showtime Next",
+      "callsign": "NEXT",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "25270"
     },
     {
       "id": "ch-557",
       "number": "557",
       "name": "Showtime Women",
+      "callsign": "WOMEN",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "25272"
     },
     {
       "id": "ch-558",
       "number": "558",
       "name": "Showtime Familyzone",
+      "callsign": "FAMZ",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "25274"
+    },
+    {
+      "id": "ch-559",
+      "number": "559",
+      "name": "Paramount+ with Showtime (Pacific)",
+      "callsign": "PARSHOW",
+      "category": "Premium",
+      "music": false,
+      "stationId": "11117"
+    },
+    {
+      "id": "ch-560",
+      "number": "560",
+      "name": "SHO 2 (Pacific)",
+      "callsign": "SHO2P",
+      "category": "Premium",
+      "music": false,
+      "stationId": "16444"
+    },
+    {
+      "id": "ch-561",
+      "number": "561",
+      "name": "Showtime Showcase (Pacific)",
+      "callsign": "SHOCSEP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "16584"
+    },
+    {
+      "id": "ch-562",
+      "number": "562",
+      "name": "Showtime Extreme (Pacific)",
+      "callsign": "SHOWXP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "18164"
+    },
+    {
+      "id": "ch-563",
+      "number": "563",
+      "name": "SHO x BET (Pacific)",
+      "callsign": "SHOBETP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "20625"
+    },
+    {
+      "id": "ch-564",
+      "number": "564",
+      "name": "Showtime Next (Pacific)",
+      "callsign": "NEXTP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "25271"
+    },
+    {
+      "id": "ch-565",
+      "number": "565",
+      "name": "Showtime Women (Pacific)",
+      "callsign": "WOMENP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "25273"
+    },
+    {
+      "id": "ch-566",
+      "number": "566",
+      "name": "Showtime Familyzone (Pacific)",
+      "callsign": "FAMZP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "25275"
+    },
+    {
+      "id": "ch-570",
+      "number": "570",
+      "name": "TMC On Demand",
+      "callsign": "TMCDM",
+      "category": "Premium",
+      "music": false,
+      "stationId": "31570"
     },
     {
       "id": "ch-571",
       "number": "571",
       "name": "The Movie Channel",
+      "callsign": "TMC",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "11160"
     },
     {
       "id": "ch-572",
       "number": "572",
       "name": "The Movie Channel Extra",
+      "callsign": "TMCX",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "17663"
+    },
+    {
+      "id": "ch-573",
+      "number": "573",
+      "name": "The Movie Channel (Pacific)",
+      "callsign": "TMCP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "12509"
+    },
+    {
+      "id": "ch-574",
+      "number": "574",
+      "name": "The Movie Channel Extra (Pacific)",
+      "callsign": "TMCXP",
+      "category": "Premium",
+      "music": false,
+      "stationId": "17687"
+    },
+    {
+      "id": "ch-580",
+      "number": "580",
+      "name": "Starz On Demand",
+      "callsign": "STARZDM",
+      "category": "Premium",
+      "music": false,
+      "stationId": "31578"
     },
     {
       "id": "ch-581",
       "number": "581",
       "name": "Starz",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STARZ",
+      "category": "Premium",
+      "music": false,
+      "stationId": "12719"
     },
     {
       "id": "ch-582",
       "number": "582",
       "name": "Starz Edge",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZE",
+      "category": "Premium",
+      "music": false,
+      "stationId": "16311"
     },
     {
       "id": "ch-583",
       "number": "583",
       "name": "Starz in Black",
+      "callsign": "STZIB",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "16833"
     },
     {
       "id": "ch-584",
       "number": "584",
       "name": "Starz Kids & Family",
-      "category": "Kids",
-      "music": false
+      "callsign": "STZK",
+      "category": "Premium",
+      "music": false,
+      "stationId": "19635"
     },
     {
       "id": "ch-585",
       "number": "585",
       "name": "Starz Cinema",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZCI",
+      "category": "Premium",
+      "music": false,
+      "stationId": "19634"
     },
     {
       "id": "ch-586",
       "number": "586",
       "name": "Starz Comedy",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZC",
+      "category": "Premium",
+      "music": false,
+      "stationId": "34901"
+    },
+    {
+      "id": "ch-594",
+      "number": "594",
+      "name": "MGM+ On Demand",
+      "callsign": "MGMDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67491"
     },
     {
       "id": "ch-595",
       "number": "595",
       "name": "MGM+ East",
-      "category": "Premium",
-      "music": false
+      "callsign": "MGM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "65669"
+    },
+    {
+      "id": "ch-596",
+      "number": "596",
+      "name": "MGM+ West",
+      "callsign": "MGMW",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66073"
     },
     {
       "id": "ch-597",
       "number": "597",
       "name": "MGM+ Hits",
-      "category": "Premium",
-      "music": false
+      "callsign": "MGMHIT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73075"
     },
     {
       "id": "ch-598",
       "number": "598",
       "name": "MGM+ Marquee",
-      "category": "Premium",
-      "music": false
+      "callsign": "MGMMAR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "74320"
     },
     {
       "id": "ch-599",
       "number": "599",
       "name": "MGM+ Drive-In",
+      "callsign": "MGMDRV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "68409"
+    },
+    {
+      "id": "ch-601",
+      "number": "601",
+      "name": "EPG Starz Encore On Demand",
+      "callsign": "STZENDM",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "49317"
     },
     {
       "id": "ch-602",
       "number": "602",
       "name": "Starz Encore",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZENC",
+      "category": "Premium",
+      "music": false,
+      "stationId": "10178"
     },
     {
       "id": "ch-603",
       "number": "603",
       "name": "Starz Encore Action",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZENAC",
+      "category": "Premium",
+      "music": false,
+      "stationId": "14871"
     },
     {
       "id": "ch-604",
       "number": "604",
       "name": "Starz Encore Black",
+      "callsign": "STZENBK",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "14870"
     },
     {
       "id": "ch-605",
       "number": "605",
       "name": "Starz Encore Classic",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "STZENCL",
+      "category": "Premium",
+      "music": false,
+      "stationId": "14764"
     },
     {
       "id": "ch-606",
       "number": "606",
       "name": "Starz Encore Suspense",
+      "callsign": "STZENSU",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "14766"
     },
     {
       "id": "ch-607",
       "number": "607",
-      "name": "Starz Encore Westerns",
-      "category": "Entertainment",
-      "music": false
+      "name": "Starz Encore Westerns SD",
+      "callsign": "STZEWSS",
+      "category": "Premium",
+      "music": false,
+      "stationId": "102906"
     },
     {
       "id": "ch-608",
       "number": "608",
-      "name": "Starz Encore Family",
+      "name": "Starz Encore Family SD",
+      "callsign": "STZENFS",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "102903"
     },
     {
-      "id": "ch-620",
-      "number": "620",
-      "name": "MoviePlex",
+      "id": "ch-609",
+      "number": "609",
+      "name": "Starz Encore (Pacific)",
+      "callsign": "STZENCP",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "17125"
+    },
+    {
+      "id": "ch-617",
+      "number": "617",
+      "name": "AMC+ On Demand",
+      "callsign": "AMCPLDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "139497"
     },
     {
       "id": "ch-621",
       "number": "621",
-      "name": "IndiePlex",
-      "category": "Premium",
-      "music": false
-    },
-    {
-      "id": "ch-622",
-      "number": "622",
       "name": "RetroPlex",
+      "callsign": "RETRO",
       "category": "Premium",
-      "music": false
+      "music": false,
+      "stationId": "49767"
     },
     {
       "id": "ch-623",
       "number": "623",
       "name": "Flix",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "FLIX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10201"
     },
     {
       "id": "ch-625",
       "number": "625",
       "name": "SundanceTV",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "SUNDANC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16108"
     },
     {
       "id": "ch-627",
       "number": "627",
       "name": "IFC",
-      "category": "Entertainment",
-      "music": false
+      "callsign": "IFC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14873"
+    },
+    {
+      "id": "ch-629",
+      "number": "629",
+      "name": "Hallmark Mystery",
+      "callsign": "HMYS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "61522"
+    },
+    {
+      "id": "ch-630",
+      "number": "630",
+      "name": "LMN",
+      "callsign": "LMN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18480"
+    },
+    {
+      "id": "ch-631",
+      "number": "631",
+      "name": "Turner Classic Movies",
+      "callsign": "TCM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12852"
     },
     {
       "id": "ch-632",
       "number": "632",
-      "name": "FX Movie Channel",
-      "category": "Entertainment",
-      "music": false
+      "name": "FX Movie Channel HD",
+      "callsign": "FXMHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "70253"
     },
     {
-      "id": "ch-633",
-      "number": "633",
-      "name": "MGM HD",
-      "category": "Entertainment",
-      "music": false
+      "id": "ch-651",
+      "number": "651",
+      "name": "In Demand PPVHD (HD Events)",
+      "callsign": "HDPPV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "44076"
     },
     {
-      "id": "ch-640",
-      "number": "640",
-      "name": "HDNet Movies",
-      "category": "Entertainment",
-      "music": false
+      "id": "ch-660",
+      "number": "660",
+      "name": "In Demand PPV (SD Events)",
+      "callsign": "SDPPV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "90987"
+    },
+    {
+      "id": "ch-661",
+      "number": "661",
+      "name": "PPV en Espa\u00f1ol",
+      "callsign": "PPVE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12504"
+    },
+    {
+      "id": "ch-700",
+      "number": "700",
+      "name": "Game HD",
+      "callsign": "GMHD1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "55596"
+    },
+    {
+      "id": "ch-701",
+      "number": "701",
+      "name": "Game HD 2",
+      "callsign": "GMHD2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66112"
+    },
+    {
+      "id": "ch-702",
+      "number": "702",
+      "name": "GAME HD 3",
+      "callsign": "GMHD3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72810"
+    },
+    {
+      "id": "ch-703",
+      "number": "703",
+      "name": "GAME HD 4",
+      "callsign": "GMHD4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72824"
+    },
+    {
+      "id": "ch-704",
+      "number": "704",
+      "name": "GAME HD 5",
+      "callsign": "GMHD5",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72825"
+    },
+    {
+      "id": "ch-705",
+      "number": "705",
+      "name": "GAME HD 6",
+      "callsign": "GMHD6",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72826"
+    },
+    {
+      "id": "ch-706",
+      "number": "706",
+      "name": "GAME HD 7",
+      "callsign": "GMHD7",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72827"
+    },
+    {
+      "id": "ch-707",
+      "number": "707",
+      "name": "GAME HD 8",
+      "callsign": "GMHD8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72828"
+    },
+    {
+      "id": "ch-708",
+      "number": "708",
+      "name": "GAME HD 9",
+      "callsign": "GMHD9",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72829"
+    },
+    {
+      "id": "ch-709",
+      "number": "709",
+      "name": "GAME 1",
+      "callsign": "GAME1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26197"
+    },
+    {
+      "id": "ch-710",
+      "number": "710",
+      "name": "GAME 2",
+      "callsign": "GAME2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26198"
+    },
+    {
+      "id": "ch-711",
+      "number": "711",
+      "name": "GAME 3",
+      "callsign": "GAME3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26199"
+    },
+    {
+      "id": "ch-712",
+      "number": "712",
+      "name": "GAME 4",
+      "callsign": "GAME4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26200"
+    },
+    {
+      "id": "ch-713",
+      "number": "713",
+      "name": "GAME 5",
+      "callsign": "GAME5",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26201"
+    },
+    {
+      "id": "ch-714",
+      "number": "714",
+      "name": "GAME 6",
+      "callsign": "GAME6",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26202"
+    },
+    {
+      "id": "ch-715",
+      "number": "715",
+      "name": "GAME 7",
+      "callsign": "GAME7",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26203"
+    },
+    {
+      "id": "ch-716",
+      "number": "716",
+      "name": "GAME 8",
+      "callsign": "GAME8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26204"
+    },
+    {
+      "id": "ch-717",
+      "number": "717",
+      "name": "GAME 9",
+      "callsign": "GAME9",
+      "category": "Cable",
+      "music": false,
+      "stationId": "29093"
+    },
+    {
+      "id": "ch-718",
+      "number": "718",
+      "name": "GAME 10",
+      "callsign": "GME10",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31250"
+    },
+    {
+      "id": "ch-719",
+      "number": "719",
+      "name": "GAME 11",
+      "callsign": "GME11",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53701"
+    },
+    {
+      "id": "ch-720",
+      "number": "720",
+      "name": "GAME 12",
+      "callsign": "GME12",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53704"
+    },
+    {
+      "id": "ch-721",
+      "number": "721",
+      "name": "GAME 13",
+      "callsign": "GME13",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53705"
+    },
+    {
+      "id": "ch-722",
+      "number": "722",
+      "name": "GAME 14",
+      "callsign": "GME14",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53708"
+    },
+    {
+      "id": "ch-725",
+      "number": "725",
+      "name": "NBA League Pass 1 HD",
+      "callsign": "TMHD1",
+      "category": "Sports",
+      "music": false,
+      "stationId": "55597"
+    },
+    {
+      "id": "ch-726",
+      "number": "726",
+      "name": "NBA League Pass 2 HD",
+      "callsign": "TMHD2",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72809"
+    },
+    {
+      "id": "ch-727",
+      "number": "727",
+      "name": "NBA League Pass 3 HD",
+      "callsign": "TMHD3",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72831"
+    },
+    {
+      "id": "ch-728",
+      "number": "728",
+      "name": "NBA League Pass 4 HD",
+      "callsign": "TMHD4",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72832"
+    },
+    {
+      "id": "ch-729",
+      "number": "729",
+      "name": "NBA League Pass 5 HD",
+      "callsign": "TMHD5",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72833"
+    },
+    {
+      "id": "ch-730",
+      "number": "730",
+      "name": "NBA League Pass 6 HD",
+      "callsign": "TMHD6",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72834"
+    },
+    {
+      "id": "ch-731",
+      "number": "731",
+      "name": "NBA League Pass 7 HD",
+      "callsign": "TMHD7",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72835"
+    },
+    {
+      "id": "ch-732",
+      "number": "732",
+      "name": "NBA League Pass 8 HD",
+      "callsign": "TMHD8",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72836"
+    },
+    {
+      "id": "ch-733",
+      "number": "733",
+      "name": "NBA League Pass 9 HD",
+      "callsign": "TMHD9",
+      "category": "Sports",
+      "music": false,
+      "stationId": "72837"
+    },
+    {
+      "id": "ch-734",
+      "number": "734",
+      "name": "NBA League Pass 1",
+      "callsign": "TEAM1",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20810"
+    },
+    {
+      "id": "ch-735",
+      "number": "735",
+      "name": "NBA League Pass 2",
+      "callsign": "TEAM2",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20811"
+    },
+    {
+      "id": "ch-736",
+      "number": "736",
+      "name": "NBA League Pass 3",
+      "callsign": "TEAM3",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20812"
+    },
+    {
+      "id": "ch-737",
+      "number": "737",
+      "name": "NBA League Pass 4",
+      "callsign": "TEAM4",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21044"
+    },
+    {
+      "id": "ch-738",
+      "number": "738",
+      "name": "NBA League Pass 5",
+      "callsign": "TEAM5",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21045"
+    },
+    {
+      "id": "ch-739",
+      "number": "739",
+      "name": "NBA League Pass 6",
+      "callsign": "TEAM6",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21046"
+    },
+    {
+      "id": "ch-740",
+      "number": "740",
+      "name": "NBA League Pass 7",
+      "callsign": "TEAM7",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21047"
+    },
+    {
+      "id": "ch-741",
+      "number": "741",
+      "name": "NBA League Pass 8",
+      "callsign": "TEAM8",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21048"
+    },
+    {
+      "id": "ch-742",
+      "number": "742",
+      "name": "NBA League Pass 9",
+      "callsign": "TEAM9",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21049"
+    },
+    {
+      "id": "ch-743",
+      "number": "743",
+      "name": "NBA League Pass 10",
+      "callsign": "TEA10",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21115"
+    },
+    {
+      "id": "ch-750",
+      "number": "750",
+      "name": "Game HD",
+      "callsign": "GMHD1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "55596"
+    },
+    {
+      "id": "ch-751",
+      "number": "751",
+      "name": "Game HD 2",
+      "callsign": "GMHD2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "66112"
+    },
+    {
+      "id": "ch-752",
+      "number": "752",
+      "name": "GAME HD 3",
+      "callsign": "GMHD3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72810"
+    },
+    {
+      "id": "ch-753",
+      "number": "753",
+      "name": "GAME HD 4",
+      "callsign": "GMHD4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72824"
+    },
+    {
+      "id": "ch-754",
+      "number": "754",
+      "name": "GAME HD 5",
+      "callsign": "GMHD5",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72825"
+    },
+    {
+      "id": "ch-755",
+      "number": "755",
+      "name": "GAME HD 6",
+      "callsign": "GMHD6",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72826"
+    },
+    {
+      "id": "ch-756",
+      "number": "756",
+      "name": "GAME HD 7",
+      "callsign": "GMHD7",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72827"
+    },
+    {
+      "id": "ch-757",
+      "number": "757",
+      "name": "GAME HD 8",
+      "callsign": "GMHD8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72828"
+    },
+    {
+      "id": "ch-758",
+      "number": "758",
+      "name": "GAME HD 9",
+      "callsign": "GMHD9",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72829"
+    },
+    {
+      "id": "ch-759",
+      "number": "759",
+      "name": "GAME 1",
+      "callsign": "GAME1",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26197"
+    },
+    {
+      "id": "ch-760",
+      "number": "760",
+      "name": "GAME 2",
+      "callsign": "GAME2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26198"
+    },
+    {
+      "id": "ch-761",
+      "number": "761",
+      "name": "GAME 3",
+      "callsign": "GAME3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26199"
+    },
+    {
+      "id": "ch-762",
+      "number": "762",
+      "name": "GAME 4",
+      "callsign": "GAME4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26200"
+    },
+    {
+      "id": "ch-763",
+      "number": "763",
+      "name": "GAME 5",
+      "callsign": "GAME5",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26201"
+    },
+    {
+      "id": "ch-764",
+      "number": "764",
+      "name": "GAME 6",
+      "callsign": "GAME6",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26202"
+    },
+    {
+      "id": "ch-765",
+      "number": "765",
+      "name": "GAME 7",
+      "callsign": "GAME7",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26203"
+    },
+    {
+      "id": "ch-766",
+      "number": "766",
+      "name": "GAME 8",
+      "callsign": "GAME8",
+      "category": "Cable",
+      "music": false,
+      "stationId": "26204"
+    },
+    {
+      "id": "ch-767",
+      "number": "767",
+      "name": "GAME 9",
+      "callsign": "GAME9",
+      "category": "Cable",
+      "music": false,
+      "stationId": "29093"
+    },
+    {
+      "id": "ch-768",
+      "number": "768",
+      "name": "GAME 10",
+      "callsign": "GME10",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31250"
+    },
+    {
+      "id": "ch-769",
+      "number": "769",
+      "name": "GAME 11",
+      "callsign": "GME11",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53701"
+    },
+    {
+      "id": "ch-770",
+      "number": "770",
+      "name": "GAME 12",
+      "callsign": "GME12",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53704"
+    },
+    {
+      "id": "ch-771",
+      "number": "771",
+      "name": "GAME 13",
+      "callsign": "GME13",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53705"
+    },
+    {
+      "id": "ch-772",
+      "number": "772",
+      "name": "GAME 14",
+      "callsign": "GME14",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53708"
+    },
+    {
+      "id": "ch-775",
+      "number": "775",
+      "name": "NBA League Pass 1",
+      "callsign": "TEAM1",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20810"
+    },
+    {
+      "id": "ch-776",
+      "number": "776",
+      "name": "NBA League Pass 2",
+      "callsign": "TEAM2",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20811"
+    },
+    {
+      "id": "ch-777",
+      "number": "777",
+      "name": "NBA League Pass 3",
+      "callsign": "TEAM3",
+      "category": "Sports",
+      "music": false,
+      "stationId": "20812"
+    },
+    {
+      "id": "ch-778",
+      "number": "778",
+      "name": "NBA League Pass 4",
+      "callsign": "TEAM4",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21044"
+    },
+    {
+      "id": "ch-779",
+      "number": "779",
+      "name": "NBA League Pass 5",
+      "callsign": "TEAM5",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21045"
+    },
+    {
+      "id": "ch-780",
+      "number": "780",
+      "name": "NBA League Pass 6",
+      "callsign": "TEAM6",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21046"
+    },
+    {
+      "id": "ch-781",
+      "number": "781",
+      "name": "NBA League Pass 7",
+      "callsign": "TEAM7",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21047"
+    },
+    {
+      "id": "ch-782",
+      "number": "782",
+      "name": "NBA League Pass 8",
+      "callsign": "TEAM8",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21048"
+    },
+    {
+      "id": "ch-783",
+      "number": "783",
+      "name": "NBA League Pass 9",
+      "callsign": "TEAM9",
+      "category": "Sports",
+      "music": false,
+      "stationId": "21049"
+    },
+    {
+      "id": "ch-799",
+      "number": "799",
+      "name": "Spectrum Noticias",
+      "callsign": "SNNOT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "173953"
+    },
+    {
+      "id": "ch-800",
+      "number": "800",
+      "name": "Lo Mejor On Demand",
+      "callsign": "MEJORDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "64365"
+    },
+    {
+      "id": "ch-801",
+      "number": "801",
+      "name": "Univision Network",
+      "callsign": "UNI",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11118"
+    },
+    {
+      "id": "ch-803",
+      "number": "803",
+      "name": "Telemundo Satellite Feed",
+      "callsign": "TELESAT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "77606"
+    },
+    {
+      "id": "ch-804",
+      "number": "804",
+      "name": "UniMas",
+      "callsign": "UNIMAS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "29058"
+    },
+    {
+      "id": "ch-811",
+      "number": "811",
+      "name": "Estrella TV",
+      "callsign": "ESTRLLA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "65064"
     },
     {
       "id": "ch-827",
       "number": "827",
-      "name": "Galavisi\u00f3n",
-      "category": "Spanish",
-      "music": false
+      "name": "Galavision Cable Network",
+      "callsign": "GALA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "10222"
+    },
+    {
+      "id": "ch-834",
+      "number": "834",
+      "name": "CNN en Espa\u00f1ol",
+      "callsign": "CNNE",
+      "category": "News",
+      "music": false,
+      "stationId": "58631"
+    },
+    {
+      "id": "ch-837",
+      "number": "837",
+      "name": "Comercio TV",
+      "callsign": "COMERTVH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "166714"
+    },
+    {
+      "id": "ch-847",
+      "number": "847",
+      "name": "N+ Foro",
+      "callsign": "NMASFOR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "76964"
+    },
+    {
+      "id": "ch-850",
+      "number": "850",
+      "name": "Canal Sur",
+      "callsign": "SUR",
+      "category": "Cable",
+      "music": false,
+      "stationId": "12750"
+    },
+    {
+      "id": "ch-890",
+      "number": "890",
+      "name": "TeleN",
+      "callsign": "TELEN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "48523"
+    },
+    {
+      "id": "ch-895",
+      "number": "895",
+      "name": "Univision TL Novelas",
+      "callsign": "UNITLNO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "74550"
+    },
+    {
+      "id": "ch-896",
+      "number": "896",
+      "name": "Pasiones TV US",
+      "callsign": "PASNUS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "61776"
     },
     {
       "id": "ch-898",
       "number": "898",
       "name": "UNIVERSO",
-      "category": "Spanish",
-      "music": false
+      "callsign": "UNVSO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14791"
+    },
+    {
+      "id": "ch-899",
+      "number": "899",
+      "name": "Tr3s: MTV, Musica y Mas",
+      "callsign": "TR3S",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18715"
+    },
+    {
+      "id": "ch-900",
+      "number": "900",
+      "name": "Fuse",
+      "callsign": "FUSE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14929"
+    },
+    {
+      "id": "ch-910",
+      "number": "910",
+      "name": "Bandamax",
+      "callsign": "BANDAUS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "54867"
+    },
+    {
+      "id": "ch-920",
+      "number": "920",
+      "name": "Cartoonito",
+      "callsign": "CARTOA",
+      "category": "Kids",
+      "music": false,
+      "stationId": "26089"
+    },
+    {
+      "id": "ch-921",
+      "number": "921",
+      "name": "SPAN CARTOON NET",
+      "callsign": "STOON",
+      "category": "Kids",
+      "music": false,
+      "stationId": "38279"
+    },
+    {
+      "id": "ch-923",
+      "number": "923",
+      "name": "Sorpresa",
+      "callsign": "SORPRESA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "25347"
+    },
+    {
+      "id": "ch-924",
+      "number": "924",
+      "name": "Discovery Familia En Espa\u00f1ol",
+      "callsign": "DFAM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "58428"
+    },
+    {
+      "id": "ch-926",
+      "number": "926",
+      "name": "Atreseries",
+      "callsign": "ATRESSD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "90917"
+    },
+    {
+      "id": "ch-930",
+      "number": "930",
+      "name": "Discovery en Espa\u00f1ol",
+      "callsign": "DSCE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "19247"
+    },
+    {
+      "id": "ch-931",
+      "number": "931",
+      "name": "Nat Geo Mundo",
+      "callsign": "NGMUNDH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "117788"
+    },
+    {
+      "id": "ch-932",
+      "number": "932",
+      "name": "History Channel En Espa\u00f1ol",
+      "callsign": "HISTE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "43362"
+    },
+    {
+      "id": "ch-945",
+      "number": "945",
+      "name": "EWTN Latin America",
+      "callsign": "EWTNL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "16350"
+    },
+    {
+      "id": "ch-950",
+      "number": "950",
+      "name": "ESPN Deportes",
+      "callsign": "ESPND",
+      "category": "Sports",
+      "music": false,
+      "stationId": "25595"
+    },
+    {
+      "id": "ch-953",
+      "number": "953",
+      "name": "Fox Deportes",
+      "callsign": "FXDEP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "15377"
+    },
+    {
+      "id": "ch-958",
+      "number": "958",
+      "name": "beIN Sports En Espa\u00f1ol",
+      "callsign": "BEINSES",
+      "category": "Sports",
+      "music": false,
+      "stationId": "76943"
+    },
+    {
+      "id": "ch-959",
+      "number": "959",
+      "name": "TUDN",
+      "callsign": "TUDNU",
+      "category": "Cable",
+      "music": false,
+      "stationId": "75176"
+    },
+    {
+      "id": "ch-970",
+      "number": "970",
+      "name": "Espa\u00f1ol Movies on Demand",
+      "callsign": "ESPMVDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "58767"
+    },
+    {
+      "id": "ch-971",
+      "number": "971",
+      "name": "Cine Latino US",
+      "callsign": "CINLUS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "62401"
+    },
+    {
+      "id": "ch-973",
+      "number": "973",
+      "name": "Sony Cine",
+      "callsign": "SOCINH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "76408"
+    },
+    {
+      "id": "ch-979",
+      "number": "979",
+      "name": "De Pelicula Clasico",
+      "callsign": "DEPELC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "33628"
+    },
+    {
+      "id": "ch-980",
+      "number": "980",
+      "name": "De Pelicula",
+      "callsign": "DPLUSSD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "100502"
+    },
+    {
+      "id": "ch-1001",
+      "number": "1001",
+      "name": "Primetime On Demand",
+      "callsign": "PTIMEDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "62601"
+    },
+    {
+      "id": "ch-1002",
+      "number": "1002",
+      "name": "Entertainment on Demand",
+      "callsign": "ENTRDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "59324"
+    },
+    {
+      "id": "ch-1003",
+      "number": "1003",
+      "name": "Cutting Edge On Demand",
+      "callsign": "CEDGDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "47196"
+    },
+    {
+      "id": "ch-1004",
+      "number": "1004",
+      "name": "KIDS (Kids Channel) On Demand",
+      "callsign": "KIDSDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "34351"
+    },
+    {
+      "id": "ch-1005",
+      "number": "1005",
+      "name": "Music On Demand",
+      "callsign": "MSCDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31596"
+    },
+    {
+      "id": "ch-1007",
+      "number": "1007",
+      "name": "Lifestyle On Demand",
+      "callsign": "LIFESDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "48003"
+    },
+    {
+      "id": "ch-1008",
+      "number": "1008",
+      "name": "Nature & Knowledge on Demand",
+      "callsign": "HISNADM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "68069"
+    },
+    {
+      "id": "ch-1009",
+      "number": "1009",
+      "name": "Sports and Fitness On Demand",
+      "callsign": "SPFTDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "47188"
+    },
+    {
+      "id": "ch-1020",
+      "number": "1020",
+      "name": "Local On Demand",
+      "callsign": "LOCDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "34294"
+    },
+    {
+      "id": "ch-1024",
+      "number": "1024",
+      "name": "Carnegie Hall+ On Demand",
+      "callsign": "CHPDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "124643"
+    },
+    {
+      "id": "ch-1200",
+      "number": "1200",
+      "name": "WXLV",
+      "callsign": "WXLV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11734"
+    },
+    {
+      "id": "ch-1203",
+      "number": "1203",
+      "name": "WXII",
+      "callsign": "WXII",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11994"
+    },
+    {
+      "id": "ch-1206",
+      "number": "1206",
+      "name": "WGHP",
+      "callsign": "WGHP",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11470"
+    },
+    {
+      "id": "ch-1209",
+      "number": "1209",
+      "name": "WFMY",
+      "callsign": "WFMY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11442"
+    },
+    {
+      "id": "ch-1212",
+      "number": "1212",
+      "name": "WCWG",
+      "callsign": "WCWG",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14568"
+    },
+    {
+      "id": "ch-1215",
+      "number": "1215",
+      "name": "WMYV",
+      "callsign": "WMYV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11469"
+    },
+    {
+      "id": "ch-1218",
+      "number": "1218",
+      "name": "WGPX",
+      "callsign": "WGPX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11257"
+    },
+    {
+      "id": "ch-1221",
+      "number": "1221",
+      "name": "WUNL",
+      "callsign": "WUNL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11946"
+    },
+    {
+      "id": "ch-1230",
+      "number": "1230",
+      "name": "WLXI",
+      "callsign": "WLXI",
+      "category": "Cable",
+      "music": false,
+      "stationId": "11662"
     },
     {
       "id": "ch-1240",
       "number": "1240",
-      "name": "wxlv-tv2",
-      "category": "Local",
-      "music": false
+      "name": "WXLV-DT2",
+      "callsign": "WXLVDT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "45794"
     },
     {
       "id": "ch-1241",
       "number": "1241",
-      "name": "wxlv-tv3",
-      "category": "Local",
-      "music": false
+      "name": "WXLV-DT3",
+      "callsign": "WXLVDT3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "91874"
     },
     {
       "id": "ch-1245",
       "number": "1245",
-      "name": "wxii-tv2",
-      "category": "Local",
-      "music": false
+      "name": "WXII-DT2",
+      "callsign": "WXIIDT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "46397"
     },
     {
       "id": "ch-1250",
       "number": "1250",
-      "name": "wghp2",
-      "category": "Local",
-      "music": false
+      "name": "WGHP-DT2",
+      "callsign": "WGHPDT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "70542"
+    },
+    {
+      "id": "ch-1251",
+      "number": "1251",
+      "name": "WGHP-DT3",
+      "callsign": "WGHPDT3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "91315"
     },
     {
       "id": "ch-1255",
       "number": "1255",
-      "name": "wfmy-dt2",
-      "category": "Local",
-      "music": false
+      "name": "WFMY-DT2",
+      "callsign": "WFMYDT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "46405"
+    },
+    {
+      "id": "ch-1257",
+      "number": "1257",
+      "name": "WFMY-DT4",
+      "callsign": "WFMYDT4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "55532"
     },
     {
       "id": "ch-1260",
       "number": "1260",
-      "name": "wcwg-dt2",
-      "category": "Local",
-      "music": false
-    },
-    {
-      "id": "ch-1261",
-      "number": "1261",
-      "name": "wcwg-dt3",
-      "category": "Local",
-      "music": false
+      "name": "WCWG-DT4",
+      "callsign": "WCWGDT4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73219"
     },
     {
       "id": "ch-1265",
       "number": "1265",
-      "name": "wmyv2",
-      "category": "Local",
-      "music": false
+      "name": "WMYV-DT2",
+      "callsign": "WMYVDT2",
+      "category": "Cable",
+      "music": false,
+      "stationId": "45796"
     },
     {
       "id": "ch-1266",
       "number": "1266",
-      "name": "wmyv3",
-      "category": "Local",
-      "music": false
+      "name": "WMYV-DT3",
+      "callsign": "WMYVDT3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "97169"
     },
     {
       "id": "ch-1275",
       "number": "1275",
-      "name": "wunc-dt2",
-      "category": "Local",
-      "music": false
+      "name": "Cable Feed of WUNCDT3",
+      "callsign": "UNCKD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "35780"
     },
     {
       "id": "ch-1276",
       "number": "1276",
-      "name": "wunc-dt3",
-      "category": "Local",
-      "music": false
+      "name": "WUNC-DT3",
+      "callsign": "WUNCDT3",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30647"
     },
     {
       "id": "ch-1277",
       "number": "1277",
-      "name": "wunc-dt4",
-      "category": "Local",
-      "music": false
+      "name": "WUNC-DT4",
+      "callsign": "WUNCDT4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30648"
+    },
+    {
+      "id": "ch-1301",
+      "number": "1301",
+      "name": "Public, Educational, Government PEG",
+      "callsign": "PEG",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22568"
+    },
+    {
+      "id": "ch-1302",
+      "number": "1302",
+      "name": "Public, Educational, Government PEG",
+      "callsign": "PEG",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22568"
+    },
+    {
+      "id": "ch-1303",
+      "number": "1303",
+      "name": "Public, Educational, Government PEG",
+      "callsign": "PEG",
+      "category": "Cable",
+      "music": false,
+      "stationId": "22568"
+    },
+    {
+      "id": "ch-1304",
+      "number": "1304",
+      "name": "Government Access - GOAC1304",
+      "callsign": "GOAC1304",
+      "category": "Cable",
+      "music": false,
+      "stationId": "83488"
+    },
+    {
+      "id": "ch-1400",
+      "number": "1400",
+      "name": "CTI Zhong Tian Channel",
+      "callsign": "CTIZTC",
+      "category": "Cable",
+      "music": false,
+      "stationId": "20655"
+    },
+    {
+      "id": "ch-1401",
+      "number": "1401",
+      "name": "CCTV4-China Central TV",
+      "callsign": "CCTV4",
+      "category": "Cable",
+      "music": false,
+      "stationId": "24248"
+    },
+    {
+      "id": "ch-1403",
+      "number": "1403",
+      "name": "Phoenix Satellite TV",
+      "callsign": "PNAX",
+      "category": "Cable",
+      "music": false,
+      "stationId": "24935"
     },
     {
       "id": "ch-1404",
       "number": "1404",
       "name": "Phoenix Info News",
-      "category": "International",
-      "music": false
+      "callsign": "PHNIN",
+      "category": "News",
+      "music": false,
+      "stationId": "44617"
+    },
+    {
+      "id": "ch-1450",
+      "number": "1450",
+      "name": "The Filipino Channel HD",
+      "callsign": "FILPEHD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "114048"
+    },
+    {
+      "id": "ch-1451",
+      "number": "1451",
+      "name": "Filipino on Demand",
+      "callsign": "FILIPDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "56671"
+    },
+    {
+      "id": "ch-1452",
+      "number": "1452",
+      "name": "GMA Pinoy TV",
+      "callsign": "GMAPNY",
+      "category": "Cable",
+      "music": false,
+      "stationId": "46463"
+    },
+    {
+      "id": "ch-1453",
+      "number": "1453",
+      "name": "GMA Life TV",
+      "callsign": "GMALIFE",
+      "category": "Cable",
+      "music": false,
+      "stationId": "60152"
+    },
+    {
+      "id": "ch-1456",
+      "number": "1456",
+      "name": "DZBB Radio From GMA Pinoy",
+      "callsign": "DZBBRA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67373"
+    },
+    {
+      "id": "ch-1457",
+      "number": "1457",
+      "name": "DWLS Radio From GMA Pinoy/Life",
+      "callsign": "DWLSRA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "67374"
+    },
+    {
+      "id": "ch-1515",
+      "number": "1515",
+      "name": "Saigon Broadcasting Network",
+      "callsign": "SBN",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30324"
+    },
+    {
+      "id": "ch-1531",
+      "number": "1531",
+      "name": "Eros Now On Demand",
+      "callsign": "EROSDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "52195"
+    },
+    {
+      "id": "ch-1533",
+      "number": "1533",
+      "name": "Zee TV HD",
+      "callsign": "ZEETVH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "77032"
+    },
+    {
+      "id": "ch-1541",
+      "number": "1541",
+      "name": "SET",
+      "callsign": "SET",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18644"
+    },
+    {
+      "id": "ch-1542",
+      "number": "1542",
+      "name": "TV Asia",
+      "callsign": "ASIA",
+      "category": "Cable",
+      "music": false,
+      "stationId": "14763"
+    },
+    {
+      "id": "ch-1551",
+      "number": "1551",
+      "name": "ABP NEWS US",
+      "callsign": "ABPNWS",
+      "category": "News",
+      "music": false,
+      "stationId": "44851"
     },
     {
       "id": "ch-1575",
       "number": "1575",
-      "name": "TV5MONDE",
-      "category": "International",
-      "music": false
+      "name": "TV5MONDE Etats Unis",
+      "callsign": "TV5MOND",
+      "category": "Cable",
+      "music": false,
+      "stationId": "19059"
     },
     {
       "id": "ch-1581",
       "number": "1581",
       "name": "Rai Italia",
-      "category": "International",
-      "music": false
+      "callsign": "RAII",
+      "category": "Cable",
+      "music": false,
+      "stationId": "17250"
+    },
+    {
+      "id": "ch-1610",
+      "number": "1610",
+      "name": "Russian Television",
+      "callsign": "RTV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "30266"
+    },
+    {
+      "id": "ch-1613",
+      "number": "1613",
+      "name": "RTV International",
+      "callsign": "RTVINT",
+      "category": "Cable",
+      "music": false,
+      "stationId": "21063"
+    },
+    {
+      "id": "ch-1621",
+      "number": "1621",
+      "name": "Russian Kino",
+      "callsign": "RUSKINO",
+      "category": "Cable",
+      "music": false,
+      "stationId": "61399"
+    },
+    {
+      "id": "ch-1632",
+      "number": "1632",
+      "name": "ART Cable",
+      "callsign": "ARTL",
+      "category": "Cable",
+      "music": false,
+      "stationId": "18741"
+    },
+    {
+      "id": "ch-1800",
+      "number": "1800",
+      "name": "Adult On Demand",
+      "callsign": "ADLTDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31590"
+    },
+    {
+      "id": "ch-1801",
+      "number": "1801",
+      "name": "Hustler On Demand",
+      "callsign": "HUSTDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "49936"
+    },
+    {
+      "id": "ch-1804",
+      "number": "1804",
+      "name": "Penthouse (TEN) On Demand",
+      "callsign": "PENTTDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "60128"
+    },
+    {
+      "id": "ch-1806",
+      "number": "1806",
+      "name": "Real On Demand",
+      "callsign": "REALDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73053"
+    },
+    {
+      "id": "ch-1808",
+      "number": "1808",
+      "name": "Ten XX.5 On Demand",
+      "callsign": "TNXX5DM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "74719"
+    },
+    {
+      "id": "ch-1810",
+      "number": "1810",
+      "name": "Playboy On Demand",
+      "callsign": "PLBYDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "31809"
+    },
+    {
+      "id": "ch-1811",
+      "number": "1811",
+      "name": "Playboy Premium SD",
+      "callsign": "PLYPRM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "91307"
+    },
+    {
+      "id": "ch-1814",
+      "number": "1814",
+      "name": "Vivid On Demand",
+      "callsign": "VIVIDDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "87931"
+    },
+    {
+      "id": "ch-1825",
+      "number": "1825",
+      "name": "HIS ON DEMAND",
+      "callsign": "HISODM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "75699"
+    },
+    {
+      "id": "ch-1827",
+      "number": "1827",
+      "name": "Manhandle On Demand",
+      "callsign": "MANHDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "73058"
+    },
+    {
+      "id": "ch-1846",
+      "number": "1846",
+      "name": "Too Much For TV On Demand",
+      "callsign": "TMFTVDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "51972"
+    },
+    {
+      "id": "ch-1847",
+      "number": "1847",
+      "name": "Outrageous TV On Demand",
+      "callsign": "OUTTVDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "53344"
+    },
+    {
+      "id": "ch-1848",
+      "number": "1848",
+      "name": "Here TV On Demand",
+      "callsign": "HERETDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "65500"
+    },
+    {
+      "id": "ch-1849",
+      "number": "1849",
+      "name": "Here TV",
+      "callsign": "HERETV",
+      "category": "Cable",
+      "music": false,
+      "stationId": "45210"
+    },
+    {
+      "id": "ch-1999",
+      "number": "1999",
+      "name": "How-To On Demand",
+      "callsign": "HOWTOOD",
+      "category": "Cable",
+      "music": false,
+      "stationId": "72647"
+    },
+    {
+      "id": "ch-2010",
+      "number": "2010",
+      "name": "Spectrum Originals On Demand",
+      "callsign": "ORIGDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "110981"
+    },
+    {
+      "id": "ch-2240",
+      "number": "2240",
+      "name": "Spectrum News - Michigan STVA",
+      "callsign": "SNMIS",
+      "category": "News",
+      "music": false,
+      "stationId": "153078"
+    },
+    {
+      "id": "ch-2242",
+      "number": "2242",
+      "name": "Spectrum Noticias - Florida STVA",
+      "callsign": "SNNOTFS",
+      "category": "Cable",
+      "music": false,
+      "stationId": "174122"
+    },
+    {
+      "id": "ch-2244",
+      "number": "2244",
+      "name": "Spectrum News - Alabama STVA",
+      "callsign": "SNALS",
+      "category": "News",
+      "music": false,
+      "stationId": "178586"
+    },
+    {
+      "id": "ch-2245",
+      "number": "2245",
+      "name": "Spectrum News - Georgia STVA",
+      "callsign": "SNGAS",
+      "category": "News",
+      "music": false,
+      "stationId": "178588"
+    },
+    {
+      "id": "ch-2508",
+      "number": "2508",
+      "name": "Zee TV HD",
+      "callsign": "ZEETVH",
+      "category": "Cable",
+      "music": false,
+      "stationId": "77032"
+    },
+    {
+      "id": "ch-4000",
+      "number": "4000",
+      "name": "GAIAM TV On Demand",
+      "callsign": "GMTVDM",
+      "category": "Cable",
+      "music": false,
+      "stationId": "110586"
     }
   ]
 }

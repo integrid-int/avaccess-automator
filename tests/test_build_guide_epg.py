@@ -3,6 +3,7 @@ from scripts.avaccess.build_guide_epg import (
     auto_map_xmltv_ids,
     build_guide_epg,
     classify_sport_key,
+    map_xmltv_ids_by_number,
     match_schedule_to_epg,
     normalize_channel_name,
 )
@@ -23,21 +24,22 @@ def test_classify_sport_key():
     assert classify_sport_key("SportsCenter") == "other"
 
 
-def test_auto_map_xmltv_ids_by_display_name():
+def test_auto_map_prefers_channel_number_from_xmltv():
     lineup = [
-        {"number": "17", "name": "ESPN"},
+        {"number": "17", "name": "ESPN Wrong Label"},
         {"number": "33", "name": "CNN"},
         {"number": "999", "name": "Unknown Net"},
     ]
     xmltv = {
-        "espn.example": ["ESPN"],
-        "cnn.example": ["CNN"],
+        "espn.example": ["17 ESPN", "ESPN", "17"],
+        "cnn.example": ["CNN", "33"],
         "other.example": ["Something Else"],
     }
-    resolved = auto_map_xmltv_ids(lineup, xmltv, {"17": ["espn.example"]})
+    resolved = auto_map_xmltv_ids(lineup, xmltv, {})
     assert resolved["17"] == ["espn.example"]
     assert resolved["33"] == ["cnn.example"]
     assert resolved["999"] == []
+    assert map_xmltv_ids_by_number(xmltv)["17"] == ["espn.example"]
 
 
 def test_normalize_channel_name_strips_hd_suffix():

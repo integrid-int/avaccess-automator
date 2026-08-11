@@ -19,3 +19,6 @@ lineup_id: ""
 
 days: 2
 xmltv_out: config/cache/schedules_direct.xmltv
+
+# SD map is the Guide channel-number authority (music dropped by default).
+exclude_music: true

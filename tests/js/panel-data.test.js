@@ -19,19 +19,19 @@ test("spectrum zip is 27403 and sports tabs are EPG filters", () => {
   const ids = SPORTS.map((s) => s.id);
   assert.deepEqual(ids, ["all", "nfl", "cfb", "nba", "nhl", "mlb", "wnba", "other"]);
   assert.ok(GUIDE_CHANNELS.length >= 100);
-  assert.ok(GUIDE_CHANNELS.some((c) => c.number === "17" && c.name === "ESPN"));
+  assert.ok(GUIDE_CHANNELS.some((c) => c.number === "17"));
   assert.ok(!GUIDE_CHANNELS.some((c) => /music choice/i.test(c.name)));
 });
 
 test("guide filter matches channel number or name", () => {
   const hits = filterGuideChannels(GUIDE_CHANNELS, "espn");
-  assert.ok(hits.some((c) => c.number === "17"));
+  assert.ok(hits.some((c) => /espn/i.test(c.name) || c.number === "17"));
 });
 
 test("guide category filter and categories list", () => {
   const cats = guideCategories(GUIDE_CHANNELS);
   assert.ok(cats.includes("Sports"));
-  assert.ok(cats.includes("Local"));
+  assert.ok(cats.includes("Cable") || cats.includes("News"));
   const sports = filterGuideByCategory(GUIDE_CHANNELS, "Sports");
   assert.ok(sports.length > 0);
   assert.ok(sports.every((c) => c.category === "Sports"));

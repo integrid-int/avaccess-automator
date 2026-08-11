@@ -68,12 +68,38 @@ def normalize_channel_name(name: str) -> str:
     return text
 
 
+def map_xmltv_ids_by_number(
+    xmltv_channels: dict[str, list[str]],
+) -> dict[str, list[str]]:
+    """Map Spectrum dial number → XMLTV id(s) from digit-only display-names."""
+    number_to_ids: dict[str, list[str]] = {}
+    for xml_id, names in xmltv_channels.items():
+        for name in names:
+            text = str(name or "").strip()
+            if not re.fullmatch(r"\d+", text):
+                continue
+            number_s = str(int(text))
+            number_to_ids.setdefault(number_s, []).append(xml_id)
+    resolved: dict[str, list[str]] = {}
+    for number_s, ids in number_to_ids.items():
+        unique = sorted(set(ids))
+        if len(unique) == 1:
+            resolved[number_s] = unique
+    return resolved
+
+
 def auto_map_xmltv_ids(
     lineup_channels: list[dict[str, Any]],
     xmltv_channels: dict[str, list[str]],
     explicit_map: dict[str, Any],
 ) -> dict[str, list[str]]:
-    """Merge explicit number→xmltv ids with unique display-name matches."""
+    """Resolve lineup numbers → XMLTV ids.
+
+    Priority when Schedules Direct is source of truth:
+    1) explicit channel_number_map
+    2) dial number on XMLTV display-name (SD SoT)
+    3) unique normalized name match (legacy fallback)
+    """
     name_to_ids: dict[str, list[str]] = {}
     for xml_id, names in xmltv_channels.items():
         for name in names:
@@ -81,6 +107,8 @@ def auto_map_xmltv_ids(
             if not key:
                 continue
             name_to_ids.setdefault(key, []).append(xml_id)
+
+    by_number = map_xmltv_ids_by_number(xmltv_channels)
 
     resolved: dict[str, list[str]] = {}
     for number, xmltv_ids in explicit_map.items():
@@ -100,14 +128,21 @@ def auto_map_xmltv_ids(
         number_s = str(ch.get("number", "")).strip()
         if not number_s or number_s in resolved:
             continue
+        if number_s in by_number:
+            resolved[number_s] = by_number[number_s]
+            continue
         key = normalize_channel_name(str(ch.get("name") or ""))
         matches = name_to_ids.get(key) or []
-        # Unique match only — avoid ambiguous networks.
         unique = sorted(set(matches))
         if len(unique) == 1:
             resolved[number_s] = unique
         else:
             resolved.setdefault(number_s, [])
+
+    # If lineup is empty, still emit every numbered XMLTV channel.
+    if not lineup_channels:
+        for number_s, ids in by_number.items():
+            resolved.setdefault(number_s, ids)
     return resolved
 
 

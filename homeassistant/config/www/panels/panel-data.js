@@ -1,4 +1,4 @@
-import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=16";
+import { GUIDE_CHANNELS as LINEUP_CHANNELS } from "./spectrum-lineup-data.js?v=17";
 
 export const SPECTRUM_ZIP = "27403";
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";

@@ -293,6 +293,208 @@ def write_lineup_id(config_path: Path, lineup_id: str) -> None:
     )
 
 
+MUSIC_NAME_RE = re.compile(
+    r"music\s*choice|sonic\s*tap|stingray\s*music|\bmc\b",
+    re.I,
+)
+SPORTS_NAME_RE = re.compile(
+    r"\bespn|\bfs1\b|\bfs2\b|fox sports|nfl|nba|nhl|mlb|golf|tennis|"
+    r"fanduel|acc network|sec network|big ten|btn|olympic|"
+    r"cbs sports|nbc sports|be[ií]n|sportsnet|stadium|"
+    r"willow|tvg|outdoor channel|maav|fight",
+    re.I,
+)
+NEWS_NAME_RE = re.compile(
+    r"news|cnn|msnbc|cnbc|fox news|weather|bloomberg|c-span|newsnation",
+    re.I,
+)
+KIDS_NAME_RE = re.compile(
+    r"disney|nickelodeon|nick\b|cartoon|universal kids|baby|pbs kids|boomerang",
+    re.I,
+)
+PREMIUM_NAME_RE = re.compile(
+    r"\bhbo\b|cinemax|showtime|\bsho\b|starz|movieplex|indieplex|retroplex|the movie channel|\btmc\b",
+    re.I,
+)
+
+
+def classify_category(name: str, callsign: str = "") -> str:
+    text = f"{name} {callsign}"
+    if MUSIC_NAME_RE.search(text):
+        return "Music"
+    if PREMIUM_NAME_RE.search(text):
+        return "Premium"
+    if SPORTS_NAME_RE.search(text):
+        return "Sports"
+    if NEWS_NAME_RE.search(text):
+        return "News"
+    if KIDS_NAME_RE.search(text):
+        return "Kids"
+    return "Cable"
+
+
+def lineup_channels_from_sd(
+    lineup: dict[str, Any],
+    *,
+    lineup_id: str,
+    exclude_music: bool = True,
+) -> list[dict[str, Any]]:
+    """Build panel GUIDE channels from Schedules Direct map (source of truth)."""
+    stations = {
+        str(st.get("stationID")): st for st in (lineup.get("stations") or [])
+    }
+    channels: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for mapping in lineup.get("map") or []:
+        sid = str(mapping.get("stationID") or "")
+        st = stations.get(sid)
+        if not st:
+            continue
+        number = _channel_number(mapping.get("channel"))
+        if not number or number in seen:
+            continue
+        name = str(st.get("name") or st.get("callsign") or sid).strip()
+        callsign = str(st.get("callsign") or "").strip()
+        category = classify_category(name, callsign)
+        music = category == "Music" or bool(MUSIC_NAME_RE.search(name))
+        if exclude_music and music:
+            continue
+        seen.add(number)
+        channels.append(
+            {
+                "id": f"ch-{number}",
+                "number": number,
+                "name": name,
+                "callsign": callsign,
+                "category": category,
+                "music": False,
+                "stationId": sid,
+            }
+        )
+
+    def sort_key(ch: dict[str, Any]) -> tuple[int, str]:
+        n = ch["number"]
+        return (int(n), n) if n.isdigit() else (10**9, n)
+
+    channels.sort(key=sort_key)
+    return channels
+
+
+def lineup_channels_from_xmltv(
+    xmltv_path: Path,
+    *,
+    exclude_music: bool = True,
+) -> list[dict[str, Any]]:
+    """Rebuild panel lineup from a Schedules Direct XMLTV cache (offline SoT)."""
+    import xml.etree.ElementTree as etree
+
+    root = etree.parse(xmltv_path).getroot()
+    channels: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for ch in root.findall("channel"):
+        names = [
+            (n.text or "").strip()
+            for n in ch.findall("display-name")
+            if n.text and n.text.strip()
+        ]
+        number = ""
+        for name in names:
+            if re.fullmatch(r"\d+", name):
+                number = str(int(name))
+                break
+        if not number or number in seen:
+            continue
+        # Prefer bare network name (last display-name from our writer).
+        name = names[-1] if names else number
+        callsign = names[1] if len(names) > 1 else name
+        category = classify_category(name, callsign)
+        music = category == "Music" or bool(MUSIC_NAME_RE.search(name))
+        if exclude_music and music:
+            continue
+        seen.add(number)
+        sid = str(ch.attrib.get("id") or "")
+        m = re.search(r"I(\d+)\.schedulesdirect\.org", sid)
+        channels.append(
+            {
+                "id": f"ch-{number}",
+                "number": number,
+                "name": name,
+                "callsign": callsign,
+                "category": category,
+                "music": False,
+                "stationId": m.group(1) if m else "",
+            }
+        )
+
+    def sort_key(item: dict[str, Any]) -> tuple[int, str]:
+        n = item["number"]
+        return (int(n), n) if n.isdigit() else (10**9, n)
+
+    channels.sort(key=sort_key)
+    return channels
+
+
+def write_lineup_artifacts(
+    channels: list[dict[str, Any]],
+    *,
+    lineup_id: str,
+    postalcode: str,
+) -> list[Path]:
+    """Write SD lineup JSON + panel JS module (Schedules Direct is SoT)."""
+    payload = {
+        "zip": postalcode,
+        "package": "spectrum-cable",
+        "packageColumn": "Schedules Direct",
+        "source": f"schedulesdirect:{lineup_id}",
+        "lineupId": lineup_id,
+        "generatedAt": dt.datetime.now(tz=dt.timezone.utc).isoformat(),
+        "channels": channels,
+    }
+    paths = [
+        ROOT / "config" / "spectrum_lineup_27403.json",
+        ROOT
+        / "homeassistant"
+        / "config"
+        / "www"
+        / "avaccess"
+        / "spectrum_lineup_27403.json",
+    ]
+    js_path = (
+        ROOT
+        / "homeassistant"
+        / "config"
+        / "www"
+        / "panels"
+        / "spectrum-lineup-data.js"
+    )
+    written: list[Path] = []
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        written.append(path)
+        print(path)
+    js_path.parent.mkdir(parents=True, exist_ok=True)
+    # Strip internal-only fields from the browser module.
+    browser_channels = [
+        {
+            "id": c["id"],
+            "number": c["number"],
+            "name": c["name"],
+            "category": c["category"],
+        }
+        for c in channels
+    ]
+    js_path.write_text(
+        "// Generated from Schedules Direct — do not edit by hand.\n"
+        f"export const GUIDE_CHANNELS = {json.dumps(browser_channels, indent=2)};\n",
+        encoding="utf-8",
+    )
+    written.append(js_path)
+    print(js_path)
+    print(f"{len(channels)} channels (Schedules Direct SoT, music excluded)")
+    return written
+
+
 def pull(
     cfg: dict[str, Any],
     *,
@@ -327,6 +529,14 @@ def pull(
 
     ensure_lineup(session, lineup_id)
     lineup = fetch_lineup(session, lineup_id)
+    # Schedules Direct map is the channel-number / name authority for the panel.
+    channels = lineup_channels_from_sd(
+        lineup,
+        lineup_id=lineup_id,
+        exclude_music=bool(cfg.get("exclude_music", True)),
+    )
+    write_lineup_artifacts(channels, lineup_id=lineup_id, postalcode=postalcode)
+
     station_ids = [
         str(m.get("stationID"))
         for m in (lineup.get("map") or [])
@@ -362,9 +572,28 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="List headend lineups for postalcode and exit",
     )
+    parser.add_argument(
+        "--lineup-from-xmltv",
+        type=Path,
+        help="Rebuild panel lineup JSON/JS from an existing SD XMLTV cache (no API)",
+    )
     args = parser.parse_args(argv)
     try:
         cfg = load_config(args.config)
+        if args.lineup_from_xmltv:
+            xmltv_path = args.lineup_from_xmltv
+            if not xmltv_path.is_absolute():
+                xmltv_path = ROOT / xmltv_path
+            channels = lineup_channels_from_xmltv(
+                xmltv_path,
+                exclude_music=bool(cfg.get("exclude_music", True)),
+            )
+            write_lineup_artifacts(
+                channels,
+                lineup_id=str(cfg.get("lineup_id") or "from-xmltv"),
+                postalcode=str(cfg.get("postalcode") or "27403"),
+            )
+            return 0
         if args.list_lineups:
             username = os.environ.get("SD_USERNAME") or cfg.get("username")
             sha = password_sha1(
