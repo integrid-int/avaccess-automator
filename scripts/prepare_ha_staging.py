@@ -14,6 +14,9 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 STAGING = ROOT / "homeassistant" / "staging"
@@ -27,7 +30,7 @@ default_config:
 
 homeassistant:
   name: AVAccess Staging
-  unit_system: us
+  unit_system: us_customary
   currency: USD
   packages: !include_dir_named packages
 
@@ -70,6 +73,66 @@ COMPOSE_YAML = """services:
 """
 
 
+def migrate_legacy_template_sensors(package_path: Path) -> None:
+    """HA 2026+ rejects `sensor: platform: template`. Rewrite to modern `template:`."""
+    raw = package_path.read_text()
+    data = yaml.safe_load(raw)
+    if not isinstance(data, dict):
+        return
+
+    sensors_cfg = data.get("sensor")
+    if sensors_cfg is None:
+        return
+
+    migrated: list[dict[str, Any]] = []
+    remaining: list[Any] = []
+    blocks = sensors_cfg if isinstance(sensors_cfg, list) else [sensors_cfg]
+    for block in blocks:
+        if isinstance(block, dict) and block.get("platform") == "template" and "sensors" in block:
+            for object_id, spec in block["sensors"].items():
+                if not isinstance(spec, dict):
+                    continue
+                migrated.append(
+                    {
+                        "default_entity_id": f"sensor.{object_id}",
+                        "name": spec.get("friendly_name", object_id),
+                        "unique_id": f"staging_{object_id}",
+                        "state": spec.get("value_template", ""),
+                        "icon": spec.get("icon_template", "mdi:satellite-uplink"),
+                    }
+                )
+        else:
+            remaining.append(block)
+
+    if not migrated:
+        return
+
+    if remaining:
+        data["sensor"] = remaining
+    else:
+        data.pop("sensor", None)
+
+    new_block = {"sensor": migrated}
+    existing = data.get("template")
+    if existing is None:
+        data["template"] = [new_block]
+    elif isinstance(existing, list):
+        existing.append(new_block)
+    else:
+        data["template"] = [existing, new_block]
+
+    header = ""
+    if raw.startswith("#"):
+        header_lines = []
+        for line in raw.splitlines():
+            if line.startswith("#") or line.strip() == "":
+                header_lines.append(line)
+            else:
+                break
+        header = "\n".join(header_lines).rstrip() + "\n"
+    package_path.write_text(header + yaml.safe_dump(data, sort_keys=False, width=120, allow_unicode=False))
+
+
 def main() -> None:
     (CONFIG / "packages").mkdir(parents=True, exist_ok=True)
     (CONFIG / "dashboards").mkdir(parents=True, exist_ok=True)
@@ -93,6 +156,7 @@ def main() -> None:
         str(CONFIG / "dashboards" / "avaccess_matrix.yaml"),
     ]
     subprocess.run(cmd, check=True)
+    migrate_legacy_template_sensors(CONFIG / "packages" / "avaccess_matrix.yaml")
     print(f"Staging config ready: {CONFIG}")
     print("Start with:")
     print(f"  docker compose -f {STAGING / 'docker-compose.yml'} up -d")
