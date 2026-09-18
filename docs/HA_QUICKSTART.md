@@ -86,6 +86,8 @@ After restart you should see:
 
 ## 7) iPad operation flow
 
+Picture-by-picture operator playbook (favorites, presets, sports tabs, route-to-TVs): **[OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md)**.
+
 1. Tap preset (1/2/3)  
 2. Tap active program (A..I)  
 3. Tap channel (ESPN/TNT/...)  

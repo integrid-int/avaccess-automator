@@ -6,6 +6,7 @@ Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-f
 
 - **[docs/PLAN.md](docs/PLAN.md)** — architecture, preset math, Home Assistant vs alternatives, Xumo strategy
 - **[docs/HOME_ASSISTANT_CHANNELS.md](docs/HOME_ASSISTANT_CHANNELS.md)** — one-tap channel buttons and guide options
+- **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** — iPad operator playbook with screenshots
 - **[docs/HA_QUICKSTART.md](docs/HA_QUICKSTART.md)** — generate package/dashboard and run in Home Assistant
 - **[docs/WEEKLY_SCHEDULE_SYNC.md](docs/WEEKLY_SCHEDULE_SYNC.md)** — weekly EPG sync with local-blackout preference
 - **[docs/PHASE2_SPORTS_PAGES.md](docs/PHASE2_SPORTS_PAGES.md)** — sport tabs + daily updates + one/many TV routing
