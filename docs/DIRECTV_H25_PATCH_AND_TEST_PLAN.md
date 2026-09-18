@@ -23,20 +23,23 @@ This is a **structured patch**, not a rewrite. AVAccess presets, sports pages, a
 | `scripts/generate_ha_bundle.py` | Add `directv_shef` tune path + shell command |
 | `config/channels.example.yaml` | Default transport `directv_shef`, provider `directv` |
 | `tests/test_directv_shef.py` | Offline parse/tune URL tests |
-| `docs/HA_QUICKSTART.md` | Copy `directv.yaml`, probe/tune steps |
+| `docs/HA_QUICKSTART.md` | Copy `directv.yaml`, probe/tune steps, cloud HA UI staging |
+| `scripts/prepare_ha_staging.py` | **New** stubbed HA config + Docker compose for cloud UI testing |
+| `homeassistant/staging/docker-compose.yml` | Cloud/VM Home Assistant on port 8123 |
 | iTach files | **Keep** as rollback transport (`itach_tcp`) |
 
 ## Cutover sequence
 
-1. **Commission H25 LAN**
+1. **Cloud HA UI staging** (no AV LAN required) — catch Lovelace/layout bugs
+2. **Commission H25 LAN**
    - DHCP reservations for all 10 boxes
    - Enable External Access + Current Program on each H25
-2. **Fill `config/directv.yaml`** with real IPs
-3. **Lab probe** (`probe-all`) before touching the matrix
-4. **Single-box tune+verify** on ENC-01 only
-5. Flip `channels.yaml` to `ir_transport: directv_shef` and regenerate HA bundle
-6. Keep iTach config on disk until a full game-day rehearsal passes
-7. Then retire IR emitters from the operator path
+3. **Fill `config/directv.yaml`** with real IPs
+4. **Lab probe** (`probe-all`) before touching the matrix
+5. **Single-box tune+verify** on ENC-01 only
+6. Point staging HA (or site HA) at live package (no `--ui-staging`) and retest UI against hardware
+7. Keep iTach config on disk until a full game-day rehearsal passes
+8. Then retire IR emitters from the operator path
 
 ## Testing plan
 
@@ -52,6 +55,44 @@ python3 scripts/generate_ha_bundle.py \
   --out-dashboard /tmp/avaccess_dash.yaml
 ```
 Pass criteria: generated package includes `shell_command.avaccess_directv_tune` and `script.avaccess_tune_channel` calls it.
+
+### A2. Cloud Home Assistant UI staging (required before live hardware)
+
+Stand up a **cloud or VM Home Assistant** with this repo mounted so we can fix live Lovelace bugs (layout, missing entities, iPad tap targets, tab overflow) without DirecTV/AVAccess on the network.
+
+```bash
+python3 scripts/prepare_ha_staging.py
+docker compose -f homeassistant/staging/docker-compose.yml up -d
+```
+
+Open `http://<cloud-host>:8123`:
+1. Complete HA onboarding once (create owner account).
+2. Confirm sidebar shows **AVAccess Matrix**.
+3. Walk the UI checklist below on **desktop** and **iPad Safari / HA Companion**.
+
+`--ui-staging` stubs every `shell_command` to `echo`, so taps should not fail because H25s are unreachable. Scripts and helpers still load.
+
+#### UI bug checklist
+| Check | Pass |
+|-------|------|
+| Control tab loads without red "entity not found" for program/channel/target helpers | |
+| Favorites row: FOX / NFL Afternoon / All Sunday are large enough to tap on iPad | |
+| Preset 1/2/3 buttons visible without horizontal scroll | |
+| Program A–I grid fits portrait iPad | |
+| Channel buttons wrap; NFL S1–S9 readable | |
+| **NFL / College Football / Basketball** tabs switch and keep destination card | |
+| Now Playing card: unavailable entities are acceptable in staging; must not break the view | |
+| Tap Favorite FOX → script runs (log shows STAGING echo, no traceback) | |
+| Tap Route Program → TVs with `RX-01,RX-02` → script runs | |
+| Settings/Guide views on pretty dashboard (if used) do not 404 | |
+| Browser console / HA logs: no YAML parse errors after restart | |
+
+Fix YAML/layout in git, regenerate staging bundle, **reload Lovelace** (or restart HA), retest. Do not skip this gate.
+
+#### Cloud deployment notes
+- Use a small VM (2 vCPU / 2 GB) or the same Docker compose on a cloud box with port 8123 (or a reverse proxy + TLS).
+- This staging instance is **UI-only**. Do not attach it to production AV VLAN until section D.
+- After UI sign-off, regenerate **without** `--ui-staging` on the site HA that can reach H25s and the AV switch.
 
 ### B. Per-receiver SHEF smoke (on AV LAN)
 For each ENC-01..ENC-10:

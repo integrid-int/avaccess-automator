@@ -96,6 +96,23 @@ class BundleGenerationTests(unittest.TestCase):
         self.assertIn("shell_command.avaccess_directv_tune", dumped)
         self.assertNotIn("shell_command.avaccess_itach_send_channel", dumped)
 
+    def test_ui_staging_stubs_shell_commands(self) -> None:
+        from scripts.generate_ha_bundle import apply_ui_staging_stubs
+
+        inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
+        channels = load_yaml(ROOT / "config" / "channels.example.yaml")
+        profile, _presets = resolve_presets(inventory, None)
+        package = build_package(
+            inventory=inventory,
+            channels_cfg=channels,
+            profile_override=profile,
+            inventory_ha_path="/config/avaccess/config/inventory.yaml",
+        )
+        staged = apply_ui_staging_stubs(package)
+        for name, cmd in staged["shell_command"].items():
+            self.assertTrue(str(cmd).startswith("echo "), name)
+            self.assertIn("STAGING", str(cmd))
+
 
 if __name__ == "__main__":
     unittest.main()

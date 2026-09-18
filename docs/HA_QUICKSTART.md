@@ -34,7 +34,17 @@ Edit:
 - `config/channels.yaml` `sports_pages:` section → defines NFL/NCAA/NBA tabs in dashboard
 
 DirecTV cutover and test steps:
-- `docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md`
+- `docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md` (includes **cloud HA UI staging** before live hardware)
+
+## 2b) Cloud HA UI staging (catch Lovelace bugs)
+
+```bash
+cd /path/to/avaccess-automator
+python3 scripts/prepare_ha_staging.py
+docker compose -f homeassistant/staging/docker-compose.yml up -d
+```
+
+Open port **8123**, finish onboarding, use the **AVAccess Matrix** dashboard on desktop and iPad. Shell commands are stubs (`echo STAGING ...`) so missing H25s will not break taps.
 
 ## 3) Generate HA package + dashboard YAML
 
@@ -120,3 +130,4 @@ shell_command:
 - AVAccess preset switching uses UDP broadcast `:5010` (`msg_b_reconnect`).
 - Xumo channel tune relies on IR commands via your HA remote entities.
 - Keep `ENC-10` spare unless you intentionally map it in `channels.yaml` and presets.
+- Cloud UI staging uses `scripts/prepare_ha_staging.py` + Docker Home Assistant on port 8123.
