@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=14";
+} from "./assignment-store.js?v=18";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -16,16 +16,21 @@ import {
   SPORTS,
   STORAGE_KEY,
   TOKENS,
+  allSportsItems,
+  filterGuideByCategory,
   filterGuideChannels,
+  guideCategories,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=14";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=14";
+  sportsItemsForTab,
+} from "./panel-data.js?v=18";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=18";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
   sportId: SPORTS[0]?.id ?? null,
   guideQuery: "",
+  guideCategory: "All",
   selectedContent: null,
   selectedTvs: [],
   selectedPresetId: null,
@@ -44,6 +49,8 @@ const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
 const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
 const GUIDE_UNAVAILABLE_BANNER =
   "Guide listings unavailable — channel list only";
+const SPORTS_UNAVAILABLE_BANNER =
+  "No games on Spectrum sports channels in this window";
 
 const SCREEN_TITLES = {
   "browse-sport": "Sports",
@@ -63,6 +70,8 @@ class PanelHealth extends HTMLElement {
     this._assignments = createEmptyAssignments();
     this._boundClick = this._onClick.bind(this);
     this._boundInput = this._onInput.bind(this);
+    this._boundFocusOut = this._onFocusOut.bind(this);
+    this._guideSearchCaret = null;
     this._eventsBound = false;
     this._inventoryLiveReady = false;
     this._inventoryLoaded = false;
@@ -79,11 +88,14 @@ class PanelHealth extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     this._syncLiveCommitFromHass();
+    // HA pushes hass updates frequently; avoid wiping Guide search focus.
+    if (this._isGuideSearchFocused()) return;
     this.render();
   }
 
   set panel(panelConfig) {
     this._panel = panelConfig;
+    if (this._isGuideSearchFocused()) return;
     this.render();
   }
 
@@ -92,6 +104,7 @@ class PanelHealth extends HTMLElement {
     if (!this._eventsBound) {
       this.addEventListener("click", this._boundClick);
       this.addEventListener("input", this._boundInput);
+      this.addEventListener("focusout", this._boundFocusOut);
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
@@ -106,6 +119,7 @@ class PanelHealth extends HTMLElement {
     if (this._eventsBound) {
       this.removeEventListener("click", this._boundClick);
       this.removeEventListener("input", this._boundInput);
+      this.removeEventListener("focusout", this._boundFocusOut);
       this._eventsBound = false;
     }
     if (this._guideEpgTimer) {
@@ -181,15 +195,37 @@ class PanelHealth extends HTMLElement {
 
   _guideFeedState() {
     const { channels, epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, this.guideEpg);
+    const byCategory = filterGuideByCategory(channels, this._state.guideCategory);
     return {
-      channels: filterGuideChannels(channels, this._state.guideQuery),
+      channels: filterGuideChannels(byCategory, this._state.guideQuery),
       guideEpgAvailable: epgAvailable,
+      categories: guideCategories(GUIDE_CHANNELS),
+    };
+  }
+
+  _sportsFeedState() {
+    const sportId = this._state.sportId || "all";
+    const { available, now, upcoming, schedule, items } = sportsItemsForTab(
+      this.guideEpg,
+      sportId
+    );
+    return {
+      sportsAvailable: available,
+      now,
+      upcoming,
+      schedule,
+      items,
     };
   }
 
   _guideUnavailableBannerHtml(guideEpgAvailable) {
     if (guideEpgAvailable) return "";
     return `<div class="guide-epg-banner" role="status">${GUIDE_UNAVAILABLE_BANNER}</div>`;
+  }
+
+  _sportsUnavailableBannerHtml(sportsAvailable, hasItems) {
+    if (sportsAvailable && hasItems) return "";
+    return `<div class="guide-epg-banner" role="status">${SPORTS_UNAVAILABLE_BANNER}</div>`;
   }
 
   _renderGuideRowCells(channel) {
@@ -242,14 +278,24 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  _isGuideSearchFocused() {
+    const input = this.querySelector?.('[data-action="guide-search"]');
+    // Prefer :focus — document.activeElement is often the HA shadow host.
+    if (input?.matches?.(":focus")) return true;
+    return Boolean(this._guideSearchCaret);
+  }
+
   _captureGuideSearchCaret() {
-    const active = this.querySelector?.('[data-action="guide-search"]');
-    if (!active || document.activeElement !== active) return null;
-    return {
-      value: active.value,
-      start: active.selectionStart,
-      end: active.selectionEnd,
-    };
+    const input = this.querySelector?.('[data-action="guide-search"]');
+    if (!input) return this._guideSearchCaret ?? null;
+    if (input.matches?.(":focus") || this._guideSearchCaret) {
+      return {
+        value: input.value,
+        start: input.selectionStart,
+        end: input.selectionEnd,
+      };
+    }
+    return null;
   }
 
   _restoreGuideSearchCaret(snapshot) {
@@ -264,6 +310,7 @@ class PanelHealth extends HTMLElement {
     } catch {
       // Some input types reject selection ranges; focus alone is enough.
     }
+    this._guideSearchCaret = snapshot;
   }
 
   _routeBadgeHtml(routeId) {
@@ -280,23 +327,29 @@ class PanelHealth extends HTMLElement {
     { kicker, selected = false, cta = "Choose destination", action = "select-game" } = {}
   ) {
     const selectedClass = selected ? "is-selected" : "";
-    const actionAttr = action === "toggle-program" ? 'data-action="toggle-program"' : 'data-action="select-game"';
+    const tunable = Boolean(game.channelNumber);
+    const actionAttr = tunable
+      ? action === "toggle-program"
+        ? 'data-action="toggle-program"'
+        : 'data-action="select-game"'
+      : "";
+    const title = game.title || `${game.away || ""} @ ${game.home || ""}`.trim();
+    const channelLabel = game.channelNumber
+      ? `${game.channelNumber} ${game.channelName || game.channel || ""}`.trim()
+      : "No EPG channel match";
+    const metaCta = tunable ? cta : "No EPG channel match";
     return `
-      <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}">
-        <span class="card-kicker">${escapeHtml(kicker)}</span>
-        <span class="matchup">
+      <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}" ${
+        tunable ? "" : "disabled aria-disabled=\"true\""
+      }>
+        <span class="card-kicker">${escapeHtml(kicker || `${channelLabel} · ${game.tipoff || ""}`)}</span>
+        <span class="matchup epg-title">
           <span class="team">
-            <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="36" height="36" loading="lazy">
-            <span>${escapeHtml(game.away)}</span>
-          </span>
-          <span class="at" aria-hidden="true">@</span>
-          <span class="team">
-            <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="36" height="36" loading="lazy">
-            <span>${escapeHtml(game.home)}</span>
+            <span>${escapeHtml(title)}</span>
           </span>
         </span>
         <span class="card-meta">
-          <span>${escapeHtml(cta)}</span>
+          <span>${escapeHtml(metaCta)}</span>
           ${this._routeBadgeHtml(game.id)}
         </span>
       </button>
@@ -311,6 +364,12 @@ class PanelHealth extends HTMLElement {
     const content = this._state.selectedContent;
     if (!content) return "No content selected";
     if (content.kind === "channel") return `${content.number} ${content.name}`;
+    if (content.title) {
+      const ch = content.channelNumber
+        ? `${content.channelNumber} ${content.channelName || content.channel || ""}`.trim()
+        : content.channel || "";
+      return ch ? `${content.title} (${ch})` : content.title;
+    }
     return `${content.away} @ ${content.home}`;
   }
 
@@ -338,6 +397,10 @@ class PanelHealth extends HTMLElement {
         groupMode: null,
         selectedPrograms: [],
       });
+      return;
+    }
+    if (action === "set-guide-category") {
+      this._setState({ guideCategory: value || "All" });
       return;
     }
     if (action === "open-tvs") {
@@ -443,8 +506,23 @@ class PanelHealth extends HTMLElement {
   _onInput(event) {
     const target = event.target;
     if (target?.dataset?.action === "guide-search") {
+      this._guideSearchCaret = {
+        value: target.value,
+        start: target.selectionStart,
+        end: target.selectionEnd,
+      };
       this._setState({ guideQuery: target.value });
     }
+  }
+
+  _onFocusOut(event) {
+    const target = event.target;
+    if (target?.dataset?.action !== "guide-search") return;
+    // Clear after the new focus settles so HA hass updates can render again.
+    queueMicrotask(() => {
+      const input = this.querySelector?.('[data-action="guide-search"]');
+      if (!input?.matches?.(":focus")) this._guideSearchCaret = null;
+    });
   }
 
   _browseScreenForContent() {
@@ -495,26 +573,24 @@ class PanelHealth extends HTMLElement {
   }
 
   _selectGame(gameId) {
-    const game = SPORTS.flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
-      (item) => item.game.id === gameId
-    );
-    if (!game) return;
-    const selectedContent = { ...game.game, kind: "game", sportId: game.sport.id };
+    const game = this._findContentById(gameId);
+    if (!game || game.kind !== "game") return;
+    const selectedContent = { ...game, kind: "game", sportId: game.sportKey || this._state.sportId };
     if (this._state.entryPath === "tv") {
       this._setState({
         screen: "content-picker",
         selectedContent,
-        sportId: game.sport.id,
+        sportId: selectedContent.sportId,
         contentMode: "sports",
       });
       return;
     }
-    const selectedPresetId = this._seedDestinationPresetId(game.game.id);
-    const destMode = this._seedDestinationMode(game.game.id);
+    const selectedPresetId = this._seedDestinationPresetId(game.id);
+    const destMode = this._seedDestinationMode(game.id);
     this._setState({
       screen: "destination",
       selectedContent,
-      selectedTvs: this._seedDestinationTvs(game.game.id),
+      selectedTvs: this._seedDestinationTvs(game.id),
       selectedPresetId,
       destMode,
       contentMode: "sports",
@@ -574,21 +650,24 @@ class PanelHealth extends HTMLElement {
         channelNumber: String(content.number),
       };
     }
+    const channelNumber = content.channelNumber != null ? String(content.channelNumber) : null;
+    const label = content.title
+      ? content.title
+      : `${content.away || ""} @ ${content.home || ""}`.trim();
     return {
       id: content.id,
       kind: "game",
-      sportId: content.sportId ?? null,
-      label: `${content.away} @ ${content.home}`,
-      channel: content.channel,
-      channelNumber: null,
+      sportId: content.sportId ?? content.sportKey ?? null,
+      label,
+      channel: channelNumber || content.channel,
+      channelNumber,
     };
   }
 
   _findContentById(contentId) {
-    for (const sport of SPORTS) {
-      const game = sport.games.find((item) => item.id === contentId);
-      if (game) return { ...game, kind: "game", sportId: sport.id };
-    }
+    const { items } = allSportsItems(this.guideEpg);
+    const game = items.find((item) => item.id === contentId);
+    if (game) return { ...game, kind: "game", sportId: game.sportKey };
     const channel = GUIDE_CHANNELS.find((item) => item.id === contentId);
     if (channel) return { ...channel, kind: "channel" };
     return null;
@@ -804,7 +883,7 @@ class PanelHealth extends HTMLElement {
               data-action="select-sport"
               data-value="${escapeAttr(item.id)}"
             >
-              <span>${escapeHtml(item.icon)}</span>${escapeHtml(item.chipTitle ?? item.title)}
+              ${item.icon ? `<span>${escapeHtml(item.icon)}</span>` : ""}${escapeHtml(item.chipTitle ?? item.title)}
             </button>
           `
         ).join("")}
@@ -829,28 +908,86 @@ class PanelHealth extends HTMLElement {
 
   _renderSportScreen() {
     const sport = this._activeSport();
+    const { sportsAvailable, now, upcoming, schedule, items } = this._sportsFeedState();
+    const renderGrid = (games, kickerFn) =>
+      `<div class="card-grid">${games
+        .map((game) =>
+          this._renderGameCard(game, {
+            kicker: kickerFn(game),
+            cta: "Choose destination",
+          })
+        )
+        .join("")}</div>`;
     return `
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse sport</p>
           <h2>${escapeHtml(sport.title)}</h2>
         </div>
-        <div class="card-grid">
-          ${sport.games
-            .map((game) =>
-              this._renderGameCard(game, {
-                kicker: `${game.channel} - ${game.tipoff}`,
-                cta: "Choose destination",
-              })
-            )
-            .join("")}
-        </div>
+        ${
+          sportsAvailable
+            ? this._sportsUnavailableBannerHtml(true, items.length > 0)
+            : this._guideUnavailableBannerHtml(false)
+        }
+        ${
+          schedule.length
+            ? `<div class="content-section"><h3>Games</h3>${renderGrid(
+                schedule,
+                (game) => {
+                  const net = (game.broadcasts || []).slice(0, 2).join("/");
+                  if (game.channelNumber) {
+                    return `${game.channelNumber} ${game.channelName}${
+                      net ? ` · ${net}` : ""
+                    } · ${game.tipoff || "TBD"}`;
+                  }
+                  return `No channel match${net ? ` · ${net}` : ""} · ${game.tipoff || "TBD"}`;
+                }
+              )}</div>`
+            : ""
+        }
+        ${
+          now.length
+            ? `<div class="content-section"><h3>On now (EPG fallback)</h3>${renderGrid(
+                now,
+                (game) => `${game.channelNumber} ${game.channelName} · Now`
+              )}</div>`
+            : ""
+        }
+        ${
+          upcoming.length
+            ? `<div class="content-section"><h3>Upcoming (EPG fallback)</h3>${renderGrid(
+                upcoming,
+                (game) => `${game.channelNumber} ${game.channelName} · ${game.tipoff}`
+              )}</div>`
+            : ""
+        }
       </section>
     `;
   }
 
+  _renderGuideCategoryChips(categories) {
+    const active = this._state.guideCategory || "All";
+    const chips = ["All", ...categories];
+    return `
+      <nav class="chips guide-category-chips" aria-label="Guide categories">
+        ${chips
+          .map(
+            (cat) => `
+              <button
+                type="button"
+                class="chip ${active === cat ? "is-active" : ""}"
+                data-action="set-guide-category"
+                data-value="${escapeAttr(cat)}"
+              >${escapeHtml(cat)}</button>
+            `
+          )
+          .join("")}
+      </nav>
+    `;
+  }
+
   _renderGuideScreen() {
-    const { channels, guideEpgAvailable } = this._guideFeedState();
+    const { channels, guideEpgAvailable, categories } = this._guideFeedState();
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -858,9 +995,10 @@ class PanelHealth extends HTMLElement {
           <h2 aria-label="Spectrum · ZIP 27403">Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
         </div>
         ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
+        ${this._renderGuideCategoryChips(categories)}
         <label class="search">
           <span>Search by channel, name, or title</span>
-          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 17, SportsCenter">
         </label>
         <div class="list">
           ${channels
@@ -1087,27 +1225,26 @@ class PanelHealth extends HTMLElement {
 
   _renderSportsProgramOptions() {
     const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
+    const { sportsAvailable, items } = this._sportsFeedState();
     return `
       <div class="content-stack">
-        ${SPORTS.map(
-          (sport) => `
-            <div class="content-section">
-              <h3>${escapeHtml(sport.title)}</h3>
-              <div class="card-grid">
-                ${sport.games
-                  .map((game) =>
-                    this._renderGameCard(game, {
-                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
-                      selected: selectedIds.has(game.id),
-                      cta: selectedIds.has(game.id) ? "Selected for slot" : "Add to slots",
-                      action: "toggle-program",
-                    })
-                  )
-                  .join("")}
-              </div>
-            </div>
-          `
-        ).join("")}
+        ${
+          sportsAvailable
+            ? this._sportsUnavailableBannerHtml(true, items.length > 0)
+            : this._guideUnavailableBannerHtml(false)
+        }
+        <div class="card-grid">
+          ${items
+            .map((game) =>
+              this._renderGameCard(game, {
+                kicker: `${game.channelNumber} ${game.channelName} · ${game.bucket === "now" ? "Now" : game.tipoff}`,
+                selected: selectedIds.has(game.id),
+                cta: selectedIds.has(game.id) ? "Selected for slot" : "Add to slots",
+                action: "toggle-program",
+              })
+            )
+            .join("")}
+        </div>
       </div>
     `;
   }
@@ -1119,7 +1256,7 @@ class PanelHealth extends HTMLElement {
       ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
       <label class="search">
         <span>Search by channel, name, or title</span>
-        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 17, SportsCenter">
       </label>
       <div class="list">
         ${channels
@@ -1199,26 +1336,25 @@ class PanelHealth extends HTMLElement {
   }
 
   _renderSportsContentOptions() {
+    const { sportsAvailable, items } = this._sportsFeedState();
     return `
       <div class="content-stack">
-        ${SPORTS.map(
-          (sport) => `
-            <div class="content-section">
-              <h3>${escapeHtml(sport.title)}</h3>
-              <div class="card-grid">
-                ${sport.games
-                  .map((game) =>
-                    this._renderGameCard(game, {
-                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
-                      selected: this._state.selectedContent?.id === game.id,
-                      cta: this._state.entryPath === "tv" ? "Select content" : "Choose destination",
-                    })
-                  )
-                  .join("")}
-              </div>
-            </div>
-          `
-        ).join("")}
+        ${
+          sportsAvailable
+            ? this._sportsUnavailableBannerHtml(true, items.length > 0)
+            : this._guideUnavailableBannerHtml(false)
+        }
+        <div class="card-grid">
+          ${items
+            .map((game) =>
+              this._renderGameCard(game, {
+                kicker: `${game.channelNumber} ${game.channelName} · ${game.bucket === "now" ? "Now" : game.tipoff}`,
+                selected: this._state.selectedContent?.id === game.id,
+                cta: this._state.entryPath === "tv" ? "Select content" : "Choose destination",
+              })
+            )
+            .join("")}
+        </div>
       </div>
     `;
   }
@@ -1229,7 +1365,7 @@ class PanelHealth extends HTMLElement {
       ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
       <label class="search">
         <span>Search by channel, name, or title</span>
-        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+        <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 17, SportsCenter">
       </label>
       <div class="list">
         ${channels

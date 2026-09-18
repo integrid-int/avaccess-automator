@@ -1,0 +1,24 @@
+# Schedules Direct → XMLTV pull config.
+# Copy to config/schedules_direct.yaml (gitignored) and set secrets via env:
+#
+#   export SD_USERNAME='your-sd-username'
+#   export SD_PASSWORD='your-sd-password'   # or SD_PASSWORD_SHA1
+#
+#   python3 scripts/avaccess/pull_schedules_direct.py \
+#     --config config/schedules_direct.yaml \
+#     --write-lineup-id
+#
+# Then point guide_epg.yaml source at xmltv_out and run build_guide_epg.py.
+
+country: USA
+postalcode: "27403"
+
+# Leave blank to auto-select Charter Spectrum Cable for the ZIP (-X preferred).
+# Greensboro Spectrum: USA-NC32529-X
+lineup_id: ""
+
+days: 2
+xmltv_out: config/cache/schedules_direct.xmltv
+
+# SD map is the Guide channel-number authority (music dropped by default).
+exclude_music: true
