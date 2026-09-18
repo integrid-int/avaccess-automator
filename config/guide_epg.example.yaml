@@ -1,0 +1,29 @@
+# XMLTV → guide_epg.json builder config (ZIP 27403 Spectrum/Xumo favorites).
+# Copy to config/guide_epg.yaml and point source at your XMLTV feed.
+#
+#   python3 scripts/avaccess/build_guide_epg.py \
+#     --config config/guide_epg.yaml \
+#     --out homeassistant/config/www/avaccess/guide_epg.json
+
+timezone: America/New_York
+zip_code: "27403"
+
+# Local fixture for offline tests/demos. Prefer url + compression for operators:
+# source:
+#   url: "https://example.invalid/xmltv.xml.gz"
+#   compression: gzip
+source:
+  file: tests/fixtures/guide_sample.xmltv
+  compression: none
+
+# Spectrum/Xumo guide number → XMLTV channel id(s). First matching programmes win.
+channel_number_map:
+  "4": ["fox.example"]       # WGHP FOX
+  "2": []                    # WFMY CBS — fill with XMLTV id
+  "12": []                   # WXII NBC
+  "45": []                   # WXLV ABC
+  "206": ["espn.example"]    # ESPN
+  "207": []                  # ESPN2
+  "400": []                  # FS1
+  "245": []                  # TNT
+  "705": []                  # NFL Sunday Ticket 1

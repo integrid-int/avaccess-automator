@@ -178,6 +178,8 @@ def main() -> None:
         str(ROOT / "config" / "inventory.example.yaml"),
         "--channels",
         str(ROOT / "config" / "channels.example.yaml"),
+        "--profile",
+        "numeric_v1",
         "--ui-staging",
         "--out-package",
         str(CONFIG / "packages" / "avaccess_matrix.yaml"),

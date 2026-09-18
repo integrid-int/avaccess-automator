@@ -1,0 +1,595 @@
+{
+  "network": {
+    "broadcast": "255.255.255.255",
+    "udp_switch_port": 5010,
+    "telnet_port": 24
+  },
+  "encoders": [
+    {
+      "id": "ENC-01",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.11",
+      "source_label": "Xumo-01"
+    },
+    {
+      "id": "ENC-02",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.12",
+      "source_label": "Xumo-02"
+    },
+    {
+      "id": "ENC-03",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.13",
+      "source_label": "Xumo-03"
+    },
+    {
+      "id": "ENC-04",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.14",
+      "source_label": "Xumo-04"
+    },
+    {
+      "id": "ENC-05",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.15",
+      "source_label": "Xumo-05"
+    },
+    {
+      "id": "ENC-06",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.16",
+      "source_label": "Xumo-06"
+    },
+    {
+      "id": "ENC-07",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.17",
+      "source_label": "Xumo-07"
+    },
+    {
+      "id": "ENC-08",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.18",
+      "source_label": "Xumo-08"
+    },
+    {
+      "id": "ENC-09",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.19",
+      "source_label": "Xumo-09"
+    },
+    {
+      "id": "ENC-10",
+      "hostname": "IPE935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.20",
+      "source_label": "Xumo-10 Spare"
+    }
+  ],
+  "receivers": [
+    {
+      "id": "RX-01",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.101",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-02",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.102",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-03",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.103",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-04",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.104",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-05",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.105",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-06",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.106",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-07",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.107",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-08",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.108",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-09",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.109",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-10",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.110",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-11",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.111",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-12",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.112",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-13",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.113",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-14",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.114",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-15",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.115",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-16",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.116",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-17",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.117",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-18",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.118",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-19",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.119",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-20",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.120",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-21",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.121",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-22",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.122",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-23",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.123",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-24",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.124",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-25",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.125",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-26",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.126",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-27",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.127",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-28",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.128",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-29",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.129",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-30",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.130",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-31",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.131",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-32",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.132",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-33",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.133",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-34",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.134",
+      "zone": "TBD"
+    },
+    {
+      "id": "RX-35",
+      "hostname": "IPD935-REPLACE_ME",
+      "mac": "REPLACE_ME",
+      "ip": "192.168.10.135",
+      "zone": "TBD"
+    }
+  ],
+  "mapping_profiles": {
+    "active": "striped_v1",
+    "profiles": {
+      "striped_v1": {
+        "description": "Striped multi-program layout. Runtime uses RoutePlan slots, not these fixed maps. Reference lists below: ENC-01..04 for N=4 and ENC-01..09 for N=9.",
+        "presets": {
+          "2_four_programs": {
+            "description": "Reference stripe N=4 (ENC-01..ENC-04) \u2014 docs only; runtime uses RoutePlan",
+            "routes": {
+              "ENC-01": [
+                "RX-01",
+                "RX-05",
+                "RX-09",
+                "RX-13",
+                "RX-17",
+                "RX-21",
+                "RX-25",
+                "RX-29",
+                "RX-33"
+              ],
+              "ENC-02": [
+                "RX-02",
+                "RX-06",
+                "RX-10",
+                "RX-14",
+                "RX-18",
+                "RX-22",
+                "RX-26",
+                "RX-30",
+                "RX-34"
+              ],
+              "ENC-03": [
+                "RX-03",
+                "RX-07",
+                "RX-11",
+                "RX-15",
+                "RX-19",
+                "RX-23",
+                "RX-27",
+                "RX-31",
+                "RX-35"
+              ],
+              "ENC-04": [
+                "RX-04",
+                "RX-08",
+                "RX-12",
+                "RX-16",
+                "RX-20",
+                "RX-24",
+                "RX-28",
+                "RX-32"
+              ]
+            }
+          },
+          "3_nine_programs": {
+            "description": "Reference stripe N=9 (ENC-01..ENC-09) \u2014 docs only; runtime uses RoutePlan",
+            "routes": {
+              "ENC-01": [
+                "RX-01",
+                "RX-10",
+                "RX-19",
+                "RX-28"
+              ],
+              "ENC-02": [
+                "RX-02",
+                "RX-11",
+                "RX-20",
+                "RX-29"
+              ],
+              "ENC-03": [
+                "RX-03",
+                "RX-12",
+                "RX-21",
+                "RX-30"
+              ],
+              "ENC-04": [
+                "RX-04",
+                "RX-13",
+                "RX-22",
+                "RX-31"
+              ],
+              "ENC-05": [
+                "RX-05",
+                "RX-14",
+                "RX-23",
+                "RX-32"
+              ],
+              "ENC-06": [
+                "RX-06",
+                "RX-15",
+                "RX-24",
+                "RX-33"
+              ],
+              "ENC-07": [
+                "RX-07",
+                "RX-16",
+                "RX-25",
+                "RX-34"
+              ],
+              "ENC-08": [
+                "RX-08",
+                "RX-17",
+                "RX-26",
+                "RX-35"
+              ],
+              "ENC-09": [
+                "RX-09",
+                "RX-18",
+                "RX-27"
+              ]
+            }
+          }
+        }
+      },
+      "numeric_v1": {
+        "description": "Numeric split (legacy contiguous) \u2014 ENC-10 is spare",
+        "presets": {
+          "1_all": {
+            "description": "Encoder 1 broadcasts to all 35 TVs",
+            "routes": {
+              "ENC-01": [
+                "RX-01",
+                "RX-02",
+                "RX-03",
+                "RX-04",
+                "RX-05",
+                "RX-06",
+                "RX-07",
+                "RX-08",
+                "RX-09",
+                "RX-10",
+                "RX-11",
+                "RX-12",
+                "RX-13",
+                "RX-14",
+                "RX-15",
+                "RX-16",
+                "RX-17",
+                "RX-18",
+                "RX-19",
+                "RX-20",
+                "RX-21",
+                "RX-22",
+                "RX-23",
+                "RX-24",
+                "RX-25",
+                "RX-26",
+                "RX-27",
+                "RX-28",
+                "RX-29",
+                "RX-30",
+                "RX-31",
+                "RX-32",
+                "RX-33",
+                "RX-34",
+                "RX-35"
+              ]
+            }
+          },
+          "2_four_programs": {
+            "description": "4 programs split evenly (ENC-01..ENC-04, 9/9/9/8)",
+            "routes": {
+              "ENC-01": [
+                "RX-01",
+                "RX-02",
+                "RX-03",
+                "RX-04",
+                "RX-05",
+                "RX-06",
+                "RX-07",
+                "RX-08",
+                "RX-09"
+              ],
+              "ENC-02": [
+                "RX-10",
+                "RX-11",
+                "RX-12",
+                "RX-13",
+                "RX-14",
+                "RX-15",
+                "RX-16",
+                "RX-17",
+                "RX-18"
+              ],
+              "ENC-03": [
+                "RX-19",
+                "RX-20",
+                "RX-21",
+                "RX-22",
+                "RX-23",
+                "RX-24",
+                "RX-25",
+                "RX-26",
+                "RX-27"
+              ],
+              "ENC-04": [
+                "RX-28",
+                "RX-29",
+                "RX-30",
+                "RX-31",
+                "RX-32",
+                "RX-33",
+                "RX-34",
+                "RX-35"
+              ]
+            }
+          },
+          "3_nine_programs": {
+            "description": "9 programs across 35 TVs (ENC-01..ENC-09, 4+4+4+4+4+4+4+4+3)",
+            "routes": {
+              "ENC-01": [
+                "RX-01",
+                "RX-02",
+                "RX-03",
+                "RX-04"
+              ],
+              "ENC-02": [
+                "RX-05",
+                "RX-06",
+                "RX-07",
+                "RX-08"
+              ],
+              "ENC-03": [
+                "RX-09",
+                "RX-10",
+                "RX-11",
+                "RX-12"
+              ],
+              "ENC-04": [
+                "RX-13",
+                "RX-14",
+                "RX-15",
+                "RX-16"
+              ],
+              "ENC-05": [
+                "RX-17",
+                "RX-18",
+                "RX-19",
+                "RX-20"
+              ],
+              "ENC-06": [
+                "RX-21",
+                "RX-22",
+                "RX-23",
+                "RX-24"
+              ],
+              "ENC-07": [
+                "RX-25",
+                "RX-26",
+                "RX-27",
+                "RX-28"
+              ],
+              "ENC-08": [
+                "RX-29",
+                "RX-30",
+                "RX-31",
+                "RX-32"
+              ],
+              "ENC-09": [
+                "RX-33",
+                "RX-34",
+                "RX-35"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

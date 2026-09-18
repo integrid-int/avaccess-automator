@@ -31,7 +31,7 @@ def main() -> None:
     parser.add_argument("--channels", type=Path, required=True)
     parser.add_argument("--sync-config", type=Path, required=True)
     parser.add_argument("--inventory", type=Path, required=True)
-    parser.add_argument("--profile")
+    parser.add_argument("--profile", default="numeric_v1")
     parser.add_argument("--inventory-ha-path", default="/config/avaccess/config/inventory.yaml")
     parser.add_argument("--out-package", type=Path, required=True)
     parser.add_argument("--out-dashboard", type=Path, required=True)

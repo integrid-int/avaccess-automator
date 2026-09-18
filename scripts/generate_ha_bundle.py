@@ -782,7 +782,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inventory", type=Path, required=True)
     parser.add_argument("--channels", type=Path, required=True)
-    parser.add_argument("--profile", help="Optional mapping profile override.")
+    parser.add_argument(
+        "--profile",
+        default="numeric_v1",
+        help="Mapping profile for Lovelace presets (default numeric_v1). Track B bartender uses striped_v1 via inventory.active.",
+    )
     parser.add_argument(
         "--inventory-ha-path",
         default="/config/avaccess/config/inventory.yaml",

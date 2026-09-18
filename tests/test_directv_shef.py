@@ -81,7 +81,7 @@ class BundleGenerationTests(unittest.TestCase):
     def test_directv_transport_emits_tune_shell_command(self) -> None:
         inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
         channels = load_yaml(ROOT / "config" / "channels.example.yaml")
-        profile, presets = resolve_presets(inventory, None)
+        profile, presets = resolve_presets(inventory, "numeric_v1")
         self.assertIn("1_all", presets)
         package = build_package(
             inventory=inventory,
@@ -100,7 +100,7 @@ class BundleGenerationTests(unittest.TestCase):
 
         inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
         channels = load_yaml(ROOT / "config" / "channels.example.yaml")
-        profile, _presets = resolve_presets(inventory, None)
+        profile, _presets = resolve_presets(inventory, "numeric_v1")
         package = build_package(
             inventory=inventory,
             channels_cfg=channels,
@@ -115,7 +115,7 @@ class BundleGenerationTests(unittest.TestCase):
     def test_favorite_scripts_call_tune_channel(self) -> None:
         inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
         channels = load_yaml(ROOT / "config" / "channels.example.yaml")
-        profile, _presets = resolve_presets(inventory, None)
+        profile, _presets = resolve_presets(inventory, "numeric_v1")
         package = build_package(
             inventory=inventory,
             channels_cfg=channels,
@@ -143,6 +143,8 @@ def _run_generate_ha_bundle(out_dir: Path, *, ui_staging: bool) -> tuple[Path, P
         str(ROOT / "config" / "inventory.example.yaml"),
         "--channels",
         str(ROOT / "config" / "channels.example.yaml"),
+        "--profile",
+        "numeric_v1",
         "--out-package",
         str(package_path),
         "--out-dashboard",

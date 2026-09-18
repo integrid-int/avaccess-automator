@@ -54,6 +54,7 @@ python3 -m pip install pyyaml
 python3 scripts/generate_ha_bundle.py \
   --inventory config/inventory.yaml \
   --channels config/channels.yaml \
+  --profile numeric_v1 \
   --out-package /config/packages/avaccess_matrix.yaml \
   --out-dashboard /config/dashboards/avaccess_matrix.yaml
 ```
@@ -123,6 +124,7 @@ shell_command:
     python3 /config/avaccess/scripts/generate_ha_bundle.py
     --inventory /config/avaccess/config/inventory.yaml
     --channels /config/avaccess/config/channels.yaml
+    --profile numeric_v1
     --out-package /config/packages/avaccess_matrix.yaml
     --out-dashboard /config/dashboards/avaccess_matrix.yaml
 ```

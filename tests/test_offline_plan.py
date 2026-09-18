@@ -146,6 +146,8 @@ class SectionCMatrixCliDryRunTests(unittest.TestCase):
                     str(inventory),
                     "--preset",
                     "1_all",
+                    "--profile",
+                    "numeric_v1",
                     "--dry-run",
                     "--delay",
                     "0",
@@ -186,7 +188,7 @@ class SectionAHaBundleTests(unittest.TestCase):
     def test_bundle_without_ui_staging_wires_directv_tune(self) -> None:
         inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
         channels = load_yaml(ROOT / "config" / "channels.example.yaml")
-        profile, _presets = resolve_presets(inventory, None)
+        profile, _presets = resolve_presets(inventory, "numeric_v1")
         package = build_package(
             inventory=inventory,
             channels_cfg=channels,

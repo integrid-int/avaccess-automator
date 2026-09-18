@@ -1,0 +1,15 @@
+# AVAccess Track C — Guide EPG (XMLTV → guide_epg.json) refresh
+#
+# shell_command runs with cwd = HA config dir (./config in compose, or
+# homeassistant/config for local Core). Paths below are relative to that cwd.
+#
+# Compose mounts (see homeassistant/docker-compose.yml):
+#   ../scripts/avaccess -> /config/avaccess/scripts
+#   ../config           -> /config/avaccess/config  (includes guide_epg.yaml)
+# Local Core uses the same relative paths via checked-in symlinks under avaccess/.
+
+shell_command:
+  avaccess_refresh_guide_epg: >-
+    python3 avaccess/run_build_guide_epg.py
+    --config avaccess/config/guide_epg.yaml
+    --out www/avaccess/guide_epg.json

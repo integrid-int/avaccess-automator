@@ -51,6 +51,7 @@ python3 scripts/directv_shef.py --config config/directv.example.yaml tune --enco
 python3 scripts/generate_ha_bundle.py \
   --inventory config/inventory.example.yaml \
   --channels config/channels.example.yaml \
+  --profile numeric_v1 \
   --out-package /tmp/avaccess_matrix.yaml \
   --out-dashboard /tmp/avaccess_dash.yaml
 ```
