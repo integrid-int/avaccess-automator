@@ -7,6 +7,10 @@ This quickstart gives you an operator-ready iPad control surface for:
 - One-tap DirecTV H25 channel control over IP (SHEF)
 - Optional iTach IR rollback
 
+## 0) Site go-live (not staging)
+
+Step-by-step to run this on the bar’s Home Assistant (real H25s, no `--ui-staging`): **[HA_LIVE.md](HA_LIVE.md)**.
+
 ## 1) Put this project in Home Assistant config
 
 On your HA host, place this repo under:
