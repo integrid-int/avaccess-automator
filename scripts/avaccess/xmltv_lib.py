@@ -8,6 +8,7 @@ import io
 import re
 import urllib.request
 import xml.etree.ElementTree as et
+import defusedxml.ElementTree as DefusedET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -63,7 +64,7 @@ def parse_xmltv(
     xml_bytes: bytes, tz: ZoneInfo
 ) -> tuple[dict[str, list[str]], list[Program]]:
     """Parse channel display-names and programme list from XMLTV bytes."""
-    root = et.parse(io.BytesIO(xml_bytes)).getroot()
+    root = DefusedET.parse(io.BytesIO(xml_bytes)).getroot()
     channels: dict[str, list[str]] = {}
     for ch in root.findall("channel"):
         ch_id = ch.attrib.get("id", "").strip()
