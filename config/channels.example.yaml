@@ -107,7 +107,7 @@ channels:
     label: "NFL S8"
   nfl_sunday_game_9:
     number: "713"
-    label: "S9 NFL Slot"
+    label: "NFL S9"
 
 # Optional per-channel tail command depending on remote behavior.
 # Common values: ["ok"] or [].

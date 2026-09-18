@@ -262,7 +262,7 @@ views:
         action: call-service
         service: script.avaccess_tune_nfl_sunday_game_8
     - type: button
-      name: S9 NFL Slot
+      name: NFL S9
       icon: mdi:television-play
       tap_action:
         action: call-service
@@ -416,7 +416,7 @@ views:
         action: call-service
         service: script.avaccess_tune_nfl_sunday_game_8
     - type: button
-      name: S9 NFL Slot
+      name: NFL S9
       icon: mdi:television-play
       tap_action:
         action: call-service

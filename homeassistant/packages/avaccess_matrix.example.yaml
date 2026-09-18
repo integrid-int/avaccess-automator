@@ -173,7 +173,7 @@ script:
           label: NFL S8
         nfl_sunday_game_9:
           number: '713'
-          label: S9 NFL Slot
+          label: NFL S9
       suffix_commands:
       - ok
       program_key: '{{ (program | default(states(''input_select.avaccess_program''), true)) | lower }}'
@@ -419,7 +419,7 @@ script:
         option: nfl_sunday_game_8
     - service: script.avaccess_tune_selected_channel
   avaccess_tune_nfl_sunday_game_9:
-    alias: AVAccess tune S9 NFL Slot
+    alias: AVAccess tune NFL S9
     mode: single
     sequence:
     - service: input_select.select_option

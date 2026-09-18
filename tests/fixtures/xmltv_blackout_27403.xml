@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<!-- Minimal ZIP 27403 blackout fixture: one Sunday NFL game on local FOX (WGHP 8)
+     and the same kickoff/matchup on Sunday Ticket 705. Sunday 2026-09-20, America/New_York. -->
+<tv generator-info-name="avaccess-offline-plan">
+  <channel id="I8.wghp.greensboro.example">
+    <display-name>WGHP</display-name>
+    <display-name>FOX</display-name>
+    <display-name>WGHP FOX</display-name>
+  </channel>
+  <channel id="I705.nflsundayticket.example">
+    <display-name>NFL Sunday Ticket 1</display-name>
+    <display-name>NFL ST 1</display-name>
+  </channel>
+  <programme start="20260920130000 -0400" stop="20260920160000 -0400" channel="I8.wghp.greensboro.example">
+    <title>NFL Football</title>
+    <sub-title>Panthers vs Saints</sub-title>
+    <desc>Carolina Panthers vs New Orleans Saints. Local FOX WGHP (ZIP 27403).</desc>
+    <category>Sports</category>
+    <category>Football</category>
+  </programme>
+  <programme start="20260920130000 -0400" stop="20260920160000 -0400" channel="I705.nflsundayticket.example">
+    <title>NFL Football</title>
+    <sub-title>Panthers vs Saints</sub-title>
+    <desc>Carolina Panthers vs New Orleans Saints. NFL Sunday Ticket.</desc>
+    <category>Sports</category>
+    <category>Football</category>
+  </programme>
+</tv>

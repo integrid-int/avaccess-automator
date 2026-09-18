@@ -11,6 +11,7 @@ Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-f
 - **[docs/PHASE2_SPORTS_PAGES.md](docs/PHASE2_SPORTS_PAGES.md)** — sport tabs + daily updates + one/many TV routing
 - **[docs/GLOBAL_CACHE_ITACH_SETUP.md](docs/GLOBAL_CACHE_ITACH_SETUP.md)** — iTach IP2IR-P x4 setup and testing (rollback)
 - **[docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md](docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md)** — DirecTV IP cutover + test plan (includes cloud HA UI staging)
+- **[docs/HA_STAGING_STATUS.md](docs/HA_STAGING_STATUS.md)** / **[docs/HA_STAGING_A2_CHECKLIST.md](docs/HA_STAGING_A2_CHECKLIST.md)** — cloud HA 2026.9 staging boot + A2 UI walk
 - **`homeassistant/dashboards/avaccess_matrix_dashboard_pretty.example.yaml`** — polished iPad-style Lovelace mockup
 
 ## Quick start (after inventory is filled)
@@ -43,3 +44,11 @@ Generated outputs:
 - dashboard YAML with preset/program/channel buttons
 - sports-specific views (from `sports_pages` in `channels.yaml`)
 - one/many TV routing via `input_text.avaccess_target_rxs` + route scripts
+
+Cloud UI staging (no AV LAN): `python3 scripts/prepare_ha_staging.py` then `docker compose -f homeassistant/staging/docker-compose.yml up -d`. Optional owner: `python3 scripts/complete_ha_onboarding.py` (`operator` / `avaccess-staging`).
+
+## Tests
+
+```bash
+python3 -m unittest tests.test_directv_shef tests.test_ha_staging_config tests.test_offline_plan -v
+```

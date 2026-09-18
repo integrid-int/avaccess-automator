@@ -44,7 +44,7 @@ python3 scripts/prepare_ha_staging.py
 docker compose -f homeassistant/staging/docker-compose.yml up -d
 ```
 
-Open port **8123**, finish onboarding, use the **AVAccess Matrix** dashboard on desktop and iPad. Shell commands are stubs (`echo STAGING ...`) so missing H25s will not break taps.
+Open port **8123**, finish onboarding (default staging owner `operator` / `avaccess-staging`; optional `python3 scripts/complete_ha_onboarding.py`), use the **AVAccess Matrix** dashboard on desktop and iPad. Shell commands are stubs (`echo STAGING ...`) so missing H25s will not break taps. Dummy Now Playing entities are HA 2026.9 `template:` sensors, not legacy `sensor: platform: template`.
 
 ## 3) Generate HA package + dashboard YAML
 

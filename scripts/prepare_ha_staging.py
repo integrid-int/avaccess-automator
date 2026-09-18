@@ -30,6 +30,10 @@ default_config:
 
 homeassistant:
   name: AVAccess Staging
+  latitude: 36.0726
+  longitude: -79.7920
+  elevation: 0
+  time_zone: America/New_York
   unit_system: us_customary
   currency: USD
   packages: !include_dir_named packages
@@ -73,15 +77,40 @@ COMPOSE_YAML = """services:
 """
 
 
+def _legacy_template_blocks(sensors_cfg: Any) -> bool:
+    """True when YAML still has `sensor: [{platform: template, sensors: ...}]`."""
+    if sensors_cfg is None:
+        return False
+    blocks = sensors_cfg if isinstance(sensors_cfg, list) else [sensors_cfg]
+    return any(
+        isinstance(block, dict) and block.get("platform") == "template" and "sensors" in block
+        for block in blocks
+    )
+
+
+def package_has_legacy_template_sensors(package_path: Path) -> bool:
+    """Safety-net probe: generator now emits modern `template:` sensors directly."""
+    if not package_path.is_file():
+        return False
+    data = yaml.safe_load(package_path.read_text())
+    if not isinstance(data, dict):
+        return False
+    return _legacy_template_blocks(data.get("sensor"))
+
+
 def migrate_legacy_template_sensors(package_path: Path) -> None:
-    """HA 2026+ rejects `sensor: platform: template`. Rewrite to modern `template:`."""
+    """HA 2026+ rejects `sensor: platform: template`. Rewrite to modern `template:`.
+
+    Keep this as a safety net for already-legacy YAML. New `--ui-staging` packages
+    from generate_ha_bundle.apply_ui_staging_stubs should already be modern.
+    """
     raw = package_path.read_text()
     data = yaml.safe_load(raw)
     if not isinstance(data, dict):
         return
 
     sensors_cfg = data.get("sensor")
-    if sensors_cfg is None:
+    if not _legacy_template_blocks(sensors_cfg):
         return
 
     migrated: list[dict[str, Any]] = []
@@ -156,11 +185,17 @@ def main() -> None:
         str(CONFIG / "dashboards" / "avaccess_matrix.yaml"),
     ]
     subprocess.run(cmd, check=True)
-    migrate_legacy_template_sensors(CONFIG / "packages" / "avaccess_matrix.yaml")
+    package_path = CONFIG / "packages" / "avaccess_matrix.yaml"
+    # Safety net only: skip when generate already wrote modern `template:` sensors.
+    if package_has_legacy_template_sensors(package_path):
+        migrate_legacy_template_sensors(package_path)
     print(f"Staging config ready: {CONFIG}")
     print("Start with:")
     print(f"  docker compose -f {STAGING / 'docker-compose.yml'} up -d")
     print("Then open http://<host>:8123 , complete onboarding, and use the AVAccess Matrix sidebar dashboard.")
+    print("Default staging owner: operator / avaccess-staging")
+    print("  python3 scripts/complete_ha_onboarding.py")
+    print("  python3 scripts/complete_ha_onboarding.py --dry-run")
 
 
 if __name__ == "__main__":

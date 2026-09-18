@@ -1,0 +1,66 @@
+# Offline ZIP 27403 blackout fixture for tests/test_offline_plan.py
+# Classification rules match config/schedule_sync.example.yaml.
+
+timezone: America/New_York
+zip_code: "27403"
+prefer_local_for_blackout: true
+channel_class_priority: [local, nfl_ticket, other]
+
+source:
+  file: tests/fixtures/xmltv_blackout_27403.xml
+  compression: none
+
+nfl_keywords:
+  - NFL
+  - Football
+  - Sunday Ticket
+
+channel_classification:
+  local:
+    by_channel_id: []
+    by_display_name: []
+    by_display_name_contains:
+      - WGHP
+      - WFMY
+      - WXII
+      - WXLV
+      - FOX
+      - CBS
+      - NBC
+      - ABC
+    by_numbers: []
+  nfl_ticket:
+    by_channel_id: []
+    by_display_name: []
+    by_display_name_contains:
+      - Sunday Ticket
+      - NFL ST
+      - NFL Ticket
+    by_numbers: ["705", "706", "707", "708", "709", "710", "711", "712", "713"]
+
+market_profiles:
+  "27403":
+    local_display_name_contains:
+      - WGHP
+      - WFMY
+      - WXII
+      - WXLV
+
+afternoon_window:
+  start: "13:00"
+  end: "19:00"
+
+sunday_window:
+  start: "09:00"
+  end: "23:59"
+
+channel_number_map:
+  by_channel_id:
+    I8.wghp.greensboro.example: "8"
+    I705.nflsundayticket.example: "705"
+  by_display_name:
+    WGHP: "8"
+    FOX: "8"
+    WGHP FOX: "8"
+    NFL Sunday Ticket 1: "705"
+    NFL ST 1: "705"

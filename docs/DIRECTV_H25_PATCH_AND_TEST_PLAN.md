@@ -66,11 +66,11 @@ docker compose -f homeassistant/staging/docker-compose.yml up -d
 ```
 
 Open `http://<cloud-host>:8123`:
-1. Complete HA onboarding once (create owner account).
+1. Complete HA onboarding once (create owner account; staging default is `operator` / `avaccess-staging`).
 2. Confirm sidebar shows **AVAccess Matrix**.
 3. Walk the UI checklist below on **desktop** and **iPad Safari / HA Companion**.
 
-`--ui-staging` stubs every `shell_command` to `echo`, so taps should not fail because H25s are unreachable. Scripts and helpers still load.
+`--ui-staging` stubs every `shell_command` to `echo` and emits modern `template:` dummy Now Playing sensors (HA 2026.9), so taps should not fail because H25s are unreachable. Scripts and helpers still load.
 
 #### UI bug checklist
 | Check | Pass |
