@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -18,9 +20,6 @@ if str(ROOT) not in sys.path:
 
 from scripts.directv_shef import parse_channel, shef_get, summarize_tuned
 from scripts.generate_ha_bundle import build_package, load_yaml, resolve_presets
-
-
-ROOT = Path(__file__).resolve().parent.parent
 
 
 class ParseChannelTests(unittest.TestCase):
@@ -112,6 +111,72 @@ class BundleGenerationTests(unittest.TestCase):
         for name, cmd in staged["shell_command"].items():
             self.assertTrue(str(cmd).startswith("echo "), name)
             self.assertIn("STAGING", str(cmd))
+
+    def test_favorite_scripts_call_tune_channel(self) -> None:
+        inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
+        channels = load_yaml(ROOT / "config" / "channels.example.yaml")
+        profile, _presets = resolve_presets(inventory, None)
+        package = build_package(
+            inventory=inventory,
+            channels_cfg=channels,
+            profile_override=profile,
+            inventory_ha_path="/config/avaccess/config/inventory.yaml",
+        )
+        favorites = {
+            name: script
+            for name, script in package["script"].items()
+            if name.startswith("avaccess_favorite_")
+        }
+        self.assertTrue(favorites, "expected favorite scripts in the generated package")
+        for name, script in favorites.items():
+            dumped = yaml.safe_dump(script)
+            self.assertIn("script.avaccess_tune_channel", dumped, name)
+
+
+def _run_generate_ha_bundle(out_dir: Path, *, ui_staging: bool) -> tuple[Path, Path]:
+    package_path = out_dir / "avaccess_matrix.yaml"
+    dashboard_path = out_dir / "avaccess_matrix_dashboard.yaml"
+    cmd = [
+        sys.executable,
+        str(ROOT / "scripts" / "generate_ha_bundle.py"),
+        "--inventory",
+        str(ROOT / "config" / "inventory.example.yaml"),
+        "--channels",
+        str(ROOT / "config" / "channels.example.yaml"),
+        "--out-package",
+        str(package_path),
+        "--out-dashboard",
+        str(dashboard_path),
+    ]
+    if ui_staging:
+        cmd.append("--ui-staging")
+    subprocess.run(cmd, check=True, capture_output=True, text=True)
+    return package_path, dashboard_path
+
+
+class GenerateHaBundleCliTests(unittest.TestCase):
+    """Exercise generate_ha_bundle.py as a CLI, including written YAML files."""
+
+    def test_ui_staging_cli_writes_echo_stubs_into_package_yaml(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            package_path, _dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=True)
+            raw = package_path.read_text()
+            self.assertIn("UI-STAGING", raw)
+            package = yaml.safe_load(raw)
+            commands = package["shell_command"]
+            self.assertTrue(commands)
+            for name, cmd in commands.items():
+                self.assertTrue(str(cmd).startswith("echo "), name)
+                self.assertIn("STAGING", str(cmd))
+                self.assertNotIn("python3", str(cmd), name)
+
+    def test_dashboard_yaml_contains_sports_views(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            _package_path, dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=False)
+            dashboard = yaml.safe_load(dashboard_path.read_text())
+            titles = {view.get("title") for view in dashboard.get("views", [])}
+            for expected in ("NFL", "College Football", "Basketball"):
+                self.assertIn(expected, titles)
 
 
 if __name__ == "__main__":
