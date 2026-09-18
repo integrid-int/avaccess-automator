@@ -1,20 +1,44 @@
 # AVAccess iPad operations guide
 
-This is the day-of-game playbook for the **AVAccess Matrix** dashboard in Home Assistant. It drives **10 DirecTV H25 boxes** (through 10 AVAccess encoders) onto **35 TVs**.
+Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures).
+
+This is the day-of-game playbook for Home Assistant on the iPad. It drives **10 DirecTV H25 boxes** (through 10 AVAccess encoders) onto **35 TVs**. There is **no IR**. Tune is SHEF IP; routing is UDP to the matrix.
+
+Two sidebar surfaces:
+
+| Sidebar | Use it for |
+|---------|------------|
+| **Sports Routing** | Bartender panel. Pick a game or DirecTV channel, then ALL / 4-way / 9-way or specific TVs. |
+| **AVAccess Matrix** | One-tap favorites (FOX Local, NFL Afternoon, All Sunday), presets, program letters, route-to-TVs. |
 
 These pictures are from the live cloud staging instance (HA 2026.9). Taps run for real — scripts fire and show up in Activity. Hardware is stubbed in staging, so **Now Playing** reads `STAGING - DirecTV not connected` instead of the live program title. On the site HA, those cards show the actual H25 channel.
 
-## Open the dashboard
+## Open the iPad
 
-1. On the iPad, open **Home Assistant Companion** (or Safari) and sign in.
-2. In the sidebar, tap **AVAccess Matrix**.
-3. The four tabs across the top are **Control**, **NFL**, **College Football**, and **Basketball**.
+1. Open **Home Assistant Companion** (or Safari) and sign in.
+2. Sidebar: **Sports Routing** (bartender) and **AVAccess Matrix** (favorites).
 
-Desktop Control tab (favorites, presets, programs, channels, Now Playing, route):
+Desktop Matrix Control tab (favorites, presets, programs, channels, DirecTV Now Playing, route). Sports Routing is in the sidebar:
 
 ![Control tab on desktop](images/operations/01-control-overview.png)
 
-iPad portrait — this is the operator view:
+## Sports Routing (bartender)
+
+NFL game list — tap a card, then choose a destination:
+
+![Sports Routing NFL](images/operations/08-sports-routing-nfl.png)
+
+DirecTV guide for ZIP **27403** (not Spectrum / Xumo):
+
+![Sports Routing Guide](images/operations/09-sports-routing-guide.png)
+
+Send Chiefs @ Bills to ALL 35 TVs. Leave **Live commit** off unless you mean to change the wall. **Dry-run Send** is occupancy only; Live Send SHEF-tunes the H25 then UDP-reconnects the TVs.
+
+![Sports Routing destination](images/operations/10-sports-routing-destination.png)
+
+## Matrix Control (iPad)
+
+iPad portrait — favorites, presets, programs, channels, DirecTV Now Playing:
 
 ![Control tab on iPad](images/operations/02-control-ipad.png)
 

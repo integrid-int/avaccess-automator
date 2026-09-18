@@ -61,6 +61,16 @@ logger:
   logs:
     homeassistant.components.shell_command: debug
     homeassistant.components.script: debug
+
+panel_custom:
+  - name: panel-health
+    sidebar_title: Sports Routing
+    sidebar_icon: mdi:trophy
+    url_path: panel-health
+    module_url: /local/panels/panel-health.js?v=15
+    require_admin: false
+    config:
+      environment: staging
 """
 
 COMPOSE_YAML = """services:
@@ -191,10 +201,21 @@ def main() -> None:
     # Safety net only: skip when generate already wrote modern `template:` sensors.
     if package_has_legacy_template_sensors(package_path):
         migrate_legacy_template_sensors(package_path)
+
+    import shutil
+
+    src_panels = ROOT / "homeassistant" / "config" / "www" / "panels"
+    dst_panels = CONFIG / "www" / "panels"
+    if src_panels.is_dir():
+        shutil.copytree(src_panels, dst_panels, dirs_exist_ok=True)
+    src_av = ROOT / "homeassistant" / "config" / "www" / "avaccess"
+    dst_av = CONFIG / "www" / "avaccess"
+    if src_av.is_dir():
+        shutil.copytree(src_av, dst_av, dirs_exist_ok=True)
     print(f"Staging config ready: {CONFIG}")
     print("Start with:")
     print(f"  docker compose -f {STAGING / 'docker-compose.yml'} up -d")
-    print("Then open http://<host>:8123 , complete onboarding, and use the AVAccess Matrix sidebar dashboard.")
+    print("Then open http://<host>:8123 , complete onboarding, and use the AVAccess Matrix and Sports Routing sidebar items.")
     print("Default staging owner: operator / avaccess-staging")
     print("  python3 scripts/complete_ha_onboarding.py")
     print("  python3 scripts/complete_ha_onboarding.py --dry-run")

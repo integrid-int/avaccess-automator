@@ -29,7 +29,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Automated tests: `tests/test_validate_panels.py`
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
 - **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — make this live on site Home Assistant (H25 SHEF + matrix + bartender panel)
-- iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)**
+- iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
 
 The bartender **Sports Routing** panel is the production iPad UI (`/panel-health`, striped `RoutePlan`). Lovelace Matrix is the SHEF/favorites surface; generate it with `--profile numeric_v1` so Preset 1/2/3 match the operations guide (contiguous splits). Inventory `mapping_profiles.active` stays `striped_v1` for Track B.
