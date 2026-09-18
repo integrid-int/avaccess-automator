@@ -1,8 +1,11 @@
-provider: spectrum
-ir_transport: itach_tcp
+provider: directv
+source_transport: directv_shef
+ir_transport: directv_shef
+directv_config_path: /config/avaccess/config/directv.yaml
+# Keep iTach config for rollback: ir_transport: itach_tcp
 itach_config_path: /config/avaccess/config/itach.yaml
 
-# Tie logical programs to encoder-connected Xumo boxes.
+# Tie logical programs to encoder-connected DirecTV H25 boxes.
 program_to_encoder:
   program_a: ENC-01
   program_b: ENC-02
@@ -14,8 +17,20 @@ program_to_encoder:
   program_h: ENC-08
   program_i: ENC-09
 
+# Optional HA DirecTV media_player entities for now-playing cards.
+# Replace with entities created by the official DirecTV integration.
+encoder_media_player:
+  ENC-01: media_player.directv_h25_01
+  ENC-02: media_player.directv_h25_02
+  ENC-03: media_player.directv_h25_03
+  ENC-04: media_player.directv_h25_04
+  ENC-05: media_player.directv_h25_05
+  ENC-06: media_player.directv_h25_06
+  ENC-07: media_player.directv_h25_07
+  ENC-08: media_player.directv_h25_08
+  ENC-09: media_player.directv_h25_09
+
 # Home Assistant IR remote entities (optional fallback when ir_transport=ha_remote).
-# For ir_transport=itach_tcp these are not required.
 encoder_ir_entity:
   ENC-01: remote.xumo_01_ir
   ENC-02: remote.xumo_02_ir

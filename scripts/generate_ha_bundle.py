@@ -66,11 +66,15 @@ def validate_channels(channels_cfg: dict[str, Any]) -> None:
             raise SystemExit(f"channels file missing required key: {key}")
     if not isinstance(channels_cfg["channels"], dict) or not channels_cfg["channels"]:
         raise SystemExit("channels must be a non-empty mapping")
-    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
-    if ir_transport not in {"ha_remote", "itach_tcp"}:
-        raise SystemExit("ir_transport must be 'ha_remote' or 'itach_tcp'")
+    ir_transport = str(
+        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "ha_remote"
+    ).strip().lower()
+    if ir_transport not in {"ha_remote", "itach_tcp", "directv_shef"}:
+        raise SystemExit("ir_transport/source_transport must be ha_remote, itach_tcp, or directv_shef")
     if ir_transport == "ha_remote" and "encoder_ir_entity" not in channels_cfg:
         raise SystemExit("channels file missing required key for ha_remote mode: encoder_ir_entity")
+    if ir_transport == "directv_shef" and not channels_cfg.get("directv_config_path"):
+        raise SystemExit("directv_shef mode requires directv_config_path")
 
 
 def build_package(
@@ -83,13 +87,19 @@ def build_package(
     validate_channels(channels_cfg)
 
     program_to_encoder = channels_cfg["program_to_encoder"]
-    ir_transport = str(channels_cfg.get("ir_transport", "ha_remote")).strip().lower()
+    ir_transport = str(
+        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "ha_remote"
+    ).strip().lower()
     encoder_ir_entity = channels_cfg.get("encoder_ir_entity", {})
+    encoder_media_player = channels_cfg.get("encoder_media_player", {})
     channels = channels_cfg["channels"]
     suffix_commands = channels_cfg.get("suffix_commands", ["ok"])
     digit_delay = channels_cfg.get("digit_delay", "00:00:00.25")
     digit_delay_ms = int(channels_cfg.get("digit_delay_ms", 250))
     itach_config_path = str(channels_cfg.get("itach_config_path", "/config/avaccess/config/itach.yaml"))
+    directv_config_path = str(
+        channels_cfg.get("directv_config_path", "/config/avaccess/config/directv.yaml")
+    )
 
     program_keys = list(program_to_encoder.keys())
     channel_keys = list(channels.keys())
@@ -122,6 +132,16 @@ def build_package(
             "python3 /config/avaccess/scripts/send_xumo_ir_itach.py "
             f"--itach-config {itach_config_path} --encoder \"{{{{ encoder }}}}\" "
             "--digits \"{{ digits }}\" --suffix \"{{ suffix }}\" --digit-delay-ms {{ digit_delay_ms }}"
+        )
+    if ir_transport == "directv_shef":
+        shell_command["avaccess_directv_tune"] = (
+            "python3 /config/avaccess/scripts/directv_shef.py "
+            f"--config {directv_config_path} tune --encoder \"{{{{ encoder }}}}\" "
+            "--channel \"{{ channel }}\""
+        )
+        shell_command["avaccess_directv_get_tuned"] = (
+            "python3 /config/avaccess/scripts/directv_shef.py "
+            f"--config {directv_config_path} get-tuned --encoder \"{{{{ encoder }}}}\""
         )
 
     scripts["avaccess_set_program"] = {
@@ -193,6 +213,37 @@ def build_package(
                 ],
             }
         ]
+    elif ir_transport == "directv_shef":
+        tune_sequence = [
+            {
+                "choose": [
+                    {
+                        "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
+                        "sequence": [
+                            {
+                                "service": "shell_command.avaccess_directv_tune",
+                                "data": {
+                                    "encoder": "{{ selected_encoder }}",
+                                    "channel": "{{ channel_number }}",
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess tune failed (directv_shef); check program/channel/H25 maps. "
+                                "program={{ program_key }} channel={{ channel_key }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ]
     else:
         tune_sequence = [
             {
@@ -228,7 +279,7 @@ def build_package(
         ]
 
     scripts["avaccess_tune_channel"] = {
-        "alias": "AVAccess tune channel on Xumo",
+        "alias": "AVAccess tune channel on source",
         "mode": "queued",
         "fields": {
             "program": {
@@ -429,8 +480,17 @@ def _build_channel_buttons(
     return out
 
 
-def _destination_cards() -> list[dict[str, Any]]:
-    return [
+def _now_playing_card(encoder_media_player: dict[str, Any]) -> dict[str, Any] | None:
+    if not isinstance(encoder_media_player, dict) or not encoder_media_player:
+        return None
+    entities = []
+    for enc_id, entity_id in encoder_media_player.items():
+        entities.append({"entity": str(entity_id), "name": str(enc_id)})
+    return {"type": "entities", "title": "Now Playing (DirecTV)", "entities": entities}
+
+
+def _destination_cards(encoder_media_player: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    cards: list[dict[str, Any]] = [
         {
             "type": "entities",
             "title": "Destination",
@@ -440,6 +500,11 @@ def _destination_cards() -> list[dict[str, Any]]:
                 "input_text.avaccess_target_rxs",
             ],
         },
+    ]
+    now_playing = _now_playing_card(encoder_media_player or {})
+    if now_playing:
+        cards.insert(0, now_playing)
+    return cards + [
         {
             "type": "grid",
             "title": "Route Actions",
@@ -472,6 +537,7 @@ def _destination_cards() -> list[dict[str, Any]]:
 def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> dict[str, Any]:
     channels = channels_cfg["channels"]
     program_keys = list(channels_cfg["program_to_encoder"].keys())
+    encoder_media_player = channels_cfg.get("encoder_media_player", {})
 
     preset_buttons = []
     for preset_key in presets.keys():
@@ -550,7 +616,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
             {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
             {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
             {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
-            *_destination_cards(),
+            *_destination_cards(encoder_media_player),
         ]
     )
 
@@ -601,7 +667,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
                     "cards": buttons,
                 }
             )
-            page_cards.extend(_destination_cards())
+            page_cards.extend(_destination_cards(encoder_media_player))
             views.append(
                 {
                     "title": page_title,

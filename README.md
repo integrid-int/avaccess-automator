@@ -1,6 +1,6 @@
 # AVAccess Automator
 
-Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-friendly presets (and optional Xumo IR control).
+Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-friendly presets and DirecTV H25 IP control (iTach IR remains as rollback).
 
 ## Docs
 
@@ -9,7 +9,8 @@ Plan and tooling to drive **10× 4KIP200 encoders + 35× receivers** with iPad-f
 - **[docs/HA_QUICKSTART.md](docs/HA_QUICKSTART.md)** — generate package/dashboard and run in Home Assistant
 - **[docs/WEEKLY_SCHEDULE_SYNC.md](docs/WEEKLY_SCHEDULE_SYNC.md)** — weekly EPG sync with local-blackout preference
 - **[docs/PHASE2_SPORTS_PAGES.md](docs/PHASE2_SPORTS_PAGES.md)** — sport tabs + daily updates + one/many TV routing
-- **[docs/GLOBAL_CACHE_ITACH_SETUP.md](docs/GLOBAL_CACHE_ITACH_SETUP.md)** — iTach IP2IR-P x4 setup and testing
+- **[docs/GLOBAL_CACHE_ITACH_SETUP.md](docs/GLOBAL_CACHE_ITACH_SETUP.md)** — iTach IP2IR-P x4 setup and testing (rollback)
+- **[docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md](docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md)** — DirecTV IP cutover + test plan
 - **`homeassistant/dashboards/avaccess_matrix_dashboard_pretty.example.yaml`** — polished iPad-style Lovelace mockup
 
 ## Quick start (after inventory is filled)

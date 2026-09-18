@@ -4,7 +4,8 @@ Xumo channel/app navigation is most reliable through IR commands.
 This document shows a practical pattern for one-tap channel buttons on iPad.
 
 Current project default transport:
-- **Global Caché iTach IP2IR-P** (`ir_transport: itach_tcp`)
+- **DirecTV H25 SHEF IP** (`ir_transport: directv_shef`)
+- iTach IR remains available as rollback (`itach_tcp`)
 
 ## 1) Prerequisites
 

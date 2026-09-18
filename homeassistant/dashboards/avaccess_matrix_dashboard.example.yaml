@@ -268,6 +268,27 @@ views:
         action: call-service
         service: script.avaccess_tune_nfl_sunday_game_9
   - type: entities
+    title: Now Playing (DirecTV)
+    entities:
+    - entity: media_player.directv_h25_01
+      name: ENC-01
+    - entity: media_player.directv_h25_02
+      name: ENC-02
+    - entity: media_player.directv_h25_03
+      name: ENC-03
+    - entity: media_player.directv_h25_04
+      name: ENC-04
+    - entity: media_player.directv_h25_05
+      name: ENC-05
+    - entity: media_player.directv_h25_06
+      name: ENC-06
+    - entity: media_player.directv_h25_07
+      name: ENC-07
+    - entity: media_player.directv_h25_08
+      name: ENC-08
+    - entity: media_player.directv_h25_09
+      name: ENC-09
+  - type: entities
     title: Destination
     entities:
     - input_select.avaccess_program
@@ -401,6 +422,27 @@ views:
         action: call-service
         service: script.avaccess_tune_nfl_sunday_game_9
   - type: entities
+    title: Now Playing (DirecTV)
+    entities:
+    - entity: media_player.directv_h25_01
+      name: ENC-01
+    - entity: media_player.directv_h25_02
+      name: ENC-02
+    - entity: media_player.directv_h25_03
+      name: ENC-03
+    - entity: media_player.directv_h25_04
+      name: ENC-04
+    - entity: media_player.directv_h25_05
+      name: ENC-05
+    - entity: media_player.directv_h25_06
+      name: ENC-06
+    - entity: media_player.directv_h25_07
+      name: ENC-07
+    - entity: media_player.directv_h25_08
+      name: ENC-08
+    - entity: media_player.directv_h25_09
+      name: ENC-09
+  - type: entities
     title: Destination
     entities:
     - input_select.avaccess_program
@@ -486,6 +528,27 @@ views:
         action: call-service
         service: script.avaccess_tune_fs1
   - type: entities
+    title: Now Playing (DirecTV)
+    entities:
+    - entity: media_player.directv_h25_01
+      name: ENC-01
+    - entity: media_player.directv_h25_02
+      name: ENC-02
+    - entity: media_player.directv_h25_03
+      name: ENC-03
+    - entity: media_player.directv_h25_04
+      name: ENC-04
+    - entity: media_player.directv_h25_05
+      name: ENC-05
+    - entity: media_player.directv_h25_06
+      name: ENC-06
+    - entity: media_player.directv_h25_07
+      name: ENC-07
+    - entity: media_player.directv_h25_08
+      name: ENC-08
+    - entity: media_player.directv_h25_09
+      name: ENC-09
+  - type: entities
     title: Destination
     entities:
     - input_select.avaccess_program
@@ -552,6 +615,27 @@ views:
       tap_action:
         action: call-service
         service: script.avaccess_tune_abc
+  - type: entities
+    title: Now Playing (DirecTV)
+    entities:
+    - entity: media_player.directv_h25_01
+      name: ENC-01
+    - entity: media_player.directv_h25_02
+      name: ENC-02
+    - entity: media_player.directv_h25_03
+      name: ENC-03
+    - entity: media_player.directv_h25_04
+      name: ENC-04
+    - entity: media_player.directv_h25_05
+      name: ENC-05
+    - entity: media_player.directv_h25_06
+      name: ENC-06
+    - entity: media_player.directv_h25_07
+      name: ENC-07
+    - entity: media_player.directv_h25_08
+      name: ENC-08
+    - entity: media_player.directv_h25_09
+      name: ENC-09
   - type: entities
     title: Destination
     entities:

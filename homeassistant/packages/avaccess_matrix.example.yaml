@@ -57,8 +57,10 @@ shell_command:
     --profile numeric_v1 --preset 3_nine_programs
   avaccess_route_targets: python3 /config/avaccess/scripts/route_targets.py --inventory /config/avaccess/config/inventory.yaml
     --encoder "{{ encoder }}" --targets "{{ targets }}"
-  avaccess_itach_send_channel: python3 /config/avaccess/scripts/send_xumo_ir_itach.py --itach-config /config/avaccess/config/itach.yaml
-    --encoder "{{ encoder }}" --digits "{{ digits }}" --suffix "{{ suffix }}" --digit-delay-ms {{ digit_delay_ms }}
+  avaccess_directv_tune: python3 /config/avaccess/scripts/directv_shef.py --config /config/avaccess/config/directv.yaml tune
+    --encoder "{{ encoder }}" --channel "{{ channel }}"
+  avaccess_directv_get_tuned: python3 /config/avaccess/scripts/directv_shef.py --config /config/avaccess/config/directv.yaml
+    get-tuned --encoder "{{ encoder }}"
 script:
   avaccess_preset_1_all:
     alias: AVAccess Preset 1_all
@@ -88,7 +90,7 @@ script:
         entity_id: input_select.avaccess_program
         option: '{{ program }}'
   avaccess_tune_channel:
-    alias: AVAccess tune channel on Xumo
+    alias: AVAccess tune channel on source
     mode: queued
     fields:
       program:
@@ -185,17 +187,15 @@ script:
     - choose:
       - conditions: '{{ selected_encoder is not none and channel_number is not none }}'
         sequence:
-        - service: shell_command.avaccess_itach_send_channel
+        - service: shell_command.avaccess_directv_tune
           data:
             encoder: '{{ selected_encoder }}'
-            digits: '{{ channel_number }}'
-            suffix: '{{ suffix_text }}'
-            digit_delay_ms: '{{ digit_delay_ms }}'
+            channel: '{{ channel_number }}'
       default:
       - service: system_log.write
         data:
           level: warning
-          message: AVAccess tune failed (itach_tcp); check program/channel/itach maps. program={{ program_key }} channel={{
+          message: AVAccess tune failed (directv_shef); check program/channel/H25 maps. program={{ program_key }} channel={{
             channel_key }}
   avaccess_tune_selected_channel:
     alias: AVAccess tune selected channel

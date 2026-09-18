@@ -1,0 +1,71 @@
+# DirecTV H25 SHEF mapping
+# Enable on each receiver:
+# Menu > Settings & Help > Settings > Whole Home > External Device
+#   External Access: Allow
+#   Current Program: Allow
+
+timeout_seconds: 4
+
+receivers:
+  H25-01:
+    host: 192.168.10.151
+    port: 8080
+    client_addr: "0"
+    label: "Program A / ENC-01"
+  H25-02:
+    host: 192.168.10.152
+    port: 8080
+    client_addr: "0"
+    label: "Program B / ENC-02"
+  H25-03:
+    host: 192.168.10.153
+    port: 8080
+    client_addr: "0"
+    label: "Program C / ENC-03"
+  H25-04:
+    host: 192.168.10.154
+    port: 8080
+    client_addr: "0"
+    label: "Program D / ENC-04"
+  H25-05:
+    host: 192.168.10.155
+    port: 8080
+    client_addr: "0"
+    label: "Program E / ENC-05"
+  H25-06:
+    host: 192.168.10.156
+    port: 8080
+    client_addr: "0"
+    label: "Program F / ENC-06"
+  H25-07:
+    host: 192.168.10.157
+    port: 8080
+    client_addr: "0"
+    label: "Program G / ENC-07"
+  H25-08:
+    host: 192.168.10.158
+    port: 8080
+    client_addr: "0"
+    label: "Program H / ENC-08"
+  H25-09:
+    host: 192.168.10.159
+    port: 8080
+    client_addr: "0"
+    label: "Program I / ENC-09"
+  H25-10:
+    host: 192.168.10.160
+    port: 8080
+    client_addr: "0"
+    label: "Spare / ENC-10"
+
+encoder_to_receiver:
+  ENC-01: H25-01
+  ENC-02: H25-02
+  ENC-03: H25-03
+  ENC-04: H25-04
+  ENC-05: H25-05
+  ENC-06: H25-06
+  ENC-07: H25-07
+  ENC-08: H25-08
+  ENC-09: H25-09
+  ENC-10: H25-10
