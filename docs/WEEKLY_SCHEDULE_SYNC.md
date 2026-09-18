@@ -26,7 +26,7 @@ cp /config/avaccess/config/schedule_sync.example.yaml /config/avaccess/config/sc
 
 Edit:
 - XMLTV source (`source.url` or `source.file`)
-- `channel_number_map` (map XMLTV channel IDs/names → Spectrum channel numbers)
+- `channel_number_map` (map XMLTV channel IDs/names → DirecTV major numbers)
 - local/ticket classification rules
 
 ## 2) Dry run
@@ -89,4 +89,4 @@ automation:
 
 - Keep fallback channel lists populated for weeks where EPG data is incomplete.
 - Initial channel mapping is the key dependency: once the XMLTV channel map is right, weekly updates are low-touch.
-- Local channel numbers vary by Spectrum package and region; verify once and keep in config.
+- Local channel numbers vary by DirecTV package and region; verify once and keep in config.

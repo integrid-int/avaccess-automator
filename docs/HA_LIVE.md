@@ -6,7 +6,7 @@ There are two operator surfaces. You can enable both on one HA:
 
 | Surface | Sidebar | What it does live |
 |---------|---------|-------------------|
-| **Sports Routing** | `Sports Routing` → `/panel-health` | Bartender iPad panel. Striped presets, Guide now/next, Live Send (IR + UDP). |
+| **Sports Routing** | `Sports Routing` → `/panel-health` | Bartender iPad panel. Striped presets, Guide now/next, Live Send (SHEF + UDP). |
 | **AVAccess Matrix** | `AVAccess Matrix` | Lovelace favorites (FOX / NFL afternoon / all Sunday), DirecTV SHEF tune, contiguous Preset 1/2/3, route to specific TVs. |
 
 Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
@@ -81,7 +81,6 @@ ln -sfn /share/avaccess-automator/config /config/avaccess/config
 cp /share/avaccess-automator/scripts/apply_preset.py /config/avaccess/scripts/
 cp /share/avaccess-automator/scripts/directv_shef.py /config/avaccess/scripts/
 cp /share/avaccess-automator/scripts/route_targets.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/send_xumo_ir_itach.py /config/avaccess/scripts/
 cp /share/avaccess-automator/scripts/generate_ha_bundle.py /config/avaccess/scripts/
 cp /share/avaccess-automator/scripts/refresh_ha_weekly.py /config/avaccess/scripts/
 cp /share/avaccess-automator/scripts/sync_weekly_schedule.py /config/avaccess/scripts/
@@ -108,7 +107,6 @@ services:
       - ./scripts/apply_preset.py:/config/avaccess/scripts/apply_preset.py:ro
       - ./scripts/directv_shef.py:/config/avaccess/scripts/directv_shef.py:ro
       - ./scripts/route_targets.py:/config/avaccess/scripts/route_targets.py:ro
-      - ./scripts/send_xumo_ir_itach.py:/config/avaccess/scripts/send_xumo_ir_itach.py:ro
       - ./scripts/generate_ha_bundle.py:/config/avaccess/scripts/generate_ha_bundle.py:ro
       - ./scripts/refresh_ha_weekly.py:/config/avaccess/scripts/refresh_ha_weekly.py:ro
       - ./scripts/sync_weekly_schedule.py:/config/avaccess/scripts/sync_weekly_schedule.py:ro
@@ -126,11 +124,10 @@ services:
 From the **git clone** (`/share/avaccess-automator` or repo root):
 
 ```bash
-rm -f config/inventory.yaml config/directv.yaml config/channels.yaml config/itach.yaml config/schedule_sync.yaml
+rm -f config/inventory.yaml config/directv.yaml config/channels.yaml config/schedule_sync.yaml
 cp config/inventory.example.yaml config/inventory.yaml
 cp config/directv.example.yaml config/directv.yaml
 cp config/channels.example.yaml config/channels.yaml
-cp config/itach.example.yaml config/itach.yaml
 cp config/schedule_sync.example.yaml config/schedule_sync.yaml
 ```
 
@@ -139,7 +136,6 @@ Edit:
 1. **`config/inventory.yaml`** — every encoder/receiver `hostname` and `mac` (no `REPLACE_ME`). Discover via VDirector or UDP 3335/3336. `network.broadcast` must be the AV LAN broadcast (often `192.168.10.255`, not `255.255.255.255`, if the HA host has multiple NICs).
 2. **`config/directv.yaml`** — real H25 IPs. Example placeholders are `192.168.10.151`–`.160`.
 3. **`config/channels.yaml`** — keep `ir_transport: directv_shef` and `directv_config_path: /config/avaccess/config/directv.yaml`. After adding the HA DirecTV integration (step 6), set `encoder_media_player` to the real `media_player.*` entity IDs.
-4. **`config/itach.yaml`** — only if you still want IR rollback.
 
 Export the bartender Live gate:
 
@@ -201,7 +197,7 @@ panel_custom:
     sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=14
+    module_url: /local/panels/panel-health.js?v=15
     require_admin: false
     config:
       environment: live
@@ -283,9 +279,9 @@ Operator cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 ## Rollback
 
-- **Tune only:** in `channels.yaml` set `ir_transport: itach_tcp`, regenerate the Matrix bundle, restart HA. Matrix routing is unchanged.
-- **Bartender Live:** turn **Live commit** off. Dry-run Send stays occupancy-only.
+- **Tune only:** leave bartender **Live commit** off (Dry-run Send stays occupancy-only). Matrix still tunes via SHEF.
 - **Whole UI:** keep the previous `/config/packages/avaccess_matrix.yaml` copy and restore it.
+- iTach IR is **not** on the operator path. `config/itach.example.yaml` and `scripts/send_xumo_ir_itach.py` remain in the repo only as unused leftovers.
 
 ---
 

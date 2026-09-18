@@ -5,6 +5,7 @@
 #
 # Compose mounts (see homeassistant/docker-compose.yml):
 #   ../scripts/avaccess -> /config/avaccess/scripts
+#   ../scripts/directv_shef.py -> /config/avaccess/scripts/directv_shef.py
 #   ../config           -> /config/avaccess/config
 # Local Core uses the same relative paths via checked-in symlinks under avaccess/.
 
@@ -18,6 +19,6 @@ shell_command:
   avaccess_execute_route_plan: >-
     python3 avaccess/run_execute_route_plan.py
     --inventory avaccess/config/inventory.yaml
-    --itach-config avaccess/config/itach.yaml
+    --directv-config avaccess/config/directv.yaml
     --plan-b64 {{ plan_b64 }}
     {% if live is true or live == True or live == 'true' %}--live{% else %}--dry-run{% endif %}

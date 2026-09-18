@@ -1,6 +1,6 @@
 # DirecTV H25 Patch + Testing Plan
 
-This is a **structured patch**, not a rewrite. AVAccess presets, sports pages, and one/many TV routing stay. Only the source-control transport changes from iTach IR (Xumo/Spectrum) to DirecTV H25 IP (SHEF).
+This is a **structured patch**, not a rewrite. AVAccess presets, sports pages, and one/many TV routing stay. Source-control transport is DirecTV H25 IP (SHEF). There is **no IR** on the live operator path.
 
 ## What stays
 - Encoder/receiver inventory and UDP `msg_b_reconnect` presets
@@ -26,7 +26,7 @@ This is a **structured patch**, not a rewrite. AVAccess presets, sports pages, a
 | `docs/HA_QUICKSTART.md` | Copy `directv.yaml`, probe/tune steps, cloud HA UI staging |
 | `scripts/prepare_ha_staging.py` | **New** stubbed HA config + Docker compose for cloud UI testing |
 | `homeassistant/staging/docker-compose.yml` | Cloud/VM Home Assistant on port 8123 |
-| iTach files | **Keep** as rollback transport (`itach_tcp`) |
+| iTach files | Unused leftovers (`itach_tcp` generator still exists, not live) |
 
 ## Cutover sequence
 
@@ -38,8 +38,8 @@ This is a **structured patch**, not a rewrite. AVAccess presets, sports pages, a
 4. **Lab probe** (`probe-all`) before touching the matrix
 5. **Single-box tune+verify** on ENC-01 only
 6. Point staging HA (or site HA) at live package (no `--ui-staging`) and retest UI against hardware
-7. Keep iTach config on disk until a full game-day rehearsal passes
-8. Then retire IR emitters from the operator path
+7. Retire IR emitters from the operator path (done: Track B Live Send is SHEF + UDP)
+8. Keep `config/itach.example.yaml` in git only as unused leftover
 
 ## Testing plan
 
@@ -133,7 +133,7 @@ Live (one TV first): Preset 1, then route ENC-01 → a single RX.
 3. Tune that slot and verify `callsign` is the local station, not ST
 
 ### F. Rollback
-Set `ir_transport: itach_tcp` in `channels.yaml`, regenerate bundle, restart HA. Matrix routing is unchanged.
+Turn bartender **Live commit** off. Dry-run Send stays occupancy-only. Matrix routing is unchanged. Do not switch `ir_transport` back to `itach_tcp` — IR is not on the live path.
 
 ## Receiver settings checklist (each H25)
 - External Access: Allow

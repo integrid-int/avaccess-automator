@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./config:/config
-      # Track B/C: executor + Guide EPG builder; inventory / itach / guide_epg YAML
+      # Track B/C: executor + Guide EPG builder; inventory / directv / guide_epg YAML
       - ../scripts/avaccess:/config/avaccess/scripts:ro
+      - ../scripts/directv_shef.py:/config/avaccess/scripts/directv_shef.py:ro
       - ../config:/config/avaccess/config:ro
       - /etc/localtime:/etc/localtime:ro
     environment:

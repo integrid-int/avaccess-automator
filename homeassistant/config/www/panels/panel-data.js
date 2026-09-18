@@ -1,4 +1,4 @@
-export const SPECTRUM_ZIP = "27403";
+export const SPECTRUM_ZIP = "27403"; // market ZIP for local-affiliate / blackout rules
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";
 
 export const TOKENS = {

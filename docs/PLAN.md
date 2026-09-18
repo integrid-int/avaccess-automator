@@ -1,7 +1,7 @@
 # AVAccess 4KIP200 Preset Control Plan
 
 **Inventory:** 10× encoders (TX / 4KIP200E) · 35× receivers (RX / 4KIP200D)  
-**Sources:** Xumo Stream Boxes feeding encoders  
+**Sources:** DirecTV H25 receivers feeding encoders (SHEF IP control, no IR)  
 **UI target:** iPad (single pane for matrix presets + source control)  
 **API source:** [API Command Guide V1.0.3](https://support.avaccess.com/wp-content/uploads/2025/12/API-Command-Guide-_-HDIP100-4KIP200-Series-V1.0.3.pdf)
 
@@ -15,7 +15,7 @@
 | **Preset 2 — 4 Programs** | 4 encoders split as evenly as possible across 35 TVs |
 | **Preset 3 — 9 Programs** | 9 encoders split across all 35 TVs |
 
-**Secondary:** Control Xumo source boxes from the same iPad UI.
+**Secondary:** Control DirecTV H25 source boxes from the same iPad UI (SHEF HTTP :8080).
 
 **Constraint noted:** Not married to Home Assistant — pick the simplest reliable stack.
 
@@ -87,8 +87,8 @@ Useful for “room on / room off” from the same UI.
                     ┌─────────────────────────┼─────────────────────────┐
                     │                         │                         │
                     ▼                         ▼                         ▼
-           UDP :5010 bulk             Telnet :24 (status,        IR blaster(s)
-           source presets             CEC power, alias)          → Xumo boxes
+           UDP :5010 bulk             Telnet :24 (status,        HTTP :8080 SHEF
+           source presets             CEC power, alias)          → DirecTV H25
                     │
                     ▼
         ┌──────────────────────────┐
@@ -101,10 +101,10 @@ Useful for “room on / room off” from the same UI.
 
 | Option | Pros | Cons | Verdict |
 |--------|------|------|---------|
-| **A. Home Assistant + shell scripts / pyscript** | Great iPad UI (HA Companion), scenes, dashboards, IR integrations (Broadlink/ESPHome), TV CEC helpers | No native AVAccess integration — you write scripts | **Best default** if you already want one iPad “remote” for AV + lights/etc. |
-| **B. BitFocus Companion** | Built for button grids / Stream Deck / iPad; TCP/UDP/Telnet native; instant preset buttons | Weaker for Xumo unless IR module added; less “smart home” | **Best if UI is only AV presets** |
+| **A. Home Assistant + shell scripts / pyscript** | Great iPad UI (HA Companion), scenes, dashboards, DirecTV integration, TV CEC helpers | No native AVAccess integration — you write scripts | **Best default** if you already want one iPad “remote” for AV + lights/etc. |
+| **B. BitFocus Companion** | Built for button grids / Stream Deck / iPad; TCP/UDP/Telnet native; instant preset buttons | Weaker for H25 now-playing / EPG unless HTTP module added; less “smart home” | **Best if UI is only AV presets** |
 | **C. Node-RED** | Excellent for UDP/Telnet flows; dashboard on iPad | Another stack to host | Good middle ground |
-| **D. Vendor VDirector app** | Already supports matrix + **presets** + source preview | May not control Xumo; less customizable branding | **Use for commissioning / backup**, not primary if you need Xumo on same UI |
+| **D. Vendor VDirector app** | Already supports matrix + **presets** + source preview | Does not control DirecTV H25; less customizable branding | **Use for commissioning / backup**, not primary if you need H25 on same UI |
 | **E. Tiny custom Python API + web UI** | Full control, simple deploy (Docker) | You own maintenance | Good if HA feels heavy |
 
 **Recommendation:**  
@@ -116,8 +116,8 @@ Useful for “room on / room off” from the same UI.
 
 | Platform | Pluses | Minuses |
 |----------|--------|---------|
-| **Home Assistant** | Strong iPad dashboarding; automations/schedules; easy add-ons (IR, notifications, EPG cards); future integration beyond AV | More setup and maintenance; no native AVAccess integration so scripts are required |
-| **BitFocus Companion** | Very fast AV button workflow; native feel for preset panels; simple operator UX | Less strong for “TV guide + search + automations”; Xumo control depends on added IR workflow |
+| **Home Assistant** | Strong iPad dashboarding; automations/schedules; easy add-ons (DirecTV, notifications, EPG cards); future integration beyond AV | More setup and maintenance; no native AVAccess integration so scripts are required |
+| **BitFocus Companion** | Very fast AV button workflow; native feel for preset panels; simple operator UX | Less strong for “TV guide + search + automations”; H25 control depends on added HTTP workflow |
 
 **Short take:**  
 - If you want **channel search + guide overlays + future automation**, pick **Home Assistant**.  
@@ -191,7 +191,7 @@ encoders:
     hostname: IPE935-XXXXXXXXXXXX
     mac: XXXXXXXXXXXX
     ip: 192.168.10.11
-    source: "Xumo-01"
+    source: "H25-01"
 receivers:
   - id: RX-01
     hostname: IPD935-YYYYYYYYYYYY
@@ -200,7 +200,7 @@ receivers:
     zone: "Wall-A"
 ```
 
-5. Document which Xumo → which encoder HDMI.
+5. Document which H25 → which encoder HDMI.
 
 Optional discovery helper: UDP probe port 3335 and listen 3336 (per API §6).
 
@@ -248,37 +248,34 @@ script:
 
 ---
 
-## 7. Xumo control from the same iPad
+## 7. DirecTV H25 control from the same iPad
 
-Xumo Stream Box has **no documented open IP control API** for channel/app navigation. Practical options:
+Each H25 is controlled over **SHEF HTTP :8080** (`/tv/tune`, `/tv/getTuned`, `/remote/processKey`). There is **no IR** on the live path.
 
 | Method | Capability | Fit |
 |--------|------------|-----|
-| **IR blaster** (Broadlink RM4, ESPHome IR, Global Cache) | Power, Home, arrows, OK, numbers, app shortcuts if learned | **Recommended** for real remote replacement |
-| **HDMI-CEC** | Limited (power / input); unreliable for channel/app | Secondary only |
-| **Keep physical remotes / Xumo app** | Full control | Fallback |
-| **RS-232 pass-through via AVAccess** | Only if a device in chain exposes serial control — Xumo does **not** | Not applicable |
+| **SHEF IP** (`scripts/directv_shef.py`) | Tune, now-playing, remote keys | **Live path** |
+| **HA DirecTV integration** | `media_player` now-playing cards | Optional overlay on Matrix |
+| **HDMI-CEC** | Limited (power / input) | Secondary only |
 
-### Practical HA + Xumo pattern
+### Practical HA + H25 pattern
 
-1. One IR emitter covering the rack of Xumos **or** one emitter per box if IR isolation needed.  
-2. Learn codes from the Xumo remotes into Broadlink/ESPHome.  
+1. Enable External Access + Current Program on every H25.  
+2. Map `ENC-01`…`ENC-10` → `H25-01`…`H25-10` in `config/directv.yaml`.  
 3. HA dashboard:  
    - Preset buttons (matrix)  
-   - Per-program “Xumo remote” mini-panels (Power, Home, Up/Down/Left/Right, OK, Back)  
-4. Label panels to match Preset 2/3 programs (Program A remote → Xumo on ENC-01, etc.).
+   - Channel buttons that SHEF-tune the selected program’s H25  
+4. Label panels to match Preset 2/3 programs (Program A → H25 on ENC-01, etc.).
 
-**Scope tip:** You probably do **not** need to control all 10 Xumos live on every dashboard page — only the encoders used by the **active preset** (1, 4, or 9).
+**Scope tip:** You probably do **not** need to control all 10 H25s live on every dashboard page — only the encoders used by the **active preset** (1, 4, or 9).
 
 ### Channel picking (practical)
 
-Because Xumo lacks an open LAN API, the workable channel-select flow is:
-
 1. Define favorite channels in config (e.g., ESPN=206, TNT=245).  
-2. HA button runs a script that sends IR digits (e.g., `2`,`0`,`6`,`OK`) to the Xumo tied to the encoder.  
+2. HA button runs `directv_shef.py tune --encoder ENC-01 --channel 206`.  
 3. Optional “Program A/B/C” channel buttons per active encoder page.
 
-This gives one-tap channel changes from iPad even without native IP control.
+This gives one-tap channel changes from iPad over IP.
 
 ---
 
@@ -299,10 +296,10 @@ This gives one-tap channel changes from iPad even without native IP control.
 - Wire engine into HA scripts **or** Companion buttons  
 - Large 3-button dashboard  
 
-### Phase 3 — Xumo (1–2 days)
-- Mount IR emitters  
-- Learn essential codes  
-- Add remote widgets to same dashboard  
+### Phase 3 — DirecTV H25 (1 day)
+- Enable SHEF External Access on each box  
+- Fill `config/directv.yaml` IPs  
+- Probe/tune from the same dashboard  
 
 ### Phase 4 — Polish
 - TV power on/off  
@@ -316,25 +313,25 @@ This gives one-tap channel changes from iPad even without native IP control.
 1. **Physical TV layout** for Presets 2 & 3 (even numeric split vs. zone-based split).  
 2. **Which 4 / which 9 encoders** are the “programs” (and what ENC-10 is for).  
 3. **Control host location** — must sit on AV network (or routed with broadcast forwarding — avoid that; prefer same subnet).  
-4. **Xumo depth of control** — navigation only vs. deep links / channel favorites.  
+4. **H25 depth of control** — SHEF tune + now-playing vs. full future guide (use XMLTV for that).  
 5. **Audio** — each RX follows its video TX by default; confirm if separate audio matrix is needed (API supports `--asource-select` if required).  
 
 ---
 
-## 10. Spectrum guide data (“bonus guide info”)
+## 10. Guide data (“bonus guide info”)
 
-There is no official, supported Home Assistant integration for Spectrum channel-guide control. Practical options:
+SHEF gives **current program** on a live H25 (`/tv/getTuned`). For now/next listings, use XMLTV.
 
 | Option | Reliability | Notes |
 |--------|-------------|-------|
-| **A. XMLTV/EPG integration in Home Assistant** | High | Best supported way to show now/next guide cards and search in HA |
-| **B. Unofficial Spectrum web endpoints / old scripts** | Low-Medium | Works for some users but brittle and may break with auth/API changes |
+| **A. XMLTV/EPG builder** (`build_guide_epg.py`) | High | Best supported way to show now/next guide cards and search in HA |
+| **B. SHEF getTuned / HA DirecTV media_player** | High | Now-playing on each live box, not a future dump |
 | **C. Manual favorites list only (no guide feed)** | Very High | Simplest: channel buttons without dynamic program data |
 
 **Recommended path:**  
 1) Start with **manual favorite channels** for dependable one-tap switching.  
-2) Add **EPG/XMLTV integration** for on-screen guide/search cards on iPad.  
-3) Treat unofficial Spectrum APIs as optional experiments, not core ops.
+2) Add **EPG/XMLTV** for on-screen guide/search cards on iPad.  
+3) Use SHEF `getTuned` (and optional HA DirecTV entities) for live Now Playing.
 
 ---
 
@@ -368,7 +365,7 @@ Once Preset 1 works, encode Presets 2 & 3 as config — no more protocol uncerta
 
 VDirector already does presets and previews and is ideal for install/commissioning. A HA/Companion layer is justified when you need:
 
-- Same iPad to also drive **Xumo IR**  
+- Same iPad to also drive **DirecTV H25 SHEF**  
 - Bigger branded buttons / kiosk  
 - Schedules (“Preset 2 at 4pm game day”)  
 - Integration with room lighting / audio  

@@ -1,5 +1,7 @@
 # Bartender Sports Routing Panel UI Implementation Plan
 
+> **Status (live UI):** Guide heading is **DirecTV · ZIP 27403**. Task text below still says Spectrum/Xumo from the original plan.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Rebuild the Home Assistant `panel-health` custom panel into the approved iPad bartender Sports Routing UI with dual entry paths, Spectrum ZIP 27403 guide, and contiguous Graphite + Cyan design.

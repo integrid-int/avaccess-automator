@@ -2,7 +2,8 @@ provider: directv
 source_transport: directv_shef
 ir_transport: directv_shef
 directv_config_path: /config/avaccess/config/directv.yaml
-# Keep iTach config for rollback: ir_transport: itach_tcp
+# iTach is unused on the live path. Leave this key only for a manual
+# ir_transport: itach_tcp rollback bundle.
 itach_config_path: /config/avaccess/config/itach.yaml
 
 # Tie logical programs to encoder-connected DirecTV H25 boxes.

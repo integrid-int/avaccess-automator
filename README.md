@@ -4,17 +4,17 @@ Home Assistant test environment for validating the **iPad bartender Sports Routi
 
 ## Goals (aligned with AVAccess plan)
 
-This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner), **Track B** (hybrid dry-run / live IR+UDP execute when inventory validates), and **Track C** Guide now/next EPG overlay from XMLTV.
+This panel is designed for Home Assistant Companion on iPad and implements **Track A** (striped group/program `RoutePlan` planner), **Track B** (hybrid dry-run / live DirecTV SHEF + UDP execute when inventory validates), and **Track C** Guide now/next EPG overlay from XMLTV.
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
-- **Spectrum channel guide** for ZIP **27403** (Spectrum / Xumo tune numbers and labels) with optional **now/next** titles from `guide_epg.json`
+- **DirecTV channel guide** for ZIP **27403** (H25 major numbers and labels) with optional **now/next** titles from `guide_epg.json`
 - **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
   - **Preset 3 — 9 Programs** — pick up to 9 programs; striped across `ENC-01`…`ENC-09`; unused encoder slots omitted / left unchanged
 - **Pick TVs (adhoc)** — multi-select TVs 1–35; planner claims the lowest-index free encoder (`ENC-01`…`ENC-10`); errors with **No free encoders** if none are free
-- **Hybrid Send (Track B)** — default **Dry-run Send** builds a `RoutePlan`, shows the summary, and updates local occupancy; optional **Live Send** runs iTach IR tune then UDP reconnect when inventory is live-ready
+- **Hybrid Send (Track B)** — default **Dry-run Send** builds a `RoutePlan`, shows the summary, and updates local occupancy; optional **Live Send** SHEF-tunes the matching H25 then UDP-reconnects when inventory is live-ready
 - Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Send**
 - Clean, large-target UI for bartender speed
 
@@ -29,6 +29,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Automated tests: `tests/test_validate_panels.py`
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
 - **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — make this live on site Home Assistant (H25 SHEF + matrix + bartender panel)
+- iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
 
 The bartender **Sports Routing** panel is the production iPad UI (`/panel-health`, striped `RoutePlan`). Lovelace Matrix is the SHEF/favorites surface; generate it with `--profile numeric_v1` so Preset 1/2/3 match the operations guide (contiguous splits). Inventory `mapping_profiles.active` stays `striped_v1` for Track B.
@@ -78,6 +79,7 @@ Canonical Python lives at `scripts/avaccess/`; device YAML at `config/`.
 Compose binds these into the HA config tree (see `homeassistant/docker-compose.yml`):
 
 - `../scripts/avaccess` → `/config/avaccess/scripts` (ro)
+- `../scripts/directv_shef.py` → `/config/avaccess/scripts/directv_shef.py` (ro)
 - `../config` → `/config/avaccess/config` (ro)
 
 For local Core (no Docker), the same paths are available via checked-in symlinks under `homeassistant/config/avaccess/`. The HA package `packages/avaccess_routing.yaml` exposes:
@@ -99,14 +101,14 @@ cp config/inventory.example.yaml config/inventory.yaml
 
 Fill every `REPLACE_ME` hostname for encoders (`ENC-01`…`ENC-10`) and receivers (`RX-01`…`RX-35`), plus non-empty `network.broadcast` and `network.udp_switch_port`.
 
-#### 2. iTach IR codes
+#### 2. DirecTV H25 SHEF map
 
 Same symlink pattern — remove the link first (or `cp --remove-destination`) so the example is not clobbered:
 
 ```bash
-rm config/itach.yaml
-cp config/itach.example.yaml config/itach.yaml
-# edit config/itach.yaml — iTach host, encoder→output map, digit / OK IR codes
+rm config/directv.yaml
+cp config/directv.example.yaml config/directv.yaml
+# edit config/directv.yaml — H25 IPs, ENC-01…ENC-10 → H25-01…H25-10
 ```
 
 #### 3. Export inventory JSON (panel Live gate)
@@ -124,8 +126,8 @@ Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/av
 
 | Mode | How | Behavior |
 |------|-----|----------|
-| **Dry-run** (default) | Panel **Live commit** off; HA `input_boolean.avaccess_live_commit` off | Builds/summarizes `RoutePlan`, updates local occupancy only — no IR/UDP |
-| **Live** | Panel **Live commit** on **and** inventory JSON live-ready | After local apply, posts plan to `shell_command.avaccess_execute_route_plan` (`plan_b64` + `live: true`) for IR tune → UDP reconnect per slot |
+| **Dry-run** (default) | Panel **Live commit** off; HA `input_boolean.avaccess_live_commit` off | Builds/summarizes `RoutePlan`, updates local occupancy only — no SHEF/UDP |
+| **Live** | Panel **Live commit** on **and** inventory JSON live-ready | After local apply, posts plan to `shell_command.avaccess_execute_route_plan` (`plan_b64` + `live: true`) for SHEF `/tv/tune` → UDP reconnect per slot |
 
 The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass` is available. If Live is requested but inventory is not ready, Send still applies locally and records a warning: `Live blocked: inventory not ready`.
 
@@ -134,22 +136,22 @@ Home Assistant `shell_command` often does **not** return script stdout to `hass.
 #### 5. CLI execute (offline / ops)
 
 ```bash
-# Dry-run (prints IR/UDP payloads; no network) — default hybrid posture
+# Dry-run (prints SHEF/UDP payloads; no network) — default hybrid posture
 .venv/bin/python scripts/avaccess/execute_route_plan.py \
   --inventory config/inventory.yaml \
-  --itach-config config/itach.yaml \
+  --directv-config config/directv.yaml \
   --plan-file /tmp/plan.json \
   --dry-run
 
 # Live (validates plan-referenced ENC/RX + network; exit 2 on preflight fail)
 .venv/bin/python scripts/avaccess/execute_route_plan.py \
   --inventory config/inventory.yaml \
-  --itach-config config/itach.yaml \
+  --directv-config config/directv.yaml \
   --plan-b64 '<base64-RoutePlan-json>' \
   --live
 ```
 
-Per slot: IR digits then UDP `msg_b_reconnect`; failures set slot `status` / `error` and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
+Per slot: DirecTV SHEF `/tv/tune` then UDP `msg_b_reconnect`; failures set slot `status` / `error` and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
 
 #### 6. Still out of scope after Track B
 
@@ -177,7 +179,7 @@ cp config/guide_epg.example.yaml config/guide_epg.yaml
 # equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
 ```
 
-Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s Spectrum/Xumo number maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
+Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s DirecTV major maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
 #### 2. Build / refresh `guide_epg.json`
 
@@ -221,7 +223,7 @@ The bartender panel uses a **top chip row** to switch browse modes:
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
 - **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the Spectrum / Xumo channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Guide** — opens the DirecTV channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
@@ -230,8 +232,8 @@ Group presets and the adhoc TV grid are exclusive modes: bartenders plan either 
 
 Every Send builds a `RoutePlan`, shows the summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser.
 
-- **Dry-run Send** (default) — occupancy only; no IR or UDP.
-- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json` with all ENC/RX hostnames + network fields); then Send calls HA `shell_command.avaccess_execute_route_plan` for live IR tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing. When the UI cannot capture shell stdout, use the CLI JSON report or HA logs for per-slot live results.
+- **Dry-run Send** (default) — occupancy only; no SHEF or UDP.
+- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json` with all ENC/RX hostnames + network fields); then Send calls HA `shell_command.avaccess_execute_route_plan` for live SHEF tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing. When the UI cannot capture shell stdout, use the CLI JSON report or HA logs for per-slot live results.
 
 ### Preset 1 — ALL (one program → all TVs)
 
@@ -281,7 +283,7 @@ Use when the bartender knows **which TVs** need content first:
 3. Tap **Next: Choose content** (requires at least one TV selected).
 4. On the content picker, choose **Sports** or **Guide** (exclusive modes):
    - **Sports** — sport chips + game list.
-   - **Guide** — ZIP 27403 Spectrum/Xumo list + search.
+   - **Guide** — ZIP 27403 DirecTV list + search.
 5. Tap a game or channel.
 6. Tap **Dry-run Send** (claims a free encoder for the selected TVs).
 7. Return to TVs browse with updated occupancy.
@@ -292,7 +294,7 @@ Each TV shows one route at a time. Dry-run plans update **slot-aware** occupancy
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=13`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=15`) and restart Home Assistant if needed. On the iPad, hard-refresh the panel or clear the Companion app cache so the browser does not serve a stale `panel-health.js`.
 
 ## Panel validation workflows
 

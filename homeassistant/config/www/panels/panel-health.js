@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=14";
+} from "./assignment-store.js?v=15";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -19,8 +19,8 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=14";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=14";
+} from "./panel-data.js?v=15";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=15";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -855,7 +855,7 @@ class PanelHealth extends HTMLElement {
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse guide</p>
-          <h2 aria-label="Spectrum · ZIP 27403">Spectrum · ZIP ${escapeHtml(SPECTRUM_ZIP)} · Xumo</h2>
+          <h2 aria-label="DirecTV · ZIP 27403">DirecTV · ZIP ${escapeHtml(SPECTRUM_ZIP)}</h2>
         </div>
         ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
         <label class="search">

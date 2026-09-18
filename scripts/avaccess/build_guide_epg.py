@@ -70,7 +70,7 @@ def _select_now_next(
 
 
 def build_guide_epg(cfg: dict[str, Any], now: dt.datetime | None = None) -> dict[str, Any]:
-    """Build guide EPG JSON from config mapping Spectrum numbers → XMLTV ids."""
+    """Build guide EPG JSON from config mapping DirecTV majors → XMLTV ids."""
     tz_name = str(cfg.get("timezone") or "UTC")
     tz = ZoneInfo(tz_name)
     if now is None:

@@ -1,46 +1,45 @@
-# Home Assistant Channel Buttons (Xumo + IR)
+# Home Assistant Channel Buttons (DirecTV SHEF)
 
-Xumo channel/app navigation is most reliable through IR commands.  
-This document shows a practical pattern for one-tap channel buttons on iPad.
+Tune DirecTV H25 boxes over IP (SHEF HTTP `:8080`). There is **no IR** on the live operator path.
 
 Current project default transport:
-- **DirecTV H25 SHEF IP** (`ir_transport: directv_shef`)
-- iTach IR remains available as rollback (`itach_tcp`)
+- **DirecTV H25 SHEF IP** (`ir_transport` / `source_transport`: `directv_shef`)
+- iTach / HA remote IR generators remain in `generate_ha_bundle.py` only as unused leftovers
 
 ## 1) Prerequisites
 
-1. An IR integration in Home Assistant (Broadlink, ESPHome IR, or Infrared proxy).  
-2. Learned commands for digits `0-9`, `ok`, `home`, arrows, back.  
-3. One IR emitter/entity per Xumo (recommended), or carefully isolated emitters.
-
-For direct iTach setup (without HA remote entities), see:
-- `docs/GLOBAL_CACHE_ITACH_SETUP.md`
+1. Each H25: **Menu → Settings & Help → Settings → Whole Home → External Device**
+   - External Access: **Allow**
+   - Current Program: **Allow**
+2. Fill [`config/directv.example.yaml`](../config/directv.example.yaml) with H25 IPs (`ENC-xx` → `H25-xx`).
+3. Optional: official HA **DirecTV** integration for Now Playing cards (`encoder_media_player`).
 
 ## 2) Data model
 
 Use [`config/channels.example.yaml`](../config/channels.example.yaml) as your source of truth:
 
 - Program → Encoder
-- Encoder → HA IR entity
-- Named channels (label + number)
+- Encoder → H25 (`config/directv.yaml`)
+- Named channels (label + DirecTV major)
 
 ## 3) Script pattern
 
-Example HA script that sends channel digits to one Xumo IR entity:
+The generated package calls SHEF via `shell_command.avaccess_directv_tune`:
 
 ```yaml
-script:
-  xumo_tune_espn_program_a:
-    alias: "Program A → ESPN"
-    sequence:
-      - service: remote.send_command
-        target:
-          entity_id: remote.xumo_01_ir
-        data:
-          command: ["2", "0", "6", "ok"]
+shell_command:
+  avaccess_directv_tune: >
+    python3 /config/avaccess/scripts/directv_shef.py
+    --config /config/avaccess/config/directv.yaml
+    tune --encoder "{{ encoder }}" --channel "{{ channel }}"
 ```
 
-For channels with one-digit numbers, just use `["4", "ok"]`.
+CLI equivalent:
+
+```bash
+python3 scripts/directv_shef.py --config config/directv.yaml \
+  tune --encoder ENC-01 --channel 206 --verify
+```
 
 ## 4) Dashboard pattern
 
@@ -55,13 +54,13 @@ This keeps operations simple:
 
 ## 5) Guide information options
 
-If you want guide context (what's on now/next), use an XMLTV/EPG integration in HA and display:
+If you want guide context (what's on now/next), use XMLTV/EPG (`scripts/avaccess/build_guide_epg.py`) and display:
 
 - Current program per favorite channel
 - Upcoming program
 - Search card for program titles
 
-Treat unofficial Spectrum API scripts as optional and non-critical.
+SHEF `getTuned` is now-playing on a live box, not a future guide dump.
 
 ## 6) Favorite macros (recommended for sports ops)
 

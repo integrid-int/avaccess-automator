@@ -1,5 +1,7 @@
 # AVAccess Route Planner Track B Implementation Plan
 
+> **Status (live code):** Track B execute is **DirecTV SHEF `/tv/tune` then UDP reconnect**. iTach IR is not on the operator path. This document is the original implementation plan and still mentions IR in task text.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Execute Track A `RoutePlan` objects live (IR tune + UDP reconnect) with a hybrid dry-run/live toggle, using a striped inventory and adapters from the preset-plan engine.

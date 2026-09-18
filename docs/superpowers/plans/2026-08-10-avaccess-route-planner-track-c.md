@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Overlay **now/next** program titles on the fixed ZIP 27403 Spectrum/Xumo Guide lineup in the bartender panel, with search-by-title and graceful degrade when EPG is missing or stale.
+**Goal:** Overlay **now/next** program titles on the fixed ZIP 27403 DirecTV Guide lineup in the bartender panel, with search-by-title and graceful degrade when EPG is missing or stale.
 
 **Architecture:** Keep `GUIDE_CHANNELS` as the source of truth for tune numbers. Add a Python job that reads XMLTV and writes `guide_epg.json` keyed by channel number. The panel fetches that JSON on a timer, merges now/next onto Guide rows, and never blocks Guide browsing if the feed is absent/stale. No `RoutePlan` shape changes.
 

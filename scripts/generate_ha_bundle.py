@@ -110,7 +110,7 @@ def validate_channels(channels_cfg: dict[str, Any]) -> None:
     if not isinstance(channels_cfg["channels"], dict) or not channels_cfg["channels"]:
         raise SystemExit("channels must be a non-empty mapping")
     ir_transport = str(
-        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "ha_remote"
+        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "directv_shef"
     ).strip().lower()
     if ir_transport not in {"ha_remote", "itach_tcp", "directv_shef"}:
         raise SystemExit("ir_transport/source_transport must be ha_remote, itach_tcp, or directv_shef")
@@ -131,7 +131,7 @@ def build_package(
 
     program_to_encoder = channels_cfg["program_to_encoder"]
     ir_transport = str(
-        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "ha_remote"
+        channels_cfg.get("source_transport") or channels_cfg.get("ir_transport") or "directv_shef"
     ).strip().lower()
     encoder_ir_entity = channels_cfg.get("encoder_ir_entity", {})
     encoder_media_player = channels_cfg.get("encoder_media_player", {})

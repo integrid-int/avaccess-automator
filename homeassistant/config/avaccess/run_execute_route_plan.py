@@ -3,6 +3,7 @@
 
 Docker compose mounts:
   scripts/avaccess -> /config/avaccess/scripts
+  scripts/directv_shef.py -> /config/avaccess/scripts/directv_shef.py
   config/          -> /config/avaccess/config
 
 Local Core (no mounts): resolves repo-root scripts/ and config/ via parents,
@@ -11,6 +12,7 @@ or uses checked-in symlinks under this directory when present.
 
 from __future__ import annotations
 
+import importlib.util
 import runpy
 import sys
 import types
@@ -45,6 +47,23 @@ def _ensure_scripts_avaccess_package(scripts_dir: Path) -> None:
         if str(scripts_dir) not in paths:
             paths.insert(0, str(scripts_dir))
             mod.__path__ = paths  # type: ignore[attr-defined]
+    _ensure_directv_shef(scripts_dir)
+
+
+def _ensure_directv_shef(scripts_dir: Path) -> None:
+    """Register overlay directv_shef.py as scripts.directv_shef when present."""
+    shef_path = scripts_dir / "directv_shef.py"
+    if not shef_path.is_file() or "scripts.directv_shef" in sys.modules:
+        return
+    spec = importlib.util.spec_from_file_location("scripts.directv_shef", shef_path)
+    if spec is None or spec.loader is None:
+        return
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    sys.modules["scripts.directv_shef"] = mod
+    scripts_pkg = sys.modules.get("scripts")
+    if scripts_pkg is not None:
+        setattr(scripts_pkg, "directv_shef", mod)
 
 
 def resolve_executor() -> Path:
@@ -66,23 +85,23 @@ def resolve_executor() -> Path:
 
 def _default_paths() -> tuple[Path, Path]:
     inventory = HERE / "config" / "inventory.yaml"
-    itach = HERE / "config" / "itach.yaml"
-    if inventory.is_file() and itach.is_file():
-        return inventory, itach
+    directv = HERE / "config" / "directv.yaml"
+    if inventory.is_file() and directv.is_file():
+        return inventory, directv
     repo = _repo_root()
     if repo is not None:
-        return repo / "config" / "inventory.yaml", repo / "config" / "itach.yaml"
-    return inventory, itach
+        return repo / "config" / "inventory.yaml", repo / "config" / "directv.yaml"
+    return inventory, directv
 
 
 def _inject_default_args(argv: list[str]) -> list[str]:
-    """Ensure --inventory / --itach-config are present for HA callers."""
+    """Ensure --inventory / --directv-config are present for HA callers."""
     out = list(argv)
-    inventory, itach = _default_paths()
+    inventory, directv = _default_paths()
     if "--inventory" not in out:
         out.extend(["--inventory", str(inventory)])
-    if "--itach-config" not in out:
-        out.extend(["--itach-config", str(itach)])
+    if "--directv-config" not in out:
+        out.extend(["--directv-config", str(directv)])
     return out
 
 

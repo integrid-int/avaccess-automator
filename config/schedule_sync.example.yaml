@@ -68,7 +68,7 @@ sunday_window:
   start: "09:00"
   end: "23:59"
 
-# Map XMLTV channels to your Spectrum channel numbers.
+# Map XMLTV channels to your DirecTV major numbers.
 # You can map by XMLTV channel id and/or display-name.
 channel_number_map:
   by_channel_id:

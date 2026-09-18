@@ -3,18 +3,19 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts.avaccess import execute_route_plan as erp
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_dry_run_sequences_ir_then_udp(monkeypatch):
+def test_dry_run_sequences_shef_then_udp(monkeypatch):
     calls = []
     monkeypatch.setattr(
         erp,
-        "send_ir_digits",
-        lambda **kw: calls.append(("ir", kw["digits"], kw["encoder_id"])),
+        "send_directv_tune",
+        lambda **kw: calls.append(("shef", kw["channel"], kw["encoder_id"])),
     )
     monkeypatch.setattr(
         erp,
@@ -64,22 +65,22 @@ def test_dry_run_sequences_ir_then_udp(monkeypatch):
         inventory={
             "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}
         },
-        itach={},
+        directv={},
         live=False,
     )
-    assert [c[0] for c in calls] == ["ir", "udp", "ir", "udp"]
+    assert [c[0] for c in calls] == ["shef", "udp", "shef", "udp"]
     assert calls[0][1] == "206"
     assert report["slots"][0]["status"] == "ok"
     assert report["ok"] is True
 
 
 def test_continues_after_slot_error(monkeypatch):
-    def boom_ir(**kw):
+    def boom_shef(**kw):
         if kw["encoder_id"] == "ENC-01":
-            raise RuntimeError("ir failed")
+            raise RuntimeError("shef failed")
         return None
 
-    monkeypatch.setattr(erp, "send_ir_digits", boom_ir)
+    monkeypatch.setattr(erp, "send_directv_tune", boom_shef)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
 
     plan = {
@@ -110,20 +111,20 @@ def test_continues_after_slot_error(monkeypatch):
     report = erp.execute_plan(
         plan,
         inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
-        itach={},
+        directv={},
         live=False,
     )
     assert report["ok"] is False
     assert report["slots"][0]["status"] == "error"
-    assert report["slots"][0]["error"] == "ir failed"
-    assert report["slots"][0]["message"] == "ir failed"
+    assert report["slots"][0]["error"] == "shef failed"
+    assert report["slots"][0]["message"] == "shef failed"
     assert report["slots"][1]["status"] == "ok"
     assert "error" not in report["slots"][1]
-    assert any("ir failed" in e for e in report["errors"])
+    assert any("shef failed" in e for e in report["errors"])
 
 
 def test_live_preflight_fails_on_bad_inventory(monkeypatch):
-    monkeypatch.setattr(erp, "send_ir_digits", lambda **kw: None)
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
 
     plan = {
@@ -148,11 +149,11 @@ def test_live_preflight_fails_on_bad_inventory(monkeypatch):
         "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
     }
     with pytest.raises(erp.PreflightError):
-        erp.execute_plan(plan, inventory=inv, itach={}, live=True)
+        erp.execute_plan(plan, inventory=inv, directv={}, live=True)
 
 
 def test_live_preflight_fails_on_missing_network(monkeypatch):
-    monkeypatch.setattr(erp, "send_ir_digits", lambda **kw: None)
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
 
     plan = {
@@ -177,13 +178,13 @@ def test_live_preflight_fails_on_missing_network(monkeypatch):
         "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
     }
     with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(plan, inventory=inv, itach={}, live=True)
+        erp.execute_plan(plan, inventory=inv, directv={}, live=True)
     assert any("broadcast" in e for e in excinfo.value.errors)
     assert any("udp_switch_port" in e for e in excinfo.value.errors)
 
 
 def test_cli_dry_run_exit_0(monkeypatch, tmp_path, capsys):
-    monkeypatch.setattr(erp, "send_ir_digits", lambda **kw: None)
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
 
     plan = {
@@ -210,15 +211,15 @@ def test_cli_dry_run_exit_0(monkeypatch, tmp_path, capsys):
         "encoders: []\nreceivers: []\n",
         encoding="utf-8",
     )
-    itach_path = tmp_path / "itach.yaml"
-    itach_path.write_text("controllers: {}\nencoder_to_output: {}\ncodes: {}\n")
+    directv_path = tmp_path / "directv.yaml"
+    directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
 
     code = erp.main(
         [
             "--inventory",
             str(inv_path),
-            "--itach-config",
-            str(itach_path),
+            "--directv-config",
+            str(directv_path),
             "--plan-file",
             str(plan_path),
             "--dry-run",
@@ -230,7 +231,7 @@ def test_cli_dry_run_exit_0(monkeypatch, tmp_path, capsys):
 
 
 def test_cli_plan_b64_live_preflight_exit_2(monkeypatch, tmp_path, capsys):
-    monkeypatch.setattr(erp, "send_ir_digits", lambda **kw: None)
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
 
     plan = {
@@ -255,16 +256,16 @@ def test_cli_plan_b64_live_preflight_exit_2(monkeypatch, tmp_path, capsys):
         "receivers:\n  - {id: RX-01, hostname: IPD935-001}\n",
         encoding="utf-8",
     )
-    itach_path = tmp_path / "itach.yaml"
-    itach_path.write_text("controllers: {}\nencoder_to_output: {}\ncodes: {}\n")
+    directv_path = tmp_path / "directv.yaml"
+    directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
     b64 = base64.b64encode(json.dumps(plan).encode("utf-8")).decode("ascii")
 
     code = erp.main(
         [
             "--inventory",
             str(inv_path),
-            "--itach-config",
-            str(itach_path),
+            "--directv-config",
+            str(directv_path),
             "--plan-b64",
             b64,
             "--live",
@@ -273,7 +274,44 @@ def test_cli_plan_b64_live_preflight_exit_2(monkeypatch, tmp_path, capsys):
     assert code == 2
 
 
-def test_itach_example_exists():
+def test_dry_run_shef_uses_example_config_without_network():
+    plan = {
+        "mode": "adhoc",
+        "commit": "dry_run",
+        "slots": [
+            {
+                "index": 1,
+                "encoderId": "ENC-01",
+                "program": {"id": "g1", "channelNumber": "206"},
+                "tvs": [1],
+                "tune": {"channelNumber": "206"},
+                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                "status": "planned",
+            }
+        ],
+        "warnings": [],
+    }
+    directv = yaml.safe_load((ROOT / "config" / "directv.example.yaml").read_text())
+    report = erp.execute_plan(
+        plan,
+        inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
+        directv=directv,
+        live=False,
+    )
+    assert report["ok"] is True
+    assert report["slots"][0]["status"] == "ok"
+
+
+def test_directv_example_exists():
+    path = ROOT / "config" / "directv.example.yaml"
+    assert path.is_file()
+    text = path.read_text(encoding="utf-8")
+    assert "encoder_to_receiver" in text
+    assert "ENC-01" in text
+    assert "H25-01" in text
+
+
+def test_itach_example_kept_as_rollback_only():
     path = ROOT / "config" / "itach.example.yaml"
     assert path.is_file()
     text = path.read_text(encoding="utf-8")

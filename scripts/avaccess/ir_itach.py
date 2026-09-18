@@ -1,4 +1,8 @@
-"""Global Cache iTach IP2IR helpers for Xumo channel digits."""
+"""Rollback-only Global Cache iTach IP2IR helpers.
+
+Not used on the live DirecTV SHEF path. Kept so ``itach_tcp`` can be
+regenerated from ``generate_ha_bundle.py`` if IR hardware is ever needed.
+"""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 # AVAccess Route Planner + Guide Now/Next Design
 
-**Status:** Approved  
+**Status:** Approved (live transport is DirecTV SHEF, not IR)  
 **Date:** 2026-08-10  
 **Supersedes (partial):** bartender panel preset behavior in `2026-08-10-bartender-panel-ui-design.md` where that spec treated Presets 2/3 as whole-TV-set shortcuts. Visual system (Graphite + Cyan) and dual entry paths remain.
 

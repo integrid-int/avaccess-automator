@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Execute a Track A RoutePlan: IR tune per slot, then UDP reconnect."""
+"""Execute a Track A RoutePlan: DirecTV SHEF tune per slot, then UDP reconnect."""
 
 from __future__ import annotations
 
 import argparse
 import base64
 import copy
+import importlib.util
 import json
 import sys
 from pathlib import Path
 from typing import Any
 
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 import yaml
 
 from scripts.avaccess.enrich_plan import enrich_route_plan
-from scripts.avaccess import ir_itach
 from scripts.avaccess import udp_reconnect
 from scripts.avaccess.inventory_lib import load_inventory, validate_inventory_for_plan
 
@@ -29,9 +33,67 @@ class PreflightError(Exception):
         )
 
 
-def send_ir_digits(**kwargs: Any) -> Any:
-    """Module-level IR sender (monkeypatch target for tests)."""
-    return ir_itach.send_ir_digits(**kwargs)
+def _load_shef_module() -> Any:
+    """Load SHEF helpers from repo package or HA overlay next to this file."""
+    try:
+        from scripts import directv_shef as shef
+
+        return shef
+    except ImportError:
+        pass
+    here = Path(__file__).resolve().parent
+    candidates = [
+        here / "directv_shef.py",
+        here.parent / "directv_shef.py",
+    ]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        spec = importlib.util.spec_from_file_location("directv_shef", path)
+        if spec is None or spec.loader is None:
+            continue
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    raise ImportError(
+        "directv_shef.py not found (expected scripts.directv_shef or overlay "
+        "next to execute_route_plan.py)"
+    )
+
+
+def send_directv_tune(
+    *,
+    channel: str,
+    encoder_id: str,
+    directv: dict,
+    dry_run: bool = False,
+    timeout: float | None = None,
+) -> Any:
+    """Module-level SHEF tuner (monkeypatch target for tests)."""
+    shef = _load_shef_module()
+    try:
+        major, minor = shef.parse_channel(str(channel))
+        recv = shef.resolve_receiver(directv, encoder_id)
+    except SystemExit as exc:
+        raise ValueError(str(exc) or "SHEF config/channel invalid") from exc
+    if timeout is None:
+        timeout = float(directv.get("timeout_seconds") or shef.DEFAULT_TIMEOUT)
+    if dry_run:
+        print(
+            f"[dry-run] SHEF {recv.get('host')}:{recv.get('port')} "
+            f"GET /tv/tune?major={major}&minor={minor} encoder={encoder_id}"
+        )
+        return {
+            "dry_run": True,
+            "encoder": encoder_id,
+            "major": major,
+            "minor": minor,
+            "host": recv.get("host"),
+        }
+    try:
+        return shef.cmd_tune(recv, major, minor, timeout)
+    except SystemExit as exc:
+        raise RuntimeError(str(exc) or "SHEF tune failed") from exc
 
 
 def send_udp_reconnect(**kwargs: Any) -> Any:
@@ -57,13 +119,12 @@ def _network_settings(inventory: dict) -> tuple[str, int]:
 def execute_plan(
     plan: dict,
     inventory: dict,
-    itach: dict,
+    directv: dict,
     *,
     live: bool = False,
-    digit_delay_ms: int = 250,
     session_start: int = 1,
 ) -> dict:
-    """Run IR then UDP for each slot; continue on errors; return a report."""
+    """Run SHEF tune then UDP for each slot; continue on errors; return a report."""
     working = copy.deepcopy(plan)
 
     if _any_udp_null(working):
@@ -98,11 +159,10 @@ def execute_plan(
             if isinstance(tune, dict):
                 channel = tune.get("channelNumber")
             if channel is not None and str(channel) != "":
-                send_ir_digits(
-                    digits=str(channel),
+                send_directv_tune(
+                    channel=str(channel),
                     encoder_id=encoder_id,
-                    itach=itach,
-                    digit_delay_ms=digit_delay_ms,
+                    directv=directv,
                     dry_run=dry_run,
                 )
 
@@ -165,13 +225,12 @@ def _load_yaml(path: Path) -> dict:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inventory", type=Path, required=True)
-    parser.add_argument("--itach-config", type=Path, required=True)
+    parser.add_argument("--directv-config", type=Path, required=True)
     parser.add_argument("--plan-file", type=Path, default=None)
     parser.add_argument("--plan-b64", default=None)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true", default=False)
     mode.add_argument("--live", action="store_true", default=False)
-    parser.add_argument("--digit-delay-ms", type=int, default=250)
     parser.add_argument("--session-start", type=int, default=1)
     args = parser.parse_args(argv)
 
@@ -182,14 +241,13 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         inventory = load_inventory(args.inventory)
-        itach = _load_yaml(args.itach_config)
+        directv = _load_yaml(args.directv_config)
         plan = _load_plan(args.plan_file, args.plan_b64)
         report = execute_plan(
             plan,
             inventory=inventory,
-            itach=itach,
+            directv=directv,
             live=live,
-            digit_delay_ms=int(args.digit_delay_ms),
             session_start=int(args.session_start),
         )
     except PreflightError as exc:

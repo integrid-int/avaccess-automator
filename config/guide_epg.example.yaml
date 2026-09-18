@@ -1,4 +1,4 @@
-# XMLTV → guide_epg.json builder config (ZIP 27403 Spectrum/Xumo favorites).
+# XMLTV → guide_epg.json builder config (ZIP 27403 DirecTV favorites).
 # Copy to config/guide_epg.yaml and point source at your XMLTV feed.
 #
 #   python3 scripts/avaccess/build_guide_epg.py \
@@ -16,7 +16,7 @@ source:
   file: tests/fixtures/guide_sample.xmltv
   compression: none
 
-# Spectrum/Xumo guide number → XMLTV channel id(s). First matching programmes win.
+# DirecTV major (guide number) → XMLTV channel id(s). First matching programmes win.
 channel_number_map:
   "4": ["fox.example"]       # WGHP FOX
   "2": []                    # WFMY CBS — fill with XMLTV id

@@ -1,7 +1,7 @@
 # Bartender Sports Routing Panel UI Design
 
 **Date:** 2026-08-10  
-**Status:** Approved — implementation plan written  
+**Status:** Approved — live Guide heading is DirecTV ZIP 27403 (no IR / Xumo)  
 **Surface:** Home Assistant custom panel (`panel-health` / `/panel-health`) for iPad Companion
 
 ## Problem
