@@ -42,19 +42,19 @@ views:
     square: false
     cards:
     - type: button
-      name: 1_all
+      name: Preset 1 ALL
       icon: mdi:video-switch
       tap_action:
         action: call-service
         service: script.avaccess_preset_1_all
     - type: button
-      name: 2_four_programs
+      name: Preset 2 4 Programs
       icon: mdi:video-switch
       tap_action:
         action: call-service
         service: script.avaccess_preset_2_four_programs
     - type: button
-      name: 3_nine_programs
+      name: Preset 3 9 Programs
       icon: mdi:video-switch
       tap_action:
         action: call-service
@@ -65,7 +65,7 @@ views:
     square: false
     cards:
     - type: button
-      name: program_a
+      name: Program A
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -73,7 +73,7 @@ views:
         data:
           program: program_a
     - type: button
-      name: program_b
+      name: Program B
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -81,7 +81,7 @@ views:
         data:
           program: program_b
     - type: button
-      name: program_c
+      name: Program C
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -89,7 +89,7 @@ views:
         data:
           program: program_c
     - type: button
-      name: program_d
+      name: Program D
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -97,7 +97,7 @@ views:
         data:
           program: program_d
     - type: button
-      name: program_e
+      name: Program E
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -105,7 +105,7 @@ views:
         data:
           program: program_e
     - type: button
-      name: program_f
+      name: Program F
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -113,7 +113,7 @@ views:
         data:
           program: program_f
     - type: button
-      name: program_g
+      name: Program G
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -121,7 +121,7 @@ views:
         data:
           program: program_g
     - type: button
-      name: program_h
+      name: Program H
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service
@@ -129,7 +129,7 @@ views:
         data:
           program: program_h
     - type: button
-      name: program_i
+      name: Program I
       icon: mdi:monitor-dashboard
       tap_action:
         action: call-service

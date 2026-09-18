@@ -31,6 +31,49 @@ def slug(value: str) -> str:
     return s or "item"
 
 
+PRESET_DISPLAY_NAMES = {
+    "1_all": "Preset 1 ALL",
+    "2_four_programs": "Preset 2 4 Programs",
+    "3_nine_programs": "Preset 3 9 Programs",
+}
+
+
+def friendly_preset_name(preset_key: str) -> str:
+    """Human-readable Control-tab label; script entity_ids still use slug(preset_key)."""
+    if preset_key in PRESET_DISPLAY_NAMES:
+        return PRESET_DISPLAY_NAMES[preset_key]
+    pretty = preset_key.replace("_", " ").strip()
+    if pretty.lower().startswith("preset "):
+        return pretty
+    return f"Preset {pretty}"
+
+
+def friendly_program_name(program_key: str) -> str:
+    """Human-readable Control-tab label; script data still uses the raw program key."""
+    match = re.fullmatch(r"program_([a-z])", program_key, re.IGNORECASE)
+    if match:
+        return f"Program {match.group(1).upper()}"
+    pretty = program_key.replace("_", " ").strip()
+    if pretty.lower().startswith("program "):
+        return pretty
+    return f"Program {pretty}"
+
+
+def staging_now_playing_entity_id(media_player_entity: str) -> str:
+    """Map a missing DirecTV media_player to a dummy template sensor object id."""
+    object_id = slug(str(media_player_entity).split(".", 1)[-1])
+    return f"sensor.{object_id}"
+
+
+def remap_encoder_media_player_for_staging(encoder_media_player: dict[str, Any]) -> dict[str, str]:
+    if not isinstance(encoder_media_player, dict):
+        return {}
+    return {
+        str(enc_id): staging_now_playing_entity_id(str(entity_id))
+        for enc_id, entity_id in encoder_media_player.items()
+    }
+
+
 def resolve_presets(inventory: dict[str, Any], profile_override: str | None) -> tuple[str | None, dict[str, Any]]:
     """Return (profile_name, presets) from inventory with backward compatibility."""
     mapping_profiles = inventory.get("mapping_profiles")
@@ -534,10 +577,16 @@ def _destination_cards(encoder_media_player: dict[str, Any] | None = None) -> li
     ]
 
 
-def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> dict[str, Any]:
+def build_dashboard(
+    channels_cfg: dict[str, Any],
+    presets: dict[str, Any],
+    ui_staging: bool = False,
+) -> dict[str, Any]:
     channels = channels_cfg["channels"]
     program_keys = list(channels_cfg["program_to_encoder"].keys())
     encoder_media_player = channels_cfg.get("encoder_media_player", {})
+    if ui_staging:
+        encoder_media_player = remap_encoder_media_player_for_staging(encoder_media_player or {})
 
     preset_buttons = []
     for preset_key in presets.keys():
@@ -545,7 +594,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
         preset_buttons.append(
             {
                 "type": "button",
-                "name": preset_key,
+                "name": friendly_preset_name(preset_key),
                 "icon": "mdi:video-switch",
                 "tap_action": {"action": "call-service", "service": f"script.avaccess_preset_{preset_slug}"},
             }
@@ -556,7 +605,7 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
         program_buttons.append(
             {
                 "type": "button",
-                "name": program_key,
+                "name": friendly_program_name(program_key),
                 "icon": "mdi:monitor-dashboard",
                 "tap_action": {
                     "action": "call-service",
@@ -681,11 +730,38 @@ def build_dashboard(channels_cfg: dict[str, Any], presets: dict[str, Any]) -> di
     return dashboard
 
 
-def apply_ui_staging_stubs(package: dict[str, Any]) -> dict[str, Any]:
-    """Replace live shell_command payloads with no-op echoes for cloud HA UI testing."""
+def apply_ui_staging_stubs(
+    package: dict[str, Any],
+    encoder_media_player: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Stub shell commands and inject dummy Now Playing sensors for cloud HA UI testing.
+
+    Staging Lovelace cannot load official DirecTV media_player entities, so template
+    sensors reuse the media_player object id (sensor.directv_h25_01, ...) and the
+    dashboard is remapped to those ids when --ui-staging is on.
+    """
     commands = package.get("shell_command", {})
     if isinstance(commands, dict):
         package["shell_command"] = {name: f'echo "STAGING {name}"' for name in commands}
+
+    sensors: dict[str, Any] = {}
+    if isinstance(encoder_media_player, dict):
+        for enc_id, entity_id in encoder_media_player.items():
+            object_id = slug(str(entity_id).split(".", 1)[-1])
+            sensors[object_id] = {
+                "friendly_name": str(enc_id),
+                "value_template": "{{ 'STAGING - DirecTV not connected' }}",
+                "icon_template": "mdi:satellite-uplink",
+            }
+    if sensors:
+        block = {"platform": "template", "sensors": sensors}
+        existing = package.get("sensor")
+        if isinstance(existing, list):
+            existing.append(block)
+        elif existing is None:
+            package["sensor"] = [block]
+        else:
+            package["sensor"] = [existing, block]
     return package
 
 
@@ -710,7 +786,11 @@ def main() -> None:
     parser.add_argument(
         "--ui-staging",
         action="store_true",
-        help="Stub shell_command calls so a cloud HA instance can load the UI without AV LAN hardware.",
+        help=(
+            "Stub shell_command calls and replace DirecTV media_player Now Playing "
+            "cards with dummy template sensors so a cloud HA instance can load the UI "
+            "without AV LAN hardware."
+        ),
     )
     args = parser.parse_args()
 
@@ -724,19 +804,33 @@ def main() -> None:
         inventory_ha_path=args.inventory_ha_path,
     )
     if args.ui_staging:
-        package = apply_ui_staging_stubs(package)
-    dashboard = build_dashboard(channels_cfg=channels_cfg, presets=presets)
+        package = apply_ui_staging_stubs(
+            package,
+            encoder_media_player=channels_cfg.get("encoder_media_player", {}),
+        )
+    dashboard = build_dashboard(
+        channels_cfg=channels_cfg,
+        presets=presets,
+        ui_staging=args.ui_staging,
+    )
 
     pkg_header = (
         "# Generated by scripts/generate_ha_bundle.py\n"
         "# Place under Home Assistant packages and include via packages: !include_dir_named packages\n"
     )
     if args.ui_staging:
-        pkg_header += "# UI-STAGING: shell_command entries are echo stubs (no AV/DirecTV hardware required)\n"
+        pkg_header += (
+            "# UI-STAGING: shell_command entries are echo stubs (no AV/DirecTV hardware required)\n"
+            "# UI-STAGING: Now Playing uses dummy template sensors instead of DirecTV media_player entities\n"
+        )
     dash_header = (
         "# Generated by scripts/generate_ha_bundle.py\n"
         "# Import into Lovelace (Raw configuration editor) or dashboard YAML mode\n"
     )
+    if args.ui_staging:
+        dash_header += (
+            "# UI-STAGING: Now Playing cards reference sensor.directv_* dummies, not media_player.directv_*\n"
+        )
     write_yaml(args.out_package, package, pkg_header)
     write_yaml(args.out_dashboard, dashboard, dash_header)
     print(f"Wrote package: {args.out_package}")

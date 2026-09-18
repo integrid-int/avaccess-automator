@@ -154,6 +154,25 @@ def _run_generate_ha_bundle(out_dir: Path, *, ui_staging: bool) -> tuple[Path, P
     return package_path, dashboard_path
 
 
+def _iter_cards(cards: list | None):
+    for card in cards or []:
+        if not isinstance(card, dict):
+            continue
+        yield card
+        yield from _iter_cards(card.get("cards"))
+
+
+def _buttons_calling(view: dict, service: str) -> list[dict]:
+    found: list[dict] = []
+    for card in _iter_cards(view.get("cards")):
+        if card.get("type") != "button":
+            continue
+        tap = card.get("tap_action") or {}
+        if tap.get("service") == service or str(tap.get("service", "")).startswith(service):
+            found.append(card)
+    return found
+
+
 class GenerateHaBundleCliTests(unittest.TestCase):
     """Exercise generate_ha_bundle.py as a CLI, including written YAML files."""
 
@@ -177,6 +196,67 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             titles = {view.get("title") for view in dashboard.get("views", [])}
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
+            for view in dashboard.get("views", []):
+                dumped = yaml.safe_dump(view)
+                self.assertIn("Destination", dumped, view.get("title"))
+                self.assertIn("Route Program -> TVs", dumped, view.get("title"))
+
+    def test_control_tab_uses_friendly_preset_and_program_names(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            _package_path, dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=False)
+            dashboard = yaml.safe_load(dashboard_path.read_text())
+            control = next(view for view in dashboard["views"] if view.get("path") == "av-control")
+
+            preset_buttons = _buttons_calling(control, "script.avaccess_preset_")
+            self.assertEqual(
+                [button["name"] for button in preset_buttons],
+                ["Preset 1 ALL", "Preset 2 4 Programs", "Preset 3 9 Programs"],
+            )
+            self.assertEqual(
+                [button["tap_action"]["service"] for button in preset_buttons],
+                [
+                    "script.avaccess_preset_1_all",
+                    "script.avaccess_preset_2_four_programs",
+                    "script.avaccess_preset_3_nine_programs",
+                ],
+            )
+
+            program_buttons = _buttons_calling(control, "script.avaccess_set_program")
+            self.assertEqual([button["name"] for button in program_buttons], [f"Program {letter}" for letter in "ABCDEFGHI"])
+            for button, key in zip(program_buttons, "abcdefghi", strict=True):
+                self.assertEqual(button["tap_action"]["service"], "script.avaccess_set_program")
+                self.assertEqual(button["tap_action"]["data"]["program"], f"program_{key}")
+
+    def test_production_dashboard_keeps_directv_media_players(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            package_path, dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=False)
+            dashboard = yaml.safe_dump(yaml.safe_load(dashboard_path.read_text()))
+            package = yaml.safe_dump(yaml.safe_load(package_path.read_text()))
+            self.assertIn("media_player.directv_h25_01", dashboard)
+            self.assertIn("Now Playing", dashboard)
+            self.assertNotIn("sensor.directv_h25_01", dashboard)
+            self.assertNotIn("DirecTV not connected", package)
+
+    def test_ui_staging_cli_uses_dummy_now_playing_sensors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            package_path, dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=True)
+            package = yaml.safe_load(package_path.read_text())
+            dashboard = yaml.safe_load(dashboard_path.read_text())
+            dumped_dash = yaml.safe_dump(dashboard)
+            dumped_pkg = yaml.safe_dump(package)
+
+            self.assertNotIn("media_player.directv", dumped_dash)
+            self.assertIn("Now Playing", dumped_dash)
+            self.assertIn("sensor.directv_h25_01", dumped_dash)
+            self.assertIn("sensor.directv_h25_09", dumped_dash)
+            self.assertIn("directv_h25_01", dumped_pkg)
+            self.assertIn("DirecTV not connected", dumped_pkg)
+
+            titles = {view.get("title") for view in dashboard.get("views", [])}
+            for expected in ("NFL", "College Football", "Basketball"):
+                self.assertIn(expected, titles)
+            self.assertIn("Destination", dumped_dash)
+            self.assertIn("Route Program -> TVs", dumped_dash)
 
 
 if __name__ == "__main__":
