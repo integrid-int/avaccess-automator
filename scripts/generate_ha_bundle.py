@@ -157,7 +157,7 @@ def build_package(
         preset_slug = slug(preset_key)
         shell_name = f"avaccess_preset_{preset_slug}"
         shell_command[shell_name] = (
-            f"python3 /config/avaccess/scripts/apply_preset.py "
+            f"python3 /config/avaccess/apply_preset.py "
             f"--inventory {inventory_ha_path}{profile_part} --preset {preset_key}"
         )
         scripts[shell_name] = {
@@ -167,7 +167,7 @@ def build_package(
         }
 
     shell_command["avaccess_route_targets"] = (
-        "python3 /config/avaccess/scripts/route_targets.py "
+        "python3 /config/avaccess/route_targets.py "
         f"--inventory {inventory_ha_path} --encoder \"{{{{ encoder }}}}\" --targets \"{{{{ targets }}}}\""
     )
     if ir_transport == "itach_tcp":
@@ -178,12 +178,12 @@ def build_package(
         )
     if ir_transport == "directv_shef":
         shell_command["avaccess_directv_tune"] = (
-            "python3 /config/avaccess/scripts/directv_shef.py "
+            "python3 /config/avaccess/directv_shef.py "
             f"--config {directv_config_path} tune --encoder \"{{{{ encoder }}}}\" "
             "--channel \"{{ channel }}\""
         )
         shell_command["avaccess_directv_get_tuned"] = (
-            "python3 /config/avaccess/scripts/directv_shef.py "
+            "python3 /config/avaccess/directv_shef.py "
             f"--config {directv_config_path} get-tuned --encoder \"{{{{ encoder }}}}\""
         )
 

@@ -49,17 +49,17 @@ input_text:
     initial: RX-01,RX-02
     icon: mdi:television-multiple
 shell_command:
-  avaccess_preset_1_all: python3 /config/avaccess/scripts/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
+  avaccess_preset_1_all: python3 /config/avaccess/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
     --profile numeric_v1 --preset 1_all
-  avaccess_preset_2_four_programs: python3 /config/avaccess/scripts/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
+  avaccess_preset_2_four_programs: python3 /config/avaccess/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
     --profile numeric_v1 --preset 2_four_programs
-  avaccess_preset_3_nine_programs: python3 /config/avaccess/scripts/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
+  avaccess_preset_3_nine_programs: python3 /config/avaccess/apply_preset.py --inventory /config/avaccess/config/inventory.yaml
     --profile numeric_v1 --preset 3_nine_programs
-  avaccess_route_targets: python3 /config/avaccess/scripts/route_targets.py --inventory /config/avaccess/config/inventory.yaml
+  avaccess_route_targets: python3 /config/avaccess/route_targets.py --inventory /config/avaccess/config/inventory.yaml
     --encoder "{{ encoder }}" --targets "{{ targets }}"
-  avaccess_directv_tune: python3 /config/avaccess/scripts/directv_shef.py --config /config/avaccess/config/directv.yaml tune
+  avaccess_directv_tune: python3 /config/avaccess/directv_shef.py --config /config/avaccess/config/directv.yaml tune
     --encoder "{{ encoder }}" --channel "{{ channel }}"
-  avaccess_directv_get_tuned: python3 /config/avaccess/scripts/directv_shef.py --config /config/avaccess/config/directv.yaml
+  avaccess_directv_get_tuned: python3 /config/avaccess/directv_shef.py --config /config/avaccess/config/directv.yaml
     get-tuned --encoder "{{ encoder }}"
 script:
   avaccess_preset_1_all:

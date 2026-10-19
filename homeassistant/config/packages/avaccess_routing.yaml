@@ -5,7 +5,7 @@
 #
 # Compose mounts (see homeassistant/docker-compose.yml):
 #   ../scripts/avaccess -> /config/avaccess/scripts
-#   ../scripts/directv_shef.py -> /config/avaccess/scripts/directv_shef.py
+#   ../scripts/directv_shef.py -> /config/avaccess/directv_shef.py
 #   ../config           -> /config/avaccess/config
 # Local Core uses the same relative paths via checked-in symlinks under avaccess/.
 

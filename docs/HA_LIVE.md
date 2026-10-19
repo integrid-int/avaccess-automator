@@ -44,13 +44,13 @@ On each receiver: **Menu → Settings & Help → Settings → Whole Home → Ext
 
 Use the **same path layout the Docker test stack uses**. Matrix shell commands call:
 
-`python3 /config/avaccess/scripts/apply_preset.py`
+`python3 /config/avaccess/apply_preset.py`
 
 Track B Live Send calls:
 
 `python3 avaccess/run_execute_route_plan.py` (cwd = HA `/config`)
 
-So HA’s `/config/avaccess/scripts/` must contain **both** the Track B package (`execute_route_plan.py`, …) **and** the Matrix CLIs (`apply_preset.py`, `directv_shef.py`, `route_targets.py`).
+So HA’s `/config/avaccess/scripts/` must contain the Track B package (`execute_route_plan.py`, …). Matrix CLIs (`apply_preset.py`, `directv_shef.py`, `route_targets.py`) live **next to** that directory, at `/config/avaccess/`.
 
 ### Home Assistant OS / Supervised
 
@@ -77,18 +77,17 @@ cp -a /share/avaccess-automator/homeassistant/config/www/. /config/www/
 ln -sfn /share/avaccess-automator/scripts/avaccess /config/avaccess/scripts
 ln -sfn /share/avaccess-automator/config /config/avaccess/config
 
-# Matrix CLIs onto that same scripts dir (shell_command paths)
-cp /share/avaccess-automator/scripts/apply_preset.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/directv_shef.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/route_targets.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/generate_ha_bundle.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/refresh_ha_weekly.py /config/avaccess/scripts/
-cp /share/avaccess-automator/scripts/sync_weekly_schedule.py /config/avaccess/scripts/
+# Matrix CLIs sit next to the scripts dir. Do not copy them into the
+# scripts symlink: that writes into the git checkout.
+cp /share/avaccess-automator/scripts/apply_preset.py /config/avaccess/
+cp /share/avaccess-automator/scripts/directv_shef.py /config/avaccess/
+cp /share/avaccess-automator/scripts/route_targets.py /config/avaccess/
+cp /share/avaccess-automator/scripts/generate_ha_bundle.py /config/avaccess/
+cp /share/avaccess-automator/scripts/refresh_ha_weekly.py /config/avaccess/
+cp /share/avaccess-automator/scripts/sync_weekly_schedule.py /config/avaccess/
 ```
 
-Because `/config/avaccess/scripts` is a symlink into the repo, those `cp` files land in `scripts/avaccess/` in git. That is expected on the live box; do not commit them.
-
-If `/share` is not writable, use `/config/avaccess-automator` as the clone path and point the `ln -sfn` / `cp` sources there.
+Do not commit those copies. If `/share` is not writable, use `/config/avaccess-automator` as the clone path and point the `ln -sfn` / `cp` sources there.
 
 ### Docker Compose on an AV-LAN host
 
@@ -104,18 +103,18 @@ services:
     volumes:
       - ./homeassistant/config:/config
       - ./scripts/avaccess:/config/avaccess/scripts:ro
-      - ./scripts/apply_preset.py:/config/avaccess/scripts/apply_preset.py:ro
-      - ./scripts/directv_shef.py:/config/avaccess/scripts/directv_shef.py:ro
-      - ./scripts/route_targets.py:/config/avaccess/scripts/route_targets.py:ro
-      - ./scripts/generate_ha_bundle.py:/config/avaccess/scripts/generate_ha_bundle.py:ro
-      - ./scripts/refresh_ha_weekly.py:/config/avaccess/scripts/refresh_ha_weekly.py:ro
-      - ./scripts/sync_weekly_schedule.py:/config/avaccess/scripts/sync_weekly_schedule.py:ro
+      - ./scripts/apply_preset.py:/config/avaccess/apply_preset.py:ro
+      - ./scripts/directv_shef.py:/config/avaccess/directv_shef.py:ro
+      - ./scripts/route_targets.py:/config/avaccess/route_targets.py:ro
+      - ./scripts/generate_ha_bundle.py:/config/avaccess/generate_ha_bundle.py:ro
+      - ./scripts/refresh_ha_weekly.py:/config/avaccess/refresh_ha_weekly.py:ro
+      - ./scripts/sync_weekly_schedule.py:/config/avaccess/sync_weekly_schedule.py:ro
       - ./config:/config/avaccess/config
     environment:
       TZ: America/New_York
 ```
 
-`network_mode: host` means HA is on `http://<host>:8123` with no port publish block. Overlay file mounts on top of `/config/avaccess/scripts` so both Track B modules and Matrix CLIs exist.
+`network_mode: host` means HA is on `http://<host>:8123` with no port publish block. Matrix CLIs and `directv_shef.py` are mounted **beside** `/config/avaccess/scripts`, not inside that read-only directory. A file mount inside the scripts volume fails to start or hides the SHEF module.
 
 ---
 
@@ -123,12 +122,14 @@ services:
 
 From the **git clone** (`/share/avaccess-automator` or repo root):
 
+`config/directv.yaml` is gitignored. `rm -f` drops a symlink first; `cp --remove-destination` will not follow one into `directv.example.yaml`. Then edit real H25 IPs. Do not leave the placeholder `192.168.10.151`–`.160` addresses in place.
+
 ```bash
 rm -f config/inventory.yaml config/directv.yaml config/channels.yaml config/schedule_sync.yaml
-cp config/inventory.example.yaml config/inventory.yaml
-cp config/directv.example.yaml config/directv.yaml
-cp config/channels.example.yaml config/channels.yaml
-cp config/schedule_sync.example.yaml config/schedule_sync.yaml
+cp --remove-destination config/inventory.example.yaml config/inventory.yaml
+cp --remove-destination config/directv.example.yaml config/directv.yaml
+cp --remove-destination config/channels.example.yaml config/channels.yaml
+cp --remove-destination config/schedule_sync.example.yaml config/schedule_sync.yaml
 ```
 
 Edit:
@@ -166,7 +167,7 @@ python3 scripts/generate_ha_bundle.py \
   --out-dashboard /config/dashboards/avaccess_matrix.yaml
 ```
 
-**Do not** pass `--ui-staging`. Open the package and confirm `shell_command.avaccess_directv_tune` contains `python3 /config/avaccess/scripts/directv_shef.py`, not `echo STAGING`.
+**Do not** pass `--ui-staging`. Open the package and confirm `shell_command.avaccess_directv_tune` contains `python3 /config/avaccess/directv_shef.py`, not `echo STAGING`.
 
 `numeric_v1` is the Lovelace favorite/preset map (Preset 1 = all TVs on ENC-01, Preset 2 = 9/9/9/8, Preset 3 = 4×8+3). The bartender panel still uses **`striped_v1`** via `mapping_profiles.active` in inventory.
 

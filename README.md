@@ -79,7 +79,7 @@ Canonical Python lives at `scripts/avaccess/`; device YAML at `config/`.
 Compose binds these into the HA config tree (see `homeassistant/docker-compose.yml`):
 
 - `../scripts/avaccess` → `/config/avaccess/scripts` (ro)
-- `../scripts/directv_shef.py` → `/config/avaccess/scripts/directv_shef.py` (ro)
+- `../scripts/directv_shef.py` → `/config/avaccess/directv_shef.py` (ro; not inside the scripts mount)
 - `../config` → `/config/avaccess/config` (ro)
 
 For local Core (no Docker), the same paths are available via checked-in symlinks under `homeassistant/config/avaccess/`. The HA package `packages/avaccess_routing.yaml` exposes:
@@ -103,11 +103,11 @@ Fill every `REPLACE_ME` hostname for encoders (`ENC-01`…`ENC-10`) and receiver
 
 #### 2. DirecTV H25 SHEF map
 
-Same symlink pattern — remove the link first (or `cp --remove-destination`) so the example is not clobbered:
+`config/directv.yaml` is gitignored. It is not a tracked symlink. Copy the example, then put in real H25 IPs. If an old checkout left a symlink, remove it first so `cp` does not follow it and overwrite `directv.example.yaml`. Do not leave the placeholder `192.168.10.151`–`.160` addresses in place.
 
 ```bash
-rm config/directv.yaml
-cp config/directv.example.yaml config/directv.yaml
+rm -f config/directv.yaml
+cp --remove-destination config/directv.example.yaml config/directv.yaml
 # edit config/directv.yaml — H25 IPs, ENC-01…ENC-10 → H25-01…H25-10
 ```
 
@@ -143,7 +143,7 @@ Home Assistant `shell_command` often does **not** return script stdout to `hass.
   --plan-file /tmp/plan.json \
   --dry-run
 
-# Live (validates plan-referenced ENC/RX + network; exit 2 on preflight fail)
+# Live (validates plan-referenced ENC/RX, H25 map, and network; exit 2 on preflight fail)
 .venv/bin/python scripts/avaccess/execute_route_plan.py \
   --inventory config/inventory.yaml \
   --directv-config config/directv.yaml \
@@ -151,7 +151,7 @@ Home Assistant `shell_command` often does **not** return script stdout to `hass.
   --live
 ```
 
-Per slot: DirecTV SHEF `/tv/tune` then UDP `msg_b_reconnect`; failures set slot `status` / `error` and execution continues; final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight.
+Per slot: DirecTV SHEF `/tv/tune` then UDP `msg_b_reconnect`. If SHEF tune fails, UDP is **not** sent for that slot, so those TVs stay on the previous source. Other slots still run. Failures set slot `status` / `error`. Final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight (bad inventory or a slot's encoder has no H25 mapping).
 
 #### 6. Still out of scope after Track B
 

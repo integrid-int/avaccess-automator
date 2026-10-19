@@ -65,7 +65,7 @@ Example automation to run early every Tuesday:
 ```yaml
 shell_command:
   avaccess_weekly_refresh: >
-    python3 /config/avaccess/scripts/refresh_ha_weekly.py
+    python3 /config/avaccess/refresh_ha_weekly.py
     --channels /config/avaccess/config/channels.yaml
     --sync-config /config/avaccess/config/schedule_sync.yaml
     --inventory /config/avaccess/config/inventory.yaml

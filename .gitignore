@@ -9,3 +9,8 @@ homeassistant/config/home-assistant.log*
 homeassistant/config/.HA_VERSION
 homeassistant/config/blueprints/
 homeassistant/config/deps/
+
+# Site DirecTV map. Copy from directv.example.yaml with cp --remove-destination.
+# A symlink here makes `cp` overwrite the example, and Live Send would use
+# the placeholder 192.168.10.151-160 addresses.
+config/directv.yaml

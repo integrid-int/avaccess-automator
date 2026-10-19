@@ -1,7 +1,6 @@
-"""Rollback-only Global Cache iTach IP2IR helpers.
+"""Unused leftover Global Cache iTach IP2IR helpers.
 
-Not used on the live DirecTV SHEF path. Kept so ``itach_tcp`` can be
-regenerated from ``generate_ha_bundle.py`` if IR hardware is ever needed.
+Not used on the live DirecTV SHEF path. Not an operator rollback.
 """
 
 from __future__ import annotations

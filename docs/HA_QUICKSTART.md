@@ -24,8 +24,11 @@ On your HA host, place this repo under:
 cd /config/avaccess
 cp config/inventory.example.yaml config/inventory.yaml
 cp config/channels.example.yaml config/channels.yaml
-cp config/directv.example.yaml config/directv.yaml
+rm -f config/directv.yaml
+cp --remove-destination config/directv.example.yaml config/directv.yaml
 ```
+
+`config/directv.yaml` is gitignored. `rm -f` drops a leftover symlink so the copy does not overwrite `directv.example.yaml`. Replace the placeholder `192.168.10.151`–`.160` addresses before Live Send.
 
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
@@ -114,14 +117,14 @@ Optional maintenance shell commands (used by the pretty Settings tab buttons):
 ```yaml
 shell_command:
   avaccess_weekly_refresh: >
-    python3 /config/avaccess/scripts/refresh_ha_weekly.py
+    python3 /config/avaccess/refresh_ha_weekly.py
     --channels /config/avaccess/config/channels.yaml
     --sync-config /config/avaccess/config/schedule_sync.yaml
     --inventory /config/avaccess/config/inventory.yaml
     --out-package /config/packages/avaccess_matrix.yaml
     --out-dashboard /config/dashboards/avaccess_matrix.yaml
   avaccess_generate_bundle: >
-    python3 /config/avaccess/scripts/generate_ha_bundle.py
+    python3 /config/avaccess/generate_ha_bundle.py
     --inventory /config/avaccess/config/inventory.yaml
     --channels /config/avaccess/config/channels.yaml
     --profile numeric_v1

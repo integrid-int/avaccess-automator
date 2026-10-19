@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Rollback-only: send IR digits through Global Cache iTach IP2IR.
+"""Unused leftover: send IR digits through Global Cache iTach IP2IR.
 
-Not used on the live DirecTV SHEF path. Keep this script only if you
-need to regenerate an ``itach_tcp`` HA bundle.
+Not used on the live DirecTV SHEF path. Not an operator rollback.
 
 Usage:
   python3 scripts/send_xumo_ir_itach.py \

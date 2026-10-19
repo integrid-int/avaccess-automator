@@ -116,6 +116,31 @@ def _network_settings(inventory: dict) -> tuple[str, int]:
     return broadcast, port
 
 
+def _directv_map_errors(directv: dict, plan: dict) -> list[str]:
+    """Slots that will SHEF-tune must have a mapped H25 before any UDP send."""
+    mapping = directv.get("encoder_to_receiver")
+    receivers = directv.get("receivers")
+    if not isinstance(mapping, dict) or not isinstance(receivers, dict):
+        return ["directv config needs encoder_to_receiver and receivers"]
+    errors: list[str] = []
+    for slot in plan.get("slots") or []:
+        if not isinstance(slot, dict):
+            continue
+        tune = slot.get("tune") or {}
+        channel = tune.get("channelNumber") if isinstance(tune, dict) else None
+        if channel is None or str(channel) == "":
+            continue
+        encoder_id = str(slot.get("encoderId") or "")
+        recv_id = mapping.get(encoder_id)
+        recv = receivers.get(recv_id) if recv_id else None
+        if not isinstance(recv, dict):
+            errors.append(f"{encoder_id or '?'}: no DirecTV receiver mapped")
+            continue
+        if not str(recv.get("host") or "").strip():
+            errors.append(f"{encoder_id}: receiver {recv_id} has empty host")
+    return errors
+
+
 def execute_plan(
     plan: dict,
     inventory: dict,
@@ -135,7 +160,8 @@ def execute_plan(
 
     if live:
         ok, errors = validate_inventory_for_plan(inventory, working)
-        if not ok:
+        errors.extend(_directv_map_errors(directv, working))
+        if not ok or errors:
             raise PreflightError(errors)
 
     broadcast, port = _network_settings(inventory)

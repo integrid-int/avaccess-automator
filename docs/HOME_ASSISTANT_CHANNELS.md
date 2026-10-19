@@ -29,7 +29,7 @@ The generated package calls SHEF via `shell_command.avaccess_directv_tune`:
 ```yaml
 shell_command:
   avaccess_directv_tune: >
-    python3 /config/avaccess/scripts/directv_shef.py
+    python3 /config/avaccess/directv_shef.py
     --config /config/avaccess/config/directv.yaml
     tune --encoder "{{ encoder }}" --channel "{{ channel }}"
 ```

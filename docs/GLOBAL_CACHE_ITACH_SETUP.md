@@ -1,4 +1,4 @@
-# Global Caché iTach IP2IR-P (unused rollback leftover)
+# Global Caché iTach IP2IR-P (unused leftover)
 
 **Not on the live path.** Sources are DirecTV H25 boxes controlled over SHEF IP. There is no IR control in operator Home Assistant, Track B Live Send, or the generated Matrix bundle.
 

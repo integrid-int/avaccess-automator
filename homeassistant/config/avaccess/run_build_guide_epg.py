@@ -23,7 +23,9 @@ HERE = Path(__file__).resolve().parent
 
 
 def _repo_root() -> Path | None:
-    # homeassistant/config/avaccess -> parents[2] == repo root when checked out normally
+    """Repo root in a git checkout. /config/avaccess on HA has no parents[2]."""
+    if len(HERE.parents) <= 2:
+        return None
     candidate = HERE.parents[2]
     marker = candidate / "scripts" / "avaccess" / "build_guide_epg.py"
     if marker.is_file():

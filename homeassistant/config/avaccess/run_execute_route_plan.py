@@ -3,8 +3,10 @@
 
 Docker compose mounts:
   scripts/avaccess -> /config/avaccess/scripts
-  scripts/directv_shef.py -> /config/avaccess/scripts/directv_shef.py
+  scripts/directv_shef.py -> /config/avaccess/directv_shef.py
   config/          -> /config/avaccess/config
+
+Do not mount directv_shef.py inside the read-only scripts directory.
 
 Local Core (no mounts): resolves repo-root scripts/ and config/ via parents,
 or uses checked-in symlinks under this directory when present.
@@ -23,7 +25,13 @@ HERE = Path(__file__).resolve().parent
 
 
 def _repo_root() -> Path | None:
-    # homeassistant/config/avaccess -> parents[2] == repo root when checked out normally
+    """Repo root when this file lives at homeassistant/config/avaccess.
+
+    On HA OS and Docker, HERE is /config/avaccess (only two parents). Do not
+    index parents[2] there — that raises IndexError before Live Send runs.
+    """
+    if len(HERE.parents) <= 2:
+        return None
     candidate = HERE.parents[2]
     marker = candidate / "scripts" / "avaccess" / "execute_route_plan.py"
     if marker.is_file():
@@ -51,9 +59,17 @@ def _ensure_scripts_avaccess_package(scripts_dir: Path) -> None:
 
 
 def _ensure_directv_shef(scripts_dir: Path) -> None:
-    """Register overlay directv_shef.py as scripts.directv_shef when present."""
-    shef_path = scripts_dir / "directv_shef.py"
-    if not shef_path.is_file() or "scripts.directv_shef" in sys.modules:
+    """Register overlay directv_shef.py as scripts.directv_shef when present.
+
+    The file is mounted next to the scripts dir (/config/avaccess/directv_shef.py),
+    not inside the read-only scripts mount.
+    """
+    candidates = (
+        scripts_dir.parent / "directv_shef.py",
+        scripts_dir / "directv_shef.py",
+    )
+    shef_path = next((path for path in candidates if path.is_file()), None)
+    if shef_path is None or "scripts.directv_shef" in sys.modules:
         return
     spec = importlib.util.spec_from_file_location("scripts.directv_shef", shef_path)
     if spec is None or spec.loader is None:

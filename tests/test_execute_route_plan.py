@@ -152,6 +152,100 @@ def test_live_preflight_fails_on_bad_inventory(monkeypatch):
         erp.execute_plan(plan, inventory=inv, directv={}, live=True)
 
 
+def _valid_live_inventory() -> dict:
+    return {
+        "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010},
+        "encoders": [{"id": "ENC-01", "hostname": "IPE935-AAA"}],
+        "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
+    }
+
+
+def _one_slot_plan() -> dict:
+    return {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [
+            {
+                "index": 1,
+                "encoderId": "ENC-01",
+                "program": {"id": "g1", "channelNumber": "206"},
+                "tvs": [1],
+                "tune": {"channelNumber": "206"},
+                "udp": {"txHostname": "IPE935-AAA", "rxHostnames": ["IPD935-001"]},
+                "status": "planned",
+            }
+        ],
+        "warnings": [],
+    }
+
+
+def test_live_preflight_fails_when_h25_unmapped(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    with pytest.raises(erp.PreflightError) as excinfo:
+        erp.execute_plan(
+            _one_slot_plan(),
+            inventory=_valid_live_inventory(),
+            directv={"encoder_to_receiver": {}, "receivers": {}},
+            live=True,
+        )
+    assert any("no DirecTV" in e or "mapped" in e for e in excinfo.value.errors)
+    assert calls == []
+
+
+def test_live_preflight_fails_when_h25_host_empty(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    with pytest.raises(erp.PreflightError) as excinfo:
+        erp.execute_plan(
+            _one_slot_plan(),
+            inventory=_valid_live_inventory(),
+            directv={
+                "encoder_to_receiver": {"ENC-01": "H25-01"},
+                "receivers": {"H25-01": {"host": "  "}},
+            },
+            live=True,
+        )
+    assert any("empty host" in e for e in excinfo.value.errors)
+    assert calls == []
+
+
+def test_cli_live_unmapped_h25_exit_2(monkeypatch, tmp_path, capsys):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
+    inv_path = tmp_path / "inv.yaml"
+    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+    directv_path = tmp_path / "directv.yaml"
+    directv_path.write_text(
+        "encoder_to_receiver: {}\nreceivers: {}\n",
+        encoding="utf-8",
+    )
+
+    code = erp.main(
+        [
+            "--inventory",
+            str(inv_path),
+            "--directv-config",
+            str(directv_path),
+            "--plan-file",
+            str(plan_path),
+            "--live",
+        ]
+    )
+    assert code == 2
+    assert calls == []
+    report = json.loads(capsys.readouterr().out)
+    assert any("no DirecTV" in e or "mapped" in e for e in report["errors"])
+
+
 def test_live_preflight_fails_on_missing_network(monkeypatch):
     monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
     monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
@@ -311,7 +405,7 @@ def test_directv_example_exists():
     assert "H25-01" in text
 
 
-def test_itach_example_kept_as_rollback_only():
+def test_itach_example_is_unused_leftover():
     path = ROOT / "config" / "itach.example.yaml"
     assert path.is_file()
     text = path.read_text(encoding="utf-8")
