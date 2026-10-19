@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=16";
+} from "./assignment-store.js?v=18";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -19,8 +19,8 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=16";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=16";
+} from "./panel-data.js?v=18";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=18";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -1337,22 +1337,18 @@ class PanelHealth extends HTMLElement {
           flex-direction: column;
           min-height: 100vh;
           min-height: 100dvh;
-          padding: 20px;
+          padding: 0;
           box-sizing: border-box;
-          background:
-            radial-gradient(circle at top left, rgba(14, 116, 144, 0.2), transparent 32rem),
-            linear-gradient(135deg, var(--canvas) 0%, #e5e7eb 100%);
+          background: var(--graphite);
         }
 
         .stage {
           display: flex;
           flex: 1;
           flex-direction: column;
-          border-radius: var(--radius-md);
           background: var(--graphite);
           color: var(--text-stage);
           padding: 18px;
-          box-shadow: 0 24px 80px rgba(17, 24, 39, 0.22);
         }
 
         .topbar {
@@ -1429,8 +1425,6 @@ class PanelHealth extends HTMLElement {
           background: var(--surface);
           border-radius: var(--radius-md);
           color: var(--text);
-          flex: 1;
-          min-height: 420px;
           padding: 18px;
         }
 
@@ -1459,7 +1453,7 @@ class PanelHealth extends HTMLElement {
         .stub-grid {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         }
 
         .content-card,
@@ -1681,8 +1675,14 @@ class PanelHealth extends HTMLElement {
         }
 
         .preset-grid {
+          align-items: stretch;
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .preset-chip {
+          height: 100%;
+          text-align: left;
         }
 
         .preset-chip.is-active {
@@ -1713,9 +1713,13 @@ class PanelHealth extends HTMLElement {
 
         .live-commit-row {
           align-items: center;
-          display: flex;
+          background: rgba(255, 255, 255, 0.06);
+          border-radius: var(--radius-md);
+          display: grid;
           gap: 10px;
+          grid-template-columns: auto minmax(0, 1fr);
           margin-bottom: 12px;
+          padding: 8px;
         }
 
         .live-commit-toggle {
@@ -1744,6 +1748,7 @@ class PanelHealth extends HTMLElement {
           color: var(--muted-stage);
           font-size: 0.8rem;
           font-weight: 700;
+          line-height: 1.35;
         }
 
         .live-commit-hint.is-blocked {

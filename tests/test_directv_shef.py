@@ -219,6 +219,8 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
             for view in dashboard.get("views", []):
+                self.assertEqual(view.get("type"), "panel", view.get("title"))
+                self.assertEqual(view["cards"][0]["type"], "vertical-stack", view.get("title"))
                 dumped = yaml.safe_dump(view, allow_unicode=True)
                 self.assertIn("Route Actions", dumped, view.get("title"))
                 self.assertIn("Route Program → TVs", dumped, view.get("title"))

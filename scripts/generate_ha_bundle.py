@@ -662,6 +662,25 @@ def _selection_card(title: str) -> dict[str, Any]:
     }
 
 
+def _stack(cards: list[dict[str, Any]]) -> dict[str, Any]:
+    """One full-width column. Masonry would scatter these cards into uneven columns."""
+    return {"type": "vertical-stack", "cards": cards}
+
+
+def _side_by_side(*cards: dict[str, Any]) -> dict[str, Any]:
+    return {"type": "grid", "columns": len(cards), "square": False, "cards": list(cards)}
+
+
+def _panel_view(title: str, path: str, icon: str, cards: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "title": title,
+        "path": path,
+        "icon": icon,
+        "type": "panel",
+        "cards": [_stack(cards)],
+    }
+
+
 def _route_actions_card() -> dict[str, Any]:
     return {
         "type": "grid",
@@ -756,10 +775,13 @@ def build_dashboard(
                 }
             )
 
-    # Selection + Route Actions first so routing is reachable without scrolling on iPad portrait.
-    cards: list[dict[str, Any]] = [_selection_card("Active Selection"), _route_actions_card()]
+    # Same skeleton on every view: selection beside route actions, then full-width grids.
+    # A panel view keeps this as one column instead of a masonry scatter.
+    control_cards: list[dict[str, Any]] = [
+        _side_by_side(_selection_card("Active Selection"), _route_actions_card())
+    ]
     if favorite_buttons:
-        cards.append(
+        control_cards.append(
             {
                 "type": "grid",
                 "title": "Favorites",
@@ -768,7 +790,7 @@ def build_dashboard(
                 "cards": favorite_buttons,
             }
         )
-    cards.extend(
+    control_cards.extend(
         [
             {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
             {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
@@ -778,12 +800,7 @@ def build_dashboard(
     )
 
     views: list[dict[str, Any]] = [
-        {
-            "title": "AV Control",
-            "path": "av-control",
-            "icon": "mdi:video-input-component",
-            "cards": cards,
-        }
+        _panel_view("AV Control", "av-control", "mdi:video-input-component", control_cards)
     ]
 
     sports_pages = channels_cfg.get("sports_pages", {})
@@ -804,26 +821,18 @@ def build_dashboard(
             page_cards: list[dict[str, Any]] = []
             if page_desc:
                 page_cards.append({"type": "markdown", "content": f"## {page_title}\n\n{page_desc}"})
-            page_cards.append(_selection_card("Selection"))
-            page_cards.append(_route_actions_card())
+            page_cards.append(_side_by_side(_selection_card("Selection"), _route_actions_card()))
             page_cards.append(
                 {
                     "type": "grid",
                     "title": f"{page_title} Channels",
-                    "columns": 3,
+                    "columns": 4,
                     "square": False,
                     "cards": buttons,
                 }
             )
             page_cards.extend(now_playing)
-            views.append(
-                {
-                    "title": page_title,
-                    "path": page_path,
-                    "icon": page_icon,
-                    "cards": page_cards,
-                }
-            )
+            views.append(_panel_view(page_title, page_path, page_icon, page_cards))
 
     dashboard = {"title": "AVAccess Matrix", "views": views}
     return dashboard
