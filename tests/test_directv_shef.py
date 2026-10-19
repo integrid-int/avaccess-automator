@@ -175,6 +175,26 @@ def _buttons_calling(view: dict, service: str) -> list[dict]:
     return found
 
 
+class FriendlySelectOptionsTests(unittest.TestCase):
+    def test_input_selects_use_friendly_labels_and_scripts_map_back(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            package_path, _dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=False)
+            package = yaml.safe_load(package_path.read_text())
+        program = package["input_select"]["avaccess_program"]
+        channel = package["input_select"]["avaccess_channel"]
+        self.assertEqual(program["options"][0], "Program A")
+        self.assertIn("ESPN", channel["options"])
+        self.assertNotIn("program_a", program["options"])
+        self.assertNotIn("espn", channel["options"])
+        tune_vars = package["script"]["avaccess_tune_channel"]["variables"]
+        self.assertEqual(tune_vars["program_label_to_key"]["Program A"], "program_a")
+        self.assertEqual(tune_vars["channel_label_to_key"]["ESPN"], "espn")
+        self.assertEqual(
+            package["script"]["avaccess_tune_espn"]["sequence"][0]["data"]["option"],
+            "ESPN",
+        )
+
+
 class GenerateHaBundleCliTests(unittest.TestCase):
     """Exercise generate_ha_bundle.py as a CLI, including written YAML files."""
 
@@ -199,9 +219,20 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
             for view in dashboard.get("views", []):
-                dumped = yaml.safe_dump(view)
-                self.assertIn("Destination", dumped, view.get("title"))
-                self.assertIn("Route Program -> TVs", dumped, view.get("title"))
+                dumped = yaml.safe_dump(view, allow_unicode=True)
+                self.assertIn("Route Actions", dumped, view.get("title"))
+                self.assertIn("Route Program → TVs", dumped, view.get("title"))
+                self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))
+                selection_cards = [
+                    card
+                    for card in _iter_cards(view.get("cards"))
+                    if card.get("type") == "entities"
+                    and any(
+                        (e.get("entity") if isinstance(e, dict) else e) == "input_select.avaccess_program"
+                        for e in card.get("entities", [])
+                    )
+                ]
+                self.assertEqual(len(selection_cards), 1, view.get("title"))
 
     def test_control_tab_uses_friendly_preset_and_program_names(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -212,7 +243,7 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             preset_buttons = _buttons_calling(control, "script.avaccess_preset_")
             self.assertEqual(
                 [button["name"] for button in preset_buttons],
-                ["Preset 1 ALL", "Preset 2 4 Programs", "Preset 3 9 Programs"],
+                ["ALL", "4 Programs", "9 Programs"],
             )
             self.assertEqual(
                 [button["tap_action"]["service"] for button in preset_buttons],
@@ -223,8 +254,15 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 ],
             )
 
-            program_buttons = _buttons_calling(control, "script.avaccess_set_program")
+            # Each program has an unselected + selected variant swapped by visibility conditions.
+            program_buttons = [
+                button
+                for button in _buttons_calling(control, "script.avaccess_set_program")
+                if button["visibility"][0].get("state_not")
+            ]
             self.assertEqual([button["name"] for button in program_buttons], [f"Program {letter}" for letter in "ABCDEFGHI"])
+            for button in program_buttons:
+                self.assertEqual(button["visibility"][0]["state_not"], button["name"])
             for button, key in zip(program_buttons, "abcdefghi", strict=True):
                 self.assertEqual(button["tap_action"]["service"], "script.avaccess_set_program")
                 self.assertEqual(button["tap_action"]["data"]["program"], f"program_{key}")
@@ -244,7 +282,7 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             package_path, dashboard_path = _run_generate_ha_bundle(Path(tmp), ui_staging=True)
             package = yaml.safe_load(package_path.read_text())
             dashboard = yaml.safe_load(dashboard_path.read_text())
-            dumped_dash = yaml.safe_dump(dashboard)
+            dumped_dash = yaml.safe_dump(dashboard, allow_unicode=True)
             dumped_pkg = yaml.safe_dump(package)
 
             self.assertNotIn("media_player.directv", dumped_dash)
@@ -257,8 +295,9 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             titles = {view.get("title") for view in dashboard.get("views", [])}
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
-            self.assertIn("Destination", dumped_dash)
-            self.assertIn("Route Program -> TVs", dumped_dash)
+            self.assertIn("Route Actions", dumped_dash)
+            self.assertIn("Route Program → TVs", dumped_dash)
+            self.assertIn("All 9 receivers", dumped_dash)
 
 
 if __name__ == "__main__":

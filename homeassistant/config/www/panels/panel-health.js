@@ -8,7 +8,7 @@ import {
   loadAssignments,
   resolveSendPresetId,
   saveAssignments,
-} from "./assignment-store.js?v=15";
+} from "./assignment-store.js?v=16";
 import {
   GUIDE_CHANNELS,
   PRESETS,
@@ -19,8 +19,8 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=15";
-import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=15";
+} from "./panel-data.js?v=16";
+import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=16";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -39,6 +39,8 @@ const DEFAULT_STATE = {
 };
 
 const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
+const LIVE_BLOCKED_REASON =
+  "Live blocked: inventory not ready — fill inventory hostnames (no REPLACE_ME) and export inventory.json";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
 const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
@@ -181,8 +183,11 @@ class PanelHealth extends HTMLElement {
 
   _guideFeedState() {
     const { channels, epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, this.guideEpg);
+    const sorted = [...channels].sort(
+      (a, b) => channelNumberValue(a.number) - channelNumberValue(b.number)
+    );
     return {
-      channels: filterGuideChannels(channels, this._state.guideQuery),
+      channels: filterGuideChannels(sorted, this._state.guideQuery),
       guideEpgAvailable: epgAvailable,
     };
   }
@@ -192,14 +197,22 @@ class PanelHealth extends HTMLElement {
     return `<div class="guide-epg-banner" role="status">${GUIDE_UNAVAILABLE_BANNER}</div>`;
   }
 
-  _renderGuideRowCells(channel) {
+  _guideRowClass(guideEpgAvailable) {
+    // Without EPG data the now/next columns would only show dashes; collapse them.
+    return guideEpgAvailable ? "guide-row" : "guide-row no-epg";
+  }
+
+  _renderGuideRowCells(channel, guideEpgAvailable = true) {
     const nowTitle = channel.nowTitle ? String(channel.nowTitle) : "";
     const nextTitle = channel.nextTitle ? String(channel.nextTitle) : "";
+    const listings = guideEpgAvailable
+      ? `
+      <span class="guide-now" title="${escapeAttr(nowTitle)}">${nowTitle ? escapeHtml(nowTitle) : "—"}</span>
+      <span class="guide-next" title="${escapeAttr(nextTitle)}">${nextTitle ? escapeHtml(nextTitle) : "—"}</span>`
+      : "";
     return `
       <b>${escapeHtml(channel.number)}</b>
-      <span class="guide-name">${escapeHtml(channel.name)}</span>
-      <span class="guide-now" title="${escapeAttr(nowTitle)}">${nowTitle ? escapeHtml(nowTitle) : "—"}</span>
-      <span class="guide-next" title="${escapeAttr(nextTitle)}">${nextTitle ? escapeHtml(nextTitle) : "—"}</span>
+      <span class="guide-name">${escapeHtml(channel.name)}</span>${listings}
       ${this._routeBadgeHtml(channel.id)}
     `;
   }
@@ -223,8 +236,14 @@ class PanelHealth extends HTMLElement {
     const ready = this._inventoryLiveReady;
     const active = this._state.liveCommit;
     const tip = ready
-      ? "When on, Send executes IR+UDP via Home Assistant"
-      : "Live blocked: fill inventory hostnames (no REPLACE_ME) and export inventory.json";
+      ? "When on, Send tunes DirecTV (SHEF) and switches video (UDP) via Home Assistant"
+      : LIVE_BLOCKED_REASON;
+    // iPads never show title tooltips, so the hint carries the full reason inline.
+    const hint = ready
+      ? active
+        ? "Live — Send changes the TVs"
+        : "Dry run — Send only previews the plan"
+      : LIVE_BLOCKED_REASON;
     return `
       <div class="live-commit-row">
         <button
@@ -237,7 +256,7 @@ class PanelHealth extends HTMLElement {
         >
           Live commit
         </button>
-        <span class="live-commit-hint">${ready ? (active ? "Live" : "Dry-run") : "Inventory not live-ready"}</span>
+        <span class="live-commit-hint ${ready ? "" : "is-blocked"}" role="status">${escapeHtml(hint)}</span>
       </div>
     `;
   }
@@ -296,7 +315,7 @@ class PanelHealth extends HTMLElement {
           </span>
         </span>
         <span class="card-meta">
-          <span>${escapeHtml(cta)}</span>
+          <span class="card-cta ${action === "toggle-program" ? "" : "has-chevron"}">${escapeHtml(cta)}</span>
           ${this._routeBadgeHtml(game.id)}
         </span>
       </button>
@@ -866,8 +885,8 @@ class PanelHealth extends HTMLElement {
           ${channels
             .map(
               (channel) => `
-                <button type="button" class="guide-row" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
-                  ${this._renderGuideRowCells(channel)}
+                <button type="button" class="${this._guideRowClass(guideEpgAvailable)}" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
+                  ${this._renderGuideRowCells(channel, guideEpgAvailable)}
                 </button>
               `
             )
@@ -926,9 +945,7 @@ class PanelHealth extends HTMLElement {
     const noFreeEncoders = speculative?.error === "No free encoders";
     const sendDisabled =
       !content || this._state.selectedTvs.length === 0 || Boolean(speculative?.error);
-    const sendLabel = viaPlan
-      ? this._planSendLabel()
-      : `Send to ${this._state.selectedTvs.length} TV${this._state.selectedTvs.length === 1 ? "" : "s"}`;
+    const sendLabel = this._destinationSendLabel(viaPlan);
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -954,15 +971,23 @@ class PanelHealth extends HTMLElement {
           data-action="send-destination"
           ${sendDisabled ? "disabled aria-disabled=\"true\"" : ""}
         >
-          ${sendLabel}
+          ${escapeHtml(sendLabel)}
         </button>
       </section>
     `;
   }
 
+  _destinationSendLabel(viaPlan) {
+    const count = this._state.selectedTvs.length;
+    if (!this._state.selectedContent) return "Choose content first";
+    if (count === 0) return "Pick a preset or TVs";
+    const suffix = viaPlan ? (this._state.liveCommit ? " (LIVE)" : " (dry run)") : "";
+    return `Send ${this._selectedContentLabel()} → ${count} TV${count === 1 ? "" : "s"}${suffix}`;
+  }
+
   _renderPresetChoices() {
     return `
-      <div class="preset-row">
+      <div class="preset-row preset-grid">
         ${PRESETS.map((preset) => {
           const active = this._state.selectedPresetId === preset.id ? "is-active" : "";
           return `
@@ -988,7 +1013,7 @@ class PanelHealth extends HTMLElement {
       const ordinal = index + 1;
       const tvs = program ? stripedTvs(stripeCount, ordinal) : [];
       const preview = program
-        ? `ENC-${String(ordinal).padStart(2, "0")} · TVs ${tvs.slice(0, 4).join(", ")}${tvs.length > 4 ? "…" : ""}`
+        ? `TVs ${tvs.slice(0, 4).join(", ")}${tvs.length > 4 ? "…" : ""}`
         : "Empty";
       return `
         <div class="slot-chip ${program ? "is-filled" : ""}">
@@ -1126,8 +1151,8 @@ class PanelHealth extends HTMLElement {
           .map((channel) => {
             const selected = selectedIds.has(channel.id) ? "is-selected" : "";
             return `
-              <button type="button" class="guide-row ${selected}" data-action="toggle-program" data-value="${escapeAttr(channel.id)}">
-                ${this._renderGuideRowCells(channel)}
+              <button type="button" class="${this._guideRowClass(guideEpgAvailable)} ${selected}" data-action="toggle-program" data-value="${escapeAttr(channel.id)}">
+                ${this._renderGuideRowCells(channel, guideEpgAvailable)}
               </button>
             `;
           })
@@ -1236,8 +1261,8 @@ class PanelHealth extends HTMLElement {
           .map((channel) => {
             const selected = this._state.selectedContent?.id === channel.id ? "is-selected" : "";
             return `
-              <button type="button" class="guide-row ${selected}" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
-                ${this._renderGuideRowCells(channel)}
+              <button type="button" class="${this._guideRowClass(guideEpgAvailable)} ${selected}" data-action="select-channel" data-value="${escapeAttr(channel.id)}">
+                ${this._renderGuideRowCells(channel, guideEpgAvailable)}
               </button>
             `;
           })
@@ -1308,7 +1333,10 @@ class PanelHealth extends HTMLElement {
         }
 
         .shell {
-          min-height: 100%;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          min-height: 100dvh;
           padding: 20px;
           box-sizing: border-box;
           background:
@@ -1317,6 +1345,9 @@ class PanelHealth extends HTMLElement {
         }
 
         .stage {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
           border-radius: var(--radius-md);
           background: var(--graphite);
           color: var(--text-stage);
@@ -1398,6 +1429,7 @@ class PanelHealth extends HTMLElement {
           background: var(--surface);
           border-radius: var(--radius-md);
           color: var(--text);
+          flex: 1;
           min-height: 420px;
           padding: 18px;
         }
@@ -1495,6 +1527,19 @@ class PanelHealth extends HTMLElement {
           justify-content: space-between;
         }
 
+        .card-cta {
+          background: var(--cyan-soft);
+          border-radius: var(--radius-sm);
+          color: var(--cyan);
+          font-weight: 800;
+          padding: 6px 10px;
+        }
+
+        .card-cta.has-chevron::after {
+          content: " ›";
+          font-weight: 900;
+        }
+
         .route-badge {
           background: var(--cyan-soft);
           border-radius: var(--radius-sm);
@@ -1549,6 +1594,10 @@ class PanelHealth extends HTMLElement {
           display: grid;
           gap: 10px;
           grid-template-columns: 56px minmax(90px, 1.1fr) minmax(70px, 1fr) minmax(70px, 1fr) auto;
+        }
+
+        .guide-row.no-epg {
+          grid-template-columns: 56px minmax(90px, 1fr) auto;
         }
 
         .guide-row b {
@@ -1631,6 +1680,11 @@ class PanelHealth extends HTMLElement {
           font-size: 0.8rem;
         }
 
+        .preset-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
         .preset-chip.is-active {
           background: var(--cyan);
           color: white;
@@ -1669,8 +1723,10 @@ class PanelHealth extends HTMLElement {
           border: 1px solid rgba(165, 243, 252, 0.35);
           border-radius: var(--radius-md);
           color: var(--cyan-stage);
+          flex-shrink: 0;
           font-weight: 800;
           padding: 10px 14px;
+          white-space: nowrap;
         }
 
         .live-commit-toggle.is-active {
@@ -1688,6 +1744,10 @@ class PanelHealth extends HTMLElement {
           color: var(--muted-stage);
           font-size: 0.8rem;
           font-weight: 700;
+        }
+
+        .live-commit-hint.is-blocked {
+          color: #fcd34d;
         }
 
         .dry-run-summary {
@@ -1807,6 +1867,10 @@ class PanelHealth extends HTMLElement {
           .tv-grid {
             grid-template-columns: repeat(5, minmax(0, 1fr));
           }
+
+          .preset-grid {
+            grid-template-columns: 1fr;
+          }
         }
       </style>
 
@@ -1817,7 +1881,11 @@ class PanelHealth extends HTMLElement {
               <span>AVAccess · iPad</span>
               <h1>Sports Routing</h1>
             </div>
-            <div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>
+            ${
+              this._panel?.config?.debug
+                ? `<div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>`
+                : ""
+            }
           </header>
           ${this._renderChipRow()}
           ${this._renderLiveCommitToggle()}
@@ -1829,6 +1897,15 @@ class PanelHealth extends HTMLElement {
 
     this._restoreGuideSearchCaret(guideSearchCaret);
   }
+}
+
+function channelNumberValue(number) {
+  // "212" -> 212, "212-1" -> 212.001 so subchannels sort after their major.
+  const [major, minor] = String(number ?? "").split(/[-.]/);
+  const value = Number.parseInt(major, 10);
+  if (!Number.isFinite(value)) return Number.POSITIVE_INFINITY;
+  const sub = Number.parseInt(minor ?? "0", 10);
+  return value + (Number.isFinite(sub) ? sub / 1000 : 0);
 }
 
 function escapeHtml(value) {

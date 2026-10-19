@@ -32,10 +32,14 @@ def slug(value: str) -> str:
 
 
 PRESET_DISPLAY_NAMES = {
-    "1_all": "Preset 1 ALL",
-    "2_four_programs": "Preset 2 4 Programs",
-    "3_nine_programs": "Preset 3 9 Programs",
+    "1_all": "ALL",
+    "2_four_programs": "4 Programs",
+    "3_nine_programs": "9 Programs",
 }
+
+# Valid MDI names (mdi:television-multiple does not exist and renders blank).
+ROUTE_ICON = "mdi:monitor-multiple"
+SELECTED_ICON = "mdi:check-circle"
 
 
 def friendly_preset_name(preset_key: str) -> str:
@@ -57,6 +61,40 @@ def friendly_program_name(program_key: str) -> str:
     if pretty.lower().startswith("program "):
         return pretty
     return f"Program {pretty}"
+
+
+def friendly_channel_names(channels: dict[str, Any]) -> dict[str, str]:
+    """Map channel key -> unique operator-facing label (used as input_select option)."""
+    out: dict[str, str] = {}
+    seen: set[str] = set()
+    for channel_key, info in channels.items():
+        label = str((info or {}).get("label") or channel_key) if isinstance(info, dict) else str(channel_key)
+        if label in seen:
+            label = f"{label} ({channel_key})"
+        seen.add(label)
+        out[str(channel_key)] = label
+    return out
+
+
+def friendly_program_names(program_keys: list[str]) -> dict[str, str]:
+    """Map program key -> unique operator-facing label (used as input_select option)."""
+    out: dict[str, str] = {}
+    seen: set[str] = set()
+    for key in program_keys:
+        label = friendly_program_name(key)
+        if label in seen:
+            label = f"{label} ({key})"
+        seen.add(label)
+        out[key] = label
+    return out
+
+
+def _key_from_option(field: str, entity: str, label_to_key: str) -> str:
+    """Jinja: accept a raw key or a friendly input_select label and return the raw key."""
+    return (
+        f"{{% set raw = ({field} | default(states('{entity}'), true)) | string %}}"
+        f"{{{{ {label_to_key}[raw] if raw in {label_to_key} else raw | lower }}}}"
+    )
 
 
 def staging_now_playing_entity_id(media_player_entity: str) -> str:
@@ -148,6 +186,12 @@ def build_package(
     channel_keys = list(channels.keys())
     if not program_keys:
         raise SystemExit("program_to_encoder must include at least one program")
+    program_labels = friendly_program_names(program_keys)
+    channel_labels = friendly_channel_names(channels)
+    program_label_to_key = {label: key for key, label in program_labels.items()}
+    channel_label_to_key = {label: key for key, label in channel_labels.items()}
+    program_key_template = _key_from_option("program", "input_select.avaccess_program", "program_label_to_key")
+    channel_key_template = _key_from_option("channel", "input_select.avaccess_channel", "channel_label_to_key")
 
     shell_command: dict[str, str] = {}
     scripts: dict[str, Any] = {}
@@ -193,10 +237,18 @@ def build_package(
         "fields": {
             "program": {"description": "Program key from program_to_encoder", "example": program_keys[0]}
         },
+        "variables": {
+            "program_key_to_label": program_labels,
+            "program_label_to_key": program_label_to_key,
+            "program_key": program_key_template,
+        },
         "sequence": [
             {
                 "service": "input_select.select_option",
-                "data": {"entity_id": "input_select.avaccess_program", "option": "{{ program }}"},
+                "data": {
+                    "entity_id": "input_select.avaccess_program",
+                    "option": "{{ program_key_to_label[program_key] if program_key in program_key_to_label else program }}",
+                },
             }
         ],
     }
@@ -205,8 +257,10 @@ def build_package(
         "program_to_encoder": program_to_encoder,
         "channels": channels,
         "suffix_commands": suffix_commands,
-        "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
-        "channel_key": "{{ (channel | default(states('input_select.avaccess_channel'), true)) | lower }}",
+        "program_label_to_key": program_label_to_key,
+        "channel_label_to_key": channel_label_to_key,
+        "program_key": program_key_template,
+        "channel_key": channel_key_template,
         "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
         "channel_number": "{{ channels[channel_key]['number'] if channel_key in channels else none }}",
         "digit_delay": digit_delay,
@@ -361,7 +415,8 @@ def build_package(
         },
         "variables": {
             "program_to_encoder": program_to_encoder,
-            "program_key": "{{ (program | default(states('input_select.avaccess_program'), true)) | lower }}",
+            "program_label_to_key": program_label_to_key,
+            "program_key": program_key_template,
             "selected_encoder": "{{ program_to_encoder[program_key] if program_key in program_to_encoder else none }}",
             "target_list": "{{ targets | default(states('input_text.avaccess_target_rxs'), true) }}",
         },
@@ -412,7 +467,7 @@ def build_package(
             "sequence": [
                 {
                     "service": "input_select.select_option",
-                    "data": {"entity_id": "input_select.avaccess_channel", "option": channel_key},
+                    "data": {"entity_id": "input_select.avaccess_channel", "option": channel_labels[channel_key]},
                 },
                 {"service": "script.avaccess_tune_selected_channel"},
             ],
@@ -477,14 +532,14 @@ def build_package(
         "input_select": {
             "avaccess_program": {
                 "name": "AVAccess Program",
-                "options": program_keys,
-                "initial": program_keys[0],
+                "options": [program_labels[k] for k in program_keys],
+                "initial": program_labels[program_keys[0]],
                 "icon": "mdi:view-grid-plus",
             },
             "avaccess_channel": {
                 "name": "AVAccess Channel",
-                "options": channel_keys,
-                "initial": channel_keys[0],
+                "options": [channel_labels[k] for k in channel_keys],
+                "initial": channel_labels[channel_keys[0]],
                 "icon": "mdi:television-guide",
             },
         },
@@ -493,7 +548,7 @@ def build_package(
                 "name": "AVAccess Target TVs",
                 "max": 255,
                 "initial": "RX-01,RX-02",
-                "icon": "mdi:television-multiple",
+                "icon": ROUTE_ICON,
             }
         },
         "shell_command": shell_command,
@@ -502,79 +557,138 @@ def build_package(
     return package
 
 
+def _selectable_buttons(
+    name: str,
+    icon: str,
+    tap_action: dict[str, Any],
+    entity: str,
+    option: str,
+) -> list[dict[str, Any]]:
+    """Two button variants so the tile matching the input_select state looks selected.
+
+    Built-in `visibility` conditions swap the icon to a check mark; no custom cards needed.
+    """
+    return [
+        {
+            "type": "button",
+            "name": name,
+            "icon": icon,
+            "tap_action": tap_action,
+            "visibility": [{"condition": "state", "entity": entity, "state_not": option}],
+        },
+        {
+            "type": "button",
+            "name": name,
+            "icon": SELECTED_ICON,
+            "tap_action": tap_action,
+            "visibility": [{"condition": "state", "entity": entity, "state": option}],
+        },
+    ]
+
+
 def _build_channel_buttons(
     channels: dict[str, Any], channel_keys: list[str] | None = None, icon: str = "mdi:television-play"
 ) -> list[dict[str, Any]]:
     keys = channel_keys or list(channels.keys())
+    labels = friendly_channel_names(channels)
     out: list[dict[str, Any]] = []
     for channel_key in keys:
         if channel_key not in channels:
             continue
-        info = channels[channel_key]
         ch_slug = slug(channel_key)
-        out.append(
-            {
-                "type": "button",
-                "name": info.get("label", channel_key),
-                "icon": icon,
-                "tap_action": {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
-            }
+        out.extend(
+            _selectable_buttons(
+                labels[channel_key],
+                icon,
+                {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
+                "input_select.avaccess_channel",
+                labels[channel_key],
+            )
         )
     return out
 
 
-def _now_playing_card(encoder_media_player: dict[str, Any]) -> dict[str, Any] | None:
+def _now_playing_cards(encoder_media_player: dict[str, Any], ui_staging: bool) -> list[dict[str, Any]]:
+    """Per-encoder rows, collapsed to one banner when every receiver reports the same idle status."""
     if not isinstance(encoder_media_player, dict) or not encoder_media_player:
-        return None
-    entities = []
-    for enc_id, entity_id in encoder_media_player.items():
-        entities.append({"entity": str(entity_id), "name": str(enc_id)})
-    return {"type": "entities", "title": "Now Playing (DirecTV)", "entities": entities}
-
-
-def _destination_cards(encoder_media_player: dict[str, Any] | None = None) -> list[dict[str, Any]]:
-    cards: list[dict[str, Any]] = [
+        return []
+    entity_ids = [str(entity_id) for entity_id in encoder_media_player.values()]
+    entities = [{"entity": str(entity_id), "name": str(enc_id)} for enc_id, entity_id in encoder_media_player.items()]
+    shared_status = "STAGING - DirecTV not connected" if ui_staging else "unavailable"
+    banner_text = (
+        "STAGING – DirecTV not connected" if ui_staging else "DirecTV receivers unavailable"
+    )
+    return [
         {
-            "type": "entities",
-            "title": "Destination",
-            "entities": [
-                "input_select.avaccess_program",
-                "input_select.avaccess_channel",
-                "input_text.avaccess_target_rxs",
+            "type": "conditional",
+            "conditions": [
+                {"condition": "state", "entity": entity_id, "state": shared_status} for entity_id in entity_ids
             ],
+            "card": {
+                "type": "markdown",
+                "content": (
+                    "### Now Playing (DirecTV)\n\n"
+                    f"<ha-alert alert-type=\"warning\">All {len(entity_ids)} receivers: "
+                    f"**{banner_text}**</ha-alert>"
+                ),
+            },
+        },
+        {
+            "type": "conditional",
+            "conditions": [
+                {
+                    "condition": "or",
+                    "conditions": [
+                        {"condition": "state", "entity": entity_id, "state_not": shared_status}
+                        for entity_id in entity_ids
+                    ],
+                }
+            ],
+            "card": {"type": "entities", "title": "Now Playing (DirecTV)", "entities": entities},
         },
     ]
-    now_playing = _now_playing_card(encoder_media_player or {})
-    if now_playing:
-        cards.insert(0, now_playing)
-    return cards + [
-        {
-            "type": "grid",
-            "title": "Route Actions",
-            "columns": 2,
-            "square": False,
-            "cards": [
-                {
-                    "type": "button",
-                    "name": "Tune Selected Program",
-                    "icon": "mdi:remote-tv",
-                    "tap_action": {
-                        "action": "call-service",
-                        "service": "script.avaccess_tune_selected_channel",
-                    },
+
+
+def _selection_card(title: str) -> dict[str, Any]:
+    return {
+        "type": "entities",
+        "title": title,
+        "show_header_toggle": False,
+        "entities": [
+            {"entity": "input_select.avaccess_program", "name": "Program"},
+            {"entity": "input_select.avaccess_channel", "name": "Channel"},
+            {"entity": "input_text.avaccess_target_rxs", "name": "Target TVs"},
+        ],
+    }
+
+
+def _route_actions_card() -> dict[str, Any]:
+    return {
+        "type": "grid",
+        "title": "Route Actions",
+        "columns": 2,
+        "square": False,
+        "cards": [
+            {
+                "type": "button",
+                "name": "Tune Selected Program",
+                "icon": "mdi:remote-tv",
+                "tap_action": {
+                    "action": "call-service",
+                    "service": "script.avaccess_tune_selected_channel",
                 },
-                {
-                    "type": "button",
-                    "name": "Route Program -> TVs",
-                    "icon": "mdi:television-multiple",
-                    "tap_action": {
-                        "action": "call-service",
-                        "service": "script.avaccess_route_selected_program_to_tvs",
-                    },
+            },
+            {
+                "type": "button",
+                "name": "Route Program → TVs",
+                "icon": ROUTE_ICON,
+                "tap_action": {
+                    "action": "call-service",
+                    "service": "script.avaccess_route_selected_program_to_tvs",
                 },
-            ],
-        },
-    ]
+            },
+        ],
+    }
 
 
 def build_dashboard(
@@ -584,9 +698,11 @@ def build_dashboard(
 ) -> dict[str, Any]:
     channels = channels_cfg["channels"]
     program_keys = list(channels_cfg["program_to_encoder"].keys())
+    program_labels = friendly_program_names(program_keys)
     encoder_media_player = channels_cfg.get("encoder_media_player", {})
     if ui_staging:
         encoder_media_player = remap_encoder_media_player_for_staging(encoder_media_player or {})
+    now_playing = _now_playing_cards(encoder_media_player or {}, ui_staging)
 
     preset_buttons = []
     for preset_key in presets.keys():
@@ -602,17 +718,18 @@ def build_dashboard(
 
     program_buttons = []
     for program_key in program_keys:
-        program_buttons.append(
-            {
-                "type": "button",
-                "name": friendly_program_name(program_key),
-                "icon": "mdi:monitor-dashboard",
-                "tap_action": {
+        program_buttons.extend(
+            _selectable_buttons(
+                program_labels[program_key],
+                "mdi:monitor-dashboard",
+                {
                     "action": "call-service",
                     "service": "script.avaccess_set_program",
                     "data": {"program": program_key},
                 },
-            }
+                "input_select.avaccess_program",
+                program_labels[program_key],
+            )
         )
 
     channel_buttons = _build_channel_buttons(channels)
@@ -639,17 +756,8 @@ def build_dashboard(
                 }
             )
 
-    cards: list[dict[str, Any]] = [
-        {
-            "type": "entities",
-            "title": "Active Selection",
-            "entities": [
-                "input_select.avaccess_program",
-                "input_select.avaccess_channel",
-                "input_text.avaccess_target_rxs",
-            ],
-        }
-    ]
+    # Selection + Route Actions first so routing is reachable without scrolling on iPad portrait.
+    cards: list[dict[str, Any]] = [_selection_card("Active Selection"), _route_actions_card()]
     if favorite_buttons:
         cards.append(
             {
@@ -665,7 +773,7 @@ def build_dashboard(
             {"type": "grid", "title": "Presets", "columns": 3, "square": False, "cards": preset_buttons},
             {"type": "grid", "title": "Programs", "columns": 3, "square": False, "cards": program_buttons},
             {"type": "grid", "title": "Channels", "columns": 4, "square": False, "cards": channel_buttons},
-            *_destination_cards(encoder_media_player),
+            *now_playing,
         ]
     )
 
@@ -686,7 +794,7 @@ def build_dashboard(
             page_title = str(page_cfg.get("title", page_key.upper()))
             page_path = str(page_cfg.get("path", slug(page_key)))
             page_icon = str(page_cfg.get("icon", "mdi:basketball"))
-            page_desc = str(page_cfg.get("description", ""))
+            page_desc = str(page_cfg.get("description", "")).replace("->", "→")
             page_channels = page_cfg.get("channels", [])
             if not isinstance(page_channels, list) or not page_channels:
                 continue
@@ -696,17 +804,8 @@ def build_dashboard(
             page_cards: list[dict[str, Any]] = []
             if page_desc:
                 page_cards.append({"type": "markdown", "content": f"## {page_title}\n\n{page_desc}"})
-            page_cards.append(
-                {
-                    "type": "entities",
-                    "title": "Selection",
-                    "entities": [
-                        "input_select.avaccess_program",
-                        "input_select.avaccess_channel",
-                        "input_text.avaccess_target_rxs",
-                    ],
-                }
-            )
+            page_cards.append(_selection_card("Selection"))
+            page_cards.append(_route_actions_card())
             page_cards.append(
                 {
                     "type": "grid",
@@ -716,7 +815,7 @@ def build_dashboard(
                     "cards": buttons,
                 }
             )
-            page_cards.extend(_destination_cards(encoder_media_player))
+            page_cards.extend(now_playing)
             views.append(
                 {
                     "title": page_title,
@@ -773,9 +872,9 @@ def apply_ui_staging_stubs(
 
 
 def write_yaml(path: Path, data: dict[str, Any], header: str) -> None:
-    text = yaml.safe_dump(data, sort_keys=False, width=120, allow_unicode=False)
+    text = yaml.safe_dump(data, sort_keys=False, width=120, allow_unicode=True)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(f"{header}\n{text}")
+    path.write_text(f"{header}\n{text}", encoding="utf-8")
 
 
 def main() -> None:
