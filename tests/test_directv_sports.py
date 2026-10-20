@@ -230,6 +230,23 @@ def test_pull_writes_the_window_and_a_refusal_keeps_the_old_file(tmp_path, monke
     assert written["sports"][0]["games"][0]["channelNumber"] == "216"
 
 
+def test_college_basketball_sits_under_basketball_with_the_nba():
+    college = _game(1228045, "NCAAB", "Tennessee", "Duke", [_showing(_channel(612, callsign="ACCN"))])
+    college["sport"] = {"text_id": "basketball", "title": "Basketball", "emoji": "🏀", "rank": 2, "show": True}
+    college["league"]["title"] = "College Basketball (M)"
+    college["league"]["title_short"] = "NCAA Basketball (M)"
+    college["league"]["rank"] = 6
+    nba = _game(9, "NBA", "Mavericks", "Heat", [_showing(_channel(216, callsign="NBA"))])
+    schedule = parse_schedule({"games": [college, nba]}, generated_at=_stamp())
+    basketball = schedule["sports"][0]
+    assert basketball["id"] == "basketball"
+    assert [league["id"] for league in basketball["leagues"]] == ["nba", "ncaab"]
+    assert basketball["leagues"][1]["chipTitle"] == "NCAA Basketball (M)"
+    by_league = {game["leagueId"]: game for game in basketball["games"]}
+    assert by_league["ncaab"]["channelNumber"] == "612"
+    assert by_league["nba"]["channelNumber"] == "216"
+
+
 def test_college_football_sits_under_football_with_the_nfl():
     college = _game(1228556, "NCAAF", "Pittsburgh", "Miami", [_showing(_channel(206, callsign="ESPN"))])
     college["sport"] = {"text_id": "football", "title": "Football", "emoji": "🏈", "rank": 1, "show": True}

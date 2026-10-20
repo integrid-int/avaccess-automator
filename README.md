@@ -214,7 +214,7 @@ The bartender panel uses a **top chip row** to switch browse modes:
 
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
-- **Sport chips** — the live picker follows DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets a second row (NFL, EPL, La Liga, and so on). Each row is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
+- **Sport chips** — the live picker follows DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets a second row (NFL, NCAA Football, NBA, NCAA Basketball (M), EPL, and so on). Each row is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
 - **Guide** — opens the DirecTV channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
