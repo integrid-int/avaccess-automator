@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T21:10:39Z",
+  "generatedAt": "2026-10-20T21:17:18Z",
   "zip": "27403",
   "source": "directv-sports-info",
   "sports": [
@@ -1858,9 +1858,14 @@
           "leagueTitle": "NBA",
           "away": "Bucks",
           "home": "Wizards",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1209 Milwaukee Bucks: NBA League Pass Premium",
+          "channelNumber": "1209",
+          "alternates": [
+            {
+              "channelNumber": "1214",
+              "channel": "1214 Washington Wizards: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 7:00 PM",
           "startsAt": "2026-10-21T23:00:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png",
@@ -1872,9 +1877,14 @@
           "leagueTitle": "NBA",
           "away": "Hawks",
           "home": "Magic",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1200 Atlanta Hawks: NBA League Pass Premium",
+          "channelNumber": "1200",
+          "alternates": [
+            {
+              "channelNumber": "1211",
+              "channel": "1211 Orlando Magic: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 7:00 PM",
           "startsAt": "2026-10-21T23:00:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png",
@@ -1933,9 +1943,14 @@
           "leagueTitle": "NBA",
           "away": "Bulls",
           "home": "Raptors",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1204 Chicago Bulls: NBA League Pass Premium",
+          "channelNumber": "1204",
+          "alternates": [
+            {
+              "channelNumber": "1213",
+              "channel": "1213 Toronto Raptors: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 7:30 PM",
           "startsAt": "2026-10-21T23:30:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png",
@@ -1947,9 +1962,14 @@
           "leagueTitle": "NBA",
           "away": "Jazz",
           "home": "Grizzlies",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1221 Memphis Grizzlies: NBA League Pass Premium",
+          "channelNumber": "1221",
+          "alternates": [
+            {
+              "channelNumber": "1229",
+              "channel": "1229 Utah Jazz: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 8:00 PM",
           "startsAt": "2026-10-22T00:00:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/uth.png",
@@ -1961,9 +1981,14 @@
           "leagueTitle": "NBA",
           "away": "Pacers",
           "home": "Pelicans",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1207 Indiana Pacers: NBA League Pass Premium",
+          "channelNumber": "1207",
+          "alternates": [
+            {
+              "channelNumber": "1223",
+              "channel": "1223 New Orleans Pelicans: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 8:00 PM",
           "startsAt": "2026-10-22T00:00:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png",
@@ -1998,9 +2023,14 @@
           "leagueTitle": "NBA",
           "away": "Mavericks",
           "home": "Rockets",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1215 Dallas Mavericks: NBA League Pass Premium",
+          "channelNumber": "1215",
+          "alternates": [
+            {
+              "channelNumber": "1218",
+              "channel": "1218 Houston Rockets: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 8:30 PM",
           "startsAt": "2026-10-22T00:30:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png",
@@ -2031,9 +2061,14 @@
           "leagueTitle": "NBA",
           "away": "Suns",
           "home": "Trail Blazers",
-          "channel": "No channel",
-          "channelNumber": null,
-          "alternates": [],
+          "channel": "1225 Phoenix Suns: NBA League Pass Premium",
+          "channelNumber": "1225",
+          "alternates": [
+            {
+              "channelNumber": "1226",
+              "channel": "1226 Portland Trail Blazers: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 10:00 PM",
           "startsAt": "2026-10-22T02:00:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/pho.png",
@@ -2047,7 +2082,16 @@
           "home": "Clippers",
           "channel": "768 NBA LEAGUE PASS",
           "channelNumber": "768",
-          "alternates": [],
+          "alternates": [
+            {
+              "channelNumber": "1219",
+              "channel": "1219 Los Angeles Clippers: NBA League Pass Premium"
+            },
+            {
+              "channelNumber": "1227",
+              "channel": "1227 Sacramento Kings: NBA League Pass Premium"
+            }
+          ],
           "tipoff": "Wed 10:30 PM",
           "startsAt": "2026-10-22T02:30:00.000000Z",
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png",

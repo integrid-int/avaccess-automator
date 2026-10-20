@@ -56,6 +56,10 @@ MARKET_TZ = ZoneInfo("America/New_York")
 # 20 Bars and Restaurants, 21 Shops and Services, 22 Private Office.
 # 20 and above is the commercial branch. This account is bars and restaurants.
 BARS_AND_RESTAURANTS = 20
+# Sports-page add-on. Residential and commercial. Out-of-market NBA games
+# show on these feeds when that add-on is selected; the games URL itself
+# ignores the add-on and still returns the feeds.
+NBA_LEAGUE_PASS = 101
 APP_MAJOR_MIN = 30000
 # Greensboro in-market affiliates. Prefer these over the national simulcast.
 LOCAL_MAJORS = (2, 8, 12, 45)
@@ -475,14 +479,42 @@ def _virtual(channel: dict[str, Any]) -> bool:
     return "virtual" in blob or "(virt" in blob
 
 
+def _channel_text(channel: dict[str, Any]) -> str:
+    return " ".join(
+        str(channel.get(key) or "")
+        for key in ("title_display", "title", "callsign_display", "callsign", "title_pgws")
+    ).casefold()
+
+
+def _nba_league_pass_feed(channel: dict[str, Any]) -> bool:
+    """True for the NBA League Pass add-on, including Premium feeds.
+
+    The games response does not change when the page selects that add-on.
+    Out-of-market games are still on these feeds, and Premium feeds are marked
+    off-satellite even though the number is the one the page lists.
+    """
+    text = _channel_text(channel)
+    if "nba mobile" in text:
+        return False
+    if "nba league pass" in text:
+        return True
+    packages = channel.get("packages")
+    if not isinstance(packages, list):
+        return False
+    return any(
+        isinstance(package, dict) and package.get("id") == NBA_LEAGUE_PASS for package in packages
+    )
+
+
 def is_tunable_showing(showing: dict[str, Any]) -> bool:
-    """Satellite major the Greensboro commercial lineup can tune."""
-    if not isinstance(showing, dict) or showing.get("is_sat") is False:
+    """Major the Greensboro lineup can tune, including NBA League Pass feeds."""
+    if not isinstance(showing, dict):
         return False
     channel = showing.get("channel")
     if not isinstance(channel, dict):
         return False
-    if channel.get("is_sat") is False:
+    league_pass = _nba_league_pass_feed(channel)
+    if not league_pass and (showing.get("is_sat") is False or channel.get("is_sat") is False):
         return False
     if channel.get("nondtv") in (1, True, "1"):
         return False
@@ -498,6 +530,8 @@ def is_tunable_showing(showing: dict[str, Any]) -> bool:
         return False
     if _virtual(channel):
         return False
+    if league_pass:
+        return True
     if not _on_commercial_plan(channel, major):
         return False
     return True

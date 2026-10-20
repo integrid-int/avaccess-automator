@@ -230,6 +230,39 @@ def test_pull_writes_the_window_and_a_refusal_keeps_the_old_file(tmp_path, monke
     assert written["sports"][0]["games"][0]["channelNumber"] == "216"
 
 
+def test_nba_league_pass_feeds_stay_when_the_satellite_flag_is_off():
+    premium = _showing(
+        _channel(
+            1204,
+            callsign="NBACHI",
+            title="Chicago Bulls: NBA League Pass Premium",
+            is_sat=False,
+            packages=[],
+        ),
+        is_sat=False,
+    )
+    mobile = _showing(
+        _channel(
+            1234,
+            callsign="NBA05M",
+            title="NBA Mobile 5: NBA League Pass Premium",
+            is_sat=False,
+            packages=[],
+        ),
+        is_sat=False,
+    )
+    peacock = _showing(
+        _channel(40005, callsign="PEAC", title="Peacock", number_display="PEAC", residential_only=True),
+        is_sat=False,
+    )
+    espn = _showing(_channel(206, callsign="ESPN", title="ESPN"))
+    assert is_tunable_showing(premium) is True
+    assert is_tunable_showing(mobile) is False
+    assert is_tunable_showing(peacock) is False
+    game = _game(7, "NBA", "Bulls", "Raptors", [mobile, premium, espn])
+    assert [item["channelNumber"] for item in tunable_showings(game)] == ["206", "1204"]
+
+
 def test_college_basketball_sits_under_basketball_with_the_nba():
     college = _game(1228045, "NCAAB", "Tennessee", "Duke", [_showing(_channel(612, callsign="ACCN"))])
     college["sport"] = {"text_id": "basketball", "title": "Basketball", "emoji": "🏀", "rank": 2, "show": True}
