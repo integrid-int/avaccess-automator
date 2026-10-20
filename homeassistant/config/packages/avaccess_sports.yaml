@@ -1,0 +1,27 @@
+# DirecTV sports rail refresh through the Selenium Standalone add-on.
+#
+# Install and start https://github.com/davida72/selenium-homeassistant so
+# port 4444 is listening. This command does not curl DirecTV. It asks that
+# browser for each upcoming day, then keeps channels on a commercial package
+# (plus Greensboro locals 2, 8, 12, and 45).
+#
+# shell_command runs with cwd = HA config dir and is stopped after 60 seconds.
+# The Selenium add-on must already be running.
+
+shell_command:
+  avaccess_refresh_sports: >-
+    python3 avaccess/scripts/directv_sports.py
+    --pull
+    --selenium http://127.0.0.1:4444
+    --ahead 8
+    --zip 27403
+    --out www/avaccess/sports_schedule.json
+
+automation:
+  - id: avaccess_refresh_sports_morning
+    alias: AVAccess refresh DirecTV sports
+    triggers:
+      - trigger: time
+        at: "06:00:00"
+    actions:
+      - action: shell_command.avaccess_refresh_sports

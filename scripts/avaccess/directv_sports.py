@@ -5,13 +5,22 @@ The sports page loads one calendar day per request:
 
   GET https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25
 
-A week of games is that request repeated, then merged on game id. Scripted
-HTTP is refused (HTTP 403) from many networks, including the Home Assistant
-host. Do not send Cookie or XSRF headers from a saved browser session, and do
-not schedule a fetch inside the HA container.
+A week of games is that request repeated, then merged on game id. The URL has
+no plan argument: zip 27403 returns every package. This is a commercial
+account, so a channel is kept only when one of its packages is marked
+commercial. Greensboro locals 2, 8, 12, and 45 stay even though DirecTV tags
+them with the residential MySports package. Scripted HTTP is refused (HTTP
+403) from many networks. Do not send Cookie or XSRF headers from a saved
+browser session, and do not curl DirecTV from the HA container.
 
-Run the pull on a PC that can open the sports page. It starts Chrome or Edge,
-lets that browser hold the session, and asks the page for each day:
+On Home Assistant OS, the Selenium Standalone add-on is the browser. A
+morning shell command talks to it on port 4444:
+
+  python3 avaccess/scripts/directv_sports.py --pull \\
+    --selenium http://127.0.0.1:4444 --ahead 8 \\
+    --out www/avaccess/sports_schedule.json
+
+On a PC that can open the sports page, Chrome or Edge can do the same:
 
   python3 scripts/avaccess/directv_sports.py --pull --ahead 8 \\
     --out homeassistant/config/www/avaccess/sports_schedule.json
@@ -273,6 +282,143 @@ def fetch_window_in_browser(
     return payloads_from_page_results(results)
 
 
+def fetch_window_via_selenium(
+    endpoint: str,
+    zip_code: str,
+    days: list[str],
+    *,
+    page_timeout_s: float = 20,
+    script_timeout_s: float = 30,
+) -> list[dict[str, Any]]:
+    """Ask the Selenium Standalone add-on to open the sports page and pull each day.
+
+    The add-on already runs Chromium on a virtual screen. This client only
+    speaks WebDriver. It does not send DirecTV cookies.
+    """
+    days = require_days(list(days))
+    base = endpoint.strip().rstrip("/")
+    if not base:
+        raise DirectvSportsError("Pass the Selenium add-on URL, for example http://127.0.0.1:4444.")
+    session = _wd_new_session(base, timeout_s=page_timeout_s)
+    try:
+        _wd_call(
+            base,
+            "POST",
+            f"/session/{session}/timeouts",
+            {"script": int(script_timeout_s * 1000), "pageLoad": int(page_timeout_s * 1000), "implicit": 0},
+            timeout_s=page_timeout_s,
+        )
+        _wd_call(
+            base,
+            "POST",
+            f"/session/{session}/url",
+            {"url": SPORTS_PAGE},
+            timeout_s=page_timeout_s,
+        )
+        wrapper = (
+            "const done = arguments[arguments.length - 1];"
+            f"const run = {_PAGE_FETCH_JS};"
+            "Promise.resolve(run(arguments[0])).then(done).catch((error) => done({error: String(error)}));"
+        )
+        result = _wd_call(
+            base,
+            "POST",
+            f"/session/{session}/execute/async",
+            {"script": wrapper, "args": [{"zip": zip_code, "days": days}]},
+            timeout_s=script_timeout_s + 5,
+        )
+    finally:
+        try:
+            _wd_call(base, "DELETE", f"/session/{session}", timeout_s=10)
+        except DirectvSportsError:
+            pass
+    if isinstance(result, dict) and result.get("error"):
+        raise DirectvSportsError(f"DirecTV browser pull failed: {result['error']}")
+    return payloads_from_page_results(result)
+
+
+def _wd_new_session(base: str, *, timeout_s: float) -> str:
+    try:
+        value = _wd_call(
+            base,
+            "POST",
+            "/session",
+            {
+                "capabilities": {
+                    "alwaysMatch": {
+                        "browserName": "chrome",
+                        "pageLoadStrategy": "eager",
+                    }
+                }
+            },
+            timeout_s=timeout_s,
+        )
+    except DirectvSportsError as exc:
+        if "Selenium" in str(exc):
+            raise
+        raise DirectvSportsError(
+            "Cannot open a browser on the Selenium add-on. "
+            "Start Selenium Standalone and confirm port 4444."
+        ) from exc
+    session = ""
+    if isinstance(value, dict):
+        session = str(value.get("sessionId") or "")
+    if not session:
+        raise DirectvSportsError("Selenium did not return a session.")
+    return session
+
+
+def _wd_call(
+    base: str,
+    method: str,
+    path: str,
+    payload: dict[str, Any] | None = None,
+    *,
+    timeout_s: float,
+) -> Any:
+    data = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = urllib.request.Request(base + path, data=data, method=method)
+    request.add_header("Accept", "application/json")
+    if data is not None:
+        request.add_header("Content-Type", "application/json; charset=utf-8")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout_s) as response:
+            raw = response.read()
+    except urllib.error.HTTPError as exc:
+        raw = exc.read()
+        message = _wd_error(raw) or f"Selenium request failed (HTTP {exc.code})."
+        raise DirectvSportsError(message) from exc
+    except urllib.error.URLError as exc:
+        raise DirectvSportsError(
+            "Cannot reach the Selenium add-on. Start Selenium Standalone and confirm port 4444."
+        ) from exc
+    if not raw:
+        return None
+    try:
+        body = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise DirectvSportsError("Selenium returned a response that was not JSON.") from exc
+    if not isinstance(body, dict):
+        return body
+    if "value" not in body:
+        return body
+    value = body["value"]
+    if isinstance(value, dict) and value.get("error") and "sessionId" not in value:
+        raise DirectvSportsError(str(value.get("message") or value["error"]))
+    return value
+
+
+def _wd_error(raw: bytes) -> str:
+    try:
+        body = json.loads(raw)
+    except json.JSONDecodeError:
+        return ""
+    value = body.get("value") if isinstance(body, dict) else None
+    if isinstance(value, dict):
+        return str(value.get("message") or value.get("error") or "")
+    return ""
+
+
 def load_payload(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict) or not isinstance(payload.get("games"), list):
@@ -343,7 +489,27 @@ def is_tunable_showing(showing: dict[str, Any]) -> bool:
         return False
     if _virtual(channel):
         return False
+    if not _on_commercial_plan(channel, major):
+        return False
     return True
+
+
+def _on_commercial_plan(channel: dict[str, Any], major: int) -> bool:
+    """True when this commercial account can be sold the channel.
+
+    The games response mixes residential and commercial packages. Residential
+    tiers (Choice, Ultimate, Sports Pack, MySports) are not on this account.
+    A package with commercial set is. Locals are the exception: the commercial
+    headend carries them even when the only listed package is MySports.
+    """
+    if major in LOCAL_MAJORS:
+        return True
+    packages = channel.get("packages")
+    if not isinstance(packages, list) or not packages:
+        return True
+    return any(
+        isinstance(package, dict) and package.get("commercial") is True for package in packages
+    )
 
 
 def _rank(major: int) -> tuple[int, int]:
@@ -531,6 +697,11 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         default="",
         help="chrome or msedge. Default tries the installed browser.",
     )
+    parser.add_argument(
+        "--selenium",
+        default="",
+        help="Selenium Standalone URL, used with --pull. Example: http://127.0.0.1:4444.",
+    )
     parser.add_argument("--file", action="append", default=[], help="Saved games JSON. Repeatable.")
     parser.add_argument("--out", required=True, help="sports_schedule.json path.")
     return parser.parse_args(argv)
@@ -543,14 +714,17 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.pull:
             pulled_days = require_days(args.days) if args.days else window_days(args.ahead)
-            payloads.extend(
-                fetch_window_in_browser(
-                    args.zip,
-                    pulled_days,
-                    headless=not args.headed,
-                    channel=args.browser or None,
+            if args.selenium:
+                payloads.extend(fetch_window_via_selenium(args.selenium, args.zip, pulled_days))
+            else:
+                payloads.extend(
+                    fetch_window_in_browser(
+                        args.zip,
+                        pulled_days,
+                        headless=not args.headed,
+                        channel=args.browser or None,
+                    )
                 )
-            )
         else:
             for day in require_days(args.days):
                 payloads.append(fetch_games(args.zip, day))
@@ -573,7 +747,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(schedule, indent=2) + "\n", encoding="utf-8")
+    temporary = out.with_suffix(out.suffix + ".tmp")
+    temporary.write_text(json.dumps(schedule, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, out)
     games = sum(len(sport["games"]) for sport in schedule["sports"])
     print(f"wrote {out} ({games} games)")
     return 0

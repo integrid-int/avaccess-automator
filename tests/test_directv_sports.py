@@ -7,6 +7,7 @@ import pytest
 from scripts.avaccess.directv_sports import (
     DirectvSportsError,
     browser_channel_order,
+    fetch_window_via_selenium,
     games_url,
     is_tunable_showing,
     main,
@@ -207,6 +208,146 @@ def test_pull_writes_the_window_and_a_refusal_keeps_the_old_file(tmp_path, monke
     written = json.loads(out.read_text(encoding="utf-8"))
     assert written["days"] == ["2026-10-26"]
     assert written["sports"][0]["games"][0]["channelNumber"] == "216"
+
+
+def test_commercial_plan_drops_residential_packages_and_keeps_locals():
+    sunday = _showing(
+        _channel(
+            9558,
+            callsign="NFL",
+            commercial_only=True,
+            packages=[{"title": "NFL SUNDAY TICKET", "commercial": True, "residential": False}],
+        )
+    )
+    local = _showing(
+        _channel(
+            8,
+            callsign="WGHP",
+            packages=[{"title": "MySports", "commercial": False, "residential": True}],
+        )
+    )
+    sports_pack = _showing(
+        _channel(
+            464,
+            callsign="TUDN",
+            packages=[{"title": "SPORTS PACK", "commercial": False, "residential": True}],
+        )
+    )
+    business = _showing(
+        _channel(
+            242,
+            callsign="USA",
+            packages=[
+                {"title": "ULTIMATE", "commercial": False, "residential": True},
+                {"title": "COMMERCIAL CHOICE", "commercial": True, "residential": False},
+            ],
+        )
+    )
+    assert is_tunable_showing(sunday) is True
+    assert is_tunable_showing(local) is True
+    assert is_tunable_showing(sports_pack) is False
+    assert is_tunable_showing(business) is True
+    game = _game(1, "NFL", "49ers", "Falcons", [sports_pack, sunday])
+    showings = tunable_showings(game)
+    assert [item["channelNumber"] for item in showings] == ["9558"]
+    assert "packages" not in showings[0]
+
+
+def test_selenium_pull_uses_the_addon_browser_without_cookies():
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    import threading
+
+    seen = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def _read(self):
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length) if length else b""
+            body = json.loads(raw.decode() or "{}") if raw else None
+            seen.append((self.command, self.path, self.headers.get("Cookie"), body))
+            return body
+
+        def _send(self, payload, status=200):
+            data = json.dumps(payload).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_POST(self):
+            body = self._read()
+            if self.path == "/session":
+                self._send({"value": {"sessionId": "abc"}})
+                return
+            if self.path == "/session/abc/execute/async":
+                self._send(
+                    {
+                        "value": [
+                            {
+                                "day": "2026-10-25",
+                                "status": 200,
+                                "body": json.dumps(
+                                    {
+                                        "games": [
+                                            _game(
+                                                1214005,
+                                                "NFL",
+                                                "49ers",
+                                                "Falcons",
+                                                [
+                                                    _showing(
+                                                        _channel(
+                                                            9558,
+                                                            callsign="NFL",
+                                                            packages=[
+                                                                {
+                                                                    "title": "NFL SUNDAY TICKET",
+                                                                    "commercial": True,
+                                                                }
+                                                            ],
+                                                        )
+                                                    )
+                                                ],
+                                            )
+                                        ]
+                                    }
+                                ),
+                            }
+                        ]
+                    }
+                )
+                return
+            self._send({"value": None})
+
+        def do_DELETE(self):
+            seen.append((self.command, self.path, self.headers.get("Cookie"), None))
+            self._send({"value": None})
+
+        def log_message(self, *_args):
+            return
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        payloads = fetch_window_via_selenium(
+            f"http://127.0.0.1:{server.server_address[1]}",
+            "27403",
+            ["2026-10-25"],
+            page_timeout_s=5,
+            script_timeout_s=5,
+        )
+    finally:
+        server.shutdown()
+    assert payloads[0]["games"][0]["id"] == 1214005
+    assert any(item[1] == "/session/abc/url" for item in seen)
+    assert all(item[2] is None for item in seen)
+    script = next(item[3]["script"] for item in seen if item[1].endswith("/execute/async"))
+    assert "27403" not in script
+    posted = next(item[3] for item in seen if item[1].endswith("/execute/async"))
+    assert posted["args"] == [{"zip": "27403", "days": ["2026-10-25"]}]
+    assert not any("Cookie" in json.dumps(item[3]) for item in seen if item[3])
 
 
 def test_merge_payloads_keeps_the_copy_with_showings():
