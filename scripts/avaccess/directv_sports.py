@@ -57,15 +57,14 @@ LOCAL_MAJORS = (2, 8, 12, 45)
 # National sports nets the commercial lineup actually tunes.
 NATIONAL_MAJORS = (206, 209, 212, 215, 216, 218, 219, 245)
 
-# league text_id -> rail id, title, chip, icon, ESPN logo folder
-LEAGUES: dict[str, tuple[str, str, str, str, str]] = {
-    "NFL": ("nfl", "NFL", "NFL", "🏈", "nfl"),
-    "NBA": ("nba", "NBA", "NBA", "🏀", "nba"),
-    "MLB": ("mlb", "MLB", "MLB", "⚾", "mlb"),
-    "NHL": ("nhl", "NHL", "NHL", "🏒", "nhl"),
-    "WNBA": ("wnba", "WNBA", "WNBA", "🏀", "wnba"),
+# ESPN logo folders. Other leagues have no matching CDN path.
+ESPN_LOGO_FOLDER = {
+    "nfl": "nfl",
+    "nba": "nba",
+    "mlb": "mlb",
+    "nhl": "nhl",
+    "wnba": "wnba",
 }
-LEAGUE_ORDER = ("nfl", "nba", "mlb", "nhl", "wnba")
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -602,12 +601,64 @@ def _tipoff(starts_at: Any) -> str:
     return f"{local.strftime('%a')} {hour}:{local.strftime('%M %p')}"
 
 
-def _league_meta(game: dict[str, Any]) -> tuple[str, str, str, str, str] | None:
+def _slug(value: Any) -> str:
+    return "".join(ch for ch in str(value or "").strip().lower() if ch.isalnum() or ch == "_")
+
+
+def _shown(node: Any) -> bool:
+    return isinstance(node, dict) and node.get("show") is not False
+
+
+def _rank_value(node: dict[str, Any]) -> int:
+    raw = node.get("rank")
+    if isinstance(raw, bool) or raw is None:
+        return 9999
+    if isinstance(raw, int):
+        return raw
+    text = str(raw).strip()
+    return int(text) if text.isdigit() else 9999
+
+
+def _event_sides(game: dict[str, Any]) -> tuple[str, str]:
+    """Team matchup, or the event title when DirecTV has no teams."""
+    away = _team_name(game.get("away_team"))
+    home = _team_name(game.get("home_team"))
+    if away != "TBD" or home != "TBD":
+        return away, home
+    description = " ".join(str(game.get("description") or "").split())
+    if description:
+        return description, ""
+    return away, home
+
+
+def _category(game: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    """DirecTV sport category and league. Hidden rows are not picker choices."""
+    sport = game.get("sport")
     league = game.get("league")
-    text_id = ""
-    if isinstance(league, dict):
-        text_id = str(league.get("text_id") or "").strip()
-    return LEAGUES.get(text_id)
+    if not _shown(sport) or not _shown(league):
+        return None
+    sport_id = _slug(sport.get("text_id"))
+    league_id = _slug(league.get("text_id"))
+    if not sport_id or not league_id:
+        return None
+    sport_title = str(sport.get("title") or sport_id).strip()
+    league_title = str(league.get("title_short") or league.get("title") or league_id).strip()
+    emoji = str(sport.get("emoji") or "").strip()
+    return (
+        {
+            "id": sport_id,
+            "title": sport_title,
+            "chipTitle": sport_title,
+            "icon": emoji,
+            "_rank": _rank_value(sport),
+        },
+        {
+            "id": league_id,
+            "title": league_title,
+            "chipTitle": league_title,
+            "_rank": _rank_value(league),
+        },
+    )
 
 
 def parse_schedule(
@@ -622,26 +673,26 @@ def parse_schedule(
     for game in payload.get("games") or []:
         if not isinstance(game, dict):
             continue
-        meta = _league_meta(game)
-        if meta is None:
+        category = _category(game)
+        if category is None:
             continue
-        rail_id, title, chip, icon, logo_folder = meta
+        sport, league = category
         showings = tunable_showings(game)
         primary = showings[0] if showings else None
-        away_team = game.get("away_team")
-        home_team = game.get("home_team")
-        away_abbr = _team_abbr(away_team)
-        home_abbr = _team_abbr(home_team)
+        away, home = _event_sides(game)
+        logo_folder = ESPN_LOGO_FOLDER.get(league["id"], "")
+        away_abbr = _team_abbr(game.get("away_team")) if home and logo_folder else ""
+        home_abbr = _team_abbr(game.get("home_team")) if home and logo_folder else ""
         gid = game.get("id")
-        buckets.setdefault(
-            rail_id,
-            {"id": rail_id, "title": title, "chipTitle": chip, "icon": icon, "games": []},
-        )
-        buckets[rail_id]["games"].append(
+        bucket = buckets.setdefault(sport["id"], {**sport, "games": [], "_leagues": {}})
+        bucket["_leagues"].setdefault(league["id"], league)
+        bucket["games"].append(
             {
-                "id": f"{rail_id}-{gid}",
-                "away": _team_name(away_team),
-                "home": _team_name(home_team),
+                "id": f"{league['id']}-{gid}",
+                "leagueId": league["id"],
+                "leagueTitle": league["title"],
+                "away": away,
+                "home": home,
                 "channel": primary["channel"] if primary else "No channel",
                 "channelNumber": primary["channelNumber"] if primary else None,
                 "alternates": showings[1:],
@@ -652,11 +703,13 @@ def parse_schedule(
             }
         )
     sports = []
-    for rail_id in LEAGUE_ORDER:
-        sport = buckets.get(rail_id)
-        if not sport:
-            continue
+    for sport in sorted(buckets.values(), key=lambda item: (item["_rank"], item["title"])):
         sport["games"].sort(key=lambda item: (item.get("startsAt") or "", item["id"]))
+        leagues = sorted(sport.pop("_leagues").values(), key=lambda item: (item["_rank"], item["title"]))
+        for league in leagues:
+            league.pop("_rank", None)
+        sport.pop("_rank", None)
+        sport["leagues"] = leagues
         sports.append(sport)
     moment = generated_at or dt.datetime.now(dt.timezone.utc)
     if moment.tzinfo is None:

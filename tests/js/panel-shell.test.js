@@ -74,6 +74,8 @@ test("panel shell tunes a sports game from the DirecTV major", () => {
     src,
     /setInterval\(\(\) => \{\s*this\._loadGuideEpg\(\);\s*this\._loadSportsSchedule\(\);/
   );
+  assert.match(src, /data-action="select-league"/);
+  assert.match(src, /game\.leagueId === leagueId/);
 });
 
 test("panel shell tracks selectedPresetId for TV-first preset send", () => {

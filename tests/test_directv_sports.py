@@ -42,11 +42,24 @@ def _showing(channel, **extra):
     return showing
 
 
+_SPORT = {
+    "NFL": ("football", "Football", "🏈", 1),
+    "NBA": ("basketball", "Basketball", "🏀", 2),
+    "MLB": ("baseball", "Baseball", "⚾", 3),
+    "NHL": ("hockey", "Hockey", "🏒", 4),
+    "WNBA": ("basketball", "Basketball", "🏀", 2),
+    "ProGolf": ("golf", "Golf", "⛳", 9),
+    "EPL": ("soccer", "Soccer", "⚽", 5),
+}
+
+
 def _game(gid, league, away, home, showings, starts="2026-10-27T00:15:00.000000Z"):
+    sport_id, sport_title, emoji, rank = _SPORT.get(league, (league.lower(), league, "", 50))
     return {
         "id": gid,
         "starts_at": starts,
-        "league": {"text_id": league},
+        "sport": {"text_id": sport_id, "title": sport_title, "emoji": emoji, "rank": rank, "show": True},
+        "league": {"text_id": league, "title": league, "title_short": league, "rank": 1, "show": True},
         "away_team": {"name": away, "display_name_short": away, "text_id_short": away[:3].upper()},
         "home_team": {"name": home, "display_name_short": home, "text_id_short": home[:3].upper()},
         "showings": showings,
@@ -120,10 +133,10 @@ def test_national_net_beats_center_ice_and_empty_showings_stay_untunable():
     pending = _game(1229478, "MLB", "Brewers", "Rays", [], starts="2026-10-27T00:00:00Z")
     schedule = parse_schedule({"games": [kings, pending]}, generated_at=_stamp())
     by_id = {sport["id"]: sport for sport in schedule["sports"]}
-    nhl = by_id["nhl"]["games"][0]
+    nhl = by_id["hockey"]["games"][0]
     assert nhl["channelNumber"] == "215"
     assert [item["channelNumber"] for item in nhl["alternates"]] == ["770", "771"]
-    mlb = by_id["mlb"]["games"][0]
+    mlb = by_id["baseball"]["games"][0]
     assert mlb["channelNumber"] is None
     assert mlb["channel"] == "No channel"
 
@@ -144,10 +157,17 @@ def test_apps_streaming_and_other_leagues_are_not_tune_targets():
     assert is_tunable_showing(us_open_stream) is False
     assert is_tunable_showing(usa) is True
     golf = _game(1, "ProGolf", "TBD", "TBD", [usa])
+    golf["description"] = "PGA: Butterfield Bermuda Championship, Final Round"
     wnba = _game(2, "WNBA", "Aces", "Liberty", [peacock, usa], starts="2026-10-26T23:00:00Z")
-    schedule = parse_schedule({"games": [golf, wnba]}, generated_at=_stamp())
-    assert [sport["id"] for sport in schedule["sports"]] == ["wnba"]
-    assert schedule["sports"][0]["games"][0]["channelNumber"] == "242"
+    hidden = _game(3, "NFL", "Hidden", "Hidden", [usa])
+    hidden["league"]["show"] = False
+    schedule = parse_schedule({"games": [golf, wnba, hidden]}, generated_at=_stamp())
+    by_id = {sport["id"]: sport for sport in schedule["sports"]}
+    assert [sport["id"] for sport in schedule["sports"]] == ["basketball", "golf"]
+    assert by_id["basketball"]["games"][0]["channelNumber"] == "242"
+    assert by_id["basketball"]["leagues"][0]["id"] == "wnba"
+    assert by_id["golf"]["games"][0]["away"].startswith("PGA:")
+    assert by_id["golf"]["games"][0]["home"] == ""
 
 
 def test_window_days_is_the_eastern_calendar():

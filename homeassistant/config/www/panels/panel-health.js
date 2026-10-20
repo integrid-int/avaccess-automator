@@ -25,6 +25,7 @@ import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=18";
 const DEFAULT_STATE = {
   screen: "browse-sport",
   sportId: SPORTS[0]?.id ?? null,
+  leagueId: "all",
   guideQuery: "",
   selectedContent: null,
   selectedTvs: [],
@@ -382,7 +383,8 @@ class PanelHealth extends HTMLElement {
       <button type="button" class="content-card ${selectedClass}" ${actionAttr} data-value="${escapeAttr(game.id)}">
         <span class="card-kicker">${escapeHtml(kicker)}</span>
         <span class="matchup">
-          <span class="team">
+          ${game.home
+            ? `<span class="team">
             <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="36" height="36" loading="lazy">
             <span>${escapeHtml(game.away)}</span>
           </span>
@@ -390,7 +392,8 @@ class PanelHealth extends HTMLElement {
           <span class="team">
             <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="36" height="36" loading="lazy">
             <span>${escapeHtml(game.home)}</span>
-          </span>
+          </span>`
+            : `<span class="team"><span>${escapeHtml(game.away)}</span></span>`}
         </span>
         <span class="card-meta">
           <span class="card-cta ${action === "toggle-program" ? "" : "has-chevron"}">${escapeHtml(cta)}</span>
@@ -405,11 +408,44 @@ class PanelHealth extends HTMLElement {
     return sports.find((sport) => sport.id === this._state.sportId) ?? sports[0];
   }
 
+  _gamesFor(sport) {
+    const games = sport?.games ?? [];
+    const leagueId = this._state.leagueId || "all";
+    if (leagueId === "all") return games;
+    const matched = games.filter((game) => game.leagueId === leagueId);
+    return matched.length ? matched : games;
+  }
+
+  _gameLabel(game) {
+    if (!game?.home) return game?.away || "";
+    return `${game.away} @ ${game.home}`;
+  }
+
+  _renderLeagueChips(sport) {
+    const leagues = Array.isArray(sport?.leagues) ? sport.leagues : [];
+    if (leagues.length < 2) return "";
+    const active = this._state.leagueId || "all";
+    const buttons = [
+      `<button type="button" class="chip ${active === "all" ? "is-active" : ""}" data-action="select-league" data-value="all">All</button>`,
+      ...leagues.map(
+        (league) => `
+          <button
+            type="button"
+            class="chip ${active === league.id ? "is-active" : ""}"
+            data-action="select-league"
+            data-value="${escapeAttr(league.id)}"
+          >${escapeHtml(league.chipTitle ?? league.title)}</button>
+        `
+      ),
+    ];
+    return `<nav class="chips league-chips" aria-label="Leagues">${buttons.join("")}</nav>`;
+  }
+
   _selectedContentLabel() {
     const content = this._state.selectedContent;
     if (!content) return "No content selected";
     if (content.kind === "channel") return `${content.number} ${content.name}`;
-    return `${content.away} @ ${content.home}`;
+    return this._gameLabel(content);
   }
 
   _onClick(event) {
@@ -421,8 +457,17 @@ class PanelHealth extends HTMLElement {
       this._setState({
         screen: "browse-sport",
         sportId: value || this._state.sportId,
+        leagueId: "all",
         contentMode: "sports",
         entryPath: "content",
+      });
+      return;
+    }
+    if (action === "select-league") {
+      this._setState({
+        screen: "browse-sport",
+        leagueId: value || "all",
+        contentMode: "sports",
       });
       return;
     }
@@ -922,18 +967,20 @@ class PanelHealth extends HTMLElement {
 
   _renderSportScreen() {
     const sport = this._activeSport();
+    const games = this._gamesFor(sport);
     return `
       <section class="screen">
         <div class="screen-heading">
           <p class="eyebrow">Browse sport</p>
           <h2>${escapeHtml(sport.title)}</h2>
         </div>
+        ${this._renderLeagueChips(sport)}
         <div class="card-grid">
-          ${sport.games.length
-            ? sport.games
+          ${games.length
+            ? games
                 .map((game) =>
                   this._renderGameCard(game, {
-                    kicker: `${game.channel} - ${game.tipoff}`,
+                    kicker: `${game.leagueTitle ? `${game.leagueTitle} - ` : ""}${game.channel} - ${game.tipoff}`,
                     cta: "Choose destination",
                   })
                 )
@@ -1200,7 +1247,7 @@ class PanelHealth extends HTMLElement {
                 ${sport.games
                   .map((game) =>
                     this._renderGameCard(game, {
-                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
+                      kicker: `${game.leagueTitle || sport.chipTitle || sport.title} - ${game.channel} - ${game.tipoff}`,
                       selected: selectedIds.has(game.id),
                       cta: selectedIds.has(game.id) ? "Selected for slot" : "Add to slots",
                       action: "toggle-program",
@@ -1312,7 +1359,7 @@ class PanelHealth extends HTMLElement {
                 ${sport.games
                   .map((game) =>
                     this._renderGameCard(game, {
-                      kicker: `${sport.chipTitle ?? sport.title} - ${game.channel} - ${game.tipoff}`,
+                      kicker: `${game.leagueTitle || sport.chipTitle || sport.title} - ${game.channel} - ${game.tipoff}`,
                       selected: this._state.selectedContent?.id === game.id,
                       cta: this._state.entryPath === "tv" ? "Select content" : "Choose destination",
                     })
@@ -1491,15 +1538,19 @@ class PanelHealth extends HTMLElement {
   _renderGameKey(game) {
     const on = this._sourceIsOn(game.id) ? " on" : "";
     const action = this._isMultiPreset() ? "toggle-program" : "select-game";
+    const logos = game.home
+      ? `<img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="28" height="28">
+          <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="28" height="28">`
+      : "";
+    const league = game.leagueTitle ? `${game.leagueTitle} · ` : "";
     return `
       <button type="button" class="key${on}" data-action="${action}" data-value="${escapeAttr(game.id)}">
         <span class="mark">
-          <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="28" height="28">
-          <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="28" height="28">
+          ${logos}
         </span>
         <span class="key-copy">
-          <b>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</b>
-          <small>${escapeHtml(game.channel)} · ${escapeHtml(game.tipoff)}</small>
+          <b>${escapeHtml(this._gameLabel(game))}</b>
+          <small>${escapeHtml(league)}${escapeHtml(game.channel)} · ${escapeHtml(game.tipoff)}</small>
         </span>
         ${this._routeBadgeHtml(game.id)}
       </button>
@@ -1586,10 +1637,14 @@ class PanelHealth extends HTMLElement {
       `;
     }
     const sport = this._activeSport();
+    const games = this._gamesFor(sport);
     return `
       <h2>Sources</h2>
+      ${this._renderLeagueChips(sport)}
       <div class="keys">
-        ${sport.games.map((game) => this._renderGameKey(game)).join("")}
+        ${games.length
+          ? games.map((game) => this._renderGameKey(game)).join("")
+          : `<p class="eyebrow">No games in this slate</p>`}
       </div>
     `;
   }

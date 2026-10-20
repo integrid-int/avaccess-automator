@@ -1,16 +1,18 @@
 {
-  "generatedAt": "2026-10-20T20:40:51Z",
+  "generatedAt": "2026-10-20T20:45:59Z",
   "zip": "27403",
   "source": "directv-sports-info",
   "sports": [
     {
-      "id": "nfl",
-      "title": "NFL",
-      "chipTitle": "NFL",
+      "id": "football",
+      "title": "Football",
+      "chipTitle": "Football",
       "icon": "\ud83c\udfc8",
       "games": [
         {
           "id": "nfl-1213742",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Steelers",
           "home": "Saints",
           "channel": "212 NFL Network",
@@ -28,6 +30,8 @@
         },
         {
           "id": "nfl-1214005",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "49ers",
           "home": "Falcons",
           "channel": "9558 NFL Sunday Ticket",
@@ -40,6 +44,8 @@
         },
         {
           "id": "nfl-1214007",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Bengals",
           "home": "Ravens",
           "channel": "9554 NFL Sunday Ticket",
@@ -52,6 +58,8 @@
         },
         {
           "id": "nfl-1214011",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Buccs",
           "home": "Panthers",
           "channel": "8 WGHP",
@@ -69,6 +77,8 @@
         },
         {
           "id": "nfl-1214013",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Giants",
           "home": "Texans",
           "channel": "9560 NFL Sunday Ticket",
@@ -81,6 +91,8 @@
         },
         {
           "id": "nfl-1214018",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Colts",
           "home": "Vikings",
           "channel": "9555 NFL Sunday Ticket",
@@ -93,6 +105,8 @@
         },
         {
           "id": "nfl-1214021",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Dolphins",
           "home": "Jets",
           "channel": "9556 NFL Sunday Ticket",
@@ -105,6 +119,8 @@
         },
         {
           "id": "nfl-1214024",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Browns",
           "home": "Titans",
           "channel": "9557 NFL Sunday Ticket",
@@ -117,6 +133,8 @@
         },
         {
           "id": "nfl-1214025",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Broncos",
           "home": "Cardinals",
           "channel": "2 WFMY",
@@ -134,6 +152,8 @@
         },
         {
           "id": "nfl-1214026",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Packers",
           "home": "Lions",
           "channel": "8 WGHP",
@@ -151,6 +171,8 @@
         },
         {
           "id": "nfl-1214027",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Rams",
           "home": "Raiders",
           "channel": "9563 NFL Sunday Ticket",
@@ -163,6 +185,8 @@
         },
         {
           "id": "nfl-1214028",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Chiefs",
           "home": "Seahawks",
           "channel": "12 WXII",
@@ -180,6 +204,8 @@
         },
         {
           "id": "nfl-1214029",
+          "leagueId": "nfl",
+          "leagueTitle": "NFL",
           "away": "Cowboys",
           "home": "Eagles",
           "channel": "45 WXLV",
@@ -203,16 +229,39 @@
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
           "homeLogo": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"
         }
+      ],
+      "leagues": [
+        {
+          "id": "nfl",
+          "title": "NFL",
+          "chipTitle": "NFL"
+        }
       ]
     },
     {
-      "id": "nba",
-      "title": "NBA",
-      "chipTitle": "NBA",
+      "id": "basketball",
+      "title": "Basketball",
+      "chipTitle": "Basketball",
       "icon": "\ud83c\udfc0",
       "games": [
         {
+          "id": "bundesligabbl-1228512",
+          "leagueId": "bundesligabbl",
+          "leagueTitle": "Bundesliga BBL",
+          "away": "Alba Berlin vs. Ratiopharm Ulm",
+          "home": "",
+          "channel": "216 NBA TV",
+          "channelNumber": "216",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
           "id": "nba-1220067",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Lakers",
           "home": "Jazz",
           "channel": "No channel",
@@ -225,6 +274,8 @@
         },
         {
           "id": "nba-1220029",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Pacers",
           "home": "Nets",
           "channel": "No channel",
@@ -237,6 +288,8 @@
         },
         {
           "id": "nba-1220064",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Raptors",
           "home": "Timberwolves",
           "channel": "216 NBA TV",
@@ -249,6 +302,8 @@
         },
         {
           "id": "nba-1220075",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Magic",
           "home": "Knicks",
           "channel": "No channel",
@@ -261,6 +316,8 @@
         },
         {
           "id": "nba-1220078",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Clippers",
           "home": "Thunder",
           "channel": "No channel",
@@ -273,6 +330,8 @@
         },
         {
           "id": "nba-1220086",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Pistons",
           "home": "76ers",
           "channel": "No channel",
@@ -285,6 +344,8 @@
         },
         {
           "id": "nba-1220084",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Grizzlies",
           "home": "Kings",
           "channel": "No channel",
@@ -297,6 +358,8 @@
         },
         {
           "id": "nba-1220032",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Wizards",
           "home": "Hornets",
           "channel": "No channel",
@@ -309,6 +372,8 @@
         },
         {
           "id": "nba-1220037",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Timberwolves",
           "home": "Cavaliers",
           "channel": "No channel",
@@ -321,6 +386,8 @@
         },
         {
           "id": "nba-1220023",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Bulls",
           "home": "Celtics",
           "channel": "No channel",
@@ -333,6 +400,8 @@
         },
         {
           "id": "nba-1220059",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Mavericks",
           "home": "Heat",
           "channel": "216 NBA TV",
@@ -345,6 +414,8 @@
         },
         {
           "id": "nba-1220061",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Pacers",
           "home": "Bucks",
           "channel": "No channel",
@@ -357,6 +428,8 @@
         },
         {
           "id": "nba-1220082",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Suns",
           "home": "Thunder",
           "channel": "No channel",
@@ -368,7 +441,32 @@
           "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
         },
         {
+          "id": "wnba-1228622",
+          "leagueId": "wnba",
+          "leagueTitle": "WNBA",
+          "away": "Dream",
+          "home": "Valkyries",
+          "channel": "242 USA Network",
+          "channelNumber": "242",
+          "alternates": [
+            {
+              "channelNumber": "355",
+              "channel": "355 CNBC"
+            },
+            {
+              "channelNumber": "904",
+              "channel": "904 U.S. Open Featured Groups 2"
+            }
+          ],
+          "tipoff": "Mon 8:00 PM",
+          "startsAt": "2026-10-27T00:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/atlantadream110.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/goldenstatevalkyries110.png"
+        },
+        {
           "id": "nba-1220046",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Hawks",
           "home": "Rockets",
           "channel": "No channel",
@@ -381,6 +479,8 @@
         },
         {
           "id": "nba-1220068",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Grizzlies",
           "home": "Jazz",
           "channel": "No channel",
@@ -393,6 +493,8 @@
         },
         {
           "id": "nba-1220042",
+          "leagueId": "nba",
+          "leagueTitle": "NBA",
           "away": "Warriors",
           "home": "Nuggets",
           "channel": "No channel",
@@ -403,16 +505,35 @@
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/gsw.png",
           "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
         }
+      ],
+      "leagues": [
+        {
+          "id": "nba",
+          "title": "NBA",
+          "chipTitle": "NBA"
+        },
+        {
+          "id": "wnba",
+          "title": "WNBA",
+          "chipTitle": "WNBA"
+        },
+        {
+          "id": "bundesligabbl",
+          "title": "Bundesliga BBL",
+          "chipTitle": "Bundesliga BBL"
+        }
       ]
     },
     {
-      "id": "mlb",
-      "title": "MLB",
-      "chipTitle": "MLB",
+      "id": "baseball",
+      "title": "Baseball",
+      "chipTitle": "Baseball",
       "icon": "\u26be",
       "games": [
         {
           "id": "mlb-1229478",
+          "leagueId": "mlb",
+          "leagueTitle": "MLB",
           "away": "Brewers",
           "home": "Rays",
           "channel": "No channel",
@@ -423,16 +544,39 @@
           "awayLogo": "https://a.espncdn.com/i/teamlogos/mlb/500/mil.png",
           "homeLogo": "https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"
         }
+      ],
+      "leagues": [
+        {
+          "id": "mlb",
+          "title": "MLB",
+          "chipTitle": "MLB"
+        }
       ]
     },
     {
-      "id": "nhl",
-      "title": "NHL",
-      "chipTitle": "NHL",
+      "id": "hockey",
+      "title": "Hockey",
+      "chipTitle": "Hockey",
       "icon": "\ud83c\udfd2",
       "games": [
         {
+          "id": "collegefield-1228458",
+          "leagueId": "collegefield",
+          "leagueTitle": "College Field",
+          "away": "California",
+          "home": "Syracuse",
+          "channel": "612 ACC Network",
+          "channelNumber": "612",
+          "alternates": [],
+          "tipoff": "Sun 12:00 PM",
+          "startsAt": "2026-10-25T16:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
           "id": "nhl-1224591",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Panthers",
           "home": "Blackhawks",
           "channel": "770 NHL CENTER ICE",
@@ -445,6 +589,8 @@
         },
         {
           "id": "nhl-1224760",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Islanders",
           "home": "Stars",
           "channel": "772 NHL CENTER ICE",
@@ -457,6 +603,8 @@
         },
         {
           "id": "nhl-1224579",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Canadiens",
           "home": "Jets",
           "channel": "245 TNT",
@@ -474,6 +622,8 @@
         },
         {
           "id": "nhl-1224914",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Avalanche",
           "home": "Predators",
           "channel": "215 NHL Network",
@@ -491,6 +641,8 @@
         },
         {
           "id": "nhl-1225485",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Wild",
           "home": "Canucks",
           "channel": "215 NHL Network",
@@ -503,6 +655,8 @@
         },
         {
           "id": "nhl-1225395",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Kings",
           "home": "Rangers",
           "channel": "215 NHL Network",
@@ -524,6 +678,8 @@
         },
         {
           "id": "nhl-1224667",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Maple Leafs",
           "home": "Flames",
           "channel": "No channel",
@@ -536,6 +692,8 @@
         },
         {
           "id": "nhl-1225596",
+          "leagueId": "nhl",
+          "leagueTitle": "NHL",
           "away": "Red Wings",
           "home": "Oilers",
           "channel": "215 NHL Network",
@@ -546,34 +704,1415 @@
           "awayLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/det.png",
           "homeLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/edm.png"
         }
+      ],
+      "leagues": [
+        {
+          "id": "nhl",
+          "title": "NHL",
+          "chipTitle": "NHL"
+        },
+        {
+          "id": "collegefield",
+          "title": "College Field",
+          "chipTitle": "College Field"
+        }
       ]
     },
     {
-      "id": "wnba",
-      "title": "WNBA",
-      "chipTitle": "WNBA",
-      "icon": "\ud83c\udfc0",
+      "id": "soccer",
+      "title": "Soccer",
+      "chipTitle": "Soccer",
+      "icon": "\u26bd",
       "games": [
         {
-          "id": "wnba-1228622",
-          "away": "Dream",
-          "home": "Valkyries",
+          "id": "italy-1228483",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Inter de Mil\u00e1n vs. Fiorentina",
+          "home": "",
+          "channel": "406 Telemundo East",
+          "channelNumber": "406",
+          "alternates": [
+            {
+              "channelNumber": "407",
+              "channel": "407 TELW"
+            }
+          ],
+          "tipoff": "Sun 7:25 AM",
+          "startsAt": "2026-10-25T11:25:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "womensitaly-1228471",
+          "leagueId": "womensitaly",
+          "leagueTitle": "Italy Serie A (W)",
+          "away": "SS Lazio vs. Como Women",
+          "home": "",
+          "channel": "621 FOX Soccer Plus",
+          "channelNumber": "621",
+          "alternates": [],
+          "tipoff": "Sun 7:25 AM",
+          "startsAt": "2026-10-25T11:25:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228500",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Internazionale vs. Fiorentina",
+          "home": "",
+          "channel": "221 CBS Sports Network",
+          "channelNumber": "221",
+          "alternates": [],
+          "tipoff": "Sun 7:30 AM",
+          "startsAt": "2026-10-25T11:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228527",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Fiorentina",
+          "home": "Inter Milan",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 7:30 AM",
+          "startsAt": "2026-10-25T11:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1228537",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Getafe",
+          "home": "Ath. Bilbao",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 9:00 AM",
+          "startsAt": "2026-10-25T13:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ekstraklasa-1228602",
+          "leagueId": "ekstraklasa",
+          "leagueTitle": "Ekstraklasa Soccer",
+          "away": "Jagiellonia Bialystok vs. Wisla Plock",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 9:40 AM",
+          "startsAt": "2026-10-25T13:40:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "polishfirst-1228678",
+          "leagueId": "polishfirst",
+          "leagueTitle": "Polish First",
+          "away": "Jagiellonia Bialystok vs. Wisla Plock",
+          "home": "",
+          "channel": "470 Spectrum Deportes",
+          "channelNumber": "470",
+          "alternates": [],
+          "tipoff": "Sun 9:40 AM",
+          "startsAt": "2026-10-25T13:40:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "epl-1228532",
+          "leagueId": "epl",
+          "leagueTitle": "EPL",
+          "away": "Brentford",
+          "home": "Hull",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "epl-1228534",
+          "leagueId": "epl",
+          "leagueTitle": "EPL",
+          "away": "Bournemouth",
+          "home": "Man United",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "epl-1228535",
+          "leagueId": "epl",
+          "leagueTitle": "EPL",
+          "away": "Brighton & Hove Alb.",
+          "home": "Liverpool",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "epl-1228536",
+          "leagueId": "epl",
+          "leagueTitle": "EPL",
+          "away": "Newcastle",
+          "home": "Crystal Palace",
           "channel": "242 USA Network",
           "channelNumber": "242",
           "alternates": [
             {
-              "channelNumber": "355",
-              "channel": "355 CNBC"
+              "channelNumber": "406",
+              "channel": "406 Telemundo East"
+            },
+            {
+              "channelNumber": "407",
+              "channel": "407 TELW"
             },
             {
               "channelNumber": "904",
               "channel": "904 U.S. Open Featured Groups 2"
             }
           ],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228525",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Frosinone",
+          "home": "Atalanta BC",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228526",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Venezia",
+          "home": "Genoa",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "superleaguew-1228501",
+          "leagueId": "superleaguew",
+          "leagueTitle": "Super League (W)",
+          "away": "Liverpool vs. London City Lionesses",
+          "home": "",
+          "channel": "221 CBS Sports Network",
+          "channelNumber": "221",
+          "alternates": [],
+          "tipoff": "Sun 10:00 AM",
+          "startsAt": "2026-10-25T14:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "fifa_u17-1228472",
+          "leagueId": "fifa_u17",
+          "leagueTitle": "FIFA U-17",
+          "away": "Chile U17 vs. Spain U17",
+          "home": "",
+          "channel": "621 FOX Soccer Plus",
+          "channelNumber": "621",
+          "alternates": [],
+          "tipoff": "Sun 10:48 AM",
+          "startsAt": "2026-10-25T14:48:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "fifa_u17-1228477",
+          "leagueId": "fifa_u17",
+          "leagueTitle": "FIFA U-17",
+          "away": "Mexico U17 vs. Australia U17",
+          "home": "",
+          "channel": "618 FOX Sports 2",
+          "channelNumber": "618",
+          "alternates": [],
+          "tipoff": "Sun 10:48 AM",
+          "startsAt": "2026-10-25T14:48:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1226824",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Celta Vigo",
+          "home": "Betis",
+          "channel": "9525 ESPN+ for Business",
+          "channelNumber": "9525",
+          "alternates": [],
+          "tipoff": "Sun 11:05 AM",
+          "startsAt": "2026-10-25T15:05:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaawsoc-1228468",
+          "leagueId": "ncaawsoc",
+          "leagueTitle": "NCAA Soccer(W)",
+          "away": "Dartmouth",
+          "home": "Princeton",
+          "channel": "208 ESPNU",
+          "channelNumber": "208",
+          "alternates": [],
+          "tipoff": "Sun 12:00 PM",
+          "startsAt": "2026-10-25T16:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "frenchligue-1228679",
+          "leagueId": "frenchligue",
+          "leagueTitle": "French Ligue",
+          "away": "Stade Rennais vs. RC Strasbourg Alsace",
+          "home": "",
+          "channel": "470 Spectrum Deportes",
+          "channelNumber": "470",
+          "alternates": [],
+          "tipoff": "Sun 12:05 PM",
+          "startsAt": "2026-10-25T16:05:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "bundesliga-1228484",
+          "leagueId": "bundesliga",
+          "leagueTitle": "Bundesliga",
+          "away": "SC Freiburg vs. Bayern Munich",
+          "home": "",
+          "channel": "406 Telemundo East",
+          "channelNumber": "406",
+          "alternates": [
+            {
+              "channelNumber": "407",
+              "channel": "407 TELW"
+            }
+          ],
+          "tipoff": "Sun 12:25 PM",
+          "startsAt": "2026-10-25T16:25:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ekstraklasa-1228603",
+          "leagueId": "ekstraklasa",
+          "leagueTitle": "Ekstraklasa Soccer",
+          "away": "Legia Warszawa vs. Lech Poznan",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 12:25 PM",
+          "startsAt": "2026-10-25T16:25:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "epl-1228533",
+          "leagueId": "epl",
+          "leagueTitle": "EPL",
+          "away": "Leeds United",
+          "home": "Sunderland",
+          "channel": "242 USA Network",
+          "channelNumber": "242",
+          "alternates": [
+            {
+              "channelNumber": "904",
+              "channel": "904 U.S. Open Featured Groups 2"
+            }
+          ],
+          "tipoff": "Sun 12:30 PM",
+          "startsAt": "2026-10-25T16:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1228465",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "RC Celta vs. Real Betis",
+          "home": "",
+          "channel": "466 ESPN Deportes",
+          "channelNumber": "466",
+          "alternates": [],
+          "tipoff": "Sun 12:30 PM",
+          "startsAt": "2026-10-25T16:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228488",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "Juventus",
+          "home": "Lecce",
+          "channel": "410 Universo",
+          "channelNumber": "410",
+          "alternates": [],
+          "tipoff": "Sun 12:55 PM",
+          "startsAt": "2026-10-25T16:55:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1228466",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Real Sociedad de F\u00fatbol vs. Levante",
+          "home": "",
+          "channel": "466 ESPN Deportes",
+          "channelNumber": "466",
+          "alternates": [],
+          "tipoff": "Sun 1:15 PM",
+          "startsAt": "2026-10-25T17:15:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1226827",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Real Sociedad",
+          "home": "Levante UD",
+          "channel": "9519 ESPN+ for Business",
+          "channelNumber": "9519",
+          "alternates": [],
+          "tipoff": "Sun 1:20 PM",
+          "startsAt": "2026-10-25T17:20:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "fifa_u17-1228473",
+          "leagueId": "fifa_u17",
+          "leagueTitle": "FIFA U-17",
+          "away": "Samoa U17 vs. Kenya U17",
+          "home": "",
+          "channel": "621 FOX Soccer Plus",
+          "channelNumber": "621",
+          "alternates": [],
+          "tipoff": "Sun 1:48 PM",
+          "startsAt": "2026-10-25T17:48:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "fifa_u17-1228479",
+          "leagueId": "fifa_u17",
+          "leagueTitle": "FIFA U-17",
+          "away": "China U17 vs. USA U17",
+          "home": "",
+          "channel": "618 FOX Sports 2",
+          "channelNumber": "618",
+          "alternates": [],
+          "tipoff": "Sun 1:48 PM",
+          "startsAt": "2026-10-25T17:48:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaamsoc-1228469",
+          "leagueId": "ncaamsoc",
+          "leagueTitle": "NCAA Soccer",
+          "away": "Clemson",
+          "home": "Virginia Tech",
+          "channel": "208 ESPNU",
+          "channelNumber": "208",
+          "alternates": [],
+          "tipoff": "Sun 2:00 PM",
+          "startsAt": "2026-10-25T18:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaawsoc-1226828",
+          "leagueId": "ncaawsoc",
+          "leagueTitle": "NCAA Soccer(W)",
+          "away": "W. Virginia",
+          "home": "Oklahoma St.",
+          "channel": "9521 ESPN+ for Business",
+          "channelNumber": "9521",
+          "alternates": [],
+          "tipoff": "Sun 2:00 PM",
+          "startsAt": "2026-10-25T18:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaamsoc-1226829",
+          "leagueId": "ncaamsoc",
+          "leagueTitle": "NCAA Soccer",
+          "away": "Notre Dame",
+          "home": "Louisville",
+          "channel": "9520 ESPN+ for Business",
+          "channelNumber": "9520",
+          "alternates": [],
+          "tipoff": "Sun 3:00 PM",
+          "startsAt": "2026-10-25T19:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "nwsl-1228502",
+          "leagueId": "nwsl",
+          "leagueTitle": "NWSL",
+          "away": "Gotham FC at Orlando Pride",
+          "home": "",
+          "channel": "221 CBS Sports Network",
+          "channelNumber": "221",
+          "alternates": [],
+          "tipoff": "Sun 3:00 PM",
+          "startsAt": "2026-10-25T19:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "italy-1228485",
+          "leagueId": "italy",
+          "leagueTitle": "Italy Serie A",
+          "away": "AC Milan",
+          "home": "Udinese",
+          "channel": "406 Telemundo East",
+          "channelNumber": "406",
+          "alternates": [
+            {
+              "channelNumber": "407",
+              "channel": "407 TELW"
+            }
+          ],
+          "tipoff": "Sun 3:30 PM",
+          "startsAt": "2026-10-25T19:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1228467",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Barcelona vs. Real Madrid",
+          "home": "",
+          "channel": "466 ESPN Deportes",
+          "channelNumber": "466",
+          "alternates": [],
+          "tipoff": "Sun 3:30 PM",
+          "startsAt": "2026-10-25T19:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "argentina-1228521",
+          "leagueId": "argentina",
+          "leagueTitle": "Argentina Primera",
+          "away": "Boca",
+          "home": "Independiente",
+          "channel": "465 FOX Deportes",
+          "channelNumber": "465",
+          "alternates": [],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "cpl-1228474",
+          "leagueId": "cpl",
+          "leagueTitle": "CPL",
+          "away": "Forge FC at Pacific FC",
+          "home": "",
+          "channel": "621 FOX Soccer Plus",
+          "channelNumber": "621",
+          "alternates": [],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1228538",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Real Madrid",
+          "home": "Barcelona",
+          "channel": "45 WXLV",
+          "channelNumber": "45",
+          "alternates": [],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaawsoc-1226830",
+          "leagueId": "ncaawsoc",
+          "leagueTitle": "NCAA Soccer(W)",
+          "away": "Colorado",
+          "home": "AZ State",
+          "channel": "9525 ESPN+ for Business",
+          "channelNumber": "9525",
+          "alternates": [],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaamsoc-1226831",
+          "leagueId": "ncaamsoc",
+          "leagueTitle": "NCAA Soccer",
+          "away": "Carolina",
+          "home": "Central FL",
+          "channel": "9523 ESPN+ for Business",
+          "channelNumber": "9523",
+          "alternates": [],
+          "tipoff": "Sun 5:00 PM",
+          "startsAt": "2026-10-25T21:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "nwsl-1228504",
+          "leagueId": "nwsl",
+          "leagueTitle": "NWSL",
+          "away": "Washington Spirit at Kansas City Current",
+          "home": "",
+          "channel": "206 ESPN",
+          "channelNumber": "206",
+          "alternates": [],
+          "tipoff": "Sun 5:00 PM",
+          "startsAt": "2026-10-25T21:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaamsoc-1226832",
+          "leagueId": "ncaamsoc",
+          "leagueTitle": "NCAA Soccer",
+          "away": "Old Dominion",
+          "home": "Coastal Carolina",
+          "channel": "9522 ESPN+ for Business",
+          "channelNumber": "9522",
+          "alternates": [],
+          "tipoff": "Sun 6:00 PM",
+          "startsAt": "2026-10-25T22:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ligamx-1228529",
+          "leagueId": "ligamx",
+          "leagueTitle": "Liga MX",
+          "away": "Puebla",
+          "home": "Atlas",
+          "channel": "464 TUDN",
+          "channelNumber": "464",
+          "alternates": [],
+          "tipoff": "Sun 7:00 PM",
+          "startsAt": "2026-10-25T23:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ncaamsoc-1226834",
+          "leagueId": "ncaamsoc",
+          "leagueTitle": "NCAA Soccer",
+          "away": "W. Virginia",
+          "home": "GA Southern",
+          "channel": "9524 ESPN+ for Business",
+          "channelNumber": "9524",
+          "alternates": [],
+          "tipoff": "Sun 7:00 PM",
+          "startsAt": "2026-10-25T23:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ligamxfem-1228508",
+          "leagueId": "ligamxfem",
+          "leagueTitle": "Liga MX Femenil",
+          "away": "Tigres UANL vs. Monterrey",
+          "home": "",
+          "channel": "442 Estrella TV",
+          "channelNumber": "442",
+          "alternates": [
+            {
+              "channelNumber": "465",
+              "channel": "465 FOX Deportes"
+            }
+          ],
+          "tipoff": "Sun 8:00 PM",
+          "startsAt": "2026-10-26T00:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ligamx-1228487",
+          "leagueId": "ligamx",
+          "leagueTitle": "Liga MX",
+          "away": "Am\u00e9rica vs. Pachuca",
+          "home": "",
+          "channel": "464 TUDN",
+          "channelNumber": "464",
+          "alternates": [],
+          "tipoff": "Sun 9:00 PM",
+          "startsAt": "2026-10-26T01:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "mls-1212085",
+          "leagueId": "mls",
+          "leagueTitle": "MLS",
+          "away": "LA Galaxy",
+          "home": "LAFC",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 9:00 PM",
+          "startsAt": "2026-10-26T01:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "ligamx-1228516",
+          "leagueId": "ligamx",
+          "leagueTitle": "Liga MX",
+          "away": "Tijuana vs. Santos Laguna",
+          "home": "",
+          "channel": "464 TUDN",
+          "channelNumber": "464",
+          "alternates": [],
+          "tipoff": "Sun 11:00 PM",
+          "startsAt": "2026-10-26T03:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "laliga-1226835",
+          "leagueId": "laliga",
+          "leagueTitle": "La Liga",
+          "away": "Sevilla",
+          "home": "Osasuna",
+          "channel": "9521 ESPN+ for Business",
+          "channelNumber": "9521",
+          "alternates": [
+            {
+              "channelNumber": "466",
+              "channel": "466 ESPN Deportes"
+            }
+          ],
+          "tipoff": "Mon 3:50 PM",
+          "startsAt": "2026-10-26T19:50:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "mls",
+          "title": "MLS",
+          "chipTitle": "MLS"
+        },
+        {
+          "id": "cpl",
+          "title": "CPL",
+          "chipTitle": "CPL"
+        },
+        {
+          "id": "ncaamsoc",
+          "title": "NCAA Soccer",
+          "chipTitle": "NCAA Soccer"
+        },
+        {
+          "id": "ncaawsoc",
+          "title": "NCAA Soccer(W)",
+          "chipTitle": "NCAA Soccer(W)"
+        },
+        {
+          "id": "superleaguew",
+          "title": "Super League (W)",
+          "chipTitle": "Super League (W)"
+        },
+        {
+          "id": "fifa_u17",
+          "title": "FIFA U-17",
+          "chipTitle": "FIFA U-17"
+        },
+        {
+          "id": "epl",
+          "title": "EPL",
+          "chipTitle": "EPL"
+        },
+        {
+          "id": "ligamx",
+          "title": "Liga MX",
+          "chipTitle": "Liga MX"
+        },
+        {
+          "id": "ligamxfem",
+          "title": "Liga MX Femenil",
+          "chipTitle": "Liga MX Femenil"
+        },
+        {
+          "id": "argentina",
+          "title": "Argentina Primera",
+          "chipTitle": "Argentina Primera"
+        },
+        {
+          "id": "bundesliga",
+          "title": "Bundesliga",
+          "chipTitle": "Bundesliga"
+        },
+        {
+          "id": "italy",
+          "title": "Italy Serie A",
+          "chipTitle": "Italy Serie A"
+        },
+        {
+          "id": "womensitaly",
+          "title": "Italy Serie A (W)",
+          "chipTitle": "Italy Serie A (W)"
+        },
+        {
+          "id": "laliga",
+          "title": "La Liga",
+          "chipTitle": "La Liga"
+        },
+        {
+          "id": "nwsl",
+          "title": "NWSL",
+          "chipTitle": "NWSL"
+        },
+        {
+          "id": "ekstraklasa",
+          "title": "Ekstraklasa Soccer",
+          "chipTitle": "Ekstraklasa Soccer"
+        },
+        {
+          "id": "frenchligue",
+          "title": "French Ligue",
+          "chipTitle": "French Ligue"
+        },
+        {
+          "id": "polishfirst",
+          "title": "Polish First",
+          "chipTitle": "Polish First"
+        }
+      ]
+    },
+    {
+      "id": "racing",
+      "title": "Racing",
+      "chipTitle": "Racing",
+      "icon": "\ud83c\udfc1",
+      "games": [
+        {
+          "id": "nascar-1229196",
+          "leagueId": "nascar",
+          "leagueTitle": "NASCAR",
+          "away": "NASCAR Cup Series Countdown to Green",
+          "home": "",
+          "channel": "12 WXII",
+          "channelNumber": "12",
+          "alternates": [],
+          "tipoff": "Sun 1:30 PM",
+          "startsAt": "2026-10-25T17:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "nascar-1228481",
+          "leagueId": "nascar",
+          "leagueTitle": "NASCAR",
+          "away": "NASCAR Cup Series",
+          "home": "",
+          "channel": "12 WXII",
+          "channelNumber": "12",
+          "alternates": [],
+          "tipoff": "Sun 2:00 PM",
+          "startsAt": "2026-10-25T18:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "horse-1228478",
+          "leagueId": "horse",
+          "leagueTitle": "Horse",
+          "away": "America's Day At the Races",
+          "home": "",
+          "channel": "219 FOX Sports 1",
+          "channelNumber": "219",
+          "alternates": [
+            {
+              "channelNumber": "618",
+              "channel": "618 FOX Sports 2"
+            }
+          ],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "nascar",
+          "title": "NASCAR",
+          "chipTitle": "NASCAR"
+        },
+        {
+          "id": "horse",
+          "title": "Horse",
+          "chipTitle": "Horse"
+        }
+      ]
+    },
+    {
+      "id": "combat",
+      "title": "Combat",
+      "chipTitle": "Combat",
+      "icon": "\u270a",
+      "games": [
+        {
+          "id": "boxing-1228612",
+          "leagueId": "boxing",
+          "leagueTitle": "Boxing",
+          "away": "Shauna Browne vs. Jade Burden",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 12:05 PM",
+          "startsAt": "2026-10-25T16:05:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "boxing",
+          "title": "Boxing",
+          "chipTitle": "Boxing"
+        }
+      ]
+    },
+    {
+      "id": "golf",
+      "title": "Golf",
+      "chipTitle": "Golf",
+      "icon": "\u26f3",
+      "games": [
+        {
+          "id": "progolf-1229195",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "Golf Central Pregame",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Sun 12:30 PM",
+          "startsAt": "2026-10-25T16:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228510",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "PGA: Butterfield Bermuda Championship, Final Round",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228511",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "PGA Tour Champions Golf: Stifel Charity Classic, Final Round",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Sun 4:00 PM",
+          "startsAt": "2026-10-25T20:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228606",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "5 Clubs With Gary Williams",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Mon 8:00 AM",
+          "startsAt": "2026-10-26T12:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228607",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "Golf Today",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Mon 2:00 PM",
+          "startsAt": "2026-10-26T18:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228608",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "2026 East Lake Cup: First Round",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Mon 3:00 PM",
+          "startsAt": "2026-10-26T19:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228609",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "PGA Tour -- The Drop",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Mon 7:00 PM",
+          "startsAt": "2026-10-26T23:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228610",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "PGA Tour Champions Learning Center",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
+          "tipoff": "Mon 7:30 PM",
+          "startsAt": "2026-10-26T23:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "progolf-1228669",
+          "leagueId": "progolf",
+          "leagueTitle": "Pro Golf",
+          "away": "Korn Ferry Presents",
+          "home": "",
+          "channel": "218 Golf Channel",
+          "channelNumber": "218",
+          "alternates": [],
           "tipoff": "Mon 8:00 PM",
           "startsAt": "2026-10-27T00:00:00.000000Z",
-          "awayLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/atlantadream110.png",
-          "homeLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/goldenstatevalkyries110.png"
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "progolf",
+          "title": "Pro Golf",
+          "chipTitle": "Pro Golf"
+        }
+      ]
+    },
+    {
+      "id": "tennis",
+      "title": "Tennis",
+      "chipTitle": "Tennis",
+      "icon": "\ud83c\udfbe",
+      "games": [
+        {
+          "id": "protennis-1228597",
+          "leagueId": "protennis",
+          "leagueTitle": "Pro Tennis",
+          "away": "2026 Ningbo Open: Final",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 6:00 AM",
+          "startsAt": "2026-10-25T10:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "protennis-1228486",
+          "leagueId": "protennis",
+          "leagueTitle": "Pro Tennis",
+          "away": "Center Court Live",
+          "home": "",
+          "channel": "217 Tennis Channel",
+          "channelNumber": "217",
+          "alternates": [
+            {
+              "channelNumber": "906",
+              "channel": "906 BNP Paribas Open Stadium 3"
+            }
+          ],
+          "tipoff": "Sun 9:30 AM",
+          "startsAt": "2026-10-25T13:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "protennis-1228598",
+          "leagueId": "protennis",
+          "leagueTitle": "Pro Tennis",
+          "away": "Tennis Today Live",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Sun 10:00 PM",
+          "startsAt": "2026-10-26T02:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "protennis-1228666",
+          "leagueId": "protennis",
+          "leagueTitle": "Pro Tennis",
+          "away": "Tennis Today Live",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 10:00 PM",
+          "startsAt": "2026-10-27T02:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "protennis",
+          "title": "Pro Tennis",
+          "chipTitle": "Pro Tennis"
+        }
+      ]
+    },
+    {
+      "id": "cricket",
+      "title": "Cricket",
+      "chipTitle": "Cricket",
+      "icon": "\ud83c\udfcf",
+      "games": [
+        {
+          "id": "procricket-1228495",
+          "leagueId": "procricket",
+          "leagueTitle": "Pro Cricket",
+          "away": "Tri-Nations Series Cricket: Pakistan vs. England",
+          "home": "",
+          "channel": "9540 WILLOW",
+          "channelNumber": "9540",
+          "alternates": [],
+          "tipoff": "Sun 8:00 AM",
+          "startsAt": "2026-10-25T12:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "procricket-1228497",
+          "leagueId": "procricket",
+          "leagueTitle": "Pro Cricket",
+          "away": "Women's One-Day International Cricket: India vs. Zimbabwe",
+          "home": "",
+          "channel": "9541 WILLOW2",
+          "channelNumber": "9541",
+          "alternates": [],
+          "tipoff": "Sun 8:00 AM",
+          "startsAt": "2026-10-25T12:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "procricket-1229194",
+          "leagueId": "procricket",
+          "leagueTitle": "Pro Cricket",
+          "away": "Cricket Highlights: India Women vs Zimbabwe Women: 2nd ODI",
+          "home": "",
+          "channel": "9541 WILLOW2",
+          "channelNumber": "9541",
+          "alternates": [],
+          "tipoff": "Sun 8:30 AM",
+          "startsAt": "2026-10-25T12:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "procricket",
+          "title": "Pro Cricket",
+          "chipTitle": "Pro Cricket"
+        }
+      ]
+    },
+    {
+      "id": "volleyball",
+      "title": "Volleyball",
+      "chipTitle": "Volleyball",
+      "icon": "\ud83c\udfd0",
+      "games": [
+        {
+          "id": "wcvol-1226825",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Pittsburgh",
+          "home": "Clemson",
+          "channel": "9522 ESPN+ for Business",
+          "channelNumber": "9522",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1226826",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Texas",
+          "home": "Carolina",
+          "channel": "9524 ESPN+ for Business",
+          "channelNumber": "9524",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228489",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Texas A&M at Kentucky",
+          "home": "",
+          "channel": "45 WXLV",
+          "channelNumber": "45",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228506",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Michigan at Wisconsin",
+          "home": "",
+          "channel": "219 FOX Sports 1",
+          "channelNumber": "219",
+          "alternates": [],
+          "tipoff": "Sun 1:00 PM",
+          "startsAt": "2026-10-25T17:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228459",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "SMU at Georgia Tech",
+          "home": "",
+          "channel": "612 ACC Network",
+          "channelNumber": "612",
+          "alternates": [],
+          "tipoff": "Sun 1:30 PM",
+          "startsAt": "2026-10-25T17:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228503",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Kansas at Baylor",
+          "home": "",
+          "channel": "206 ESPN",
+          "channelNumber": "206",
+          "alternates": [],
+          "tipoff": "Sun 3:00 PM",
+          "startsAt": "2026-10-25T19:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228507",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Penn State at Indiana",
+          "home": "",
+          "channel": "219 FOX Sports 1",
+          "channelNumber": "219",
+          "alternates": [],
+          "tipoff": "Sun 3:00 PM",
+          "startsAt": "2026-10-25T19:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228460",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Louisville at Miami",
+          "home": "",
+          "channel": "612 ACC Network",
+          "channelNumber": "612",
+          "alternates": [],
+          "tipoff": "Sun 3:30 PM",
+          "startsAt": "2026-10-25T19:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "wcvol-1228505",
+          "leagueId": "wcvol",
+          "leagueTitle": "NCAA Volleyball (W)",
+          "away": "Stanford at North Carolina",
+          "home": "",
+          "channel": "206 ESPN",
+          "channelNumber": "206",
+          "alternates": [],
+          "tipoff": "Sun 8:30 PM",
+          "startsAt": "2026-10-26T00:30:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "wcvol",
+          "title": "NCAA Volleyball (W)",
+          "chipTitle": "NCAA Volleyball (W)"
+        }
+      ]
+    },
+    {
+      "id": "rodeo",
+      "title": "Rodeo",
+      "chipTitle": "Rodeo",
+      "icon": "\ud83d\udc0e",
+      "games": [
+        {
+          "id": "rodeo-1228613",
+          "leagueId": "rodeo",
+          "leagueTitle": "Rodeo",
+          "away": "Western Sports Roundup",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 7:00 PM",
+          "startsAt": "2026-10-26T23:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "rodeo",
+          "title": "Rodeo",
+          "chipTitle": "Rodeo"
+        }
+      ]
+    },
+    {
+      "id": "raquet",
+      "title": "Raquet Ball",
+      "chipTitle": "Raquet Ball",
+      "icon": "\ud83c\udfbe",
+      "games": [
+        {
+          "id": "racquet-1228604",
+          "leagueId": "racquet",
+          "leagueTitle": "PRB",
+          "away": "Kuwait, First & Second Round",
+          "home": "",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 9:00 AM",
+          "startsAt": "2026-10-26T13:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        },
+        {
+          "id": "racquet-1228680",
+          "leagueId": "racquet",
+          "leagueTitle": "PRB",
+          "away": "Kuwait: Primera y segunda ronda",
+          "home": "",
+          "channel": "470 Spectrum Deportes",
+          "channelNumber": "470",
+          "alternates": [],
+          "tipoff": "Mon 9:00 AM",
+          "startsAt": "2026-10-26T13:00:00.000000Z",
+          "awayLogo": "",
+          "homeLogo": ""
+        }
+      ],
+      "leagues": [
+        {
+          "id": "racquet",
+          "title": "PRB",
+          "chipTitle": "PRB"
         }
       ]
     }
