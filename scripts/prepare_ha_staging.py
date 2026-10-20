@@ -67,7 +67,7 @@ panel_custom:
     sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=18
+    module_url: /local/panels/panel-health.js?v=19
     require_admin: false
     config:
       environment: staging

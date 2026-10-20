@@ -344,8 +344,6 @@ class PanelHealth extends HTMLElement {
         sportId: value || this._state.sportId,
         contentMode: "sports",
         entryPath: "content",
-        groupMode: null,
-        selectedPrograms: [],
       });
       return;
     }
@@ -354,22 +352,11 @@ class PanelHealth extends HTMLElement {
         screen: "browse-guide",
         contentMode: "guide",
         entryPath: "content",
-        groupMode: null,
-        selectedPrograms: [],
       });
       return;
     }
     if (action === "open-tvs") {
-      this._setState({
-        screen: "browse-tvs",
-        entryPath: "tv",
-        destMode: "presets",
-        selectedContent: null,
-        selectedPresetId: null,
-        groupMode: null,
-        selectedPrograms: [],
-        selectedTvs: [],
-      });
+      this._setDestMode("tvs");
       return;
     }
     if (action === "select-game") {
@@ -528,18 +515,13 @@ class PanelHealth extends HTMLElement {
       });
       return;
     }
-    const selectedPresetId = this._seedDestinationPresetId(game.game.id);
-    const destMode = this._seedDestinationMode(game.game.id);
     this._setState({
-      screen: "destination",
+      screen: "browse-sport",
       selectedContent,
-      selectedTvs: this._seedDestinationTvs(game.game.id),
-      selectedPresetId,
-      destMode,
+      sportId: game.sport.id,
       contentMode: "sports",
       entryPath: "content",
-      groupMode: this._deriveGroupMode(destMode, selectedPresetId),
-      selectedPrograms: [],
+      selectedPrograms: this._isMultiPreset() ? this._state.selectedPrograms : [],
     });
   }
 
@@ -555,18 +537,12 @@ class PanelHealth extends HTMLElement {
       });
       return;
     }
-    const selectedPresetId = this._seedDestinationPresetId(channel.id);
-    const destMode = this._seedDestinationMode(channel.id);
     this._setState({
-      screen: "destination",
+      screen: "browse-guide",
       selectedContent,
-      selectedTvs: this._seedDestinationTvs(channel.id),
-      selectedPresetId,
-      destMode,
       contentMode: "guide",
       entryPath: "content",
-      groupMode: this._deriveGroupMode(destMode, selectedPresetId),
-      selectedPrograms: [],
+      selectedPrograms: this._isMultiPreset() ? this._state.selectedPrograms : [],
     });
   }
 
@@ -617,15 +593,18 @@ class PanelHealth extends HTMLElement {
     const preset = PRESETS.find((item) => item.id === presetId);
     if (!preset) return;
     if (preset.programCapacity > 1) {
+      const selectedPrograms = this._state.selectedPrograms.length
+        ? this._state.selectedPrograms
+        : this._state.selectedContent
+          ? [this._toProgram(this._state.selectedContent)]
+          : [];
       this._setState({
         groupMode: preset.mode,
         selectedPresetId: presetId,
         selectedTvs: [],
-        selectedPrograms: [],
-        selectedContent: null,
+        selectedPrograms,
         destMode: "presets",
-        screen: "program-picker",
-        contentMode: "sports",
+        screen: this._state.screen === "browse-guide" ? "browse-guide" : "browse-sport",
       });
       return;
     }
@@ -644,15 +623,21 @@ class PanelHealth extends HTMLElement {
     const existing = this._state.selectedPrograms;
     const index = existing.findIndex((item) => item.id === program.id);
     if (index >= 0) {
+      const selectedPrograms = existing.filter((item) => item.id !== program.id);
+      const last = selectedPrograms[selectedPrograms.length - 1];
       this._setState({
-        selectedPrograms: existing.filter((item) => item.id !== program.id),
+        selectedPrograms,
+        selectedContent: last ? this._findContentById(last.id) : null,
       });
       return;
     }
     const capacity = this._programCapacity();
     if (existing.length >= capacity) return;
+    const selectedPrograms = [...existing, program];
+    const last = selectedPrograms[selectedPrograms.length - 1];
     this._setState({
-      selectedPrograms: [...existing, program],
+      selectedPrograms,
+      selectedContent: this._findContentById(last.id),
       contentMode: content.kind === "channel" ? "guide" : "sports",
       sportId: content.sportId ?? this._state.sportId,
     });
@@ -1302,6 +1287,211 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  _isMultiPreset() {
+    const preset = this._activePreset();
+    return Boolean(preset && preset.programCapacity > 1 && this._state.destMode === "presets");
+  }
+
+  _sourceIsOn(id) {
+    if (this._isMultiPreset()) {
+      return (
+        this._state.selectedPrograms.some((item) => item.id === id) ||
+        this._state.selectedContent?.id === id
+      );
+    }
+    return this._state.selectedContent?.id === id;
+  }
+
+  _hasSource() {
+    if (this._isMultiPreset()) {
+      return this._state.selectedPrograms.length > 0 || Boolean(this._state.selectedContent);
+    }
+    return Boolean(this._state.selectedContent);
+  }
+
+  _hasDisplay() {
+    if (this._state.destMode === "tvs") return this._state.selectedTvs.length > 0;
+    const preset = this._activePreset();
+    if (!preset) return false;
+    if (preset.programCapacity > 1) return true;
+    return this._state.selectedTvs.length > 0;
+  }
+
+  _takeError() {
+    if (this._state.destMode !== "tvs" || !this._hasSource() || this._state.selectedTvs.length === 0) {
+      return "";
+    }
+    const content = this._state.selectedContent;
+    const programs = content ? [this._toProgram(content)] : [];
+    const plan = buildRoutePlan({
+      mode: "adhoc",
+      programs,
+      selectedTvs: this._state.selectedTvs,
+      busyEncoderIds: listBusyEncoderIds(this._assignments),
+      commit: "dry_run",
+    });
+    return plan.error || "";
+  }
+
+  _routeStatusLabel() {
+    const routes = Object.values(this._assignments || {}).filter((route) => route?.tvs?.length);
+    if (!routes.length) return "No route";
+    routes.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+    const route = routes[0];
+    const tvs = route.tvs;
+    const where = tvs.length > 6 ? `${tvs.length} TVs` : `TVs ${tvs.join(", ")}`;
+    return `${route.label} · ${where}`;
+  }
+
+  _pendingRouteLabel() {
+    if (!this._hasSource() || !this._hasDisplay()) return "";
+    let source = this._selectedContentLabel();
+    if (this._isMultiPreset() && this._state.selectedPrograms.length > 1) {
+      source = `${this._state.selectedPrograms.length} programs`;
+    }
+    let dest = "";
+    if (this._state.destMode === "tvs") {
+      const tvs = this._state.selectedTvs;
+      dest = tvs.length > 6 ? `${tvs.length} TVs` : `TVs ${tvs.join(", ")}`;
+    } else {
+      const preset = this._activePreset();
+      dest = preset?.id === "1_all" ? "All 35 TVs" : preset?.shortLabel ?? "";
+    }
+    return `${source}  →  ${dest}`;
+  }
+
+  _renderGameKey(game) {
+    const on = this._sourceIsOn(game.id) ? " on" : "";
+    const action = this._isMultiPreset() ? "toggle-program" : "select-game";
+    return `
+      <button type="button" class="key${on}" data-action="${action}" data-value="${escapeAttr(game.id)}">
+        <span class="mark">
+          <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="28" height="28">
+          <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="28" height="28">
+        </span>
+        <span class="key-copy">
+          <b>${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</b>
+          <small>${escapeHtml(game.channel)} · ${escapeHtml(game.tipoff)}</small>
+        </span>
+        ${this._routeBadgeHtml(game.id)}
+      </button>
+    `;
+  }
+
+  _renderChannelKey(channel) {
+    const on = this._sourceIsOn(channel.id) ? " on" : "";
+    const action = this._isMultiPreset() ? "toggle-program" : "select-channel";
+    const detail = channel.nowTitle ? String(channel.nowTitle) : channel.category || "";
+    return `
+      <button type="button" class="key${on}" data-action="${action}" data-value="${escapeAttr(channel.id)}">
+        <span class="mark">${escapeHtml(channel.number)}</span>
+        <span class="key-copy">
+          <b>${escapeHtml(channel.name)}</b>
+          <small>${escapeHtml(detail)}</small>
+        </span>
+        ${this._routeBadgeHtml(channel.id)}
+      </button>
+    `;
+  }
+
+  _renderRail() {
+    const onGuide = this._state.screen === "browse-guide";
+    return `
+      <nav class="rail" aria-label="Source types">
+        ${SPORTS.map(
+          (item) => `
+            <button
+              type="button"
+              class="${!onGuide && item.id === this._state.sportId ? "on" : ""}"
+              data-action="select-sport"
+              data-value="${escapeAttr(item.id)}"
+            >${escapeHtml(item.chipTitle ?? item.title)}</button>
+          `
+        ).join("")}
+        <button type="button" class="${onGuide ? "on" : ""}" data-action="open-guide">Guide</button>
+      </nav>
+    `;
+  }
+
+  _renderSources() {
+    if (this._state.screen === "browse-guide") {
+      const { channels, guideEpgAvailable } = this._guideFeedState();
+      return `
+        <h2 aria-label="DirecTV · ZIP 27403">DirecTV · ZIP ${escapeHtml(SPECTRUM_ZIP)}</h2>
+        ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
+        <label class="search">
+          <span>Search by channel, name, or title</span>
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+        </label>
+        <div class="keys">
+          ${channels.map((channel) => this._renderChannelKey(channel)).join("")}
+        </div>
+      `;
+    }
+    const sport = this._activeSport();
+    return `
+      <h2>Sources</h2>
+      <div class="keys">
+        ${sport.games.map((game) => this._renderGameKey(game)).join("")}
+      </div>
+    `;
+  }
+
+  _renderDisplays() {
+    const presetKeys = PRESETS.map((preset) => {
+      const on = this._state.destMode === "presets" && this._state.selectedPresetId === preset.id ? " on" : "";
+      const name = preset.id === "1_all" ? "All 35 TVs" : preset.shortLabel;
+      const sub = preset.id === "1_all" ? "Preset 1" : preset.description;
+      return `
+        <button type="button" class="key${on}" data-action="select-group" data-value="${escapeAttr(preset.id)}">
+          <span class="key-copy"><b>${escapeHtml(name)}</b><small>${escapeHtml(sub)}</small></span>
+        </button>
+      `;
+    }).join("");
+    const tvsOn = this._state.destMode === "tvs" ? " on" : "";
+    const grid = this._state.destMode === "tvs" ? this._renderTvGrid() : "";
+    return `
+      <div class="preset-keys" aria-label="Presets">
+        ${presetKeys}
+        <button type="button" class="key${tvsOn}" data-action="open-tvs">
+          <span class="key-copy"><b>Pick TVs</b><small>Choose rooms</small></span>
+        </button>
+      </div>
+      ${grid}
+    `;
+  }
+
+  _renderTake() {
+    const error = this._takeError();
+    const ready = this._hasSource() && this._hasDisplay() && !error;
+    return `
+      <footer class="take-bar">
+        ${error ? `<div class="plan-error-banner">${escapeHtml(error)}</div>` : ""}
+        <div class="pending">${escapeHtml(this._pendingRouteLabel())}</div>
+        <button
+          type="button"
+          class="take${ready ? " ready" : ""}"
+          data-action="send-destination"
+          ${ready ? "" : "disabled aria-disabled=\"true\""}
+        >Take</button>
+      </footer>
+    `;
+  }
+
+  _renderRoutingBoard() {
+    return `
+      <div class="board">
+        ${this._renderRail()}
+        <section class="bank">${this._renderSources()}</section>
+        <section class="bank displays">
+          <h2>Displays</h2>
+          ${this._renderDisplays()}
+        </section>
+      </div>
+      ${this._renderTake()}
+    `;
+  }
+
   render() {
     if (!this.isConnected) return;
 
@@ -1309,8 +1499,6 @@ class PanelHealth extends HTMLElement {
 
     this.innerHTML = `
       <style>
-        @import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap");
-
         :host {
           --canvas: ${TOKENS.canvas};
           --graphite: ${TOKENS.stage};
@@ -1329,7 +1517,7 @@ class PanelHealth extends HTMLElement {
           min-height: 100%;
           color: var(--text);
           background: var(--canvas);
-          font-family: Sora, "Avenir Next", "Segoe UI", sans-serif;
+          font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
         }
 
         .shell {
@@ -1877,26 +2065,315 @@ class PanelHealth extends HTMLElement {
             grid-template-columns: 1fr;
           }
         }
+
+        .routing {
+          background: #101010;
+          color: #f3f3f3;
+          display: flex;
+          flex-direction: column;
+          font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+          min-height: 100vh;
+          min-height: 100dvh;
+        }
+
+        .routing-top {
+          align-items: baseline;
+          display: flex;
+          gap: 16px;
+          justify-content: space-between;
+          padding: 22px 28px 8px;
+        }
+
+        .routing .room {
+          font-size: 22px;
+          font-weight: 650;
+        }
+
+        .routing .status {
+          color: #c8c8c8;
+          font-size: 16px;
+        }
+
+        .routing .live-commit-row,
+        .routing .dry-run-summary {
+          margin: 0 28px 8px;
+        }
+
+        .routing .dry-run-summary {
+          background: #1a1a1a;
+          border-color: #2a2a2a;
+          color: #f3f3f3;
+        }
+
+        .board {
+          display: grid;
+          flex: 1;
+          grid-template-columns: 148px minmax(0, 1fr) minmax(0, 1fr);
+          min-height: 0;
+        }
+
+        .rail {
+          border-right: 1px solid #242424;
+          display: flex;
+          flex-direction: column;
+          padding: 8px 0;
+        }
+
+        .rail button {
+          background: transparent;
+          border: 0;
+          border-left: 3px solid transparent;
+          border-radius: 0;
+          color: #8d8d8d;
+          cursor: pointer;
+          font: inherit;
+          font-size: 16px;
+          padding: 12px 16px;
+          text-align: left;
+        }
+
+        .rail button.on {
+          border-left-color: #0b5cab;
+          color: #ffffff;
+          font-weight: 650;
+        }
+
+        .bank {
+          border-left: 1px solid #242424;
+          min-width: 0;
+          overflow: auto;
+          padding: 16px 18px 12px;
+        }
+
+        .bank h2 {
+          color: #8d8d8d;
+          font-size: 14px;
+          font-weight: 500;
+          margin: 0 0 10px;
+        }
+
+        .keys {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .preset-keys {
+          display: grid;
+          gap: 8px;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .routing .key {
+          align-items: center;
+          background: linear-gradient(#323232, #2a2a2a);
+          border: 0;
+          border-radius: 3px;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+          color: #f3f3f3;
+          cursor: pointer;
+          display: flex;
+          font: inherit;
+          gap: 12px;
+          min-height: 68px;
+          padding: 10px 14px;
+          text-align: left;
+          width: 100%;
+        }
+
+        .routing .key.on {
+          background: linear-gradient(#1470d4, #0b5cab);
+        }
+
+        .routing .mark {
+          align-items: center;
+          display: flex;
+          flex: 0 0 auto;
+          gap: 4px;
+          justify-content: center;
+          width: 64px;
+        }
+
+        .routing .team-logo {
+          height: 28px;
+          object-fit: contain;
+          width: 28px;
+        }
+
+        .routing .key-copy {
+          min-width: 0;
+        }
+
+        .routing .key-copy b {
+          display: block;
+          font-size: 17px;
+          font-weight: 650;
+        }
+
+        .routing .key-copy small {
+          color: #bdbdbd;
+          display: block;
+          font-size: 13px;
+          margin-top: 2px;
+        }
+
+        .routing .key.on small {
+          color: #d7e7f8;
+        }
+
+        .routing .route-badge {
+          background: transparent;
+          color: #d7e7f8;
+          font-size: 12px;
+          font-weight: 650;
+          margin-left: auto;
+          padding: 0;
+        }
+
+        .routing .link-button {
+          background: #2a2a2a;
+          border-radius: 3px;
+          color: #f3f3f3;
+        }
+
+        .routing .dry-run-heading .eyebrow {
+          color: #c8c8c8;
+          letter-spacing: 0;
+        }
+
+        .routing .tv-toolbar {
+          color: #c8c8c8;
+        }
+
+        .routing .tv-toolbar button {
+          background: #2a2a2a;
+          border-radius: 3px;
+          color: #f3f3f3;
+        }
+
+        .routing .tv-grid {
+          gap: 8px;
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          margin-top: 8px;
+        }
+
+        .routing .tv {
+          aspect-ratio: auto;
+          background: #2a2a2a;
+          border-radius: 3px;
+          color: #f3f3f3;
+          font-weight: 650;
+          height: 52px;
+        }
+
+        .routing .tv.is-assigned:not(.is-selected) {
+          background: #3a3a3a;
+        }
+
+        .routing .tv.is-selected {
+          background: #0b5cab;
+          color: #ffffff;
+        }
+
+        .routing .tv-occupancy,
+        .routing .tv.is-selected .tv-occupancy {
+          color: #d7e7f8;
+        }
+
+        .routing .search span,
+        .routing .guide-epg-banner {
+          color: #c8c8c8;
+        }
+
+        .routing .search input {
+          background: #1a1a1a;
+          border: 1px solid #333333;
+          border-radius: 3px;
+          color: #f3f3f3;
+        }
+
+        .take-bar {
+          border-top: 1px solid #242424;
+          padding: 12px 28px 18px;
+        }
+
+        .pending {
+          font-size: 18px;
+          margin-bottom: 8px;
+          min-height: 24px;
+          text-align: center;
+        }
+
+        .routing .plan-error-banner {
+          color: #fecaca;
+          margin-bottom: 8px;
+          text-align: center;
+        }
+
+        .take {
+          background: #2a2a2a;
+          border: 0;
+          border-radius: 3px;
+          color: #6a6a6a;
+          font: inherit;
+          font-size: 20px;
+          font-weight: 700;
+          height: 64px;
+          width: 100%;
+        }
+
+        .take.ready {
+          background: #0b5cab;
+          color: #ffffff;
+          cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+          .board {
+            grid-template-columns: 1fr;
+          }
+
+          .rail {
+            border-bottom: 1px solid #242424;
+            border-right: 0;
+            flex-direction: row;
+            overflow-x: auto;
+          }
+
+          .rail button {
+            border-bottom: 3px solid transparent;
+            border-left: 0;
+            white-space: nowrap;
+          }
+
+          .rail button.on {
+            border-bottom-color: #0b5cab;
+            border-left-color: transparent;
+          }
+
+          .bank {
+            border-left: 0;
+          }
+
+          .routing .tv-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+          }
+        }
       </style>
 
-      <div class="shell">
-        <div class="stage">
-          <header class="topbar">
-            <div class="brand">
-              <span>AVAccess · iPad</span>
-              <h1>Sports Routing</h1>
-            </div>
-            ${
-              this._panel?.config?.debug
-                ? `<div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>`
-                : ""
-            }
-          </header>
-          ${this._renderChipRow()}
-          ${this._renderLiveCommitToggle()}
-          ${this._renderDryRunSummary()}
-          ${this._renderScreen()}
-        </div>
+      <div class="routing">
+        <header class="routing-top">
+          <div class="room">Bar</div>
+          <div class="status">${escapeHtml(this._routeStatusLabel())}</div>
+          ${
+            this._panel?.config?.debug
+              ? `<div class="state-pill">Screen: ${escapeHtml(SCREEN_TITLES[this._state.screen])}</div>`
+              : ""
+          }
+        </header>
+        ${this._renderLiveCommitToggle()}
+        ${this._renderDryRunSummary()}
+        ${this._renderRoutingBoard()}
       </div>
     `;
 

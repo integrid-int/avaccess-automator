@@ -85,12 +85,18 @@ test("panel shell keeps radii at token scale and avoids amber assignment accents
   assert.doesNotMatch(src, /#fef3c7/i);
 });
 
-test("panel shell brands AVAccess Sports Routing and drops stub content picker", () => {
+test("panel shell brands the routing board and drops stub content picker", () => {
   const src = readPanelSource();
-  assert.match(src, /AVAccess · iPad/);
-  assert.match(src, /Sports Routing/);
+  assert.match(src, /class="routing"/);
+  assert.match(src, /class="room">Bar</);
+  assert.match(src, /<h2>Sources<\/h2>/);
+  assert.match(src, /<h2>Displays<\/h2>/);
+  assert.match(src, /data-action="send-destination"/);
+  assert.match(src, />Take</);
+  assert.match(src, /#0b5cab/);
   assert.doesNotMatch(src, /open-content-picker/);
   assert.doesNotMatch(src, /Graphite routing shell/);
+  assert.doesNotMatch(src, /fonts\.googleapis\.com\/css2\?family=Sora/);
 });
 
 test("panel shell renders logos, route badges, and restores guide search focus", () => {
