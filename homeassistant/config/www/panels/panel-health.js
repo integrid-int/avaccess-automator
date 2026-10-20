@@ -1029,11 +1029,13 @@ class PanelHealth extends HTMLElement {
                   : ""
               }`
             : "";
+        const tuneNumber = slot.tune && slot.tune.channelNumber;
+        const tune = tuneNumber ? ` · Tune ${escapeHtml(String(tuneNumber))}` : "";
         return `
           <li>
             <b>${escapeHtml(slot.encoderId)}</b>
             · ${escapeHtml(slot.program?.label ?? "Program")}
-            · ${escapeHtml(this._formatTvList(slot.tvs))}
+            · ${escapeHtml(this._formatTvList(slot.tvs))}${tune}
             ${status}
           </li>
         `;
@@ -1377,6 +1379,11 @@ class PanelHealth extends HTMLElement {
     let source = this._selectedContentLabel();
     if (this._state.selectedPrograms.length > 1) {
       source = `${this._state.selectedPrograms.length} programs`;
+    } else {
+      const program =
+        this._state.selectedPrograms[0] || this._toProgram(this._state.selectedContent);
+      const tune = program?.channelNumber ? `Tune ${program.channelNumber}` : "";
+      if (tune) source = `${source} · ${tune}`;
     }
     let dest = "";
     if (this._state.destMode === "tvs") {
@@ -1410,7 +1417,7 @@ class PanelHealth extends HTMLElement {
   _renderChannelKey(channel) {
     const on = this._sourceIsOn(channel.id) ? " on" : "";
     const action = this._isMultiPreset() ? "toggle-program" : "select-channel";
-    const detail = channel.nowTitle ? String(channel.nowTitle) : channel.category || "";
+    const detail = channel.nowTitle ? `Now: ${channel.nowTitle}` : channel.category || "";
     return `
       <button type="button" class="key${on}" data-action="${action}" data-value="${escapeAttr(channel.id)}">
         <span class="mark">${escapeHtml(channel.number)}</span>
@@ -2258,6 +2265,9 @@ class PanelHealth extends HTMLElement {
           display: block;
           font-size: 13px;
           margin-top: 2px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .routing .key.on small {

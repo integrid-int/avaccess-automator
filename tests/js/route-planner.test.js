@@ -71,6 +71,23 @@ test("buildRoutePlan adhoc errors when no free encoders", () => {
   assert.match(plan.error, /No free encoders/i);
 });
 
+test("buildRoutePlan tunes a guide channel and skips a game without a number", () => {
+  const channel = buildRoutePlan({
+    mode: "preset_1",
+    programs: [{ kind: "channel", id: "ch-espn", label: "206 ESPN", channel: "206", channelNumber: "206" }],
+    selectedTvs: [],
+    busyEncoderIds: [],
+  });
+  assert.deepEqual(channel.slots[0].tune, { channelNumber: "206" });
+  const game = buildRoutePlan({
+    mode: "preset_1",
+    programs: [{ kind: "game", id: "g1", label: "A @ B", channel: "FOX", channelNumber: null }],
+    selectedTvs: [],
+    busyEncoderIds: [],
+  });
+  assert.equal(game.slots[0].tune, null);
+});
+
 test("buildRoutePlan preset_1 uses ENC-01 and all TVs", () => {
   const plan = buildRoutePlan({
     mode: "preset_1",

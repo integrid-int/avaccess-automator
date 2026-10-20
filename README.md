@@ -169,24 +169,16 @@ Compose already mounts `../config` → `/config/avaccess/config` and `../scripts
 
 #### 1. Guide EPG config
 
-The repo ships `config/guide_epg.yaml` as a **symlink** to `guide_epg.example.yaml`. Remove it (or use `--remove-destination`) before copying so `cp` does not follow the symlink and overwrite the example:
+`config/guide_epg.yaml` grabs listings from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the ZIP **27403** favorites: WGHP, WFMY, WXII, WXLV, ESPN, ESPN2, TNT, FS1, and NFL Sunday Ticket 1. The grabber is Python (`scripts/avaccess/tvpassport.py`) because the HA image does not ship Node. It writes XMLTV, then the builder maps each DirecTV major in `channel_number_map` to now/next.
 
-```bash
-rm config/guide_epg.yaml
-cp config/guide_epg.example.yaml config/guide_epg.yaml
-# edit config/guide_epg.yaml — XMLTV source + channel_number_map
-#
-# equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
-```
-
-Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s DirecTV major maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
+`config/guide_epg.example.yaml` is the offline fixture (no `grabber` key). Use it when you want to build from your own XMLTV file or URL instead of TV Passport. When refreshing via the HA `shell_command` without the grabber, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
 #### 2. Build / refresh `guide_epg.json`
 
-CLI (from repo root):
+CLI (from repo root). This hits TV Passport, then writes now/next:
 
 ```bash
-.venv/bin/python scripts/avaccess/build_guide_epg.py \
+python3 scripts/avaccess/build_guide_epg.py \
   --config config/guide_epg.yaml \
   --out homeassistant/config/www/avaccess/guide_epg.json
 ```
@@ -214,7 +206,7 @@ Optional hourly refresh (example — add to `automations.yaml` or a package if d
 
 The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sport chips are unchanged.
 
-The checked-in default `guide_epg.json` uses a stale `generatedAt` so the degrade banner is obvious until you run the builder.
+The checked-in `guide_epg.json` is a snapshot from the last grab. If `generatedAt` is older than **6 hours**, Guide falls back to the channel list and the banner. Refresh with the builder above (or the HA shell command) to fill now/next again. Choosing a Guide channel and pressing Take plans a DirecTV tune to that major; the dry-run summary shows `Tune` plus the channel number. Games do not tune.
 
 ## Operator guide — Sports Routing panel
 

@@ -1,1 +1,33 @@
-guide_epg.example.yaml
+# ZIP 27403 Guide listings. The builder grabs TV Passport (iptv-org/epg site
+# tvpassport.com) and writes now/next JSON for the Sports Routing Guide.
+#
+#   python3 scripts/avaccess/build_guide_epg.py \
+#     --config config/guide_epg.yaml \
+#     --out homeassistant/config/www/avaccess/guide_epg.json
+#
+# Home Assistant shell_command.avaccess_refresh_guide_epg runs the same builder.
+# Offline fixture-only builds stay in guide_epg.example.yaml (no grabber key).
+
+timezone: America/New_York
+zip_code: "27403"
+
+grabber:
+  kind: tvpassport
+  days: 2
+
+# Ignored while grabber.kind is set. The grabber writes XMLTV in memory.
+source:
+  file: tests/fixtures/guide_sample.xmltv
+  compression: none
+
+# DirecTV major → XMLTV id emitted by scripts/avaccess/tvpassport.py.
+channel_number_map:
+  "4": ["WGHP81.us@HD"]                 # WGHP FOX
+  "2": ["WFMYTV21.us@HD"]               # WFMY CBS
+  "12": ["WXIITV201.us@HD"]             # WXII NBC
+  "45": ["WXLVTV481.us@HD"]             # WXLV ABC
+  "206": ["ESPN.us@HD"]                 # ESPN
+  "207": ["ESPN2.us@HD"]                # ESPN2
+  "400": ["FoxSports1.us"]              # FS1
+  "245": ["TNT.us@HD"]                  # TNT East HD
+  "705": ["NFLSundayTicket1.us@SD"]     # NFL Sunday Ticket 1

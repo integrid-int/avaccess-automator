@@ -1,5 +1,5 @@
-# XMLTV → guide_epg.json builder config (ZIP 27403 DirecTV favorites).
-# Copy to config/guide_epg.yaml and point source at your XMLTV feed.
+# Offline XMLTV fixture for tests and demos. The operator config
+# config/guide_epg.yaml grabs TV Passport instead of this file.
 #
 #   python3 scripts/avaccess/build_guide_epg.py \
 #     --config config/guide_epg.yaml \
