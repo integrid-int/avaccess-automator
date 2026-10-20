@@ -19,7 +19,7 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=18";
+} from "./panel-data.js?v=19";
 import { buildRoutePlan, stripedTvs } from "./route-planner.js?v=18";
 
 const DEFAULT_STATE = {
@@ -42,13 +42,16 @@ const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
 const LIVE_BLOCKED_REASON = "Live commit is off until the room inventory is set up.";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
+const GUIDE_CHANNELS_JSON_URL = "/local/avaccess/guide_channels.json";
 const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
+const GUIDE_SEARCH_DELAY_MS = 300;
 const GUIDE_UNAVAILABLE_BANNER =
   "Guide listings unavailable — channel list only";
 
 const SCREEN_TITLES = {
   "browse-sport": "Sports",
   "browse-guide": "Guide",
+  "now-playing": "Now playing",
   "browse-tvs": "TVs",
   destination: "Destination",
   "content-picker": "Content Picker",
@@ -70,7 +73,10 @@ class PanelHealth extends HTMLElement {
     this._liveCommitSynced = false;
     this.guideEpg = null;
     this.guideEpgAvailable = false;
+    this.guideChannels = null;
     this._guideEpgTimer = null;
+    this._guideSearchTimer = null;
+    this._guideQueryDraft = null;
   }
 
   get hass() {
@@ -79,7 +85,14 @@ class PanelHealth extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+    const liveBefore = this._state.liveCommit;
     this._syncLiveCommitFromHass();
+    // HA pushes state often. Rebuilding the guide while a letter is in the
+    // box drops focus, so wait until the search pause finishes.
+    if (this._guideSearchTimer || this._searchInputIsFocused()) {
+      if (this._state.liveCommit !== liveBefore) this.render();
+      return;
+    }
     this.render();
   }
 
@@ -96,6 +109,7 @@ class PanelHealth extends HTMLElement {
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
+    this._loadGuideChannels();
     this._loadGuideEpg();
     if (!this._guideEpgTimer) {
       this._guideEpgTimer = setInterval(() => this._loadGuideEpg(), GUIDE_EPG_REFRESH_MS);
@@ -112,6 +126,10 @@ class PanelHealth extends HTMLElement {
     if (this._guideEpgTimer) {
       clearInterval(this._guideEpgTimer);
       this._guideEpgTimer = null;
+    }
+    if (this._guideSearchTimer) {
+      clearTimeout(this._guideSearchTimer);
+      this._guideSearchTimer = null;
     }
   }
 
@@ -170,7 +188,7 @@ class PanelHealth extends HTMLElement {
       } else {
         const feed = await response.json();
         this.guideEpg = feed;
-        const { epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, feed);
+        const { epgAvailable } = mergeGuideWithEpg(this._lineup(), feed);
         this.guideEpgAvailable = epgAvailable;
       }
     } catch {
@@ -180,8 +198,27 @@ class PanelHealth extends HTMLElement {
     if (this.isConnected) this.render();
   }
 
+  async _loadGuideChannels() {
+    try {
+      const response = await fetch(GUIDE_CHANNELS_JSON_URL, { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        if (Array.isArray(payload.channels) && payload.channels.length) {
+          this.guideChannels = payload.channels;
+        }
+      }
+    } catch {
+      this.guideChannels = this.guideChannels || null;
+    }
+    if (this.isConnected) this.render();
+  }
+
+  _lineup() {
+    return this.guideChannels?.length ? this.guideChannels : GUIDE_CHANNELS;
+  }
+
   _guideFeedState() {
-    const { channels, epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, this.guideEpg);
+    const { channels, epgAvailable } = mergeGuideWithEpg(this._lineup(), this.guideEpg);
     const sorted = [...channels].sort(
       (a, b) => channelNumberValue(a.number) - channelNumberValue(b.number)
     );
@@ -260,9 +297,22 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  _deepActiveElement() {
+    let node = document.activeElement;
+    while (node && node.shadowRoot && node.shadowRoot.activeElement) {
+      node = node.shadowRoot.activeElement;
+    }
+    return node;
+  }
+
+  _searchInputIsFocused() {
+    const active = this._deepActiveElement();
+    return active?.dataset?.action === "guide-search";
+  }
+
   _captureGuideSearchCaret() {
     const active = this.querySelector?.('[data-action="guide-search"]');
-    if (!active || document.activeElement !== active) return null;
+    if (!active || this._deepActiveElement() !== active) return null;
     return {
       value: active.value,
       start: active.selectionStart,
@@ -271,13 +321,17 @@ class PanelHealth extends HTMLElement {
   }
 
   _restoreGuideSearchCaret(snapshot) {
-    if (!snapshot) return;
-    const input = this.querySelector('[data-action="guide-search"]');
+    const input = this.querySelector?.('[data-action="guide-search"]');
     if (!input) return;
+    const typing = this._guideSearchTimer != null && this._guideQueryDraft != null;
+    if (!snapshot && !typing) return;
+    if (typing && this._guideQueryDraft !== input.value) {
+      input.value = this._guideQueryDraft;
+    }
     input.focus({ preventScroll: true });
     try {
-      const start = snapshot.start ?? input.value.length;
-      const end = snapshot.end ?? start;
+      const start = snapshot?.start ?? input.value.length;
+      const end = snapshot?.end ?? start;
       input.setSelectionRange(start, end);
     } catch {
       // Some input types reject selection ranges; focus alone is enough.
@@ -352,6 +406,10 @@ class PanelHealth extends HTMLElement {
         contentMode: "guide",
         entryPath: "content",
       });
+      return;
+    }
+    if (action === "open-now") {
+      this._setState({ screen: "now-playing" });
       return;
     }
     if (action === "open-tvs") {
@@ -447,9 +505,15 @@ class PanelHealth extends HTMLElement {
 
   _onInput(event) {
     const target = event.target;
-    if (target?.dataset?.action === "guide-search") {
-      this._setState({ guideQuery: target.value });
-    }
+    if (target?.dataset?.action !== "guide-search") return;
+    this._guideQueryDraft = target.value;
+    if (this._guideSearchTimer) clearTimeout(this._guideSearchTimer);
+    this._guideSearchTimer = setTimeout(() => {
+      this._guideSearchTimer = null;
+      const next = this._guideQueryDraft ?? "";
+      if (next === this._state.guideQuery) return;
+      this._setState({ guideQuery: next });
+    }, GUIDE_SEARCH_DELAY_MS);
   }
 
   _browseScreenForContent() {
@@ -525,7 +589,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _selectChannel(channelId) {
-    const channel = GUIDE_CHANNELS.find((item) => item.id === channelId);
+    const channel = this._lineup().find((item) => item.id === channelId);
     if (!channel) return;
     const selectedContent = { ...channel, kind: "channel" };
     if (this._state.entryPath === "tv") {
@@ -583,7 +647,7 @@ class PanelHealth extends HTMLElement {
       const game = sport.games.find((item) => item.id === contentId);
       if (game) return { ...game, kind: "game", sportId: sport.id };
     }
-    const channel = GUIDE_CHANNELS.find((item) => item.id === contentId);
+    const channel = this._lineup().find((item) => item.id === contentId);
     if (channel) return { ...channel, kind: "channel" };
     return null;
   }
@@ -863,7 +927,7 @@ class PanelHealth extends HTMLElement {
         ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
         <label class="search">
           <span>Search by channel, name, or title</span>
-          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter" autocomplete="off" spellcheck="false">
         </label>
         <div class="list">
           ${channels
@@ -1430,26 +1494,55 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  _renderNowPlaying() {
+    const rows = range(1, 35).map((tv) => {
+      const assignment = getAssignmentForTv(this._assignments, tv);
+      const program = assignment?.label ? String(assignment.label) : "Off";
+      const channel = assignment ? String(assignment.channel || "").trim() : "";
+      const detail = channel && channel !== program ? channel : assignment ? "On" : "No program";
+      return `
+        <div class="key now-row${assignment ? "" : " off"}">
+          <span class="mark">${tv}</span>
+          <span class="key-copy">
+            <b>${escapeHtml(program)}</b>
+            <small>${escapeHtml(detail)}</small>
+          </span>
+        </div>
+      `;
+    });
+    const onCount = range(1, 35).filter((tv) => getAssignmentForTv(this._assignments, tv)).length;
+    return `
+      <h2>Now playing</h2>
+      <p class="now-count">${onCount} of 35 TVs on</p>
+      <div class="keys" aria-label="Now playing">
+        ${rows.join("")}
+      </div>
+    `;
+  }
+
   _renderRail() {
     const onGuide = this._state.screen === "browse-guide";
+    const onNow = this._state.screen === "now-playing";
     return `
       <nav class="rail" aria-label="Source types">
         ${SPORTS.map(
           (item) => `
             <button
               type="button"
-              class="${!onGuide && item.id === this._state.sportId ? "on" : ""}"
+              class="${!onGuide && !onNow && item.id === this._state.sportId ? "on" : ""}"
               data-action="select-sport"
               data-value="${escapeAttr(item.id)}"
             >${escapeHtml(item.chipTitle ?? item.title)}</button>
           `
         ).join("")}
         <button type="button" class="${onGuide ? "on" : ""}" data-action="open-guide">Guide</button>
+        <button type="button" class="${onNow ? "on" : ""}" data-action="open-now">Now</button>
       </nav>
     `;
   }
 
   _renderSources() {
+    if (this._state.screen === "now-playing") return this._renderNowPlaying();
     if (this._state.screen === "browse-guide") {
       const { channels, guideEpgAvailable } = this._guideFeedState();
       return `
@@ -1457,7 +1550,7 @@ class PanelHealth extends HTMLElement {
         ${this._guideUnavailableBannerHtml(guideEpgAvailable)}
         <label class="search">
           <span>Search by channel, name, or title</span>
-          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter">
+          <input data-action="guide-search" value="${escapeAttr(this._state.guideQuery)}" placeholder="ESPN, 206, SportsCenter" autocomplete="off" spellcheck="false">
         </label>
         <div class="keys">
           ${channels.map((channel) => this._renderChannelKey(channel)).join("")}
@@ -2233,6 +2326,20 @@ class PanelHealth extends HTMLElement {
 
         .routing .key.on {
           background: linear-gradient(#1470d4, #0b5cab);
+        }
+
+        .routing .now-row {
+          cursor: default;
+        }
+
+        .routing .now-row.off {
+          color: #8d8d8d;
+        }
+
+        .routing .now-count {
+          color: #8d8d8d;
+          font-size: 13px;
+          margin: -4px 0 10px;
         }
 
         .routing .mark {

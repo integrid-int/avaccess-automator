@@ -169,7 +169,7 @@ Compose already mounts `../config` → `/config/avaccess/config` and `../scripts
 
 #### 1. Guide EPG config
 
-`config/guide_epg.yaml` grabs listings from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the ZIP **27403** favorites: WGHP, WFMY, WXII, WXLV, ESPN, ESPN2, TNT, FS1, and NFL Sunday Ticket 1. The grabber is Python (`scripts/avaccess/tvpassport.py`) because the HA image does not ship Node. It writes XMLTV, then the builder maps each DirecTV major in `channel_number_map` to now/next.
+`config/guide_epg.yaml` grabs now/next from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the ZIP **27403** locals and main sports channels. The full Guide list is the DirecTV Greensboro lineup (`scripts/avaccess/directv_lineup.py` → `guide_channels.json`). It drops music audio, pay-per-view, adult, premium movies (HBO, Cinemax, Showtime, Starz, TMC), shopping, on-demand, and the Audience Network barker. News, kids, Spanish, international, religious, and music-video channels (MTV, CMT) stay. Guide search waits briefly before filtering so typing does not steal the cursor. **Now** lists every TV and the program on it.
 
 `config/guide_epg.example.yaml` is the offline fixture (no `grabber` key). Use it when you want to build from your own XMLTV file or URL instead of TV Passport. When refreshing via the HA `shell_command` without the grabber, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 

@@ -102,6 +102,10 @@ test("panel shell brands the routing board and drops stub content picker", () =>
   assert.match(src, /Live commit is off until the room inventory is set up/);
   assert.match(src, /Tune \$\{/);
   assert.match(src, /Now: /);
+  assert.match(src, /GUIDE_SEARCH_DELAY_MS/);
+  assert.match(src, /open-now/);
+  assert.match(src, /Now playing/);
+  assert.match(src, /_deepActiveElement/);
   assert.doesNotMatch(src, /open-content-picker/);
   assert.doesNotMatch(src, /Graphite routing shell/);
   assert.doesNotMatch(src, /fonts\.googleapis\.com\/css2\?family=Sora/);

@@ -48,16 +48,16 @@ channels:
     number: "206"
     label: "ESPN"
   espn2:
-    number: "207"
+    number: "209"
     label: "ESPN2"
   fs1:
-    number: "400"
+    number: "219"
     label: "FS1"
   tnt:
     number: "245"
     label: "TNT"
   fox:
-    number: "4"
+    number: "8"
     label: "WGHP FOX (Local)"
   cbs:
     number: "2"
