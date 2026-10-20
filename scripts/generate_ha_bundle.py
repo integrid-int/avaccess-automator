@@ -210,6 +210,39 @@ def build_package(
             "sequence": [{"service": f"shell_command.{shell_name}"}],
         }
 
+    preset_choices = []
+    for preset_key in presets.keys():
+        preset_name = friendly_preset_name(preset_key)
+        preset_choices.append(
+            {
+                "conditions": (
+                    "{{ states('input_select.avaccess_active_preset') == '" + preset_name + "' }}"
+                ),
+                "sequence": [{"service": f"script.avaccess_preset_{slug(preset_key)}"}],
+            }
+        )
+    scripts["avaccess_apply_selected_preset"] = {
+        "alias": "AVAccess apply selected preset",
+        "mode": "single",
+        "sequence": [
+            {
+                "choose": preset_choices,
+                "default": [
+                    {
+                        "service": "system_log.write",
+                        "data": {
+                            "level": "warning",
+                            "message": (
+                                "AVAccess apply preset: pick ALL, 4 Programs, or 9 Programs first. "
+                                "selected={{ states('input_select.avaccess_active_preset') }}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
     shell_command["avaccess_route_targets"] = (
         "python3 /config/avaccess/route_targets.py "
         f"--inventory {inventory_ha_path} --encoder \"{{{{ encoder }}}}\" --targets \"{{{{ targets }}}}\""
@@ -542,12 +575,18 @@ def build_package(
                 "initial": channel_labels[channel_keys[0]],
                 "icon": "mdi:television-guide",
             },
+            "avaccess_active_preset": {
+                "name": "AVAccess Active Preset",
+                "options": ["None", *[friendly_preset_name(k) for k in presets.keys()]],
+                "initial": "None",
+                "icon": "mdi:video-switch",
+            },
         },
         "input_text": {
             "avaccess_target_rxs": {
                 "name": "AVAccess Target TVs",
                 "max": 255,
-                "initial": "RX-01,RX-02",
+                "initial": "RX-01, RX-02",
                 "icon": ROUTE_ICON,
             }
         },
@@ -602,12 +641,18 @@ def _build_channel_buttons(
     for channel_key in keys:
         if channel_key not in channels:
             continue
-        ch_slug = slug(channel_key)
         out.extend(
             _selectable_buttons(
                 labels[channel_key],
                 icon,
-                {"action": "call-service", "service": f"script.avaccess_tune_{ch_slug}"},
+                {
+                    "action": "call-service",
+                    "service": "input_select.select_option",
+                    "data": {
+                        "entity_id": "input_select.avaccess_channel",
+                        "option": labels[channel_key],
+                    },
+                },
                 "input_select.avaccess_channel",
                 labels[channel_key],
             )
@@ -674,38 +719,33 @@ def _stack(cards: list[dict[str, Any]]) -> dict[str, Any]:
     return {"type": "vertical-stack", "cards": cards}
 
 
-def _side_by_side(*cards: dict[str, Any]) -> dict[str, Any]:
-    return {"type": "grid", "columns": len(cards), "square": False, "cards": list(cards)}
-
-
-def _panel_view(title: str, path: str, icon: str, cards: list[dict[str, Any]]) -> dict[str, Any]:
+def _panel_view(title: str, path: str, cards: list[dict[str, Any]]) -> dict[str, Any]:
+    # No view icon: Home Assistant otherwise hides the title and shows a glyph only.
     return {
         "title": title,
         "path": path,
-        "icon": icon,
         "theme": "Avaccess Routing",
         "type": "panel",
         "cards": [_stack(cards)],
     }
 
 
-def _column(title: str, cards: list[dict[str, Any]]) -> dict[str, Any]:
-    """Top-aligned bank. A grid title stretches short key lists to the taller column."""
-    return {
-        "type": "vertical-stack",
-        "cards": [{"type": "markdown", "content": f"### {title}"}, *cards],
-    }
+def _heading(title: str) -> dict[str, Any]:
+    return {"type": "markdown", "content": f"### {title}"}
 
 
 def _keys(title: str, cards: list[dict[str, Any]], columns: int) -> dict[str, Any]:
-    return {"type": "grid", "title": title, "columns": columns, "square": False, "cards": cards}
+    card: dict[str, Any] = {"type": "grid", "columns": columns, "square": False, "cards": cards}
+    if title:
+        card["title"] = title
+    return card
 
 
 def _route_actions_card() -> dict[str, Any]:
     return {
         "type": "grid",
         "title": "Route Actions",
-        "columns": 2,
+        "columns": 3,
         "square": False,
         "cards": [
             _key_button(
@@ -717,6 +757,11 @@ def _route_actions_card() -> dict[str, Any]:
                 "Route Program → TVs",
                 ROUTE_ICON,
                 {"action": "call-service", "service": "script.avaccess_route_selected_program_to_tvs"},
+            ),
+            _key_button(
+                "Apply Preset",
+                "mdi:video-switch",
+                {"action": "call-service", "service": "script.avaccess_apply_selected_preset"},
             ),
         ],
     }
@@ -737,12 +782,18 @@ def build_dashboard(
 
     preset_buttons = []
     for preset_key in presets.keys():
-        preset_slug = slug(preset_key)
-        preset_buttons.append(
-            _key_button(
-                friendly_preset_name(preset_key),
+        preset_name = friendly_preset_name(preset_key)
+        preset_buttons.extend(
+            _selectable_buttons(
+                preset_name,
                 "mdi:video-switch",
-                {"action": "call-service", "service": f"script.avaccess_preset_{preset_slug}"},
+                {
+                    "action": "call-service",
+                    "service": "input_select.select_option",
+                    "data": {"entity_id": "input_select.avaccess_active_preset", "option": preset_name},
+                },
+                "input_select.avaccess_active_preset",
+                preset_name,
             )
         )
 
@@ -785,29 +836,33 @@ def build_dashboard(
                 )
             )
 
-    # Same skeleton as the routing panel: status, sources beside displays, route action at the bottom.
-    source_cards: list[dict[str, Any]] = []
-    if favorite_buttons:
-        source_cards.append(_keys("Favorites", favorite_buttons, 1))
-    source_cards.extend(
-        [
-            _keys("Programs", program_buttons, 2),
-            _keys("Channels", channel_buttons, 2),
-        ]
-    )
+    # Full-width banks. A side-by-side column left the right half empty once Sources got long,
+    # and the route keys scrolled off the top. The same route keys sit under Bar and again
+    # after the lists so a commit is still on screen.
     control_cards: list[dict[str, Any]] = [
         _selection_card("Bar"),
-        _route_actions_card(),
-        _side_by_side(
-            _column("Sources", source_cards),
-            _column("Displays", [_keys("Presets", preset_buttons, 1)]),
-        ),
         *now_playing,
+        _route_actions_card(),
+        _heading("Displays"),
+        _keys("Presets", preset_buttons, 3),
+        _heading("Sources"),
+        _keys("Programs", program_buttons, 3),
+        _keys("Channels", channel_buttons, 4),
     ]
+    if favorite_buttons:
+        control_cards.extend(
+            [
+                _heading("Scenes"),
+                {
+                    "type": "markdown",
+                    "content": "Scenes run as soon as you tap them.",
+                },
+                _keys("", favorite_buttons, 3),
+            ]
+        )
+    control_cards.append(_route_actions_card())
 
-    views: list[dict[str, Any]] = [
-        _panel_view("AV Control", "av-control", "mdi:video-input-component", control_cards)
-    ]
+    views: list[dict[str, Any]] = [_panel_view("AV Control", "av-control", control_cards)]
 
     sports_pages = channels_cfg.get("sports_pages", {})
     if isinstance(sports_pages, dict):
@@ -816,7 +871,6 @@ def build_dashboard(
                 continue
             page_title = str(page_cfg.get("title", page_key.upper()))
             page_path = str(page_cfg.get("path", slug(page_key)))
-            page_icon = str(page_cfg.get("icon", "mdi:basketball"))
             page_desc = str(page_cfg.get("description", "")).replace("->", "→")
             page_channels = page_cfg.get("channels", [])
             if not isinstance(page_channels, list) or not page_channels:
@@ -824,20 +878,22 @@ def build_dashboard(
             buttons = _build_channel_buttons(channels, [str(c) for c in page_channels], icon="mdi:television-play")
             if not buttons:
                 continue
+            channel_columns = 4 if len(page_channels) > 6 else 2
             page_cards: list[dict[str, Any]] = []
             if page_desc:
-                page_cards.append({"type": "markdown", "content": f"## {page_title}\n\n{page_desc}"})
+                page_cards.append({"type": "markdown", "content": page_desc})
             page_cards.extend(
                 [
                     _selection_card("Bar"),
-                    _side_by_side(
-                        _column("Sources", [_keys(f"{page_title} Channels", buttons, 2)]),
-                        _column("Displays", [_route_actions_card()]),
-                    ),
                     *now_playing,
+                    _heading("Displays"),
+                    _route_actions_card(),
+                    _heading("Sources"),
+                    _keys(f"{page_title} Channels", buttons, channel_columns),
+                    _route_actions_card(),
                 ]
             )
-            views.append(_panel_view(page_title, page_path, page_icon, page_cards))
+            views.append(_panel_view(page_title, page_path, page_cards))
 
     dashboard = {"title": "AVAccess Matrix", "views": views}
     return dashboard

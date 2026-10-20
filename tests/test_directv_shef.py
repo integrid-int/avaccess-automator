@@ -223,11 +223,20 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 self.assertEqual(view.get("theme"), "Avaccess Routing", view.get("title"))
                 self.assertEqual(view["cards"][0]["type"], "vertical-stack", view.get("title"))
                 dumped = yaml.safe_dump(view, allow_unicode=True)
+                self.assertIsNone(view.get("icon"), view.get("title"))
                 self.assertIn("Sources", dumped, view.get("title"))
                 self.assertIn("Displays", dumped, view.get("title"))
                 self.assertIn("Route Actions", dumped, view.get("title"))
                 self.assertIn("Route Program → TVs", dumped, view.get("title"))
+                self.assertGreaterEqual(dumped.count("Route Program → TVs"), 2, view.get("title"))
                 self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))
+                tune_services = {
+                    (card.get("tap_action") or {}).get("service", "")
+                    for card in _iter_cards(view.get("cards"))
+                    if card.get("type") == "button"
+                    and str((card.get("tap_action") or {}).get("service", "")).startswith("script.avaccess_tune_")
+                }
+                self.assertEqual(tune_services, {"script.avaccess_tune_selected_channel"}, view.get("title"))
                 selection_cards = [
                     card
                     for card in _iter_cards(view.get("cards"))
@@ -245,19 +254,29 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             dashboard = yaml.safe_load(dashboard_path.read_text())
             control = next(view for view in dashboard["views"] if view.get("path") == "av-control")
 
-            preset_buttons = _buttons_calling(control, "script.avaccess_preset_")
+            preset_buttons = [
+                button
+                for button in _buttons_calling(control, "input_select.select_option")
+                if (button.get("tap_action") or {}).get("data", {}).get("entity_id")
+                == "input_select.avaccess_active_preset"
+                and button["visibility"][0].get("state_not")
+            ]
             self.assertEqual(
                 [button["name"] for button in preset_buttons],
                 ["ALL", "4 Programs", "9 Programs"],
             )
-            self.assertEqual(
-                [button["tap_action"]["service"] for button in preset_buttons],
-                [
-                    "script.avaccess_preset_1_all",
-                    "script.avaccess_preset_2_four_programs",
-                    "script.avaccess_preset_3_nine_programs",
-                ],
-            )
+            for button in preset_buttons:
+                self.assertEqual(button["tap_action"]["data"]["option"], button["name"])
+            apply_buttons = _buttons_calling(control, "script.avaccess_apply_selected_preset")
+            self.assertGreaterEqual(len(apply_buttons), 1)
+            channel_buttons = [
+                button
+                for button in _buttons_calling(control, "input_select.select_option")
+                if (button.get("tap_action") or {}).get("data", {}).get("entity_id")
+                == "input_select.avaccess_channel"
+                and button["visibility"][0].get("state_not")
+            ]
+            self.assertIn("ESPN", [button["name"] for button in channel_buttons])
 
             # Each program has an unselected + selected variant swapped by visibility conditions.
             program_buttons = [

@@ -94,6 +94,12 @@ test("panel shell brands the routing board and drops stub content picker", () =>
   assert.match(src, /data-action="send-destination"/);
   assert.match(src, />Take</);
   assert.match(src, /#0b5cab/);
+  assert.match(src, /height: calc\(100dvh - 64px\)/);
+  assert.match(src, /takes one program/);
+  assert.match(src, /Ready · /);
+  assert.match(src, /_formatTvList/);
+  assert.match(src, /_tvOccupancy/);
+  assert.match(src, /Live commit is off until the room inventory is set up/);
   assert.doesNotMatch(src, /open-content-picker/);
   assert.doesNotMatch(src, /Graphite routing shell/);
   assert.doesNotMatch(src, /fonts\.googleapis\.com\/css2\?family=Sora/);

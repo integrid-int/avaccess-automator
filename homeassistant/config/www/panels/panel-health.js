@@ -39,8 +39,7 @@ const DEFAULT_STATE = {
 };
 
 const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
-const LIVE_BLOCKED_REASON =
-  "Live blocked: inventory not ready — fill inventory hostnames (no REPLACE_ME) and export inventory.json";
+const LIVE_BLOCKED_REASON = "Live commit is off until the room inventory is set up.";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
 const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
@@ -1034,7 +1033,7 @@ class PanelHealth extends HTMLElement {
           <li>
             <b>${escapeHtml(slot.encoderId)}</b>
             · ${escapeHtml(slot.program?.label ?? "Program")}
-            · TVs ${escapeHtml((slot.tvs ?? []).join(", "))}
+            · ${escapeHtml(this._formatTvList(slot.tvs))}
             ${status}
           </li>
         `;
@@ -1259,7 +1258,7 @@ class PanelHealth extends HTMLElement {
   _renderTvGrid() {
     return `
       <div class="tv-toolbar">
-        <span>${this._state.selectedTvs.length} selected</span>
+        <span>${this._state.selectedTvs.length} picked</span>
         <button type="button" data-action="clear-tvs">Clear TVs</button>
       </div>
       <div class="tv-grid" aria-label="TV picker">
@@ -1268,6 +1267,7 @@ class PanelHealth extends HTMLElement {
             const assignment = getAssignmentForTv(this._assignments, tv);
             const selected = this._state.selectedTvs.includes(tv) ? "is-selected" : "";
             const assigned = assignment ? "is-assigned" : "";
+            const occupancy = this._tvOccupancy(assignment);
             const label = assignment ? `TV ${tv}: ${assignment.label}` : `TV ${tv}`;
             return `
               <button
@@ -1278,7 +1278,7 @@ class PanelHealth extends HTMLElement {
                 title="${escapeAttr(label)}"
               >
                 <span class="tv-number">${tv}</span>
-                ${assignment ? `<span class="tv-occupancy">${escapeHtml(assignment.label)}</span>` : ""}
+                ${occupancy ? `<span class="tv-occupancy">${escapeHtml(occupancy)}</span>` : ""}
               </button>
             `;
           })
@@ -1293,7 +1293,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _sourceIsOn(id) {
-    if (this._isMultiPreset()) {
+    if (this._isMultiPreset() || this._state.selectedPrograms.length > 1) {
       return (
         this._state.selectedPrograms.some((item) => item.id === id) ||
         this._state.selectedContent?.id === id
@@ -1317,7 +1317,34 @@ class PanelHealth extends HTMLElement {
     return this._state.selectedTvs.length > 0;
   }
 
+  _formatTvList(tvs) {
+    const nums = [...(tvs || [])].map((value) => Number(value)).filter((value) => Number.isInteger(value));
+    if (!nums.length) return "no TVs";
+    const sorted = [...nums].sort((a, b) => a - b);
+    const contiguous = sorted.every((value, index) => index === 0 || value === sorted[index - 1] + 1);
+    if (sorted.length > 4 && contiguous) return `TVs ${sorted[0]}–${sorted[sorted.length - 1]}`;
+    if (sorted.length > 6) return `${sorted.length} TVs`;
+    return `TVs ${sorted.join(", ")}`;
+  }
+
+  _tvOccupancy(assignment) {
+    if (!assignment) return "";
+    const channel = String(assignment.channel || "").trim();
+    if (!channel) return "On";
+    return channel.length > 8 ? channel.slice(0, 8) : channel;
+  }
+
   _takeError() {
+    const preset = this._activePreset();
+    if (
+      preset &&
+      preset.programCapacity === 1 &&
+      this._state.destMode === "presets" &&
+      this._state.selectedPrograms.length > 1
+    ) {
+      const name = preset.id === "1_all" ? "All 35 TVs" : preset.shortLabel;
+      return `${name} takes one program. Tap the one to keep.`;
+    }
     if (this._state.destMode !== "tvs" || !this._hasSource() || this._state.selectedTvs.length === 0) {
       return "";
     }
@@ -1334,25 +1361,27 @@ class PanelHealth extends HTMLElement {
   }
 
   _routeStatusLabel() {
+    const error = this._takeError();
+    if (error) return error;
+    const pending = this._pendingRouteLabel();
+    if (pending) return `Ready · ${pending}`;
     const routes = Object.values(this._assignments || {}).filter((route) => route?.tvs?.length);
     if (!routes.length) return "No route";
     routes.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
     const route = routes[0];
-    const tvs = route.tvs;
-    const where = tvs.length > 6 ? `${tvs.length} TVs` : `TVs ${tvs.join(", ")}`;
-    return `${route.label} · ${where}`;
+    return `${route.label} · ${this._formatTvList(route.tvs)}`;
   }
 
   _pendingRouteLabel() {
     if (!this._hasSource() || !this._hasDisplay()) return "";
     let source = this._selectedContentLabel();
-    if (this._isMultiPreset() && this._state.selectedPrograms.length > 1) {
+    if (this._state.selectedPrograms.length > 1) {
       source = `${this._state.selectedPrograms.length} programs`;
     }
     let dest = "";
     if (this._state.destMode === "tvs") {
       const tvs = this._state.selectedTvs;
-      dest = tvs.length > 6 ? `${tvs.length} TVs` : `TVs ${tvs.join(", ")}`;
+      dest = this._formatTvList(tvs);
     } else {
       const preset = this._activePreset();
       dest = preset?.id === "1_all" ? "All 35 TVs" : preset?.shortLabel ?? "";
@@ -1454,7 +1483,7 @@ class PanelHealth extends HTMLElement {
       <div class="preset-keys" aria-label="Presets">
         ${presetKeys}
         <button type="button" class="key${tvsOn}" data-action="open-tvs">
-          <span class="key-copy"><b>Pick TVs</b><small>Choose rooms</small></span>
+          <span class="key-copy"><b>Pick TVs</b><small>Choose TVs</small></span>
         </button>
       </div>
       ${grid}
@@ -2068,12 +2097,15 @@ class PanelHealth extends HTMLElement {
 
         .routing {
           background: #101010;
+          box-sizing: border-box;
           color: #f3f3f3;
           display: flex;
           flex-direction: column;
           font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-          min-height: 100vh;
-          min-height: 100dvh;
+          height: calc(100dvh - 64px);
+          max-height: calc(100dvh - 64px);
+          min-height: 0;
+          overflow: hidden;
         }
 
         .routing-top {
@@ -2103,19 +2135,29 @@ class PanelHealth extends HTMLElement {
           background: #1a1a1a;
           border-color: #2a2a2a;
           color: #f3f3f3;
+          flex: 0 0 auto;
+          max-height: 88px;
+          overflow: auto;
+        }
+
+        .routing .live-commit-row {
+          flex: 0 0 auto;
         }
 
         .board {
           display: grid;
-          flex: 1;
+          flex: 1 1 auto;
           grid-template-columns: 148px minmax(0, 1fr) minmax(0, 1fr);
           min-height: 0;
+          overflow: hidden;
         }
 
         .rail {
           border-right: 1px solid #242424;
           display: flex;
           flex-direction: column;
+          min-height: 0;
+          overflow: auto;
           padding: 8px 0;
         }
 
@@ -2140,6 +2182,7 @@ class PanelHealth extends HTMLElement {
 
         .bank {
           border-left: 1px solid #242424;
+          min-height: 0;
           min-width: 0;
           overflow: auto;
           padding: 16px 18px 12px;
@@ -2242,7 +2285,11 @@ class PanelHealth extends HTMLElement {
         }
 
         .routing .tv-toolbar {
+          align-items: center;
           color: #c8c8c8;
+          display: flex;
+          gap: 8px;
+          margin: 0 0 10px;
         }
 
         .routing .tv-toolbar button {
@@ -2275,9 +2322,20 @@ class PanelHealth extends HTMLElement {
           color: #ffffff;
         }
 
+        .routing .tv-number {
+          font-size: 16px;
+          line-height: 1;
+        }
+
         .routing .tv-occupancy,
         .routing .tv.is-selected .tv-occupancy {
           color: #d7e7f8;
+          font-size: 11px;
+          line-height: 1.1;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .routing .search span,
@@ -2294,6 +2352,7 @@ class PanelHealth extends HTMLElement {
 
         .take-bar {
           border-top: 1px solid #242424;
+          flex: 0 0 auto;
           padding: 12px 28px 18px;
         }
 
@@ -2305,8 +2364,11 @@ class PanelHealth extends HTMLElement {
         }
 
         .routing .plan-error-banner {
+          background: #3a1d1d;
+          border-radius: 3px;
           color: #fecaca;
           margin-bottom: 8px;
+          padding: 10px 12px;
           text-align: center;
         }
 
