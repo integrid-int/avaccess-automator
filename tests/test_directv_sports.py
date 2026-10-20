@@ -230,6 +230,23 @@ def test_pull_writes_the_window_and_a_refusal_keeps_the_old_file(tmp_path, monke
     assert written["sports"][0]["games"][0]["channelNumber"] == "216"
 
 
+def test_college_football_sits_under_football_with_the_nfl():
+    college = _game(1228556, "NCAAF", "Pittsburgh", "Miami", [_showing(_channel(206, callsign="ESPN"))])
+    college["sport"] = {"text_id": "football", "title": "Football", "emoji": "🏈", "rank": 1, "show": True}
+    college["league"]["title"] = "College Football"
+    college["league"]["title_short"] = "NCAA Football"
+    college["league"]["rank"] = 6
+    nfl = _game(1214005, "NFL", "49ers", "Falcons", [_showing(_channel(9558, callsign="NFL"))])
+    schedule = parse_schedule({"games": [college, nfl]}, generated_at=_stamp())
+    football = schedule["sports"][0]
+    assert football["id"] == "football"
+    assert [league["id"] for league in football["leagues"]] == ["nfl", "ncaaf"]
+    assert football["leagues"][1]["chipTitle"] == "NCAA Football"
+    by_league = {game["leagueId"]: game for game in football["games"]}
+    assert by_league["ncaaf"]["channelNumber"] == "206"
+    assert by_league["nfl"]["channelNumber"] == "9558"
+
+
 def test_commercial_plan_drops_residential_packages_and_keeps_locals():
     sunday = _showing(
         _channel(
