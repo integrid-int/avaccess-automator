@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """Turn DirecTV sports-info JSON into sports-rail games with satellite majors.
 
-The sports page loads one calendar day per request:
+The sports page loads one calendar day per request. This account is Bars and
+Restaurants, customer type 20:
 
-  GET https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25
+  GET https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25&bundles=20
 
-A week of games is that request repeated, then merged on game id. The URL has
-no plan argument: zip 27403 returns every package. This is a commercial
-account, so a channel is kept only when one of its packages is marked
-commercial. Greensboro locals 2, 8, 12, and 45 stay even though DirecTV tags
-them with the residential MySports package. Scripted HTTP is refused (HTTP
-403) from many networks. Do not send Cookie or XSRF headers from a saved
-browser session, and do not curl DirecTV from the HA container.
+A week of games is that request repeated, then merged on game id. The response
+still lists every package. A non-local channel is kept only when one package
+is commercial_public (public viewing). Private-office packs are not. Greensboro
+locals 2, 8, 12, and 45 stay even though DirecTV tags them with the residential
+MySports package. Scripted HTTP is refused (HTTP 403) from many networks. Do
+not send Cookie or XSRF headers from a saved browser session, and do not curl
+DirecTV from the HA container.
 
 On Home Assistant OS, the Selenium Standalone add-on is the browser. A
 morning shell command talks to it on port 4444:
@@ -51,6 +52,10 @@ from zoneinfo import ZoneInfo
 GAMES_URL = "https://www.directv.com/sports-info/games"
 MARKET_ZIP = "27403"
 MARKET_TZ = ZoneInfo("America/New_York")
+# Customer type on the sports schedule page. 15–17 are residential.
+# 20 Bars and Restaurants, 21 Shops and Services, 22 Private Office.
+# 20 and above is the commercial branch. This account is bars and restaurants.
+BARS_AND_RESTAURANTS = 20
 APP_MAJOR_MIN = 30000
 # Greensboro in-market affiliates. Prefer these over the national simulcast.
 LOCAL_MAJORS = (2, 8, 12, 45)
@@ -85,7 +90,7 @@ ESPN_ABBR = {
 # Runs inside the sports page. The open page already has the session; this
 # does not read a token from disk.
 _PAGE_FETCH_JS = """
-async ({ zip, days }) => {
+async ({ zip, days, bundles }) => {
   const meta = document.querySelector('meta[name="csrf-token"]');
   let token = meta && meta.content ? meta.content : "";
   if (!token) {
@@ -103,7 +108,8 @@ async ({ zip, days }) => {
   const results = [];
   for (const day of days) {
     const url = "/sports-info/games?zip=" + encodeURIComponent(zip)
-      + "&days=" + encodeURIComponent(day);
+      + "&days=" + encodeURIComponent(day)
+      + "&bundles=" + encodeURIComponent(bundles);
     const response = await fetch(url, { credentials: "include", headers });
     results.push({ day, status: response.status, body: await response.text() });
   }
@@ -116,10 +122,14 @@ class DirectvSportsError(RuntimeError):
     pass
 
 
-def games_url(zip_code: str, day: str) -> str:
-    """One calendar day, matching the request the sports page fires."""
-    query = urllib.parse.urlencode({"zip": zip_code, "days": day})
+def games_url(zip_code: str, day: str, bundles: int = BARS_AND_RESTAURANTS) -> str:
+    """One calendar day for Bars and Restaurants, matching the sports page."""
+    query = urllib.parse.urlencode({"zip": zip_code, "days": day, "bundles": bundles})
     return f"{GAMES_URL}?{query}"
+
+
+def _page_fetch_args(zip_code: str, days: list[str]) -> dict[str, Any]:
+    return {"zip": zip_code, "days": days, "bundles": BARS_AND_RESTAURANTS}
 
 
 def window_days(count: int = 8, *, today: dt.date | None = None) -> list[str]:
@@ -271,7 +281,7 @@ def fetch_window_in_browser(
             page = context.pages[0] if context.pages else context.new_page()
             page.goto(SPORTS_PAGE, wait_until="domcontentloaded", timeout=timeout_ms)
             page.wait_for_timeout(1500)
-            results = page.evaluate(_PAGE_FETCH_JS, {"zip": zip_code, "days": days})
+            results = page.evaluate(_PAGE_FETCH_JS, _page_fetch_args(zip_code, days))
         except DirectvSportsError:
             raise
         except Exception as exc:
@@ -323,7 +333,7 @@ def fetch_window_via_selenium(
             base,
             "POST",
             f"/session/{session}/execute/async",
-            {"script": wrapper, "args": [{"zip": zip_code, "days": days}]},
+            {"script": wrapper, "args": [_page_fetch_args(zip_code, days)]},
             timeout_s=script_timeout_s + 5,
         )
     finally:
@@ -494,12 +504,13 @@ def is_tunable_showing(showing: dict[str, Any]) -> bool:
 
 
 def _on_commercial_plan(channel: dict[str, Any], major: int) -> bool:
-    """True when this commercial account can be sold the channel.
+    """True when a bars-and-restaurants account can be sold the channel.
 
-    The games response mixes residential and commercial packages. Residential
-    tiers (Choice, Ultimate, Sports Pack, MySports) are not on this account.
-    A package with commercial set is. Locals are the exception: the commercial
-    headend carries them even when the only listed package is MySports.
+    Customer type 20 is Bars and Restaurants. The games response still mixes
+    residential, public, and private packages. A non-local channel with a
+    package list is kept only when one package is commercial_public, the
+    public-viewing flag. Private-office packs such as Sports Choice are not.
+    Locals stay: the headend carries them even when the only package is MySports.
     """
     if major in LOCAL_MAJORS:
         return True
@@ -507,7 +518,8 @@ def _on_commercial_plan(channel: dict[str, Any], major: int) -> bool:
     if not isinstance(packages, list) or not packages:
         return True
     return any(
-        isinstance(package, dict) and package.get("commercial") is True for package in packages
+        isinstance(package, dict) and package.get("commercial_public") is True
+        for package in packages
     )
 
 

@@ -2,8 +2,8 @@
 #
 # Install and start https://github.com/davida72/selenium-homeassistant so
 # port 4444 is listening. This command does not curl DirecTV. It asks that
-# browser for each upcoming day, then keeps channels on a commercial package
-# (plus Greensboro locals 2, 8, 12, and 45).
+# browser for each upcoming day as Bars and Restaurants (customer type 20),
+# then keeps public-viewing channels (plus Greensboro locals 2, 8, 12, and 45).
 #
 # shell_command runs with cwd = HA config dir and is stopped after 60 seconds.
 # The Selenium add-on must already be running.

@@ -69,7 +69,7 @@ def _game(gid, league, away, home, showings, starts="2026-10-27T00:15:00.000000Z
 
 def test_games_url_matches_the_sports_page_request():
     assert games_url("27403", "2026-10-25") == (
-        "https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25"
+        "https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25&bundles=20"
     )
 
 
@@ -253,21 +253,42 @@ def test_commercial_plan_drops_residential_packages_and_keeps_locals():
             9558,
             callsign="NFL",
             commercial_only=True,
-            packages=[{"title": "NFL SUNDAY TICKET", "commercial": True, "residential": False}],
+            packages=[
+                {
+                    "title": "NFL SUNDAY TICKET",
+                    "commercial": True,
+                    "commercial_public": True,
+                    "residential": False,
+                }
+            ],
         )
     )
     local = _showing(
         _channel(
             8,
             callsign="WGHP",
-            packages=[{"title": "MySports", "commercial": False, "residential": True}],
+            packages=[
+                {
+                    "title": "MySports",
+                    "commercial": False,
+                    "commercial_public": False,
+                    "residential": True,
+                }
+            ],
         )
     )
     sports_pack = _showing(
         _channel(
             464,
             callsign="TUDN",
-            packages=[{"title": "SPORTS PACK", "commercial": False, "residential": True}],
+            packages=[
+                {
+                    "title": "SPORTS PACK",
+                    "commercial": False,
+                    "commercial_public": False,
+                    "residential": True,
+                }
+            ],
         )
     )
     business = _showing(
@@ -275,8 +296,27 @@ def test_commercial_plan_drops_residential_packages_and_keeps_locals():
             242,
             callsign="USA",
             packages=[
-                {"title": "ULTIMATE", "commercial": False, "residential": True},
-                {"title": "COMMERCIAL CHOICE", "commercial": True, "residential": False},
+                {"title": "ULTIMATE", "commercial": False, "commercial_public": False, "residential": True},
+                {
+                    "title": "COMMERCIAL CHOICE",
+                    "commercial": True,
+                    "commercial_public": True,
+                    "residential": False,
+                },
+            ],
+        )
+    )
+    private_office = _showing(
+        _channel(
+            218,
+            callsign="GOLF",
+            packages=[
+                {
+                    "title": "SPORTS CHOICE",
+                    "commercial": True,
+                    "commercial_public": False,
+                    "commercial_private": True,
+                }
             ],
         )
     )
@@ -284,7 +324,8 @@ def test_commercial_plan_drops_residential_packages_and_keeps_locals():
     assert is_tunable_showing(local) is True
     assert is_tunable_showing(sports_pack) is False
     assert is_tunable_showing(business) is True
-    game = _game(1, "NFL", "49ers", "Falcons", [sports_pack, sunday])
+    assert is_tunable_showing(private_office) is False
+    game = _game(1, "NFL", "49ers", "Falcons", [sports_pack, private_office, sunday])
     showings = tunable_showings(game)
     assert [item["channelNumber"] for item in showings] == ["9558"]
     assert "packages" not in showings[0]
@@ -383,7 +424,8 @@ def test_selenium_pull_uses_the_addon_browser_without_cookies():
     script = next(item[3]["script"] for item in seen if item[1].endswith("/execute/async"))
     assert "27403" not in script
     posted = next(item[3] for item in seen if item[1].endswith("/execute/async"))
-    assert posted["args"] == [{"zip": "27403", "days": ["2026-10-25"]}]
+    assert posted["args"] == [{"zip": "27403", "days": ["2026-10-25"], "bundles": 20}]
+    assert "bundles=" in script
     assert not any("Cookie" in json.dumps(item[3]) for item in seen if item[3])
 
 
