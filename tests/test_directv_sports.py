@@ -1,11 +1,20 @@
 """DirecTV sports-info games JSON -> sports rail with satellite majors."""
 
+import json
+
+import pytest
+
 from scripts.avaccess.directv_sports import (
+    DirectvSportsError,
+    browser_channel_order,
     games_url,
     is_tunable_showing,
+    main,
     merge_payloads,
     parse_schedule,
+    payloads_from_page_results,
     tunable_showings,
+    window_days,
 )
 
 
@@ -138,6 +147,66 @@ def test_apps_streaming_and_other_leagues_are_not_tune_targets():
     schedule = parse_schedule({"games": [golf, wnba]}, generated_at=_stamp())
     assert [sport["id"] for sport in schedule["sports"]] == ["wnba"]
     assert schedule["sports"][0]["games"][0]["channelNumber"] == "242"
+
+
+def test_window_days_is_the_eastern_calendar():
+    import datetime as dt
+
+    assert window_days(3, today=dt.date(2026, 10, 25)) == [
+        "2026-10-25",
+        "2026-10-26",
+        "2026-10-27",
+    ]
+
+
+def test_page_results_keep_each_day_and_reject_a_refusal():
+    body = json.dumps({"games": [_game(1214005, "NFL", "49ers", "Falcons", [])]})
+    payloads = payloads_from_page_results(
+        [{"day": "2026-10-25", "status": 200, "body": body}]
+    )
+    assert payloads[0]["games"][0]["id"] == 1214005
+    with pytest.raises(DirectvSportsError, match="refused"):
+        payloads_from_page_results(
+            [{"day": "2026-10-25", "status": 403, "body": "Access Denied"}]
+        )
+
+
+def test_espn_logo_aliases_and_pulled_days():
+    game = _game(1214005, "NFL", "49ers", "Falcons", [])
+    game["away_team"]["text_id_short"] = "SFO"
+    game["home_team"]["text_id_short"] = "ATL"
+    schedule = parse_schedule(
+        {"games": [game]},
+        generated_at=_stamp(),
+        days=["2026-10-25", "2026-10-26"],
+    )
+    rail = schedule["sports"][0]["games"][0]
+    assert rail["awayLogo"].endswith("/nfl/500/sf.png")
+    assert rail["homeLogo"].endswith("/nfl/500/atl.png")
+    assert schedule["days"] == ["2026-10-25", "2026-10-26"]
+    assert browser_channel_order("msedge") == ["msedge"]
+
+
+def test_pull_writes_the_window_and_a_refusal_keeps_the_old_file(tmp_path, monkeypatch):
+    out = tmp_path / "sports_schedule.json"
+    out.write_text("{}\n", encoding="utf-8")
+
+    def refused(*_args, **_kwargs):
+        raise DirectvSportsError("DirecTV refused the browser pull")
+
+    monkeypatch.setattr("scripts.avaccess.directv_sports.fetch_window_in_browser", refused)
+    assert main(["--pull", "--ahead", "2", "--out", str(out)]) == 1
+    assert out.read_text(encoding="utf-8") == "{}\n"
+
+    def fetched(_zip, days, **_kwargs):
+        assert days == ["2026-10-26"]
+        return [{"games": [_game(9, "NBA", "Mavericks", "Heat", [_showing(_channel(216, callsign="NBA"))])]}]
+
+    monkeypatch.setattr("scripts.avaccess.directv_sports.fetch_window_in_browser", fetched)
+    assert main(["--pull", "--days", "2026-10-26", "--out", str(out)]) == 0
+    written = json.loads(out.read_text(encoding="utf-8"))
+    assert written["days"] == ["2026-10-26"]
+    assert written["sports"][0]["games"][0]["channelNumber"] == "216"
 
 
 def test_merge_payloads_keeps_the_copy_with_showings():

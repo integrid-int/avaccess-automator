@@ -214,7 +214,21 @@ The bartender panel uses a **top chip row** to switch browse modes:
 
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
-- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
+- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list. Live games come from `/local/avaccess/sports_schedule.json` (DirecTV majors for ZIP **27403**). The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
+
+### Sports schedule refresh
+
+DirecTV returns **one calendar day** per request (`days=YYYY-MM-DD`). A full slate is those days merged on game id. A Python download from the Home Assistant machine is refused (HTTP 403). Do not schedule that fetch as an HA `shell_command`, and do not paste Cookie or XSRF values into a script.
+
+Run the pull on the PC that can already open the sports page. Chrome or Edge loads the page, then requests each upcoming day and writes the file the panel serves:
+
+```bash
+pip install playwright
+python3 scripts/avaccess/directv_sports.py --pull --ahead 8 \
+  --out homeassistant/config/www/avaccess/sports_schedule.json
+```
+
+`--ahead 8` is today through the next week in Eastern time (the Monday-night game can fall on the following UTC date). Point `--out` at the live Home Assistant file `config/www/avaccess/sports_schedule.json`. Schedule that command once a day on that PC (Task Scheduler or cron). If a hidden window is refused, add `--headed`. A saved games response still works with `--file games-2026-10-25.json` (repeat `--file` for each day).
 - **Guide** — opens the DirecTV channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 

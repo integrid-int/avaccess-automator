@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 """Turn DirecTV sports-info JSON into sports-rail games with satellite majors.
 
-The browser loads one day with:
+The sports page loads one calendar day per request:
 
   GET https://www.directv.com/sports-info/games?zip=27403&days=2026-10-25
 
-Akamai rejects scripted clients from many networks (HTTP 403), including this
-cloud host. Do not send the browser's Cookie or XSRF headers. Those are a
-short-lived session, not an API key. Save the games response in DevTools
-(the row whose body starts with {"games":) and run:
+A week of games is that request repeated, then merged on game id. Scripted
+HTTP is refused (HTTP 403) from many networks, including the Home Assistant
+host. Do not send Cookie or XSRF headers from a saved browser session, and do
+not schedule a fetch inside the HA container.
+
+Run the pull on a PC that can open the sports page. It starts Chrome or Edge,
+lets that browser hold the session, and asks the page for each day:
+
+  python3 scripts/avaccess/directv_sports.py --pull --ahead 8 \\
+    --out homeassistant/config/www/avaccess/sports_schedule.json
+
+Point --out at the file Home Assistant serves as
+/local/avaccess/sports_schedule.json. If a hidden window is refused, add
+--headed. A saved DevTools body still works:
 
   python3 scripts/avaccess/directv_sports.py --file games.json \\
     --out homeassistant/config/www/avaccess/sports_schedule.json
-
-Several saved days can be passed as repeated --file arguments. They merge on
-game id.
 """
 
 from __future__ import annotations
@@ -22,6 +29,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -53,6 +62,46 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0"
 )
+SPORTS_PAGE = "https://www.directv.com/sports-info/all/all"
+_DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+# DirecTV text_id_short values that do not match the ESPN logo filename.
+ESPN_ABBR = {
+    "sfo": "sf",
+    "gnb": "gb",
+    "oak": "lv",
+    "tam": "tb",
+    "nor": "no",
+    "kan": "kc",
+}
+
+# Runs inside the sports page. The open page already has the session; this
+# does not read a token from disk.
+_PAGE_FETCH_JS = """
+async ({ zip, days }) => {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  let token = meta && meta.content ? meta.content : "";
+  if (!token) {
+    const match = document.cookie.match(/(?:^|;\\s*)XSRF-TOKEN=([^;]+)/);
+    token = match ? decodeURIComponent(match[1]) : "";
+  }
+  const headers = {
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  };
+  if (token) {
+    headers["X-CSRF-Token"] = token;
+    headers["X-XSRF-Token"] = token;
+  }
+  const results = [];
+  for (const day of days) {
+    const url = "/sports-info/games?zip=" + encodeURIComponent(zip)
+      + "&days=" + encodeURIComponent(day);
+    const response = await fetch(url, { credentials: "include", headers });
+    results.push({ day, status: response.status, body: await response.text() });
+  }
+  return results;
+}
+"""
 
 
 class DirectvSportsError(RuntimeError):
@@ -63,6 +112,48 @@ def games_url(zip_code: str, day: str) -> str:
     """One calendar day, matching the request the sports page fires."""
     query = urllib.parse.urlencode({"zip": zip_code, "days": day})
     return f"{GAMES_URL}?{query}"
+
+
+def window_days(count: int = 8, *, today: dt.date | None = None) -> list[str]:
+    """Eastern calendar dates starting today. One games request per date."""
+    if count < 1:
+        raise DirectvSportsError("--ahead must be at least 1.")
+    start = today or dt.datetime.now(MARKET_TZ).date()
+    return [(start + dt.timedelta(days=offset)).isoformat() for offset in range(count)]
+
+
+def require_days(days: list[str]) -> list[str]:
+    cleaned: list[str] = []
+    for day in days:
+        text = str(day).strip()
+        if not _DAY.match(text):
+            raise DirectvSportsError(f"Not a calendar day: {day}")
+        try:
+            dt.date.fromisoformat(text)
+        except ValueError as exc:
+            raise DirectvSportsError(f"Not a calendar day: {day}") from exc
+        cleaned.append(text)
+    return cleaned
+
+
+def browser_profile_dir() -> Path:
+    """Persistent Chrome/Edge profile on this PC. Never a path in the repo."""
+    override = os.environ.get("AVACCESS_DIRECTV_BROWSER_PROFILE", "").strip()
+    if override:
+        return Path(override)
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA") or str(Path.home())
+        return Path(base) / "avaccess" / "directv-sports-browser"
+    return Path.home() / ".cache" / "avaccess" / "directv-sports-browser"
+
+
+def browser_channel_order(preferred: str | None = None) -> list[str | None]:
+    choice = (preferred or "").strip().lower()
+    if choice:
+        return [choice]
+    if sys.platform == "win32":
+        return ["msedge", "chrome", None]
+    return ["chrome", "msedge", None]
 
 
 def fetch_games(zip_code: str, day: str, timeout: float = 25) -> dict[str, Any]:
@@ -95,6 +186,91 @@ def fetch_games(zip_code: str, day: str, timeout: float = 25) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise DirectvSportsError("DirecTV games response was not a JSON object.")
     return payload
+
+
+def payloads_from_page_results(results: Any) -> list[dict[str, Any]]:
+    """Games payloads from the in-page fetch. One failure aborts the pull."""
+    if not isinstance(results, list) or not results:
+        raise DirectvSportsError("DirecTV browser pull returned no days.")
+    payloads: list[dict[str, Any]] = []
+    for item in results:
+        if not isinstance(item, dict):
+            raise DirectvSportsError("DirecTV browser pull returned an unexpected row.")
+        day = item.get("day") or "?"
+        status = item.get("status")
+        body = item.get("body") if isinstance(item.get("body"), str) else ""
+        lowered = body.lstrip().lower()
+        if status == 403 or lowered.startswith("<!doctype html") or lowered.startswith("<html"):
+            raise DirectvSportsError(
+                f"DirecTV refused the browser pull (HTTP {status}) for {day}. "
+                "Run --pull on the PC that can open the sports page, and add "
+                "--headed if a hidden window is refused."
+            )
+        if status != 200:
+            raise DirectvSportsError(f"DirecTV games request for {day} failed (HTTP {status}).")
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise DirectvSportsError(f"DirecTV games response for {day} was not JSON.") from exc
+        if not isinstance(payload, dict) or not isinstance(payload.get("games"), list):
+            raise DirectvSportsError(f"DirecTV games response for {day} had no games list.")
+        payloads.append(payload)
+    return payloads
+
+
+def fetch_window_in_browser(
+    zip_code: str,
+    days: list[str],
+    *,
+    headless: bool = True,
+    channel: str | None = None,
+    timeout_s: float = 45,
+) -> list[dict[str, Any]]:
+    """Open the sports page and request each day from that page."""
+    days = require_days(days)
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise DirectvSportsError(
+            "Install Playwright on the PC that opens DirecTV: pip install playwright"
+        ) from exc
+
+    profile = browser_profile_dir()
+    profile.mkdir(parents=True, exist_ok=True)
+    timeout_ms = int(timeout_s * 1000)
+    last_error: Exception | None = None
+    with sync_playwright() as playwright:
+        context = None
+        for candidate in browser_channel_order(channel):
+            try:
+                options: dict[str, Any] = {
+                    "user_data_dir": str(profile),
+                    "headless": headless,
+                    "viewport": {"width": 1280, "height": 800},
+                }
+                if candidate:
+                    options["channel"] = candidate
+                context = playwright.chromium.launch_persistent_context(**options)
+                break
+            except Exception as exc:  # noqa: BLE001 — try the next installed browser
+                last_error = exc
+        if context is None:
+            raise DirectvSportsError(
+                "Could not open Chrome or Edge for the DirecTV pull. "
+                "Install one of them on this PC."
+            ) from last_error
+        try:
+            page = context.pages[0] if context.pages else context.new_page()
+            page.goto(SPORTS_PAGE, wait_until="domcontentloaded", timeout=timeout_ms)
+            page.wait_for_timeout(1500)
+            results = page.evaluate(_PAGE_FETCH_JS, {"zip": zip_code, "days": days})
+        except DirectvSportsError:
+            raise
+        except Exception as exc:
+            raise DirectvSportsError(f"DirecTV browser pull failed: {exc}") from exc
+        finally:
+            context.close()
+    return payloads_from_page_results(results)
 
 
 def load_payload(path: Path) -> dict[str, Any]:
@@ -235,7 +411,8 @@ def _team_abbr(team: Any) -> str:
     if not isinstance(team, dict):
         return ""
     raw = str(team.get("text_id_short") or team.get("text_id") or "").strip().lower()
-    return "".join(ch for ch in raw if ch.isalnum())
+    abbr = "".join(ch for ch in raw if ch.isalnum())
+    return ESPN_ABBR.get(abbr, abbr)
 
 
 def _logo(abbr: str, folder: str) -> str:
@@ -272,6 +449,7 @@ def parse_schedule(
     *,
     zip_code: str = MARKET_ZIP,
     generated_at: dt.datetime | None = None,
+    days: list[str] | None = None,
 ) -> dict[str, Any]:
     """Sports-rail document. Drops betting fields and non-satellite showings."""
     buckets: dict[str, dict[str, Any]] = {}
@@ -317,18 +495,42 @@ def parse_schedule(
     moment = generated_at or dt.datetime.now(dt.timezone.utc)
     if moment.tzinfo is None:
         moment = moment.replace(tzinfo=dt.timezone.utc)
-    return {
+    document: dict[str, Any] = {
         "generatedAt": moment.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "zip": zip_code,
         "source": "directv-sports-info",
         "sports": sports,
     }
+    if days:
+        document["days"] = list(days)
+    return document
 
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build the sports rail from DirecTV games JSON.")
     parser.add_argument("--zip", default=MARKET_ZIP, help="Lineup ZIP. Default 27403.")
     parser.add_argument("--days", nargs="*", default=[], help="YYYY-MM-DD values to fetch.")
+    parser.add_argument(
+        "--pull",
+        action="store_true",
+        help="Fetch a rolling window in Chrome or Edge on this PC.",
+    )
+    parser.add_argument(
+        "--ahead",
+        type=int,
+        default=8,
+        help="Days to pull starting today Eastern. Used with --pull. Default 8.",
+    )
+    parser.add_argument(
+        "--headed",
+        action="store_true",
+        help="Show the browser window. Use when a hidden window is refused.",
+    )
+    parser.add_argument(
+        "--browser",
+        default="",
+        help="chrome or msedge. Default tries the installed browser.",
+    )
     parser.add_argument("--file", action="append", default=[], help="Saved games JSON. Repeatable.")
     parser.add_argument("--out", required=True, help="sports_schedule.json path.")
     return parser.parse_args(argv)
@@ -337,12 +539,24 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv if argv is not None else sys.argv[1:])
     payloads: list[dict[str, Any]] = []
-    for day in args.days:
-        try:
-            payloads.append(fetch_games(args.zip, day))
-        except DirectvSportsError as exc:
-            print(str(exc), file=sys.stderr)
-            return 1
+    pulled_days: list[str] = []
+    try:
+        if args.pull:
+            pulled_days = require_days(args.days) if args.days else window_days(args.ahead)
+            payloads.extend(
+                fetch_window_in_browser(
+                    args.zip,
+                    pulled_days,
+                    headless=not args.headed,
+                    channel=args.browser or None,
+                )
+            )
+        else:
+            for day in require_days(args.days):
+                payloads.append(fetch_games(args.zip, day))
+    except DirectvSportsError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     for raw in args.file:
         try:
             payloads.append(load_payload(Path(raw)))
@@ -350,9 +564,13 @@ def main(argv: list[str] | None = None) -> int:
             print(str(exc), file=sys.stderr)
             return 1
     if not payloads:
-        print("Pass --days YYYY-MM-DD or --file games.json.", file=sys.stderr)
+        print("Pass --pull, --days YYYY-MM-DD, or --file games.json.", file=sys.stderr)
         return 1
-    schedule = parse_schedule(merge_payloads(payloads), zip_code=args.zip)
+    schedule = parse_schedule(
+        merge_payloads(payloads),
+        zip_code=args.zip,
+        days=pulled_days or None,
+    )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(schedule, indent=2) + "\n", encoding="utf-8")

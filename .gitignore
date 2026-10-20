@@ -17,3 +17,4 @@ config/directv.yaml
 
 # Raw DirecTV sports-page probe from scripts/avaccess/probe_directv_sports.py
 directv-sports-probe/
+directv-sports-browser/

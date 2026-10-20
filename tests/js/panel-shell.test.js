@@ -70,6 +70,10 @@ test("panel shell tunes a sports game from the DirecTV major", () => {
   const src = readPanelSource();
   assert.match(src, /\/local\/avaccess\/sports_schedule\.json/);
   assert.match(src, /channelNumber: content\.channelNumber \? String\(content\.channelNumber\) : null/);
+  assert.match(
+    src,
+    /setInterval\(\(\) => \{\s*this\._loadGuideEpg\(\);\s*this\._loadSportsSchedule\(\);/
+  );
 });
 
 test("panel shell tracks selectedPresetId for TV-first preset send", () => {

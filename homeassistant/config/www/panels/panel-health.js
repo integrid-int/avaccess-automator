@@ -115,7 +115,10 @@ class PanelHealth extends HTMLElement {
     this._loadGuideEpg();
     this._loadSportsSchedule();
     if (!this._guideEpgTimer) {
-      this._guideEpgTimer = setInterval(() => this._loadGuideEpg(), GUIDE_EPG_REFRESH_MS);
+      this._guideEpgTimer = setInterval(() => {
+        this._loadGuideEpg();
+        this._loadSportsSchedule();
+      }, GUIDE_EPG_REFRESH_MS);
     }
     this.render();
   }
