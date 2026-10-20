@@ -66,6 +66,12 @@ test("panel shell renders short sports chips and DirecTV ZIP guide label", () =>
   assert.match(src, /DirecTV · ZIP \$\{escapeHtml\(SPECTRUM_ZIP\)\}/);
 });
 
+test("panel shell tunes a sports game from the DirecTV major", () => {
+  const src = readPanelSource();
+  assert.match(src, /\/local\/avaccess\/sports_schedule\.json/);
+  assert.match(src, /channelNumber: content\.channelNumber \? String\(content\.channelNumber\) : null/);
+});
+
 test("panel shell tracks selectedPresetId for TV-first preset send", () => {
   const src = readPanelSource();
   assert.match(src, /selectedPresetId/);

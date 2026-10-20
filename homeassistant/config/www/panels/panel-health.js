@@ -43,6 +43,7 @@ const LIVE_BLOCKED_REASON = "Live commit is off until the room inventory is set 
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
 const GUIDE_CHANNELS_JSON_URL = "/local/avaccess/guide_channels.json";
+const SPORTS_JSON_URL = "/local/avaccess/sports_schedule.json";
 const GUIDE_EPG_REFRESH_MS = 15 * 60 * 1000;
 const GUIDE_SEARCH_DELAY_MS = 300;
 const GUIDE_UNAVAILABLE_BANNER =
@@ -74,6 +75,7 @@ class PanelHealth extends HTMLElement {
     this.guideEpg = null;
     this.guideEpgAvailable = false;
     this.guideChannels = null;
+    this.sportsSchedule = null;
     this._guideEpgTimer = null;
     this._guideSearchTimer = null;
     this._guideQueryDraft = null;
@@ -111,6 +113,7 @@ class PanelHealth extends HTMLElement {
     this._loadInventoryLiveReady();
     this._loadGuideChannels();
     this._loadGuideEpg();
+    this._loadSportsSchedule();
     if (!this._guideEpgTimer) {
       this._guideEpgTimer = setInterval(() => this._loadGuideEpg(), GUIDE_EPG_REFRESH_MS);
     }
@@ -215,6 +218,25 @@ class PanelHealth extends HTMLElement {
 
   _lineup() {
     return this.guideChannels?.length ? this.guideChannels : GUIDE_CHANNELS;
+  }
+
+  async _loadSportsSchedule() {
+    try {
+      const response = await fetch(SPORTS_JSON_URL, { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        if (Array.isArray(payload.sports) && payload.sports.length) {
+          this.sportsSchedule = payload.sports;
+        }
+      }
+    } catch {
+      this.sportsSchedule = this.sportsSchedule || null;
+    }
+    if (this.isConnected) this.render();
+  }
+
+  _sports() {
+    return this.sportsSchedule?.length ? this.sportsSchedule : SPORTS;
   }
 
   _guideFeedState() {
@@ -376,7 +398,8 @@ class PanelHealth extends HTMLElement {
   }
 
   _activeSport() {
-    return SPORTS.find((sport) => sport.id === this._state.sportId) ?? SPORTS[0];
+    const sports = this._sports();
+    return sports.find((sport) => sport.id === this._state.sportId) ?? sports[0];
   }
 
   _selectedContentLabel() {
@@ -564,7 +587,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _selectGame(gameId) {
-    const game = SPORTS.flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
+    const game = this._sports().flatMap((item) => item.games.map((sportGame) => ({ sport: item, game: sportGame }))).find(
       (item) => item.game.id === gameId
     );
     if (!game) return;
@@ -638,12 +661,12 @@ class PanelHealth extends HTMLElement {
       sportId: content.sportId ?? null,
       label: `${content.away} @ ${content.home}`,
       channel: content.channel,
-      channelNumber: null,
+      channelNumber: content.channelNumber ? String(content.channelNumber) : null,
     };
   }
 
   _findContentById(contentId) {
-    for (const sport of SPORTS) {
+    for (const sport of this._sports()) {
       const game = sport.games.find((item) => item.id === contentId);
       if (game) return { ...game, kind: "game", sportId: sport.id };
     }
@@ -863,7 +886,7 @@ class PanelHealth extends HTMLElement {
     const sport = this._activeSport();
     return `
       <nav class="chips" aria-label="Panel screens">
-        ${SPORTS.map(
+        ${this._sports().map(
           (item) => `
             <button
               type="button"
@@ -903,14 +926,16 @@ class PanelHealth extends HTMLElement {
           <h2>${escapeHtml(sport.title)}</h2>
         </div>
         <div class="card-grid">
-          ${sport.games
-            .map((game) =>
-              this._renderGameCard(game, {
-                kicker: `${game.channel} - ${game.tipoff}`,
-                cta: "Choose destination",
-              })
-            )
-            .join("")}
+          ${sport.games.length
+            ? sport.games
+                .map((game) =>
+                  this._renderGameCard(game, {
+                    kicker: `${game.channel} - ${game.tipoff}`,
+                    cta: "Choose destination",
+                  })
+                )
+                .join("")
+            : `<p class="eyebrow">No games in this slate</p>`}
         </div>
       </section>
     `;
@@ -1164,7 +1189,7 @@ class PanelHealth extends HTMLElement {
     const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
     return `
       <div class="content-stack">
-        ${SPORTS.map(
+        ${this._sports().map(
           (sport) => `
             <div class="content-section">
               <h3>${escapeHtml(sport.title)}</h3>
@@ -1276,7 +1301,7 @@ class PanelHealth extends HTMLElement {
   _renderSportsContentOptions() {
     return `
       <div class="content-stack">
-        ${SPORTS.map(
+        ${this._sports().map(
           (sport) => `
             <div class="content-section">
               <h3>${escapeHtml(sport.title)}</h3>
@@ -1525,7 +1550,7 @@ class PanelHealth extends HTMLElement {
     const onNow = this._state.screen === "now-playing";
     return `
       <nav class="rail" aria-label="Source types">
-        ${SPORTS.map(
+        ${this._sports().map(
           (item) => `
             <button
               type="button"

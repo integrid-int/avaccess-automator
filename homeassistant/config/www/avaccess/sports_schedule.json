@@ -1,0 +1,258 @@
+{
+  "generatedAt": "2026-10-20T19:55:00Z",
+  "zip": "27403",
+  "source": "directv-sports-info",
+  "sports": [
+    {
+      "id": "nfl",
+      "title": "NFL",
+      "chipTitle": "NFL",
+      "icon": "\ud83c\udfc8",
+      "games": [
+        {
+          "id": "nfl-1214029",
+          "away": "Cowboys",
+          "home": "Eagles",
+          "channel": "45 WXLV",
+          "channelNumber": "45",
+          "alternates": [
+            {
+              "channelNumber": "206",
+              "channel": "206 ESPN"
+            },
+            {
+              "channelNumber": "209",
+              "channel": "209 ESPN2"
+            },
+            {
+              "channelNumber": "212",
+              "channel": "212 NFL Network"
+            }
+          ],
+          "tipoff": "Mon 8:15 PM",
+          "startsAt": "2026-10-27T00:15:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"
+        }
+      ]
+    },
+    {
+      "id": "nba",
+      "title": "NBA",
+      "chipTitle": "NBA",
+      "icon": "\ud83c\udfc0",
+      "games": [
+        {
+          "id": "nba-1220032",
+          "away": "Wizards",
+          "home": "Hornets",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 7:00 PM",
+          "startsAt": "2026-10-26T23:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/was.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
+        },
+        {
+          "id": "nba-1220037",
+          "away": "Timberwolves",
+          "home": "Cavaliers",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 7:00 PM",
+          "startsAt": "2026-10-26T23:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/min.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
+        },
+        {
+          "id": "nba-1220023",
+          "away": "Bulls",
+          "home": "Celtics",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 7:30 PM",
+          "startsAt": "2026-10-26T23:30:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/bos.png"
+        },
+        {
+          "id": "nba-1220059",
+          "away": "Mavericks",
+          "home": "Heat",
+          "channel": "216 NBA TV",
+          "channelNumber": "216",
+          "alternates": [],
+          "tipoff": "Mon 7:30 PM",
+          "startsAt": "2026-10-26T23:30:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
+        },
+        {
+          "id": "nba-1220061",
+          "away": "Pacers",
+          "home": "Bucks",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 8:00 PM",
+          "startsAt": "2026-10-27T00:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
+        },
+        {
+          "id": "nba-1220082",
+          "away": "Suns",
+          "home": "Thunder",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 8:00 PM",
+          "startsAt": "2026-10-27T00:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/pho.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
+        },
+        {
+          "id": "nba-1220046",
+          "away": "Hawks",
+          "home": "Rockets",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 8:30 PM",
+          "startsAt": "2026-10-27T00:30:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
+        },
+        {
+          "id": "nba-1220068",
+          "away": "Grizzlies",
+          "home": "Jazz",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 9:00 PM",
+          "startsAt": "2026-10-27T01:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/mem.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/uth.png"
+        },
+        {
+          "id": "nba-1220042",
+          "away": "Warriors",
+          "home": "Nuggets",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 10:00 PM",
+          "startsAt": "2026-10-27T02:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/gsw.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
+        }
+      ]
+    },
+    {
+      "id": "mlb",
+      "title": "MLB",
+      "chipTitle": "MLB",
+      "icon": "\u26be",
+      "games": [
+        {
+          "id": "mlb-1229478",
+          "away": "Brewers",
+          "home": "Rays",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 8:00 PM",
+          "startsAt": "2026-10-27T00:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/mlb/500/mil.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/mlb/500/tam.png"
+        }
+      ]
+    },
+    {
+      "id": "nhl",
+      "title": "NHL",
+      "chipTitle": "NHL",
+      "icon": "\ud83c\udfd2",
+      "games": [
+        {
+          "id": "nhl-1225395",
+          "away": "Kings",
+          "home": "Rangers",
+          "channel": "215 NHL Network",
+          "channelNumber": "215",
+          "alternates": [
+            {
+              "channelNumber": "770",
+              "channel": "770 NHL CENTER ICE"
+            },
+            {
+              "channelNumber": "771",
+              "channel": "771 NHL CENTER ICE"
+            }
+          ],
+          "tipoff": "Mon 7:00 PM",
+          "startsAt": "2026-10-26T23:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/la.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png"
+        },
+        {
+          "id": "nhl-1224667",
+          "away": "Maple Leafs",
+          "home": "Flames",
+          "channel": "No channel",
+          "channelNumber": null,
+          "alternates": [],
+          "tipoff": "Mon 8:30 PM",
+          "startsAt": "2026-10-27T00:30:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/tor.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/cgy.png"
+        },
+        {
+          "id": "nhl-1225596",
+          "away": "Red Wings",
+          "home": "Oilers",
+          "channel": "215 NHL Network",
+          "channelNumber": "215",
+          "alternates": [],
+          "tipoff": "Mon 9:30 PM",
+          "startsAt": "2026-10-27T01:30:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/det.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/nhl/500/edm.png"
+        }
+      ]
+    },
+    {
+      "id": "wnba",
+      "title": "WNBA",
+      "chipTitle": "WNBA",
+      "icon": "\ud83c\udfc0",
+      "games": [
+        {
+          "id": "wnba-1228622",
+          "away": "Dream",
+          "home": "Valkyries",
+          "channel": "242 USA Network",
+          "channelNumber": "242",
+          "alternates": [
+            {
+              "channelNumber": "355",
+              "channel": "355 CNBC"
+            },
+            {
+              "channelNumber": "904",
+              "channel": "904 U.S. Open Featured Groups 2"
+            }
+          ],
+          "tipoff": "Mon 8:00 PM",
+          "startsAt": "2026-10-27T00:00:00.000000Z",
+          "awayLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/atlantadream110.png",
+          "homeLogo": "https://a.espncdn.com/i/teamlogos/wnba/500/goldenstatevalkyries110.png"
+        }
+      ]
+    }
+  ]
+}
