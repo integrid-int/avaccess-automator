@@ -220,8 +220,11 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 self.assertIn(expected, titles)
             for view in dashboard.get("views", []):
                 self.assertEqual(view.get("type"), "panel", view.get("title"))
+                self.assertEqual(view.get("theme"), "Avaccess Routing", view.get("title"))
                 self.assertEqual(view["cards"][0]["type"], "vertical-stack", view.get("title"))
                 dumped = yaml.safe_dump(view, allow_unicode=True)
+                self.assertIn("Sources", dumped, view.get("title"))
+                self.assertIn("Displays", dumped, view.get("title"))
                 self.assertIn("Route Actions", dumped, view.get("title"))
                 self.assertIn("Route Program → TVs", dumped, view.get("title"))
                 self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))

@@ -38,6 +38,9 @@ homeassistant:
   currency: USD
   packages: !include_dir_named packages
 
+frontend:
+  themes: !include_dir_merge_named themes
+
 http:
   use_x_forwarded_for: true
   trusted_proxies:
@@ -203,6 +206,11 @@ def main() -> None:
         migrate_legacy_template_sensors(package_path)
 
     import shutil
+
+    src_themes = ROOT / "homeassistant" / "config" / "themes"
+    dst_themes = CONFIG / "themes"
+    if src_themes.is_dir():
+        shutil.copytree(src_themes, dst_themes, dirs_exist_ok=True)
 
     src_panels = ROOT / "homeassistant" / "config" / "www" / "panels"
     dst_panels = CONFIG / "www" / "panels"
