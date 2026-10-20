@@ -69,6 +69,8 @@ test("panel shell renders short sports chips and DirecTV ZIP guide label", () =>
 test("panel shell tunes a sports game from the DirecTV major", () => {
   const src = readPanelSource();
   assert.match(src, /\/local\/avaccess\/sports_schedule\.json/);
+  assert.match(src, /directv-sports-info/);
+  assert.match(src, /payload\.source === SPORTS_SOURCE/);
   assert.match(src, /channelNumber: content\.channelNumber \? String\(content\.channelNumber\) : null/);
   assert.match(
     src,

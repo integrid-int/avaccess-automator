@@ -146,17 +146,17 @@ export const SPORTS = [
   },
 ];
 
-// Offline fallback. The live guide loads guide_channels.json (full DirecTV lineup).
+// TV Passport favorites for ZIP 27403. Now/next comes from guide_epg.json.
 export const GUIDE_CHANNELS = [
+  { id: "ch-fox", number: "4", name: "WGHP FOX", category: "Local" },
   { id: "ch-cbs", number: "2", name: "WFMY CBS", category: "Local" },
-  { id: "ch-fox", number: "8", name: "WGHP FOX", category: "Local" },
   { id: "ch-nbc", number: "12", name: "WXII NBC", category: "Local" },
   { id: "ch-abc", number: "45", name: "WXLV ABC", category: "Local" },
   { id: "ch-espn", number: "206", name: "ESPN", category: "Sports" },
-  { id: "ch-espn2", number: "209", name: "ESPN2", category: "Sports" },
-  { id: "ch-fs1", number: "219", name: "FS1", category: "Sports" },
+  { id: "ch-espn2", number: "207", name: "ESPN2", category: "Sports" },
+  { id: "ch-fs1", number: "400", name: "FS1", category: "Sports" },
   { id: "ch-tnt", number: "245", name: "TNT", category: "Sports" },
-  { id: "ch-nfl-a1", number: "9554", name: "NFL Sunday Ticket 705", category: "Sports" },
+  { id: "ch-nfl-a1", number: "705", name: "NFL Sunday Ticket 1", category: "Sports" },
 ];
 
 export const GUIDE_EPG_STALE_MS = 6 * 60 * 60 * 1000;

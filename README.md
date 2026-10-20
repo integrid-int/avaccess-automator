@@ -8,7 +8,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
-- **DirecTV channel guide** for ZIP **27403** (H25 major numbers and labels) with optional **now/next** titles from `guide_epg.json`
+- **TV Passport guide** for ZIP **27403** favorites, with **now/next** titles from `guide_epg.json`
 - **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
@@ -169,7 +169,7 @@ Compose already mounts `../config` → `/config/avaccess/config` and `../scripts
 
 #### 1. Guide EPG config
 
-`config/guide_epg.yaml` grabs now/next from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the ZIP **27403** locals and main sports channels. The full Guide list is the DirecTV Greensboro lineup (`scripts/avaccess/directv_lineup.py` → `guide_channels.json`). It drops music audio, pay-per-view, adult, premium movies (HBO, Cinemax, Showtime, Starz, TMC), shopping, on-demand, and the Audience Network barker. News, kids, Spanish, international, religious, and music-video channels (MTV, CMT) stay. Guide search waits briefly before filtering so typing does not steal the cursor. **Now** lists every TV and the program on it.
+`config/guide_epg.yaml` grabs listings from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the ZIP **27403** favorites: WGHP, WFMY, WXII, WXLV, ESPN, ESPN2, TNT, FS1, and NFL Sunday Ticket 1. The grabber is Python (`scripts/avaccess/tvpassport.py`) because the HA image does not ship Node. It writes XMLTV, then the builder maps each DirecTV major in `channel_number_map` to now/next. Guide search waits briefly before filtering so typing does not steal the cursor. **Now** lists every TV and the program on it.
 
 `config/guide_epg.example.yaml` is the offline fixture (no `grabber` key). Use it when you want to build from your own XMLTV file or URL instead of TV Passport. When refreshing via the HA `shell_command` without the grabber, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
@@ -214,8 +214,8 @@ The bartender panel uses a **top chip row** to switch browse modes:
 
 `NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
 
-- **Sport chips** — the live picker follows DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets a second row (NFL, NCAA Football, NBA, NCAA Basketball (M), EPL, and so on). Each row is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
-- **Guide** — opens the DirecTV channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Sport chips** — the live picker follows DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets a second row (NFL, NCAA Football, NBA, NCAA Basketball (M), EPL, and so on). Each row is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
+- **Guide** — opens the TV Passport favorites for ZIP **27403** (locals, ESPN, ESPN2, FS1, TNT, and NFL Sunday Ticket 1) with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **TVs** — starts the **TV-first / adhoc** path (see below).
 
 ### Sports schedule refresh
