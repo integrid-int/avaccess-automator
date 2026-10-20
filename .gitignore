@@ -14,3 +14,6 @@ homeassistant/config/deps/
 # A symlink here makes `cp` overwrite the example, and Live Send would use
 # the placeholder 192.168.10.151-160 addresses.
 config/directv.yaml
+
+# Raw DirecTV sports-page probe from scripts/avaccess/probe_directv_sports.py
+directv-sports-probe/
