@@ -138,3 +138,26 @@ _(per-WP commit entries follow)_
 **Browser evidence (harness):** active chip `rgb(11,92,171)`; Live ON toggle and banner `rgb(185,28,28)`; Guide/Now/Sets bottoms 248/294/340 px of a 681 px viewport; sources scrolled to 400 px and rail to 120 px both survive an unchanged and a changed `hass` push (unchanged push keeps the same DOM node); sport switch resets sources to 0; broken URL → `MS` tile, empty URLs → `MTS`/`FIU`, valid image kept; ESPN URLs (no egress in the sandbox) all fell back to initials.
 
 **Not in this WP:** docs still cite `?v=30` (WP-G). Legacy `_render*Screen` methods remain unreachable dead code (not removed, to keep scope). Not checked on a physical iPad / HA Companion.
+
+---
+
+## WP-G — Docs corrections
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S1-MATRIX-CONFUSION, S1-INVENTORY-TRAP, S1-DOCKER-UDP, S0-OFF-FICTION (docs) |
+| Commit | `ce04dc8` (docs + staff PDF builder text) |
+| Verify | `rg` scan of edited files: no `?v=30`, `Dry-run Send`, `DRY-RUN`, “turn off”/“go off” (except “do not turn off”), `**Off**`, “Swipe the left”, or “bottom of the left”. `python3 -m py_compile scripts/build_staff_pdfs.py` OK. No product code changed; `node --test tests/js/*.test.js` 87/87, `python3 -m unittest discover -s tests` 151 OK. |
+
+**Changes**
+- `HA_QUICKSTART.md`: section 2 now `rm -f` + `cp --remove-destination` for inventory, channels, and directv (inventory ships as a symlink to the example; plain `cp` wrote through it). `?v=33`. PRACTICE banner mention.
+- `HA_LIVE.md`: `?v=33` everywhere (matches `configuration.yaml` after WP-F); note that panel imports carry their own `?v=`. New “How Live is gated” subsection (`script.avaccess_live_execute`, `mode: single`, shared `input_boolean.avaccess_live_commit`, `--live-commit` defense, UDP re-enrich, SHEF verify, success-only occupancy, Sending… lock). New section 7b **Soft Launch**: leave `REPLACE_ME` in `www/avaccess/inventory.json` to keep Live blocked, boolean off, PRACTICE banner on every iPad, Matrix is always live; first-Live steps incl. **Clear room state** on every iPad (wipes `avaccess-bartender-panel-v2`, keeps TV sets) and single-iPad Live. Section 0 warns that both checked-in compose files are Docker bridge and Live UDP must run on HA OS / host network. Surface table and checklist say which surface is live. Inventory symlink trap explained in section 3.
+- `STAFF_TRAINING.md`: PRACTICE / LIVE banners; Matrix has no practice mode; Guide/Now/Sets pinned at top of the rail; **PRACTICE summary** / **Live summary** (not DRY-RUN SUMMARY); Take → Confirm before leftover TVs; leftover TVs keep the retuned program (no turn-off); Now says **Unassigned**; **Clear room state**; Take gray with **Cannot Take: … has no DirecTV channel**; demo/stale sports banners; Sending… and Live ok/error lines; troubleshooting rows. Notes that the screenshots predate the banner and pinned rail.
+- `OPERATIONS_GUIDE.md`: Sports Routing screenshots flagged stale; “Which one changes the wall” (Matrix always live SHEF + UDP, contiguous `numeric_v1` presets vs striped Sports Routing); Soft Launch guidance.
+- `README.md`: `?v=33`; Take/PRACTICE/LIVE wording replaces Dry-run Send / Live Send; returnResponse + success-only occupancy replaces the “stdout often not returned” note; free-box-first + Confirm; Unassigned / Clear room state; pinned rail; Matrix has no Live gate.
+- `scripts/build_staff_pdfs.py` (doc source only): same wording changes so the next rebuild of `STAFF_QUICK_START.pdf` / `STAFF_FULL_GUIDE.pdf` drops the turn-off/Off fiction.
+
+**BLOCKED — PDF rebuild:** `reportlab` is not installed and PyPI is unreachable (`pip install reportlab` SSL EOF; no apt package). `docs/STAFF_QUICK_START.pdf` and `docs/STAFF_FULL_GUIDE.pdf` are **not** rebuilt and still contain the old “turn off” / “Off” / DRY-RUN SUMMARY text. Rebuild with `pip install reportlab && python3 scripts/build_staff_pdfs.py` on a machine with PyPI access. `docs/STAFF_TRAINING.pdf` (legacy combined, `build_staff_training_pdf.py`) and `docs/AVACCESS_OPERATORS_GUIDE.pdf` were not edited; both are already marked superseded/older layout. Staff screenshots (`docs/images/staff/*`) predate the PRACTICE banner, pinned rail, and Unassigned wording; recapture is Phase 7.
+
+**Not in this WP:** README Path A / Path B still describe the older multi-screen flow (destination screen, TVs chip); only button labels were synced. Not checked against a real HA instance.
