@@ -5,10 +5,13 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import json
+import re
 from pathlib import Path
 
 MAX_SETS = 8
+_B64_RE = re.compile(r"[A-Za-z0-9+/]+={0,2}")
 
 
 def normalize(payload: dict) -> dict:
@@ -33,13 +36,21 @@ def normalize(payload: dict) -> dict:
     return {"source": "tv-sets", "sets": sets}
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
+def decode_sets_b64(value: str) -> object:
+    if not isinstance(value, str) or not _B64_RE.fullmatch(value):
+        raise SystemExit("sets_b64 is empty or not base64")
+    try:
+        return json.loads(base64.b64decode(value, validate=True))
+    except (binascii.Error, ValueError) as exc:
+        raise SystemExit(f"sets_b64 is not valid base64 JSON: {exc}") from exc
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--sets-b64", required=True)
     parser.add_argument("--out", required=True)
-    args = parser.parse_args()
-    decoded = base64.b64decode(args.sets_b64)
-    payload = json.loads(decoded)
+    args = parser.parse_args(argv)
+    payload = decode_sets_b64(args.sets_b64)
     if not isinstance(payload, dict):
         raise SystemExit("payload must be an object")
     document = normalize(payload)

@@ -7,7 +7,11 @@ import {
   guardedSend,
   interpretLiveServiceResponse,
   isTakeArmed,
+  LIVE_COMMIT_ENTITY,
+  liveCommitFromStates,
+  liveCommitToggleArgs,
   liveExecuteCallServiceArgs,
+  liveFailureWarning,
   occupancyPlanFromLiveResult,
   runDryRunSend,
   runLiveSend,
@@ -47,16 +51,53 @@ function haResponse({ returncode, stdout }) {
   return { response: { returncode, stdout } };
 }
 
-test("liveExecuteCallServiceArgs requests returnResponse as the 6th HA frontend arg", () => {
+test("liveExecuteCallServiceArgs calls the gated HA script with returnResponse as the 6th arg", () => {
   const args = liveExecuteCallServiceArgs("dGVzdA==");
   assert.equal(args.length, 6);
-  assert.equal(args[0], "shell_command");
-  assert.equal(args[1], "avaccess_execute_route_plan");
-  assert.equal(args[2].live, true);
-  assert.equal(args[2].plan_b64, "dGVzdA==");
+  assert.equal(args[0], "script");
+  assert.equal(args[1], "avaccess_live_execute");
+  assert.deepEqual(args[2], { plan_b64: "dGVzdA==" });
   assert.equal(args[3], undefined);
   assert.equal(args[4], true);
   assert.equal(args[5], true);
+});
+
+test("liveCommitFromStates follows the HA boolean on every read", () => {
+  const on = { [LIVE_COMMIT_ENTITY]: { state: "on" } };
+  const off = { [LIVE_COMMIT_ENTITY]: { state: "off" } };
+  assert.equal(liveCommitFromStates(on, true), true);
+  assert.equal(liveCommitFromStates(off, true), false);
+  assert.equal(liveCommitFromStates(on, false), false);
+  assert.equal(liveCommitFromStates({}, true), false);
+  assert.equal(liveCommitFromStates(undefined, true), false);
+  assert.equal(liveCommitFromStates({ [LIVE_COMMIT_ENTITY]: { state: "unavailable" } }, true), false);
+});
+
+test("liveCommitToggleArgs writes the HA boolean instead of a local flag", () => {
+  assert.deepEqual(liveCommitToggleArgs(false), [
+    "input_boolean",
+    "turn_on",
+    { entity_id: "input_boolean.avaccess_live_commit" },
+  ]);
+  assert.deepEqual(liveCommitToggleArgs(true), [
+    "input_boolean",
+    "turn_off",
+    { entity_id: "input_boolean.avaccess_live_commit" },
+  ]);
+});
+
+test("HA script refusal response is a failed live report", () => {
+  const outcome = interpretLiveServiceResponse({
+    response: {
+      returncode: 3,
+      stderr: "",
+      stdout:
+        'Live Commit is off - refusing Live Send.\n{"ok": false, "slots": [], "errors": ["Live Commit is off in Home Assistant. Nothing was sent."]}',
+    },
+  });
+  assert.equal(outcome.failed, true);
+  assert.equal(outcome.missingReport, false);
+  assert.match(liveFailureWarning(outcome), /Live Commit is off/);
 });
 
 test("context-only HA response is a missing report failure", () => {

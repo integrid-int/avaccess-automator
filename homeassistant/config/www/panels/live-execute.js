@@ -2,20 +2,28 @@
 // as failure, and persist occupancy only for slots that reported ok.
 import { applyRoutePlan } from "./assignment-store.js";
 
+export const LIVE_COMMIT_ENTITY = "input_boolean.avaccess_live_commit";
+export const LIVE_EXECUTE_SCRIPT = "avaccess_live_execute";
+
 export function encodePlanB64(plan) {
   return btoa(unescape(encodeURIComponent(JSON.stringify(plan))));
 }
 
-/** HA frontend: callService(domain, service, serviceData, target, notifyOnError, returnResponse) */
+/**
+ * HA frontend: callService(domain, service, serviceData, target, notifyOnError, returnResponse)
+ * The script refuses unless LIVE_COMMIT_ENTITY is on, then runs the shell_command with --live.
+ */
 export function liveExecuteCallServiceArgs(planB64) {
-  return [
-    "shell_command",
-    "avaccess_execute_route_plan",
-    { plan_b64: planB64, live: true },
-    undefined,
-    true,
-    true,
-  ];
+  return ["script", LIVE_EXECUTE_SCRIPT, { plan_b64: planB64 }, undefined, true, true];
+}
+
+/** Live is armed only when Home Assistant reports the boolean on and inventory is ready. */
+export function liveCommitFromStates(states, inventoryLiveReady) {
+  return Boolean(inventoryLiveReady) && states?.[LIVE_COMMIT_ENTITY]?.state === "on";
+}
+
+export function liveCommitToggleArgs(currentlyOn) {
+  return ["input_boolean", currentlyOn ? "turn_off" : "turn_on", { entity_id: LIVE_COMMIT_ENTITY }];
 }
 
 export function extractShellCommandStdout(response) {

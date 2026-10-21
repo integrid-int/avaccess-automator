@@ -168,7 +168,7 @@ test("panel shell clears stale groupMode and routes adhoc destination through pl
   assert.match(src, /onGuide \? content\.kind === "channel" : content\.kind === "game"/);
 });
 
-test("panel shell exposes live commit toggle and shell_command execute path", () => {
+test("panel shell exposes live commit toggle and gated script execute path", () => {
   const src = readPanelSource();
   const liveSrc = readFileSync(
     new URL("../../homeassistant/config/www/panels/live-execute.js", import.meta.url),
@@ -176,7 +176,13 @@ test("panel shell exposes live commit toggle and shell_command execute path", ()
   );
   assert.match(src, /liveCommit/);
   assert.match(src, /runLiveSendSafe|live-execute/);
-  assert.match(liveSrc, /avaccess_execute_route_plan/);
+  assert.match(liveSrc, /avaccess_live_execute/);
+  assert.doesNotMatch(liveSrc, /avaccess_execute_route_plan/);
+  // The toggle writes the HA boolean; the panel never flips a local-only flag.
+  assert.match(src, /callService\(\.\.\.liveCommitToggleArgs\(/);
+  assert.doesNotMatch(src, /_setState\(\{\s*liveCommit:/);
+  assert.doesNotMatch(src, /_liveCommitSynced/);
+  assert.match(src, /render\(\)\s*\{\s*if \(!this\.isConnected\) return;\s*this\._syncLiveCommitFromHass\(\);/);
   assert.match(liveSrc, /returnResponse|true,\s*true/);
   assert.match(src, /Live Send|live commit/i);
   assert.match(src, /inventory\.json/);

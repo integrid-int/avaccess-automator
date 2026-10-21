@@ -8,6 +8,15 @@
 #   ../scripts/directv_shef.py -> /config/avaccess/directv_shef.py
 #   ../config           -> /config/avaccess/config
 # Local Core uses the same relative paths via checked-in symlinks under avaccess/.
+#
+# Live interlock: the panel calls script.avaccess_live_execute, which refuses
+# unless input_boolean.avaccess_live_commit is on. The shell_command also
+# renders --live-commit on|off from the boolean at call time, and
+# run_execute_route_plan.py refuses --live unless it reads "on", so calling the
+# shell_command directly cannot bypass the boolean either.
+#
+# Templated shell_commands are shlex-split (no shell). The b64 payloads are
+# regex-checked and single-quoted so a crafted value cannot add arguments.
 
 input_boolean:
   avaccess_live_commit:
@@ -20,9 +29,51 @@ shell_command:
     python3 avaccess/run_execute_route_plan.py
     --inventory avaccess/config/inventory.yaml
     --directv-config avaccess/config/directv.yaml
-    --plan-b64 {{ plan_b64 }}
-    {% if live is true or live == True or live == 'true' %}--live{% else %}--dry-run{% endif %}
+    --plan-b64 '{{ plan_b64 if plan_b64 is string and plan_b64 | regex_match("^[A-Za-z0-9+/]+={0,2}$") else "" }}'
+    {% if live is true or live == True or live == 'true' %}--live --live-commit {{ 'on' if is_state('input_boolean.avaccess_live_commit', 'on') else 'off' }}{% else %}--dry-run{% endif %}
   avaccess_save_tv_sets: >-
     python3 avaccess/scripts/save_tv_sets.py
-    --sets-b64 {{ sets_b64 }}
+    --sets-b64 '{{ sets_b64 if sets_b64 is string and sets_b64 | regex_match("^[A-Za-z0-9+/]+={0,2}$") else "" }}'
     --out www/avaccess/custom_tv_sets.json
+
+script:
+  avaccess_live_execute:
+    alias: AVAccess Live Execute
+    description: >-
+      Live Take from the Sports Routing panel. Runs the route-plan executor
+      with --live only while input_boolean.avaccess_live_commit is on, and
+      returns the shell_command response (stdout/returncode) to the caller.
+    icon: mdi:broadcast
+    mode: single
+    max_exceeded: warning
+    fields:
+      plan_b64:
+        name: Plan (base64 JSON)
+        required: true
+        selector:
+          text:
+    sequence:
+      - if:
+          - condition: state
+            entity_id: input_boolean.avaccess_live_commit
+            state: "on"
+        then:
+          - action: shell_command.avaccess_execute_route_plan
+            data:
+              plan_b64: "{{ plan_b64 }}"
+              live: true
+            response_variable: result
+          - stop: Live execute finished
+            response_variable: result
+        else:
+          # First line keeps HA from parsing stdout as a literal; the panel
+          # reads the last JSON line as the report.
+          - variables:
+              refused:
+                returncode: 3
+                stderr: ""
+                stdout: |-
+                  Live Commit is off - refusing Live Send.
+                  {"ok": false, "slots": [], "errors": ["Live Commit is off in Home Assistant. Nothing was sent."]}
+          - stop: Live Commit is off
+            response_variable: refused

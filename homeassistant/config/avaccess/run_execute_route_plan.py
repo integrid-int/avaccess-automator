@@ -15,6 +15,7 @@ or uses checked-in symlinks under this directory when present.
 from __future__ import annotations
 
 import importlib.util
+import json
 import runpy
 import sys
 import types
@@ -121,8 +122,52 @@ def _inject_default_args(argv: list[str]) -> list[str]:
     return out
 
 
+LIVE_REFUSED_EXIT = 3
+LIVE_REFUSED_MESSAGE = "Live Commit is off in Home Assistant. Nothing was sent."
+
+
+def split_live_commit(argv: list[str]) -> tuple[list[str], str | None]:
+    """Remove ``--live-commit <state>`` (rendered by HA from the boolean)."""
+    out: list[str] = []
+    state: str | None = None
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--live-commit":
+            state = argv[i + 1] if i + 1 < len(argv) else ""
+            i += 2
+            continue
+        if arg.startswith("--live-commit="):
+            state = arg.split("=", 1)[1]
+            i += 1
+            continue
+        out.append(arg)
+        i += 1
+    return out, state
+
+
+def live_refusal(argv: list[str]) -> str | None:
+    """Return a refusal message when --live is requested without the boolean on.
+
+    The shell_command template renders ``--live-commit on|off`` from
+    ``input_boolean.avaccess_live_commit`` at call time, so a caller that skips
+    the panel or script still cannot go live while the boolean is off.
+    """
+    args, state = split_live_commit(argv)
+    if "--live" not in args:
+        return None
+    if state == "on":
+        return None
+    return LIVE_REFUSED_MESSAGE
+
+
 def main(argv: list[str] | None = None) -> None:
     args = list(sys.argv[1:] if argv is None else argv)
+    refusal = live_refusal(args)
+    if refusal is not None:
+        print(json.dumps({"ok": False, "slots": [], "errors": [refusal]}), flush=True)
+        raise SystemExit(LIVE_REFUSED_EXIT)
+    args, _ = split_live_commit(args)
     target = resolve_executor()
     forwarded = _inject_default_args(args)
     sys.argv = [str(target), *forwarded]

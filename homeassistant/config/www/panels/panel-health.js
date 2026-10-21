@@ -35,9 +35,11 @@ import {
 import {
   createInFlightLock,
   isTakeArmed,
+  liveCommitFromStates,
+  liveCommitToggleArgs,
   runDryRunSend,
   runLiveSendSafe,
-} from "./live-execute.js?v=20";
+} from "./live-execute.js?v=21";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -66,6 +68,7 @@ const DEFAULT_STATE = {
 
 const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
 const LIVE_BLOCKED_REASON = "Live commit is off until the room inventory is set up.";
+const LIVE_COMMIT_SWITCH_FAILED = "Could not change Live commit in Home Assistant.";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
 const GUIDE_CHANNELS_JSON_URL = "/local/avaccess/guide_channels.json";
@@ -103,7 +106,7 @@ class PanelHealth extends HTMLElement {
     this._eventsBound = false;
     this._inventoryLiveReady = false;
     this._inventoryLoaded = false;
-    this._liveCommitSynced = false;
+    this._liveCommitError = "";
     this.guideEpg = null;
     this.guideEpgAvailable = false;
     this.guideChannels = null;
@@ -423,15 +426,30 @@ class PanelHealth extends HTMLElement {
     `;
   }
 
+  // Home Assistant's boolean is the only source of truth; the panel never holds
+  // a local Live flag that could disagree with what the server will allow.
   _syncLiveCommitFromHass() {
-    if (this._liveCommitSynced || !this._inventoryLoaded || !this._hass?.states) return;
-    const entity = this._hass.states["input_boolean.avaccess_live_commit"];
-    if (!entity) return;
-    this._liveCommitSynced = true;
-    const liveCommit = entity.state === "on" && this._inventoryLiveReady;
+    if (!this._inventoryLoaded || !this._hass?.states) return;
+    const liveCommit = liveCommitFromStates(this._hass.states, this._inventoryLiveReady);
     if (this._state.liveCommit !== liveCommit) {
       this._state = { ...this._state, liveCommit };
     }
+  }
+
+  async _toggleLiveCommit() {
+    if (!this._inventoryLiveReady) return;
+    if (typeof this.hass?.callService !== "function") {
+      this._liveCommitError = LIVE_COMMIT_SWITCH_FAILED;
+      this.render();
+      return;
+    }
+    try {
+      await this.hass.callService(...liveCommitToggleArgs(this._state.liveCommit));
+      this._liveCommitError = "";
+    } catch {
+      this._liveCommitError = LIVE_COMMIT_SWITCH_FAILED;
+    }
+    this.render();
   }
 
   _planSendLabel() {
@@ -446,11 +464,14 @@ class PanelHealth extends HTMLElement {
       ? "When on, Send tunes DirecTV (SHEF) and switches video (UDP) via Home Assistant"
       : LIVE_BLOCKED_REASON;
     // iPads never show title tooltips, so the hint carries the full reason inline.
-    const hint = ready
-      ? active
-        ? "Live — Send changes the TVs"
-        : "Dry run — Send only previews the plan"
-      : LIVE_BLOCKED_REASON;
+    const switchError = ready ? this._liveCommitError : "";
+    const hint = switchError
+      ? switchError
+      : ready
+        ? active
+          ? "Live — Send changes the TVs"
+          : "Dry run — Send only previews the plan"
+        : LIVE_BLOCKED_REASON;
     return `
       <div class="live-commit-row">
         <button
@@ -463,7 +484,7 @@ class PanelHealth extends HTMLElement {
         >
           Live commit
         </button>
-        <span class="live-commit-hint ${ready ? "" : "is-blocked"}" role="status">${escapeHtml(hint)}</span>
+        <span class="live-commit-hint ${ready && !switchError ? "" : "is-blocked"}" role="status">${escapeHtml(hint)}</span>
         <button type="button" class="link-button" data-action="clear-room-state">Clear room state</button>
       </div>
     `;
@@ -804,8 +825,7 @@ class PanelHealth extends HTMLElement {
       return;
     }
     if (action === "toggle-live-commit") {
-      if (!this._inventoryLiveReady) return;
-      this._setState({ liveCommit: !this._state.liveCommit });
+      this._toggleLiveCommit();
       return;
     }
     if (action === "send-plan") {
@@ -1151,6 +1171,7 @@ class PanelHealth extends HTMLElement {
 
   async _sendPlan() {
     if (this._sending) return;
+    this._syncLiveCommitFromHass();
     const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
     if (!groupMode) return;
     let programs = this._state.selectedPrograms;
@@ -2302,6 +2323,7 @@ class PanelHealth extends HTMLElement {
 
   render() {
     if (!this.isConnected) return;
+    this._syncLiveCommitFromHass();
 
     const guideSearchCaret = this._captureGuideSearchCaret();
     const setNameCaret = this._captureNamedCaret("set-name");

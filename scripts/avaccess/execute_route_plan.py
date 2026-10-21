@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import copy
 import importlib.util
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -184,7 +186,9 @@ def execute_plan(
     """Run SHEF tune then UDP for each slot; continue on errors; return a report."""
     working = copy.deepcopy(plan)
 
-    if _any_udp_null(working):
+    # Live never trusts caller-supplied udp hostnames; only inventory decides
+    # which TX/RX boxes receive the reconnect.
+    if live or _any_udp_null(working):
         try:
             working = enrich_route_plan(working, inventory)
         except ValueError as exc:
@@ -260,12 +264,26 @@ def execute_plan(
     }
 
 
+_B64_RE = re.compile(r"[A-Za-z0-9+/]+={0,2}")
+
+
+def decode_plan_b64(plan_b64: str) -> dict:
+    """Strict base64 JSON decode; rejects anything outside the b64 alphabet."""
+    if not isinstance(plan_b64, str) or not _B64_RE.fullmatch(plan_b64):
+        raise PreflightError(["plan_b64 is empty or not base64"])
+    try:
+        raw = base64.b64decode(plan_b64, validate=True)
+        data = json.loads(raw.decode("utf-8"))
+    except (binascii.Error, UnicodeDecodeError, ValueError) as exc:
+        raise PreflightError([f"plan_b64 is not valid base64 JSON: {exc}"]) from exc
+    return data
+
+
 def _load_plan(plan_file: Path | None, plan_b64: str | None) -> dict:
     if plan_file is not None:
         data = json.loads(Path(plan_file).read_text(encoding="utf-8"))
-    elif plan_b64:
-        raw = base64.b64decode(plan_b64)
-        data = json.loads(raw.decode("utf-8"))
+    elif plan_b64 is not None:
+        data = decode_plan_b64(plan_b64)
     else:
         raise PreflightError(["Provide --plan-file or --plan-b64"])
     if not isinstance(data, dict):
@@ -281,7 +299,7 @@ def _load_yaml(path: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--inventory", type=Path, required=True)
     parser.add_argument("--directv-config", type=Path, required=True)
     parser.add_argument("--plan-file", type=Path, default=None)
