@@ -327,3 +327,17 @@ Live Home Assistant, boolean left **off**. Report: `/opt/cursor/artifacts/phase4
 | Matrix template sensors | 9 `sensor.directv_h25_*` missing. Scripts and helpers from that package loaded |
 
 No product bug. With Live commit on, `shell_command` inherited cwd `/` (this launcher, not Docker `WORKDIR /config`) and Python looked for `//avaccess/run_execute_route_plan.py`. The executor never started. The launcher now `cd`s to the staging config dir before the next start. This process was left running so the Chrome pass is not interrupted. Chrome iteration 1 is still in progress.
+
+## Phase 4 — Chrome iteration 1 (wrong target)
+
+The browser pass opened `http://127.0.0.1:8765/index.html`, the visual harness in `/tmp/wpf-harness`, not Home Assistant. That page sets `_inventoryLiveReady = true` and `input_boolean.avaccess_live_commit` to `on`, and its `callService` is a no-op. The five filed bugs match that fixture:
+
+| ID | Claim | Disposition |
+|----|--------|-------------|
+| BUG-001 | Banner shows LIVE while the boolean is off | Harness left the page in the forced LIVE step. Not reproduced on HA. |
+| BUG-002 | No yellow inventory line | Same fixture marks inventory ready, so the blocked hint is not shown. |
+| BUG-003 | `ERR_CONNECTION_CLOSED` on logo URLs | ESPN CDN is blocked from this VM. The written paths do not match the console screenshot. |
+| BUG-004 | Live commit button ignores clicks | Harness `callService` returns `{}` and does not change state. On HA the button is disabled while inventory has `REPLACE_ME`. |
+| BUG-005 | "Patio" rejected with "Name the set." | Patio is the empty-field placeholder. |
+
+Live check after that pass: boolean **off**, inventory has 90 `REPLACE_ME`. `http://127.0.0.1:8123/panel-health` shows **PRACTICE – TVs will not change**, **Live commit: OFF** (disabled), and the yellow line *Live commit is off until the room inventory is set up.* Screenshot: `/opt/cursor/artifacts/phase4-live-ha-banner.png`. No product change. Responsive and offline checks were skipped and still need a pass on port 8123.
