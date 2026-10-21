@@ -31,6 +31,7 @@
 | 2026-10-21 | Usage limits restored. Will re-verify/finish WP-A/B/C with Opus when Grok agents complete; subsequent WPs use Opus/GPT high. Local WIP present (`live-execute.js`, planner prefer-free, Clear room state); JS tests currently 42 pass / 5 fail (incomplete exports). |
 | 2026-10-21 | **WP-B** S0-REUSE-BAR / S0-OFF-FICTION / S0-OCCUPANCY-IPAD (partial). Adhoc planner prefers a free encoder when any exist; `singleEncoderForTvs` reuse only if none are free. Explicit `replaceEncoderId` still retunes the chosen box. Panel `_gateReuseConfirm` blocks Take until Confirm when `replaced.offTvs.length > 0`; copy says leftover TVs keep showing the retuned program (not “turn off”). Now empty rows say **Unassigned** / still showing last box. **Clear room state** removes assignment `localStorage` and resets panel occupancy. Patio-after-All-35 test expects ENC-02. `node --test tests/js/*.test.js` → 70 pass / 0 fail. Panel-health also contains concurrent WP-A/C wiring already in the working tree (`live-execute.js`, `takeBlockReason`); executor Python left unstaged for WP-C. BLOCK-SERVER-LEDGER still BLOCKED. |
 | 2026-10-21 | **WP-A** S0-SILENT-LIVE / S1-DOUBLE-TAP / S0-OCCUPANCY-IPAD (success-only local occupancy). See section below. |
+| 2026-10-21 | Stuck Grok WP-A/C agents abandoned (usage-limit hang). Coordinator took over; WP-A/B/C complete; Opus WP-D/E started. |
 
 _(per-WP commit entries follow)_
 
@@ -64,7 +65,7 @@ _(per-WP commit entries follow)_
 |-------|-------|
 | Date | 2026-10-21 |
 | Findings | S0-NO-CHANNEL, S1-DEMO-FALLBACK (panel), live executor reject |
-| Commit | _(this commit)_ |
+| Commit | `4b1bab2` (executor); panel guards in `520bb13` |
 | Verify | `node --test tests/js` 70/70; `python3 -m unittest tests.test_execute_route_plan_live_tune` 6/6 |
 
 **Changes**
