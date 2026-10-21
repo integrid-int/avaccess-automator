@@ -153,7 +153,9 @@ Live Take calls the script with `returnResponse`, so the panel gets the executor
   --live
 ```
 
-Per slot: DirecTV SHEF `/tv/tune` then UDP `msg_b_reconnect`. If SHEF tune fails, UDP is **not** sent for that slot, so those TVs stay on the previous source. Other slots still run. Failures set slot `status` / `error`. Final JSON report on stdout (`ok` / per-slot status / `errors`). Exit `0` all ok, `1` slot errors, `2` preflight (bad inventory or a slot's encoder has no H25 mapping).
+Per slot: DirecTV SHEF `/tv/tune` then UDP `msg_b_reconnect`. If SHEF tune fails, UDP is **not** sent for that slot, so those TVs stay on the previous source. Other slots still run. Failures set slot `status` / `error`. Final JSON report on stdout (`ok` / per-slot status / `errors` / `elapsedMs`). Exit `0` all ok, `1` slot errors, `2` preflight (bad inventory or a slot's encoder has no H25 mapping).
+
+Live stops starting slots once a slot could run past 50 s (`--time-budget`, default 50), because Home Assistant kills a shell command at 60 s and the panel would then get no report. Slots it skips come back as `Not attempted: …` errors and nothing is sent to them. `python3 tests/bench_live_latency.py` times the real CLI against fake H25s (healthy, offline, and slow-verify cases).
 
 #### 6. Still out of scope after Track B
 

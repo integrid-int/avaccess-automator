@@ -11,8 +11,9 @@ import importlib.util
 import json
 import re
 import sys
+import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -23,6 +24,12 @@ import yaml
 from scripts.avaccess.enrich_plan import enrich_route_plan
 from scripts.avaccess import udp_reconnect
 from scripts.avaccess.inventory_lib import load_inventory, validate_inventory_for_plan
+
+# Home Assistant kills a shell_command after 60 s and the caller then gets no
+# report at all, even for slots whose TVs already switched. Live stops starting
+# slots early enough to print its report inside this budget; the rest of the
+# 60 s covers interpreter start-up and HA overhead.
+LIVE_TIME_BUDGET_S = 50.0
 
 
 class PreflightError(Exception):
@@ -109,6 +116,24 @@ def send_udp_reconnect(**kwargs: Any) -> Any:
     return udp_reconnect.send_udp_reconnect(**kwargs)
 
 
+def worst_case_slot_seconds(directv: dict) -> float:
+    """Longest one live slot can take: SHEF tune plus every getTuned poll timing out."""
+    shef = _load_shef_module()
+    timeout = float(directv.get("timeout_seconds") or shef.DEFAULT_TIMEOUT)
+    if not bool(directv.get("verify_tune", True)):
+        return timeout
+    attempts = max(1, int(getattr(shef, "VERIFY_ATTEMPTS", 3)))
+    delay = float(getattr(shef, "VERIFY_DELAY_S", 0.5))
+    return timeout * (1 + attempts) + delay * (attempts - 1)
+
+
+def _not_attempted_message(budget_s: float) -> str:
+    return (
+        f"Not attempted: the Live Take reached its {budget_s:.0f} s time limit "
+        "before this slot. Nothing was sent; these TVs keep their previous source."
+    )
+
+
 def _any_udp_null(plan: dict) -> bool:
     slots = plan.get("slots") or []
     for slot in slots:
@@ -182,8 +207,15 @@ def execute_plan(
     *,
     live: bool = False,
     session_start: int = 1,
+    time_budget_s: float = LIVE_TIME_BUDGET_S,
+    clock: Callable[[], float] = time.monotonic,
 ) -> dict:
-    """Run SHEF tune then UDP for each slot; continue on errors; return a report."""
+    """Run SHEF tune then UDP for each slot; continue on errors; return a report.
+
+    Live starts a slot only if it can finish, at its worst case, inside
+    ``time_budget_s``; later slots are reported as not attempted.
+    """
+    started = clock()
     working = copy.deepcopy(plan)
 
     # Live never trusts caller-supplied udp hostnames; only inventory decides
@@ -200,6 +232,15 @@ def execute_plan(
         errors.extend(_missing_tune_errors(working))
         if not ok or errors:
             raise PreflightError(errors)
+        slot_worst_s = worst_case_slot_seconds(directv)
+        if slot_worst_s > time_budget_s:
+            raise PreflightError(
+                [
+                    f"directv timeout_seconds {directv.get('timeout_seconds')} is too long: "
+                    f"one slot can take {slot_worst_s:.1f} s, over the "
+                    f"{time_budget_s:.0f} s Live limit. Use timeout_seconds 4."
+                ]
+            )
 
     broadcast, port = _network_settings(inventory)
     dry_run = not live
@@ -216,6 +257,15 @@ def execute_plan(
 
         slot_out = copy.deepcopy(slot)
         encoder_id = str(slot.get("encoderId") or "")
+        slot_started = clock()
+        if live and (slot_started - started) + slot_worst_s > time_budget_s:
+            msg = _not_attempted_message(time_budget_s)
+            slot_out["status"] = "error"
+            slot_out["error"] = msg
+            slot_out["message"] = msg
+            report_errors.append(f"{encoder_id or '?'}: {msg}")
+            slots_out.append(slot_out)
+            continue
         try:
             channel = _slot_tune_channel(slot)
             if channel:
@@ -254,6 +304,7 @@ def execute_plan(
             report_errors.append(f"{encoder_id or '?'}: {msg}")
         finally:
             session += 1
+            slot_out["elapsedMs"] = round((clock() - slot_started) * 1000)
 
         slots_out.append(slot_out)
 
@@ -261,6 +312,7 @@ def execute_plan(
         "ok": len(report_errors) == 0,
         "slots": slots_out,
         "errors": report_errors,
+        "elapsedMs": round((clock() - started) * 1000),
     }
 
 
@@ -308,6 +360,12 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--dry-run", action="store_true", default=False)
     mode.add_argument("--live", action="store_true", default=False)
     parser.add_argument("--session-start", type=int, default=1)
+    parser.add_argument(
+        "--time-budget",
+        type=float,
+        default=LIVE_TIME_BUDGET_S,
+        help="Live only: seconds to finish all slots and print the report (HA kills at 60).",
+    )
     args = parser.parse_args(argv)
 
     live = bool(args.live)
@@ -325,6 +383,7 @@ def main(argv: list[str] | None = None) -> int:
             directv=directv,
             live=live,
             session_start=int(args.session_start),
+            time_budget_s=float(args.time_budget),
         )
     except PreflightError as exc:
         print(

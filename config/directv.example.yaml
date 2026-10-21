@@ -4,6 +4,9 @@
 #   External Access: Allow
 #   Current Program: Allow
 
+# Per SHEF request. Live Takes must finish inside Home Assistant's 60 s
+# shell_command limit, so the executor budgets 50 s and refuses a value whose
+# worst case per slot (tune + 3 getTuned polls) exceeds it. Keep 4.
 timeout_seconds: 4
 # Route executor confirms each tune via /tv/getTuned before UDP; a mismatch
 # fails that slot. Set false only if a receiver is slow to report the new channel.
