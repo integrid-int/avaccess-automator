@@ -42,6 +42,31 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt homeassistant
 ```
 
+The staff/operator PDF builders (`scripts/build_*_pdf*.py`) also need `pip install -r requirements-docs.txt`.
+
+## Configuration reference
+
+Runtime behavior comes from config files and Home Assistant entities, not environment variables. Copy each `*.example.yaml` with `rm -f` + `cp --remove-destination` (see [docs/HA_LIVE.md](docs/HA_LIVE.md) section 3).
+
+| File | Read by | Purpose |
+|------|---------|---------|
+| `config/inventory.yaml` | executor, `apply_preset.py`, `export_inventory_json.py` | ENC-01…10 / RX-01…35 hostnames, `network.broadcast`, `network.udp_switch_port`, mapping profiles. Ships as a symlink to the example. |
+| `config/directv.yaml` (gitignored) | executor, `directv_shef.py` | H25 IPs per encoder, `timeout_seconds` (keep 4), `verify_tune` (default true) |
+| `config/channels.yaml` | `generate_ha_bundle.py`, `sync_weekly_schedule.py` | Matrix favorites, presets, `encoder_media_player`, SHEF transport |
+| `config/guide_epg.yaml` | `build_guide_epg.py` | Guide now/next grabber and channels |
+| `config/schedule_sync.yaml` | `refresh_ha_weekly.py` | Weekly NFL slot sync |
+| `www/avaccess/inventory.json` | Sports Routing panel | Live gate. Any `REPLACE_ME` keeps Live commit disabled (Soft Launch) |
+| `www/avaccess/sports_schedule.json`, `guide_channels.json`, `guide_epg.json`, `custom_tv_sets.json` | Sports Routing panel | Sports list, Guide, now/next, named TV sets |
+| `input_boolean.avaccess_live_commit` (HA) | panel, `script.avaccess_live_execute`, shell command | The one Live switch; `initial: false` |
+
+| Environment variable | Used by | Default |
+|----------------------|---------|---------|
+| `AVACCESS_HA_OWNER_PASSWORD` | `scripts/complete_ha_onboarding.py` (staging) | none: a random password is generated and printed once |
+| `AVACCESS_DIRECTV_BROWSER_PROFILE` | `scripts/avaccess/directv_sports.py` PC pull | `~/.cache/avaccess/directv-sports-browser` (`%LOCALAPPDATA%\avaccess\directv-sports-browser` on Windows) |
+| `PYTHON_BIN` | `scripts/run_ha_panel_validation.sh` | `.venv/bin/python`, else `python3` |
+| `HA_BASE_URL`, `HASS_TOKENS`, `SHOT_DIR`, `ART_DIR`, `CHROME_PATH` | `scripts/capture_operator_screenshots.mjs` (docs screenshots) | `http://127.0.0.1:8123`, `/tmp/hassTokens.json`, `docs/images/operations`, `/opt/cursor/artifacts/screenshots`, first Chrome found |
+| `TZ` | Docker compose | `UTC` in `homeassistant/docker-compose.yml`; `America/New_York` in the staging and Live host-network compose |
+
 ## Home Assistant test environment
 
 1. Start Home Assistant:
