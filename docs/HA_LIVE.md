@@ -130,7 +130,7 @@ The `www` copy in step 2 is what the panel fetches. These files have to be prese
 
 | URL | `source` | What breaks if it is missing or wrong |
 |-----|----------|----------------------------------------|
-| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=33` in `configuration.yaml`. |
+| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=34` in `configuration.yaml`. |
 | `/local/avaccess/sports_schedule.json` | `directv-sports-info` | Sports rail stays empty. TV Passport must not be copied in as the sports file. |
 | `/local/avaccess/guide_channels.json` | `tvpassport:5960D` | Guide has no Greensboro lineup. |
 | `/local/avaccess/guide_epg.json` | fresh `generatedAt` | Guide still lists channels, with **Guide listings unavailable — channel list only**. |
@@ -282,7 +282,7 @@ panel_custom:
     sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=33
+    module_url: /local/panels/panel-health.js?v=34
     require_admin: false
     config:
       environment: live
@@ -346,19 +346,19 @@ Conditions while in Soft Launch:
 - Keep `input_boolean.avaccess_live_commit` **off**.
 - Check that every iPad shows the slate **PRACTICE** banner at the top. If any iPad shows the red **LIVE – TVs WILL change** banner, stop and turn the boolean off.
 - Matrix is **not** in practice mode. Anyone tapping AVAccess Matrix changes the wall. Say so in training.
-- Practice Takes write occupancy to each iPad’s `localStorage` (`avaccess-bartender-panel-v2`). It is per-iPad and it is fiction: no box was tuned.
+- Practice and Live occupancy are separate stores in each iPad’s `localStorage`. Practice Takes write only the practice store (`avaccess-bartender-panel-practice-v1`); it is per-iPad and it is fiction: no box was tuned. Live Takes read and write only the Live store (`avaccess-bartender-panel-v2`). When Live commit flips, the panel reloads the store for the new mode (no merge), so practice routes never count as busy boxes in Live and a practice Take never changes Live occupancy.
 
 Leaving Soft Launch (first Live Take):
 
 1. Confirm the host is HA OS or host-network (section 0). Do not go Live from a Docker bridge container.
 2. Run the section 7 smoke test from the command line, one TV first.
-3. **Wipe practice occupancy on every iPad.** Tap **Clear room state** (next to Live commit) on each iPad, or clear Companion’s data. Otherwise the planner treats practice routes as real busy boxes and can pick, or refuse, the wrong encoder. Clear room state does not delete named TV sets (`avaccess-tv-sets-v1`).
+3. **Start from an empty Live store.** Practice routes stay in the practice store and are not seen in Live, but a Live store left from an earlier Live session or test is. Tap **Clear room state** (next to Live commit) on the Live iPad, or clear Companion’s data. Clear room state wipes **both** stores (practice and Live). It does not delete named TV sets (`avaccess-tv-sets-v1`).
 4. Export the real inventory to `/config/www/avaccess/inventory.json` (section 3) and reload the panel. The **Live commit** button becomes enabled.
 5. Turn **Live commit: ON**. Every iPad banner turns red: **LIVE – TVs WILL change**.
 6. Take one game to one TV. The summary is headed **Live summary** and each slot shows `ok`. Check the wall. Then try All 35.
 7. Use one iPad for Live. Occupancy is still per-iPad (no server ledger), so a second iPad does not know which boxes the first one tuned.
 
-To go back to practice at any time, turn **Live commit** off. Every iPad returns to **PRACTICE**.
+To go back to practice at any time, turn **Live commit** off. Every iPad returns to **PRACTICE** and loads its practice store. Practice Takes from then on do not touch Live occupancy, and turning Live back on reloads the Live store as it was.
 
 ---
 
@@ -368,7 +368,7 @@ To go back to practice at any time, turn **Live commit** off. Every iPad returns
 2. Connect to `http://<ha-host>:8123` (or your TLS proxy).
 3. Sidebar: **Sports Routing** for the bar, **AVAccess Matrix** for favorites.
 4. Hold the iPad **sideways** for Sports Routing. Below 900px wide the three columns stack and the buttons get small. Matrix favorites still fit portrait.
-5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=33` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
+5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=34` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
 
 Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
@@ -387,7 +387,7 @@ Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_G
 | 7 | `input_boolean.avaccess_live_commit` is **off** except during a live Take |
 | 8 | Sports Routing is landscape. Banner reads **PRACTICE – TVs will not change**. Take shows a **PRACTICE summary**. The wall does not change while the yellow line is up |
 | 8b | HA runs on HA OS or `network_mode: host` (not a Docker bridge) before any Live Take |
-| 8c | **Clear room state** tapped on every iPad before the first Live Take (section 7b) |
+| 8c | **Clear room state** tapped on the Live iPad before the first Live Take; it wipes both the practice and Live stores (section 7b) |
 | 8d | Staff know Matrix taps are always live; Sports Routing is live only under the red **LIVE** banner |
 | 9 | `sports_schedule.json` source is `directv-sports-info`. `guide_channels.json` source is `tvpassport:5960D` |
 | 10 | Selenium add-on is up on port 4444, or a PC pull has replaced `sports_schedule.json` |

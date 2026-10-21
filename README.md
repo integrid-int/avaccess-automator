@@ -28,7 +28,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Panel validator: `scripts/validate_panels.py`
 - Automated tests: `tests/test_validate_panels.py`
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
-- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=33`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
+- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=34`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
 - Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
@@ -133,7 +133,7 @@ Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/av
 
 The panel's **Live commit** button turns `input_boolean.avaccess_live_commit` on/off in HA and re-reads it on every state update, so all iPads agree. If Live is requested but inventory is not ready, Take still applies locally and records a warning: `Live blocked: inventory not ready`. The on-screen button is **Take**, not Send (it reads **Confirm** before reusing a shared box, **Replace** after choosing a program to retune, and **Sending…** while a Live call is in flight).
 
-Live Take calls the script with `returnResponse`, so the panel gets the executor's stdout/returncode back. A missing report, `ok: false`, or a nonzero `returncode` shows an error in the Live summary; occupancy is saved only for slots that returned `ok`. Take is blocked when a selected program has no DirecTV channel, and Live Take is blocked on the demo sports fallback. Soft Launch conditions and the first-Live checklist (including **Clear room state** on every iPad) are in [docs/HA_LIVE.md](docs/HA_LIVE.md) section 7b.
+Live Take calls the script with `returnResponse`, so the panel gets the executor's stdout/returncode back. A missing report, `ok: false`, or a nonzero `returncode` shows an error in the Live summary; occupancy is saved only for slots that returned `ok`. Take is blocked when a selected program has no DirecTV channel, and Live Take is blocked on the demo sports fallback. Soft Launch conditions and the first-Live checklist (practice and Live occupancy are separate stores; **Clear room state** wipes both) are in [docs/HA_LIVE.md](docs/HA_LIVE.md) section 7b.
 
 #### 5. CLI execute (offline / ops)
 
@@ -218,7 +218,7 @@ On a landscape iPad (wider than 900px) the panel is three columns: a left rail (
 
 - **Sports rail** — DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets chips in the Sources column (NFL, NCAA Football, NBA, NCAA Basketball (M), and so on). Each list is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
 - **Guide** — the TV Passport DirecTV lineup for ZIP **27403**, opened from the top of the left rail. Music audio, pay-per-view, barkers, and channels that are not in the package are left out. **Now/next** shows when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
-- **Now** — this iPad's assignment list for TVs 1–35, also at the top of the left rail. TVs with no plan here read **Unassigned** (still showing the last box), not Off. **Clear room state** (next to Live commit) wipes this iPad's occupancy.
+- **Now** — this iPad's assignment list for TVs 1–35, also at the top of the left rail. TVs with no plan here read **Unassigned** (still showing the last box), not Off. PRACTICE and LIVE keep separate occupancy, so Now shows the list for the current mode. **Clear room state** (next to Live commit) wipes both of this iPad's occupancy stores.
 - **Displays** — **All 35 TVs** (Preset 1), **4 Programs**, **9 Programs**, **Pick TVs**, or a named TV set (the adhoc path below). The on-screen button is **Take**. Under the **PRACTICE** banner it is a dry run. **Sets**, at the top of the left rail, saves those names (Patio, Bar) on the iPad and, when Home Assistant is connected, through `shell_command.avaccess_save_tv_sets` into `custom_tv_sets.json`.
 - **No free box** — a named set or Pick TVs prefers a free DirecTV box (ENC-01–ENC-10). Only when none are free: if every selected TV is already on one box, Take reuses it after **Confirm**. If not, the middle column lists the programs already on; choose one and Take becomes **Replace** (then **Confirm** if there are leftover TVs). That box changes channel. TVs that were on it and are not in the set keep showing the retuned program until reassigned; nothing turns them off. All 35, 4 Programs, and 9 Programs do not use this path.
 
@@ -302,11 +302,11 @@ Use when the bartender knows **which TVs** need content first:
 
 ### Assignments / occupancy
 
-Each TV shows one route at a time. PRACTICE plans, and the `ok` slots of a Live plan, update **slot-aware** occupancy (which encoder is busy, with what label/channel, covering which TVs). Overlapping TVs move to the new plan’s encoder; previous encoders drop those TVs from their local set. State persists in browser `localStorage` on the iPad (`avaccess-bartender-panel-v2`), per iPad only; there is no server ledger. **Clear room state** wipes it. Clear it on every iPad before the first Live Take so practice routes are not treated as busy boxes.
+Each TV shows one route at a time. PRACTICE plans, and the `ok` slots of a Live plan, update **slot-aware** occupancy (which encoder is busy, with what label/channel, covering which TVs). Overlapping TVs move to the new plan’s encoder; previous encoders drop those TVs from their local set. State persists in browser `localStorage` on the iPad, per iPad only; there is no server ledger. Practice and Live occupancy are separate stores: PRACTICE Takes read and write `avaccess-bartender-panel-practice-v1`, and Live Takes (Live commit on and inventory ready) read and write `avaccess-bartender-panel-v2`. Switching modes reloads the target store (no merge), so practice routes are never treated as busy boxes in Live and a practice Take never changes Live occupancy. The planner’s busy encoders and the Now screen use the store for the current mode. **Clear room state** wipes both stores.
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=33`) and restart Home Assistant if needed. On the iPad, force-quit Companion or clear its cache so it does not serve a stale `panel-health.js`. Copy `www/panels/`. Do not recopy `inventory.json` or `custom_tv_sets.json` over the live files. The site steps are [docs/HA_LIVE.md](docs/HA_LIVE.md).
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=34`) and restart Home Assistant if needed. On the iPad, force-quit Companion or clear its cache so it does not serve a stale `panel-health.js`. Copy `www/panels/`. Do not recopy `inventory.json` or `custom_tv_sets.json` over the live files. The site steps are [docs/HA_LIVE.md](docs/HA_LIVE.md).
 
 ## Panel validation workflows
 

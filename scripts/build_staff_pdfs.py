@@ -207,7 +207,7 @@ def full_story(h):
             [
                 "<b>Bar</b> is the room name. Next to it: <b>PRACTICE – TVs will not change</b> or, in red, <b>LIVE – TVs WILL change</b>. The top right is <b>No route</b> until a plan is ready.",
                 "<b>Live commit: OFF</b> would send the plan to the DirecTV boxes and the TVs. Leave it off. The yellow line says why. It is one switch for the whole bar.",
-                "<b>Clear room state</b> wipes this iPad's Now list. It does not change any TV or delete sets.",
+                "<b>Clear room state</b> wipes this iPad's PRACTICE and LIVE Now lists. It does not change any TV or delete sets.",
                 "<b>Left rail.</b> <b>Guide</b>, <b>Now</b>, and <b>Sets</b> pinned at the top, then DirecTV's sports in their own scrolling list.",
                 "<b>Sources</b> (middle). League chips, then the games. On Guide, the channel list and search. On Now, every TV.",
                 "<b>Displays</b> (right). <b>All 35 TVs</b>, <b>4 Programs</b>, <b>9 Programs</b>, <b>Pick TVs</b>, then any sets you saved. Only one is active.",
@@ -378,7 +378,7 @@ def full_story(h):
             s,
             "<b>Now</b> is this iPad's list, not a power switch. It lists TVs 1 through 35. A TV with a plan shows the program and the channel. "
             "A TV with nothing planned says <b>Unassigned</b> and <b>Still showing last box until reassigned</b>. "
-            "Practice Takes fill it in too. Tap <b>Clear room state</b> to empty it; a manager will ask every iPad to do this before going Live.",
+            "PRACTICE and LIVE keep separate Now lists; practice Takes fill in only the PRACTICE list. Tap <b>Clear room state</b> to empty both.",
         )
     )
     story.append(h.photo(s, "04-now.png", "After a Take, the TVs you chose show the game. The others are Unassigned (the picture shows the older word Off).", 3.6 * inch))
@@ -408,7 +408,7 @@ def full_story(h):
                 ["<b>Choose one to replace</b>", "All ten DirecTV boxes are in use. Tap the program to retune, then Replace (and Confirm if TVs are left over)."],
                 ["<b>Cannot Take: … has no DirecTV channel</b>", "That game has no channel number. Pick another game or use Guide."],
                 ["<b>LIVE – TVs WILL change</b>", "A manager turned Live commit on. Every Take changes the wall."],
-                ["Now shows games that are not on the wall", "Practice Takes fill in Now. Tap <b>Clear room state</b>."],
+                ["Now shows games that are not on the wall", "Under PRACTICE, practice Takes fill in Now. Tap <b>Clear room state</b> (empties both lists)."],
                 ["<b>8 sets is the limit</b>", "Delete a set you do not use. Deleting the button does not change what the TVs are showing."],
             ],
             [2.4 * inch, 4.8 * inch],

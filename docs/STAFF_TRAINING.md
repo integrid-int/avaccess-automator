@@ -141,7 +141,7 @@ Sports Routing is the screen staff use during a game. **AVAccess Matrix** (favor
 
 - **Bar** is the room name. Next to it is the banner: **PRACTICE – TVs will not change** or **LIVE – TVs WILL change**. The top right is **No route** until a plan is ready, then a one-line description of what Take will do.
 - **Live commit: OFF / ON** is the switch that would send the plan to the DirecTV boxes and the TVs. It is off, and the yellow line says why. Leave it off. It is one switch for the whole bar: if a manager turns it on, every iPad shows **LIVE**.
-- **Clear room state** (next to Live commit) wipes this iPad’s Now list. Use it when Now is wrong, or when a manager asks before going Live. It does not change any TV and does not delete your named sets.
+- **Clear room state** (next to Live commit) wipes both of this iPad’s Now lists: the PRACTICE one and the LIVE one. Use it when Now is wrong, or when a manager asks before going Live. It does not change any TV and does not delete your named sets.
 - **Left rail.** **Guide**, **Now**, and **Sets** are pinned at the top. Under them, DirecTV’s own sports, in this order: Football, Basketball, Baseball, Hockey, Soccer, Rugby, Racing, Combat, Golf, Tennis, Cricket, Volleyball, Rodeo, Raquet Ball. The sports list scrolls on its own. There is no permanent scrollbar.
 - **Sources** (middle). League chips, then the games. On Guide, this column is the channel list and the search box. On Now, it is the TV-by-TV list.
 - **Displays** (right). **All 35 TVs**, **4 Programs**, **9 Programs**, **Pick TVs**, or a named set such as **Patio**. Only one of these is active. Choosing a preset clears a set. Choosing a set clears the preset. Pick TVs is the one-off number grid.
@@ -220,7 +220,7 @@ You plan either a preset or a TV pick, not both. The header and the line above T
 
 ### Take, and what the summary means
 
-Take builds the plan and shows the summary. Under **PRACTICE**, the summary is headed **PRACTICE summary**. No box changes channel. No TV switches input. The Now list still updates, so you can practice.
+Take builds the plan and shows the summary. Under **PRACTICE**, the summary is headed **PRACTICE summary**. No box changes channel. No TV switches input. The PRACTICE Now list still updates, so you can practice. It is kept apart from the LIVE Now list, so practice Takes never show up once the banner is LIVE.
 
 Read the summary before you dismiss it. One line per box, for example:
 
@@ -234,7 +234,7 @@ When a manager turns Live commit on, the banner turns red (**LIVE – TVs WILL c
 
 **Now** is this iPad’s assignment list, not a power switch. It lists TVs 1 through 35. A TV with a plan shows the program name and the channel. A TV with nothing on this iPad’s plan says **Unassigned** and **Still showing last box until reassigned**. The count at the top is how many of the 35 are assigned here.
 
-Now is kept on this iPad only. Another iPad, or a Matrix tap, does not update it. Practice Takes fill it in even though the wall did not change. Tap **Clear room state** to empty it. A manager will ask every iPad to Clear room state before the bar goes Live.
+Now is kept on this iPad only. Another iPad, or a Matrix tap, does not update it. PRACTICE and LIVE each keep their own Now list. Practice Takes fill in the PRACTICE list even though the wall did not change; under the LIVE banner, Now shows only Live Takes. Tap **Clear room state** to empty both lists. A manager may ask the Live iPad to Clear room state before the bar goes Live.
 
 While **Pick TVs** is open, the number buttons on the right also show the channel under the TV number (the pictures show **612 ACC** on 1, 3, 5, and 7).
 
@@ -261,5 +261,5 @@ While **Pick TVs** is open, the number buttons on the right also show the channe
 | Button says **Confirm** | Leftover TVs will keep showing the retuned program. Confirm, or Dismiss and change the TVs. |
 | Button says **Sending…** | A Live Take is in progress. Wait for the summary. |
 | **All DirecTV boxes are in use** | Pick TVs or a named set, and no free box. The middle column says **Choose a program**. Tap the one to retune. Take becomes **Replace**, then Confirm if leftover TVs keep the retuned program. All 35, 4 Programs, and 9 Programs do not hit this. |
-| Now shows TVs on games that are not on the wall | Now is this iPad’s list, and practice Takes fill it in. Tap **Clear room state**. |
+| Now shows TVs on games that are not on the wall | Now is this iPad’s list. Under PRACTICE, practice Takes fill it in. Tap **Clear room state** (it empties both the PRACTICE and LIVE lists). |
 | **8 sets is the limit** | Delete a set before saving another. Delete only removes the button. |

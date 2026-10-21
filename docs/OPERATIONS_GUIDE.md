@@ -27,7 +27,7 @@ While the bar is in Soft Launch (staff practicing on Sports Routing, wall run fr
 
 - Run the wall from **Matrix** only. Every tap there is real.
 - Use **Sports Routing** for practice. Its banner must read **PRACTICE – TVs will not change**. If it ever shows red **LIVE**, stop and tell the installer.
-- Practice Takes fill in each iPad’s **Now** list even though nothing moved. Before the first Live day, every iPad taps **Clear room state**.
+- Practice Takes fill in each iPad’s PRACTICE **Now** list even though nothing moved. Practice and Live occupancy are separate stores: practice routes never show in Live or make a Live Take pick the wrong box. **Clear room state** wipes both stores.
 - Installer conditions (placeholders left in `inventory.json`, boolean off, host networking for Live) are in [HA_LIVE.md](HA_LIVE.md) section 7b.
 
 These pictures are from the live cloud staging instance (HA 2026.9). Taps run for real — scripts fire and show up in Activity. Hardware is stubbed in staging, so **Now Playing** reads `STAGING - DirecTV not connected` instead of the live program title. On the site HA, those cards show the actual H25 channel.
