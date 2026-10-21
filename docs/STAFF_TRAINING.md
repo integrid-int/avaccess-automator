@@ -1,5 +1,7 @@
 # Sports Routing — staff training
 
+Printable copy, with the pictures: **[STAFF_TRAINING.pdf](STAFF_TRAINING.pdf)** (14 pages). That is the handout. This page is the same guide in text.
+
 Hold the iPad **sideways**. Open the Home Assistant app, sign in, and tap **Sports Routing** in the sidebar.
 
 **Live commit stays off.** The yellow line under the button says *Live commit is off until the room inventory is set up.* Pressing **Take** only plans the change and shows a summary. The TVs do not change until a manager turns Live commit on. That button cannot be turned on yet.
