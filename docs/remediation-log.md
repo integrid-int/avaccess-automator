@@ -277,7 +277,7 @@ After Phase 3 completes, remaining phases (4–8 and any fix loops) use **Grok e
 
 **Still BLOCKED:** PDF rebuild / S0-OFF-FICTION (PyPI SSL EOF); BLOCK-SERVER-LEDGER; a successful Live Take on real hardware; BLOCK-SITE-WALL / RECONNECT / BROADCAST / SUNDAY-CH. The Live-off `return_response` path was later observed on the VM instance (next section). That does not clear a successful Live Take.
 
-**Next:** Phase 4 (Chrome primary flows) against the live instance below. On site before Soft Launch: HA `check_config`, placeholder `inventory.json`, boolean off.
+**Next:** Phase 4 (Chrome primary flows) against the live instance below. On site before Soft Launch: placeholder `inventory.json`, boolean off, and `check_config` again on a host that has the official frontend package.
 
 ## Live HA instance for remaining tests
 
@@ -300,3 +300,16 @@ The official frontend wheel is not on this VM (release assets blocked). The page
 Package `avaccess_matrix` did not merge (`template:` is a list; HA expects a dict). Matrix scripts and the three `input_select` helpers are registered (50 entities total). `default_config` and several built-ins failed on missing wheels. Sports Routing does not need them.
 
 Do not send Live UDP from this process. There is no wall and no H25. Shell commands are the repo scripts through the `/workspace` bind. Inventory placeholders stay, so Live stays gated.
+
+The first boot staged the YAML `http:` block as a pending trial. Home Assistant reverted it after five minutes and exited 100. Nothing on this VM relaunches that exit, so the port went down. The stored pending config is now `not_promoted`, the restart uses the stable HTTP config, and the launcher loops on exit 100.
+
+## Phase 3 follow-up — `check_config`
+
+Phase 3 left `check_config` as N/A. It now runs under the same Python 3.14.2 root (`colorlog==6.10.1` vendored so the script can start; `--skip-pip` is not applied inside the script).
+
+| Config | Exit | Result |
+|--------|------|--------|
+| `homeassistant/config` (shipped) | 0 | Successful config (partial). The only warnings are `frontend` and `panel_custom`: `home-assistant-frontend==20260930.4` cannot be installed here (no `uv`, release assets blocked). No failed config. |
+| `homeassistant/staging/config` (this VM) | 0 | Same frontend warning, plus `default_config` missing stream wheels, plus package `avaccess_matrix`: `template` cannot be merged because it is a list. Sports Routing packages are not in that warning. |
+
+Soft Launch still wants `check_config` on the site host, where the frontend package exists. The shipped YAML has no fatal errors.

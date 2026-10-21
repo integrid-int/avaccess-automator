@@ -170,12 +170,12 @@ Code-side gates all PASS (interlock, b64 safety, UDP re-enrich, SHEF status + ve
 |------|--------|-----------|--------|
 | PDF rebuild / S0-OFF-FICTION | BLOCKED | `pip download reportlab` → SSL EOF to pypi.org; no apt package. `STAFF_QUICK_START.pdf` / `STAFF_FULL_GUIDE.pdf` still say "turn off" / "DRY-RUN". Rebuild: `pip install -r requirements-docs.txt && python3 scripts/build_staff_pdfs.py`. | Handing out PDFs. Soft Launch OK using `STAFF_TRAINING.md`. |
 | BLOCK-SERVER-LEDGER | BLOCKED | Occupancy is per-iPad `localStorage`. Design work, not a small fix. | Multi-iPad Live |
-| Real HA `returnResponse` | BLOCKED | No HA here; only fakes. HA source confirms `shell_command` returns `stdout`/`stderr`/`returncode`. | Live |
+| Real HA `returnResponse` | Gate path observed after this report | Live-off call returned `returncode` 3 through `return_response`. A Live Take that reaches the panel is still unproven. | Live |
 | BLOCK-SITE-WALL | BLOCKED | No wall | Live |
 | BLOCK-SITE-RECONNECT | BLOCKED | `msg_b_reconnect` eviction unknown | Live |
 | BLOCK-SITE-BROADCAST | BLOCKED | Needs AV-LAN NIC / host network | Live |
 | BLOCK-SITE-SUNDAY-CH | BLOCKED | 9554–9563 vs 705–713 | Live (Sunday) |
-| HA `check_config` | N/A here | No Docker / HA package | Run at install |
+| HA `check_config` | Partial, after this report | Shipped config exits 0. Only warning is the missing frontend wheel. See the follow-up below. | Re-run on the site host |
 
 ---
 
@@ -207,3 +207,14 @@ gh api repos/home-assistant/core/contents/homeassistant/components/shell_command
 gh api graphql -f query='{ securityVulnerabilities(ecosystem: PIP, package: "…") … }'
 python3 -m pip download --no-deps reportlab                       # SSL EOF (BLOCKED)
 ```
+
+## Follow-up after Home Assistant was running
+
+`python -m homeassistant --script check_config` was not runnable when this report was written. With Core 2026.10.2 available it was run on the shipped directory:
+
+| Config | Exit | Result |
+|--------|------|--------|
+| `homeassistant/config` | 0 | Successful config (partial). Warnings are only `frontend` and `panel_custom` missing `home-assistant-frontend==20260930.4` (no `uv`, GitHub release assets blocked). No failed config. |
+| `homeassistant/staging/config` | 0 | Those frontend warnings, `default_config` missing stream wheels, and package `avaccess_matrix` (`template` is a list, so it cannot merge). |
+
+The Live-off `return_response` call against the running instance returned `returncode` 3 and `Live Commit is off - refusing Live Send.` That covers the gate. It does not cover a Live Take whose report reaches the panel, and it does not clear BLOCK-SITE-\*. Run `check_config` again on the site host, where the frontend package is installed.
