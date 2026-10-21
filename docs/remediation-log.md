@@ -190,3 +190,24 @@ _(per-WP commit entries follow)_
 - `_sendDestination`'s non-planner branch (`applyAssignment` with no service call) has no test; it needs `destMode: "presets"` with no `groupMode`, which leaves Take disabled in the UI.
 - `live-commit-sync.test.js` still has its own DOM stub; it could move to `panel-harness.js`.
 - The converted Python modules were not run under pytest here (no pytest); pytest collects `unittest.TestCase` natively.
+
+---
+
+## Phase 2 — Re-verify, iteration 1 of 5
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| HEAD verified | `94cbb665f4b15aa26696faae4e71223725c2ecf1` (`94cbb66`) |
+| Report | `docs/phase2-reverify.md` |
+| Verify | `node --test tests/js/*.test.js` → 100 pass / 0 fail. `python3 -m unittest discover -s tests -p 'test_*.py' -q` → 151 OK. Mutation spot-check 4/4 caught. |
+
+**Counts (22 findings-table rows):** PASS **19** · FAIL **1** · BLOCKED **2** · WON'T FIX **0**
+
+- **FAIL — S0-OCCUPANCY-IPAD:** practice Takes still persist occupancy to the Live `localStorage` key, and there is no clear-on-load or clear-on-Live-arm. Manual **Clear room state** is the only mitigation. Proposed fixes F-1a (separate practice store, preferred) and F-1b (tag and drop practice routes when Live arms) are in the report. Single-iPad doc, Clear room state control, and ledger-BLOCKED note are done. The plan's WP-A step 4 prefers keeping practice occupancy, so the coordinator may instead record WON'T FIX with that reason.
+- **BLOCKED — S0-OFF-FICTION:** UI and Markdown pass. `STAFF_QUICK_START.pdf` / `STAFF_FULL_GUIDE.pdf` still say "turn off" (`reportlab` still not installable). Recommended F-2: until the PDFs are rebuilt, mark them pending next to every link and point staff to `STAFF_TRAINING.md`.
+- **BLOCKED — BLOCK-SITE-\*** (wall, reconnect, broadcast, Sunday channels).
+- Still BLOCKED outside the table: BLOCK-SERVER-LEDGER, PDF rebuild, real HA `returnResponse` integration (offline fakes only).
+- Minor copy observations, not findings: F-3 (Live commit hint still says "Dry run — Send"), F-4 (unreachable `_renderScreen` path keeps "Dry-run Send").
+
+**Next:** coordinator spawns a fix agent for S0-OCCUPANCY-IPAD (or records WON'T FIX), then Phase 2 iteration 2.
