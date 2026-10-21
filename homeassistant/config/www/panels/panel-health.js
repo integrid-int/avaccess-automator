@@ -43,6 +43,7 @@ const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
 const LIVE_BLOCKED_REASON = "Live commit is off until the room inventory is set up.";
 const INVENTORY_JSON_URL = "/local/avaccess/inventory.json";
 const GUIDE_EPG_JSON_URL = "/local/avaccess/guide_epg.json";
+const GUIDE_CHANNELS_JSON_URL = "/local/avaccess/guide_channels.json";
 // Sports pages use the DirecTV sports-info slate only. Guide listings are TV Passport.
 const SPORTS_JSON_URL = "/local/avaccess/sports_schedule.json";
 const SPORTS_SOURCE = "directv-sports-info";
@@ -76,6 +77,7 @@ class PanelHealth extends HTMLElement {
     this._liveCommitSynced = false;
     this.guideEpg = null;
     this.guideEpgAvailable = false;
+    this.guideChannels = null;
     this.sportsSchedule = null;
     this._guideEpgTimer = null;
     this._guideSearchTimer = null;
@@ -112,6 +114,7 @@ class PanelHealth extends HTMLElement {
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
+    this._loadGuideChannels();
     this._loadGuideEpg();
     this._loadSportsSchedule();
     if (!this._guideEpgTimer) {
@@ -204,8 +207,23 @@ class PanelHealth extends HTMLElement {
     if (this.isConnected) this.render();
   }
 
+  async _loadGuideChannels() {
+    try {
+      const response = await fetch(GUIDE_CHANNELS_JSON_URL, { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        if (payload.source === "tvpassport:5960D" && Array.isArray(payload.channels) && payload.channels.length) {
+          this.guideChannels = payload.channels;
+        }
+      }
+    } catch {
+      this.guideChannels = this.guideChannels || null;
+    }
+    if (this.isConnected) this.render();
+  }
+
   _lineup() {
-    return GUIDE_CHANNELS;
+    return this.guideChannels?.length ? this.guideChannels : GUIDE_CHANNELS;
   }
 
   async _loadSportsSchedule() {

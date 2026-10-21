@@ -1,7 +1,8 @@
-"""DirecTV Greensboro guide lineup from TV Passport, with bar exclusions.
+"""DirecTV Greensboro guide lineup from TV Passport.
 
 TV Passport lineup 5960D is "DirecTV - Greensboro - Winston-Salem, NC".
-Channel numbers in that grid are the majors the guide tunes.
+Channel numbers in that grid are the majors the guide tunes. Sports pages
+do not use this file.
 """
 
 from __future__ import annotations
@@ -25,45 +26,13 @@ LINEUP_SET_URL = (
 )
 USER_AGENT = "Mozilla/5.0 (compatible; avaccess-guide/1.0)"
 
-# Premium movie suites. Basic movie channels (AMC, TCM, FXM, Sundance TV) stay.
-_PREMIUM_MOVIE = (
-    "hbo",
-    "cinemax",
-    "showtime",
-    "starz",
-    "epix",
-    "mgm+",
-    "mgm hd",
-    "screenpix",
-    "movieplex",
-    "flix",
-)
-_ADULT = (
-    "playboy",
-    "hustler",
-    "penthouse",
-    "vivid",
-    "xtsy",
-    "xxx",
-)
+# Audio services, not music-video networks (MTV, CMT, VH1 stay).
 _MUSIC_AUDIO = (
     "music choice",
     "sirius",
     "siriusxm",
     "sonic tap",
     "dmx",
-)
-_SHOPPING = (
-    "qvc",
-    "hsn",
-    "shophq",
-    "shop lc",
-    "shop hq",
-    "jewelry",
-    "gem shopping",
-    "celebrity shopping",
-    "sale network",
-    "home shopping",
 )
 _PPV = ("ppv", "pay-per-view", "pay per view", "hot choice")
 
@@ -117,35 +86,25 @@ def parse_lineup_html(html: str) -> list[dict[str, str]]:
 
 
 def exclude_reason(name: str, callsign: str = "") -> str | None:
-    """Why a channel stays out of the bar guide, or None to keep it.
+    """Why a channel stays out of the guide, or None to keep it.
 
-    Dropped: music audio, pay-per-view, adult, premium movies, shopping,
-    on-demand menus, and the DirecTV promo barker. Music-video networks
-    (MTV, CMT, VH1) stay.
+    Dropped: music audio, pay-per-view, promo barkers, and channels that are
+    not in the package (on-demand storefronts). Music-video networks
+    (MTV, CMT, VH1), premiums, shopping, and news stay.
     """
     blob = f"{name} {callsign}".lower()
     plain = _TRAILING_NUMBER.sub("", name).strip().lower()
-    if "on demand" in blob or "ondemand" in blob or "on dmenad" in blob:
-        return "on-demand"
-    if "audience network" in blob:
+    if "audience network" in blob or re.search(r"\bbarker\b", blob):
         return "barker"
-    if "adult swim" not in blob and (
-        any(token in blob for token in _ADULT) or re.search(r"\badult\b", blob)
-    ):
-        return "adult"
     if any(token in blob for token in _MUSIC_AUDIO):
         return "music"
     if any(token in blob for token in _PPV):
         return "ppv"
-    if any(token in blob for token in _SHOPPING):
-        return "shopping"
-    if plain in {"tmc", "tmc xtra", "flix"} or plain.startswith("tmc "):
-        return "premium-movie"
-    if any(token in blob for token in _PREMIUM_MOVIE):
-        return "premium-movie"
     # 100s "DirecTV Sports 121" slots are event / PPV, not a network.
     if re.fullmatch(r"directv sports 1\d\d", plain):
         return "ppv"
+    if "on demand" in blob or "ondemand" in blob or "on dmenad" in blob:
+        return "not-in-package"
     return None
 
 
@@ -220,13 +179,13 @@ def guide_channels_from_rows(rows: list[dict[str, str]]) -> tuple[list[dict[str,
             excluded[reason] = excluded.get(reason, 0) + 1
             continue
         station = str(row.get("station") or "").strip()
-        # 9xxx grids repeat a station that already has its real major (RedZone).
+        # 9xxx grids repeat a station that already has its package major (RedZone).
         try:
             major = int(number.split("-", 1)[0])
         except ValueError:
             major = 0
         if station and station in seen_stations and major >= 9000:
-            excluded["duplicate"] = excluded.get("duplicate", 0) + 1
+            excluded["not-in-package"] = excluded.get("not-in-package", 0) + 1
             continue
         name = _display_name(title, callsign)
         kept.append(

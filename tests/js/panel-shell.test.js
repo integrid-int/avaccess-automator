@@ -180,6 +180,8 @@ test("panel shell exposes live commit toggle and shell_command execute path", ()
 test("panel shell loads guide EPG feed and renders now/next columns", () => {
   const src = readPanelSource();
   assert.match(src, /guide_epg\.json/);
+  assert.match(src, /guide_channels\.json/);
+  assert.match(src, /tvpassport:5960D/);
   assert.match(src, /mergeGuideWithEpg/);
   assert.match(src, /guide unavailable|Guide listings unavailable/i);
   assert.match(src, /nowTitle|Now/);

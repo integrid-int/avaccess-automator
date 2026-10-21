@@ -40,16 +40,18 @@ class Listing:
 
 # DirecTV majors for ZIP 27403. site_id is the TV Passport station path.
 # xmltv_id is what channel_number_map must list. HD pages when the site has them.
+# Majors and station paths from the DirecTV Greensboro TV Passport lineup.
+# Now/next is filled for these. The guide list itself is every package channel.
 LINEUP: tuple[GuideChannel, ...] = (
-    GuideChannel("4", "WGHP FOX", "fox-wghp-greensboro-nc-hd/4717", "WGHP81.us@HD"),
-    GuideChannel("2", "WFMY CBS", "cbs-wfmy-greensboro-nc-hd/4718", "WFMYTV21.us@HD"),
-    GuideChannel("12", "WXII NBC", "nbc-wxii-winstonsalem-nc-hd/4721", "WXIITV201.us@HD"),
-    GuideChannel("45", "WXLV ABC", "abc-wxlv-winstonsalem-nc-hd/4719", "WXLVTV481.us@HD"),
-    GuideChannel("206", "ESPN", "espn-hd/3036", "ESPN.us@HD"),
-    GuideChannel("207", "ESPN2", "espn2-hd/3379", "ESPN2.us@HD"),
-    GuideChannel("400", "FS1", "fox-sports-1/668", "FoxSports1.us"),
-    GuideChannel("245", "TNT", "tnt-hd-east-feed/3037", "TNT.us@HD"),
-    GuideChannel("705", "NFL Sunday Ticket 1", "nfl-sunday-ticket-1/2747", "NFLSundayTicket1.us@SD"),
+    GuideChannel("8", "WGHP FOX", "fox-wghp-greensboro-nc/1412", "WGHP81.us@HD"),
+    GuideChannel("2", "WFMY CBS", "cbs-wfmy-greensboro-nc/1411", "WFMYTV21.us@HD"),
+    GuideChannel("12", "WXII NBC", "nbc-wxii-winstonsalem-nc/1413", "WXIITV201.us@HD"),
+    GuideChannel("45", "WXLV ABC", "abc-wxlv-winstonsalem-nc/1410", "WXLVTV481.us@HD"),
+    GuideChannel("206", "ESPN", "espn/594", "ESPN.us@HD"),
+    GuideChannel("209", "ESPN2", "espn2/650", "ESPN2.us@HD"),
+    GuideChannel("219", "FS1", "fox-sports-1/668", "FoxSports1.us"),
+    GuideChannel("245", "TNT", "tnt-eastern-feed/347", "TNT.us@HD"),
+    GuideChannel("9554", "NFL Sunday Ticket 705", "directv-sports-705/16852", "NFLSundayTicket1.us@SD"),
 )
 
 _MOVIE_TITLES = {"movie", "cinéma", "cinema"}
