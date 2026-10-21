@@ -346,6 +346,10 @@ class RoutingPackageScriptTests(unittest.TestCase):
     def test_script_is_single_mode(self):
         self.assertEqual(self.script["mode"], "single")
 
+    def test_script_keeps_a_night_of_live_take_traces(self):
+        # HA keeps 5 traces per script by default; each trace holds the executor report.
+        self.assertGreaterEqual(self.script["trace"]["stored_traces"], 50)
+
 
 if __name__ == "__main__":
     unittest.main()

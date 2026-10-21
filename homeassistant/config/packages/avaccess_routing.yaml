@@ -46,6 +46,9 @@ script:
     icon: mdi:broadcast
     mode: single
     max_exceeded: warning
+    # Each trace keeps the executor's JSON report: the Live Take audit trail.
+    trace:
+      stored_traces: 50
     fields:
       plan_b64:
         name: Plan (base64 JSON)
