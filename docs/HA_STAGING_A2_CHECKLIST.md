@@ -11,13 +11,13 @@ Plan: `docs/DIRECTV_H25_PATCH_AND_TEST_PLAN.md` section A2.
 | Item | Value |
 |------|--------|
 | Method | Home Assistant REST API (not the HTML wizard) |
-| User created | `POST /api/onboarding/users` → `{client_id:"http://127.0.0.1:8123/", name:"Operator", username:"operator", password:"avaccess-staging", language:"en"}` → `auth_code` |
+| User created | `POST /api/onboarding/users` → `{client_id:"http://127.0.0.1:8123/", name:"Operator", username:"operator", password:"<redacted>", language:"en"}` → `auth_code` |
 | Token exchange | `POST /auth/token` `grant_type=authorization_code` `client_id=http://127.0.0.1:8123/` |
 | Core config | `POST /api/onboarding/core_config` with Bearer: `location_name=AVAccess Staging`, `language=en`, `country=US`, `timezone=America/New_York`, `unit_system=us_customary`, `currency=USD` → 200 |
 | Analytics | `POST /api/onboarding/analytics` `{}` (skip/disable) → 200 |
 | Integration | `POST /api/onboarding/integration` `{"client_id":"http://127.0.0.1:8123/","redirect_uri":"http://127.0.0.1:8123/?auth_callback=1"}` → 200 + `auth_code`. Empty body failed (`client_id` required); missing `redirect_uri` also 400. |
 | After | `GET /` **200** (no longer 302 `/onboarding.html`). `GET /api/onboarding` is **404** once complete. |
-| Owner | **username `operator` / password `avaccess-staging`** |
+| Owner | **username `operator`**. Password redacted: it was a fixed default that is no longer built in. Rotate it on any instance onboarded with it. |
 | Long-lived token | Created via websocket `auth/long_lived_access_token` client_name `avaccess-a2-checklist`, lifespan 365 days. Stored only in gitignored `homeassistant/staging/config/.a2_auth.json` (not committed). |
 
 `GET /api/config`: `location_name=AVAccess Staging`, `currency=USD`, US customary units, `version=2026.9.3`, `state=RUNNING`. `time_zone` still reported **UTC** after the core_config POST on this boot (staging YAML now sets `time_zone: America/New_York` for the next prepare/restart).
@@ -139,7 +139,7 @@ Sidebar shows **AVAccess Matrix**. No red entity-not-found.
 ## Remaining iPad Safari caveats
 
 - This pass used **Google Chrome** at 768×1024, not iPad Safari or HA Companion.
-- Publish / **port-forward 8123** to a host the iPad can reach (`http://<reachable-host>:8123`). This VM bind is `0.0.0.0:8123`; login `operator` / `avaccess-staging`.
+- Publish / **port-forward 8123** to a host the iPad can reach (`http://<reachable-host>:8123`). This VM bind is `0.0.0.0:8123`; log in as `operator` with the owner password. Rotate the old fixed staging password before exposing the port.
 - Safari-only issues not checked: safe-area / notch, 100vh, hover vs tap, Companion app sidebar, cached Lovelace after YAML regen.
 - Dismiss the Radio Browser “Starting radio_browser…” toast if it covers Route Actions.
 - Do not point this instance at live H25 / AVAccess hardware until a physical iPad walk is done if that gate is still required.

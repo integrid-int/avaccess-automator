@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Complete Home Assistant onboarding for the AVAccess staging instance.
 
-Default staging owner:
-  username: operator
-  password: avaccess-staging
+Owner username defaults to "operator". The password comes from --password,
+else the AVACCESS_HA_OWNER_PASSWORD environment variable, else a random one
+that is printed once when onboarding succeeds. There is no built-in default.
 
 Does not start or stop Docker. POSTs to the HA onboarding API on
 http://127.0.0.1:8123 (override with --base-url).
@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import secrets
 import sys
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -26,15 +28,20 @@ from urllib.request import Request, urlopen
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8123"
 DEFAULT_USERNAME = "operator"
-DEFAULT_PASSWORD = "avaccess-staging"
 DEFAULT_NAME = "operator"
+PASSWORD_ENV = "AVACCESS_HA_OWNER_PASSWORD"
+REDACTED = "<redacted>"
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="HA origin (no trailing path).")
     parser.add_argument("--username", default=DEFAULT_USERNAME)
-    parser.add_argument("--password", default=DEFAULT_PASSWORD)
+    parser.add_argument(
+        "--password",
+        default=None,
+        help=f"Owner password. Defaults to ${PASSWORD_ENV}, else a generated one printed once.",
+    )
     parser.add_argument("--name", default=DEFAULT_NAME, help="Display name for the owner account.")
     parser.add_argument("--language", default="en")
     parser.add_argument(
@@ -48,6 +55,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Print planned onboarding POSTs; do not contact Home Assistant.",
     )
     return parser.parse_args(argv)
+
+
+def resolve_password(args: argparse.Namespace) -> bool:
+    """Fill args.password from the flag, the environment, or a random value.
+
+    Returns True when the password was generated here (so it must be shown once).
+    """
+    if args.password:
+        return False
+    from_env = os.environ.get(PASSWORD_ENV, "").strip()
+    if from_env:
+        args.password = from_env
+        return False
+    args.password = secrets.token_urlsafe(18)
+    return True
 
 
 def build_onboarding_plan(args: argparse.Namespace) -> list[dict[str, Any]]:
@@ -161,6 +183,7 @@ def run_onboarding(args: argparse.Namespace) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv if argv is not None else sys.argv[1:])
+    generated = resolve_password(args)
     plan = build_onboarding_plan(args)
     if args.dry_run:
         print("dry-run: planned Home Assistant onboarding POSTs (not sent)")
@@ -169,9 +192,14 @@ def main(argv: list[str] | None = None) -> None:
         for step in plan:
             print(f"{step['method']} {step['path']}")
             if step["body"]:
-                print(json.dumps(step["body"], indent=2, sort_keys=True))
+                body = dict(step["body"])
+                if "password" in body:
+                    body["password"] = REDACTED
+                print(json.dumps(body, indent=2, sort_keys=True))
         return
     run_onboarding(args)
+    if generated:
+        print(f"Generated owner password (shown once; store it now): {args.password}")
 
 
 if __name__ == "__main__":

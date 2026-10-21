@@ -67,7 +67,7 @@ docker compose -f homeassistant/staging/docker-compose.yml up -d
 ```
 
 Open `http://<cloud-host>:8123`:
-1. Complete HA onboarding once (create owner account; staging default is `operator` / `avaccess-staging`).
+1. Complete HA onboarding once (owner `operator`; `python3 scripts/complete_ha_onboarding.py` prints a generated password once, or set `AVACCESS_HA_OWNER_PASSWORD`).
 2. Confirm sidebar shows **AVAccess Matrix**.
 3. Walk the UI checklist below on **desktop** and **iPad Safari / HA Companion**.
 

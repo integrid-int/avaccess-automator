@@ -175,7 +175,7 @@ Tap that **Program** letter → tap the correct channel. Other TVs on that progr
 | Dashboard | Same buttons and tabs | Same |
 | Channel / preset / route taps | Scripts run; shell commands are `echo STAGING …` | UDP to the AVAccess switch + HTTP SHEF to each H25 |
 | Now Playing | Dummy `sensor.directv_h25_*` | Official DirecTV `media_player` titles |
-| Login (staging only) | `operator` / `avaccess-staging` | Your site owner account |
+| Login (staging only) | `operator` + the password set at onboarding | Your site owner account |
 
 Do not point this staging container at live H25s or the AV switch. Generate the package **without** `--ui-staging` on the HA host that can reach the AV LAN.
 

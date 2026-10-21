@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import io
+import os
 import subprocess
 import sys
 import tempfile
@@ -165,15 +166,23 @@ class MigrateLegacyTemplateSensorsTests(unittest.TestCase):
 
 
 class CompleteHaOnboardingTests(unittest.TestCase):
+    def setUp(self) -> None:
+        env = patch.dict(os.environ)
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop("AVACCESS_HA_OWNER_PASSWORD", None)
+
     def test_argument_defaults_and_dry_run(self) -> None:
-        from scripts.complete_ha_onboarding import build_onboarding_plan, parse_args
+        from scripts.complete_ha_onboarding import build_onboarding_plan, parse_args, resolve_password
 
         args = parse_args(["--dry-run"])
         self.assertEqual(args.username, "operator")
-        self.assertEqual(args.password, "avaccess-staging")
+        self.assertIsNone(args.password)
         self.assertEqual(args.base_url, "http://127.0.0.1:8123")
         self.assertTrue(args.dry_run)
 
+        args.password = "from-flag"
+        self.assertFalse(resolve_password(args))
         plan = build_onboarding_plan(args)
         paths = [step["path"] for step in plan]
         self.assertEqual(
@@ -187,7 +196,7 @@ class CompleteHaOnboardingTests(unittest.TestCase):
         )
         user_body = plan[0]["body"]
         self.assertEqual(user_body["username"], "operator")
-        self.assertEqual(user_body["password"], "avaccess-staging")
+        self.assertEqual(user_body["password"], "from-flag")
         self.assertEqual(user_body["client_id"], "http://127.0.0.1:8123/")
         core_body = plan[1]["body"]
         self.assertEqual(core_body["timezone"], "America/New_York")
@@ -205,6 +214,51 @@ class CompleteHaOnboardingTests(unittest.TestCase):
         self.assertIn("/api/onboarding/users", output)
         self.assertIn("operator", output)
         self.assertIn("dry-run", output.lower())
+        self.assertIn('"password": "<redacted>"', output)
+
+    def test_no_password_is_built_in(self) -> None:
+        import scripts.complete_ha_onboarding as onboarding
+
+        source = Path(onboarding.__file__).read_text()
+        self.assertNotIn("avaccess-staging", source)
+        self.assertFalse(hasattr(onboarding, "DEFAULT_PASSWORD"))
+
+    def test_password_from_environment_is_used_and_never_printed(self) -> None:
+        from scripts.complete_ha_onboarding import main as onboarding_main
+
+        os.environ["AVACCESS_HA_OWNER_PASSWORD"] = "env-secret-value"
+        buf = io.StringIO()
+        with patch("scripts.complete_ha_onboarding.run_onboarding") as run, redirect_stdout(buf):
+            onboarding_main(["--base-url", "http://127.0.0.1:8123"])
+        self.assertEqual(run.call_args.args[0].password, "env-secret-value")
+        self.assertNotIn("env-secret-value", buf.getvalue())
+
+    def test_generated_password_is_random_and_shown_once_after_success(self) -> None:
+        from scripts.complete_ha_onboarding import main as onboarding_main
+
+        seen = []
+        outputs = []
+        for _ in range(2):
+            buf = io.StringIO()
+            with patch("scripts.complete_ha_onboarding.run_onboarding") as run, redirect_stdout(buf):
+                onboarding_main([])
+            seen.append(run.call_args.args[0].password)
+            outputs.append(buf.getvalue())
+        self.assertNotEqual(seen[0], seen[1])
+        self.assertGreaterEqual(len(seen[0]), 20)
+        self.assertEqual(outputs[0].count(seen[0]), 1)
+        self.assertIn("shown once", outputs[0])
+
+    def test_failed_onboarding_does_not_print_the_generated_password(self) -> None:
+        from scripts.complete_ha_onboarding import main as onboarding_main
+
+        buf = io.StringIO()
+        with patch(
+            "scripts.complete_ha_onboarding.run_onboarding", side_effect=SystemExit("HTTP 400")
+        ), redirect_stdout(buf):
+            with self.assertRaises(SystemExit):
+                onboarding_main([])
+        self.assertNotIn("password", buf.getvalue().lower())
 
 
 if __name__ == "__main__":

@@ -226,7 +226,8 @@ def main() -> None:
     print("Start with:")
     print(f"  docker compose -f {STAGING / 'docker-compose.yml'} up -d")
     print("Then open http://<host>:8123 , complete onboarding, and use the AVAccess Matrix and Sports Routing sidebar items.")
-    print("Default staging owner: operator / avaccess-staging")
+    print("Onboard the owner (user operator; prints a generated password once,")
+    print("or set AVACCESS_HA_OWNER_PASSWORD first):")
     print("  python3 scripts/complete_ha_onboarding.py")
     print("  python3 scripts/complete_ha_onboarding.py --dry-run")
 

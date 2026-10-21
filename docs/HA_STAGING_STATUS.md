@@ -9,7 +9,7 @@ Checked: 2026-09-18 (cloud agent VM).
 URL (on this VM): http://127.0.0.1:8123  
 Dashboard: http://127.0.0.1:8123/avaccess-matrix/av-control (sidebar **AVAccess Matrix**)
 
-Owner account: **username `operator` / password `avaccess-staging`**.
+Owner account: **username `operator`**. The password is not kept in the repo: `scripts/complete_ha_onboarding.py` takes `--password` or `AVACCESS_HA_OWNER_PASSWORD`, else prints a generated one once. Rotate the old fixed staging password on any instance that still uses it.
 
 A2 pass/fail table, script evidence, logs, and screenshots: [`docs/HA_STAGING_A2_CHECKLIST.md`](HA_STAGING_A2_CHECKLIST.md).
 
@@ -74,7 +74,7 @@ Fixed during the earlier stand-up (previous boots):
 
 ## Next steps
 
-1. Port-forward **8123** if an iPad is not on this host. Open `http://<reachable-host>:8123`, sign in as `operator` / `avaccess-staging`, sidebar **AVAccess Matrix**.
+1. Port-forward **8123** if an iPad is not on this host. Open `http://<reachable-host>:8123`, sign in as `operator` with the owner password, sidebar **AVAccess Matrix**.
 2. Optional physical iPad Safari / HA Companion walk (safe-area, tap, Companion sidebar) — Chrome 768×1024 already passed the A2 layout checks.
 3. Do not point this instance at live AVAccess or H25 boxes until that device pass (if required) is done. Shell commands remain `echo STAGING ...` stubs.
 
