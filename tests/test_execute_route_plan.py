@@ -405,6 +405,191 @@ def test_directv_example_exists():
     assert "H25-01" in text
 
 
+def _live_directv() -> dict:
+    return {
+        "encoder_to_receiver": {"ENC-01": "H25-01", "ENC-02": "H25-02"},
+        "receivers": {
+            "H25-01": {"host": "192.168.10.151"},
+            "H25-02": {"host": "192.168.10.152"},
+        },
+    }
+
+
+def _slot(*, encoder_id="ENC-01", tune=None, tvs=None, index=1, label="A @ B"):
+    return {
+        "index": index,
+        "encoderId": encoder_id,
+        "program": {
+            "id": "g1",
+            "label": label,
+            "channel": "FOX",
+            "channelNumber": (tune or {}).get("channelNumber") if isinstance(tune, dict) else None,
+        },
+        "tvs": tvs or [1],
+        "tune": tune,
+        "udp": {"txHostname": "IPE935-AAA", "rxHostnames": ["IPD935-001"]},
+        "status": "planned",
+    }
+
+
+def test_live_preflight_rejects_empty_tune_without_udp(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw)))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append(("udp", kw)))
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [_slot(tune=None)],
+        "warnings": [],
+    }
+    with pytest.raises(erp.PreflightError) as excinfo:
+        erp.execute_plan(
+            plan,
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=True,
+        )
+    assert any("tune" in e.lower() or "channel" in e.lower() for e in excinfo.value.errors)
+    assert calls == []
+
+
+def test_live_preflight_rejects_blank_tune_channel(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [_slot(tune={"channelNumber": "  "})],
+        "warnings": [],
+    }
+    with pytest.raises(erp.PreflightError):
+        erp.execute_plan(
+            plan,
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=True,
+        )
+    assert calls == []
+
+
+def test_live_mixed_slots_missing_tune_is_preflight_no_udp(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
+    monkeypatch.setattr(
+        erp,
+        "send_udp_reconnect",
+        lambda **kw: calls.append(("udp", kw["tx_hostname"])),
+    )
+    plan = {
+        "mode": "preset_2",
+        "commit": "live",
+        "slots": [
+            _slot(encoder_id="ENC-01", tune={"channelNumber": "206"}, index=1),
+            _slot(encoder_id="ENC-02", tune=None, index=2, tvs=[2], label="Open game"),
+        ],
+        "warnings": [],
+    }
+    with pytest.raises(erp.PreflightError) as excinfo:
+        erp.execute_plan(
+            plan,
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=True,
+        )
+    assert any("ENC-02" in e for e in excinfo.value.errors)
+    assert calls == []
+
+
+def test_live_slot_guard_skips_udp_when_tune_missing_after_preflight(monkeypatch):
+    """Defense in depth: a live slot with empty tune must error without UDP."""
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
+    monkeypatch.setattr(
+        erp,
+        "send_udp_reconnect",
+        lambda **kw: calls.append(("udp", kw["tx_hostname"])),
+    )
+    monkeypatch.setattr(erp, "_missing_tune_errors", lambda plan: [])
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [_slot(tune=None)],
+        "warnings": [],
+    }
+    report = erp.execute_plan(
+        plan,
+        inventory=_valid_live_inventory(),
+        directv=_live_directv(),
+        live=True,
+    )
+    assert report["ok"] is False
+    assert report["slots"][0]["status"] == "error"
+    assert "tune" in report["slots"][0]["error"].lower() or "channel" in report["slots"][0]["error"].lower()
+    assert calls == []
+
+
+def test_cli_live_empty_tune_exit_2(monkeypatch, tmp_path, capsys):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "live",
+        "slots": [_slot(tune=None)],
+        "warnings": [],
+    }
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan), encoding="utf-8")
+    inv_path = tmp_path / "inv.yaml"
+    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+    directv_path = tmp_path / "directv.yaml"
+    directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
+
+    code = erp.main(
+        [
+            "--inventory",
+            str(inv_path),
+            "--directv-config",
+            str(directv_path),
+            "--plan-file",
+            str(plan_path),
+            "--live",
+        ]
+    )
+    assert code == 2
+    assert calls == []
+    report = json.loads(capsys.readouterr().out)
+    assert report["ok"] is False
+    assert any("tune" in e.lower() or "channel" in e.lower() for e in report["errors"])
+
+
+def test_dry_run_empty_tune_does_not_preflight(monkeypatch):
+    calls = []
+    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+    plan = {
+        "mode": "adhoc",
+        "commit": "dry_run",
+        "slots": [_slot(tune=None)],
+        "warnings": [],
+    }
+    report = erp.execute_plan(
+        plan,
+        inventory=_valid_live_inventory(),
+        directv=_live_directv(),
+        live=False,
+    )
+    assert report["ok"] is True
+    assert "shef" not in calls
+    assert calls == ["udp"]
+
+
 def test_itach_example_is_unused_leftover():
     path = ROOT / "config" / "itach.example.yaml"
     assert path.is_file()

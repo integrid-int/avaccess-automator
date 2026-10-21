@@ -55,3 +55,20 @@ _(per-WP commit entries follow)_
 **Not in this WP:** server occupancy ledger (BLOCK-SERVER-LEDGER); Clear room state / free-encoder preference (WP-B); no-channel Live block (WP-C). Panel-health on this branch also contains concurrent WP-B/C wiring already in the working tree.
 
 **Tests:** `tests/js/live-execute.test.js` covers returnResponse arity, exit 1/2/empty, occupancy-after-ok, double-tap lock, and `_sendPlan` source ordering.
+
+---
+
+## WP-C — No-channel & demo guard
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S0-NO-CHANNEL, S1-DEMO-FALLBACK (panel), live executor reject |
+| Commit | _(this commit)_ |
+| Verify | `node --test tests/js` 70/70; `python3 -m unittest tests.test_execute_route_plan_live_tune` 6/6 |
+
+**Changes**
+- Panel: `takeBlockReason` / `programsMissingTuneChannel`; sports fallback + stale banners (in `520bb13`).
+- Executor: live preflight `_missing_tune_errors`; live slot guard skips UDP when tune missing; CLI exit 2.
+- Tests: `tests/test_execute_route_plan_live_tune.py`, JS take-guards.
+

@@ -116,6 +116,32 @@ def _network_settings(inventory: dict) -> tuple[str, int]:
     return broadcast, port
 
 
+def _slot_tune_channel(slot: dict) -> str | None:
+    tune = slot.get("tune") if isinstance(slot, dict) else None
+    if not isinstance(tune, dict):
+        return None
+    channel = tune.get("channelNumber")
+    if channel is None:
+        return None
+    text = str(channel).strip()
+    return text or None
+
+
+def _missing_tune_errors(plan: dict) -> list[str]:
+    errors: list[str] = []
+    for slot in plan.get("slots") or []:
+        if not isinstance(slot, dict):
+            continue
+        if _slot_tune_channel(slot) is not None:
+            continue
+        encoder_id = str(slot.get("encoderId") or "?")
+        program = slot.get("program") if isinstance(slot.get("program"), dict) else {}
+        label = program.get("label")
+        suffix = f" ({label})" if label else ""
+        errors.append(f"{encoder_id}{suffix}: missing tune channel")
+    return errors
+
+
 def _directv_map_errors(directv: dict, plan: dict) -> list[str]:
     """Slots that will SHEF-tune must have a mapped H25 before any UDP send."""
     mapping = directv.get("encoder_to_receiver")
@@ -161,6 +187,7 @@ def execute_plan(
     if live:
         ok, errors = validate_inventory_for_plan(inventory, working)
         errors.extend(_directv_map_errors(directv, working))
+        errors.extend(_missing_tune_errors(working))
         if not ok or errors:
             raise PreflightError(errors)
 
@@ -180,17 +207,16 @@ def execute_plan(
         slot_out = copy.deepcopy(slot)
         encoder_id = str(slot.get("encoderId") or "")
         try:
-            tune = slot.get("tune") or {}
-            channel = None
-            if isinstance(tune, dict):
-                channel = tune.get("channelNumber")
-            if channel is not None and str(channel) != "":
+            channel = _slot_tune_channel(slot)
+            if channel:
                 send_directv_tune(
-                    channel=str(channel),
+                    channel=channel,
                     encoder_id=encoder_id,
                     directv=directv,
                     dry_run=dry_run,
                 )
+            elif live:
+                raise ValueError(f"Slot {encoder_id or '?'} missing tune channel")
 
             udp = slot.get("udp") or {}
             tx = str(udp.get("txHostname") or "")
