@@ -399,24 +399,54 @@ Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_G
 
 ## Updating a box that is already live
 
+Turn **Live commit** off first. Then back up what you are about to overwrite and note the commit you are leaving, so the rollback below has something to restore:
+
 ```bash
 cd /share/avaccess-automator
+BACKUP=/config/avaccess-backup/$(date +%Y%m%d-%H%M)
+mkdir -p "$BACKUP"
+git rev-parse HEAD > "$BACKUP/git-sha.txt"
+cp -a /config/www/panels /config/packages /config/dashboards /config/configuration.yaml "$BACKUP/"
+cp -a /config/avaccess/*.py "$BACKUP/"
+
 git pull
 cp -a homeassistant/config/www/panels/. /config/www/panels/
 cp homeassistant/config/packages/avaccess_routing.yaml /config/packages/
 cp homeassistant/config/packages/avaccess_sports.yaml /config/packages/
 cp homeassistant/config/packages/avaccess_guide.yaml /config/packages/
+cp homeassistant/config/avaccess/run_*.py /config/avaccess/
+cp scripts/apply_preset.py scripts/directv_shef.py scripts/route_targets.py /config/avaccess/
+cp scripts/generate_ha_bundle.py scripts/refresh_ha_weekly.py scripts/sync_weekly_schedule.py /config/avaccess/
 ```
 
-Copy `sports_schedule.json` or `guide_channels.json` only when the HA host is not already refreshing them. Do not copy `inventory.json` or `custom_tv_sets.json` over the live files. If `panel-health.js` changed, bump `module_url` `?v=` in `configuration.yaml`, restart Home Assistant, and force-quit Companion.
+On HA OS the `run_*.py` wrappers and `directv_shef.py` are **copies**, not symlinks, so `git pull` alone leaves them stale. A stale `run_execute_route_plan.py` does not understand `--live-commit`, and a stale `directv_shef.py` has no `tune_and_verify`; either one makes every Live slot fail. Copy them every time. (The Docker host-network compose bind-mounts these files, so a `git pull` there is enough.)
+
+Copy `sports_schedule.json` or `guide_channels.json` only when the HA host is not already refreshing them. Do not copy `inventory.json` or `custom_tv_sets.json` over the live files. If `panel-health.js` changed, bump `module_url` `?v=` in `configuration.yaml`, restart Home Assistant, and force-quit Companion. Run one PRACTICE Take and the section 7 one-TV smoke test before turning Live commit back on.
 
 ---
 
 ## Rollback
 
-- **Tune only:** turn **Live commit** off. Every iPad returns to **PRACTICE** and Take stays a practice plan. Matrix still tunes via SHEF and still routes; it has no practice mode.
-- **Whole UI:** keep the previous `/config/packages/avaccess_matrix.yaml` copy and restore it.
-- iTach IR is **not** on the operator path. `config/itach.example.yaml` and `scripts/send_xumo_ir_itach.py` remain in the repo only as unused leftovers.
+Use the first step that fixes the problem. Each one is safe to do mid-service.
+
+1. **Stop Live Takes (seconds, every iPad):** turn **Live commit** off on any iPad or in Settings → Helpers. Every iPad returns to **PRACTICE** and Take only plans. A Live Take already running finishes its current slots (at most 50 seconds). Restarting Home Assistant also leaves the boolean off (`initial: false`).
+2. **Back to Soft Launch (Live cannot be armed):** copy the repo's placeholder `homeassistant/config/www/avaccess/inventory.json` (still `REPLACE_ME`) over `/config/www/avaccess/inventory.json` and reload the panel. The **Live commit** button is disabled and the banner stays **PRACTICE** even if someone turns the boolean on from Developer Tools. Keep the boolean off too: the script and shell command check only the boolean, not `inventory.json`. Keep your real inventory export somewhere else so you can put it back.
+3. **Roll back the code:** restore the backup taken before the update, then restart Home Assistant and force-quit Companion on every iPad:
+
+   ```bash
+   BACKUP=/config/avaccess-backup/<timestamp>
+   cd /share/avaccess-automator && git checkout "$(cat "$BACKUP/git-sha.txt")"
+   cp -a "$BACKUP/panels/." /config/www/panels/
+   cp -a "$BACKUP/packages/." /config/packages/
+   cp -a "$BACKUP/dashboards/." /config/dashboards/
+   cp "$BACKUP/configuration.yaml" /config/configuration.yaml
+   cp "$BACKUP"/*.py /config/avaccess/
+   ```
+
+   The restored `configuration.yaml` brings back the old `?v=`; Companion still needs a force-quit to drop the newer cached panel. Go back to `main` with `git checkout main` once fixed.
+4. **Matrix:** Matrix has no Live switch and no practice mode, so steps 1–2 do not stop it. To stop Matrix taps, restore the previous `/config/packages/avaccess_matrix.yaml` (and its dashboard YAML) from the backup or regenerate it with `--ui-staging` stubs, then restart Home Assistant. To run the wall without either surface, use VDirector or the AVAccess switch's own control and the DirecTV remotes.
+
+iTach IR is **not** on the operator path. `config/itach.example.yaml` and `scripts/send_xumo_ir_itach.py` remain in the repo only as unused leftovers.
 
 ---
 
