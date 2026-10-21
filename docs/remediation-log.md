@@ -313,3 +313,17 @@ Phase 3 left `check_config` as N/A. It now runs under the same Python 3.14.2 roo
 | `homeassistant/staging/config` (this VM) | 0 | Same frontend warning, plus `default_config` missing stream wheels, plus package `avaccess_matrix`: `template` cannot be merged because it is a list. Sports Routing packages are not in that warning. |
 
 Soft Launch still wants `check_config` on the site host, where the frontend package exists. The shipped YAML has no fatal errors.
+
+## Phase 4 — API iteration 1
+
+Live Home Assistant, boolean left **off**. Report: `/opt/cursor/artifacts/phase4-api.md`.
+
+| Check | Result |
+|-------|--------|
+| Config RUNNING 2026.10.2 | PASS |
+| Live-off REST and websocket `return_response` | PASS, returncode 3, refusal stdout |
+| Panel JS `?v=34` and `panel-data.js?v=21` | PASS. `?v=33` is the same bytes; `/local/` ignores the query |
+| Boolean on, empty plan | returncode 2, empty stdout, no `ok: true`. Boolean turned back off |
+| Matrix template sensors | 9 `sensor.directv_h25_*` missing. Scripts and helpers from that package loaded |
+
+No product bug. With Live commit on, `shell_command` inherited cwd `/` (this launcher, not Docker `WORKDIR /config`) and Python looked for `//avaccess/run_execute_route_plan.py`. The executor never started. The launcher now `cd`s to the staging config dir before the next start. This process was left running so the Chrome pass is not interrupted. Chrome iteration 1 is still in progress.
