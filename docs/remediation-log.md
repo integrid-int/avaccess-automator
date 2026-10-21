@@ -28,5 +28,6 @@
 |------|-------|
 | 2026-10-21 | Branch renamed `remediation/2026-10-21` → `cursor/remediation-2026-10-21-af45` (PR tool prefix). Draft PR #11. |
 | 2026-10-21 | WP-A/B/C delegated to Grok high agents (Opus/GPT usage limited). Agents told to push to new branch name on completion. |
+| 2026-10-21 | Usage limits restored. Will re-verify/finish WP-A/B/C with Opus when Grok agents complete; subsequent WPs use Opus/GPT high. Local WIP present (`live-execute.js`, planner prefer-free, Clear room state); JS tests currently 42 pass / 5 fail (incomplete exports). |
 
 _(per-WP commit entries follow)_
