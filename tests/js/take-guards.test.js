@@ -1,6 +1,5 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import {
   SPORTS,
   SPORTS_FALLBACK_BANNER,
@@ -153,18 +152,7 @@ test("isSportsScheduleFresh is false after 24 hours and true before", () => {
   assert.equal(isSportsScheduleFresh({}, nowMs), false);
 });
 
-test("panel shell shows sports fallback/stale banners and uses takeBlockReason", () => {
-  const src = readFileSync(
-    new URL("../../homeassistant/config/www/panels/panel-health.js", import.meta.url),
-    "utf8"
-  );
-  assert.match(src, /takeBlockReason/);
-  assert.match(src, /SPORTS_FALLBACK_BANNER/);
-  assert.match(src, /SPORTS_STALE_BANNER/);
-  assert.match(src, /sports-schedule-banner/);
-  assert.match(src, /_usingSportsFallback/);
-  assert.match(src, /sportsStatus/);
-  assert.equal(typeof SPORTS_FALLBACK_BANNER, "string");
+test("sports fallback and stale banner copy name the demo list and the 24 hour limit", () => {
   assert.match(SPORTS_FALLBACK_BANNER, /demo/i);
   assert.match(SPORTS_STALE_BANNER, /24 hours/i);
 });

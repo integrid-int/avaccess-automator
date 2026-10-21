@@ -1625,7 +1625,7 @@ class PanelHealth extends HTMLElement {
       : "";
     const leftoverWarning = leftoverCount
       ? `<p class="plan-warning">${escapeHtml(leftoverTvsKeepShowingCopy(plan.replaced))}${
-          this._state.reuseConfirmKey === reuseConfirmKey(plan) ? " Tap Confirm to continue." : ""
+          this._state.reuseConfirmKey === reuseConfirmKey(plan) ? ". Tap Confirm to continue." : ""
         }</p>`
       : "";
     return `

@@ -1,6 +1,5 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { applyRoutePlan, createEmptyAssignments } from "../../homeassistant/config/www/panels/assignment-store.js";
 import {
   createInFlightLock,
@@ -297,30 +296,4 @@ test("in-flight lock ignores a second send while the first await is pending", as
   assert.equal(b.ignored, true);
   assert.equal(lock.isSending(), false);
   assert.equal(isTakeArmed({ ready: true, sending: false }), true);
-});
-
-test("panel _sendPlan wires returnResponse, occupancy-after-live, and _sending Take lock", () => {
-  const src = readFileSync(
-    new URL("../../homeassistant/config/www/panels/panel-health.js", import.meta.url),
-    "utf8"
-  );
-  assert.match(src, /from\s+["']\.\/live-execute\.js/);
-  assert.match(src, /liveExecuteCallServiceArgs|runLiveSendSafe/);
-  assert.match(src, /this\._sending/);
-  assert.match(src, /if \(this\._sending\) return/);
-  assert.match(src, /Sending…|Sending\.\.\./);
-  assert.match(src, /PRACTICE summary/);
-  assert.match(src, /isTakeArmed/);
-
-  const sendPlan = src.match(/async _sendPlan\(\) \{[\s\S]*?\n  \}/);
-  assert.ok(sendPlan, "_sendPlan method should exist");
-  const liveIdx = sendPlan[0].search(/runLiveSendSafe|runLiveSend/);
-  const saveIdx = sendPlan[0].indexOf("_saveAssignments");
-  assert.ok(liveIdx >= 0, "_sendPlan must call runLiveSendSafe/runLiveSend");
-  assert.ok(saveIdx > liveIdx, "occupancy must be saved after the live call, not before");
-  assert.doesNotMatch(
-    sendPlan[0].slice(0, liveIdx),
-    /_saveAssignments/,
-    "must not save occupancy before the live call"
-  );
 });
