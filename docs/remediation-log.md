@@ -24,4 +24,9 @@
 
 ## Phase 1 — Execution
 
-_(entries appended per work package)_
+| When | Event |
+|------|-------|
+| 2026-10-21 | Branch renamed `remediation/2026-10-21` → `cursor/remediation-2026-10-21-af45` (PR tool prefix). Draft PR #11. |
+| 2026-10-21 | WP-A/B/C delegated to Grok high agents (Opus/GPT usage limited). Agents told to push to new branch name on completion. |
+
+_(per-WP commit entries follow)_
