@@ -244,3 +244,8 @@ _(per-WP commit entries follow)_
 - Still BLOCKED outside the table: BLOCK-SERVER-LEDGER, PDF rebuild, real HA `returnResponse` integration.
 
 **Next:** no S0/S1 FAIL remains. Rebuild the staff PDFs on a machine with PyPI access to clear S0-OFF-FICTION; site items stay BLOCKED.
+
+## Model policy (from 2026-10-21)
+
+After Phase 3 completes, remaining phases (4–8 and any fix loops) use **Grok extra-high fast** (`grok-4.7-xhigh-fast`) only. Do not launch Opus/GPT sub-agents. Phase 3 itself was already running and is allowed to finish.
+
