@@ -8,12 +8,12 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 
 - Games listed under **sport chips** (NFL, CFB, NBA, NHL, MLB, WNBA)
 - Each game shows **team logos + team names**
-- **DirecTV channel guide** for ZIP **27403** (H25 major numbers and labels) with optional **now/next** titles from `guide_epg.json`
+- **TV Passport guide** for the ZIP **27403** DirecTV lineup, with **now/next** on the main channels from `guide_epg.json`
 - **Groups / Programs** (not whole-TV-set shortcuts for Preset 2/3):
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
   - **Preset 3 — 9 Programs** — pick up to 9 programs; striped across `ENC-01`…`ENC-09`; unused encoder slots omitted / left unchanged
-- **Pick TVs (adhoc)** — multi-select TVs 1–35; planner claims the lowest-index free encoder (`ENC-01`…`ENC-10`); errors with **No free encoders** if none are free
+- **Pick TVs (adhoc)** and **named TV sets** — multi-select TVs 1–35, or a saved set such as Patio; planner claims the lowest free encoder (`ENC-01`…`ENC-10`). If every selected TV is already on one box, that box is reused. If none are free, staff choose a program to replace.
 - **Hybrid Send (Track B)** — default **Dry-run Send** builds a `RoutePlan`, shows the summary, and updates local occupancy; optional **Live Send** SHEF-tunes the matching H25 then UDP-reconnects when inventory is live-ready
 - Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Send**
 - Clean, large-target UI for bartender speed
@@ -30,6 +30,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
 - **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — make this live on site Home Assistant (H25 SHEF + matrix + bartender panel)
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
+- Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
 
 The bartender **Sports Routing** panel is the production iPad UI (`/panel-health`, striped `RoutePlan`). Lovelace Matrix is the SHEF/favorites surface; generate it with `--profile numeric_v1` so Preset 1/2/3 match the operations guide (contiguous splits). Inventory `mapping_profiles.active` stays `striped_v1` for Track B.
@@ -169,24 +170,16 @@ Compose already mounts `../config` → `/config/avaccess/config` and `../scripts
 
 #### 1. Guide EPG config
 
-The repo ships `config/guide_epg.yaml` as a **symlink** to `guide_epg.example.yaml`. Remove it (or use `--remove-destination`) before copying so `cp` does not follow the symlink and overwrite the example:
+The guide list is the DirecTV Greensboro lineup on TV Passport (`scripts/avaccess/directv_lineup.py` → `guide_channels.json`). It keeps every channel in that lineup except music audio, pay-per-view, promo barkers, and channels that are not in the package (on-demand storefronts and duplicate 9xxx grids). Sports pages do not use this file. `config/guide_epg.yaml` then grabs now/next from TV Passport (the `tvpassport.com` site in [iptv-org/epg](https://github.com/iptv-org/epg)) for the main locals and sports channels. The grabber is Python (`scripts/avaccess/tvpassport.py`) because the HA image does not ship Node. Guide search waits briefly before filtering so typing does not steal the cursor. **Now** lists every TV and the program on it.
 
-```bash
-rm config/guide_epg.yaml
-cp config/guide_epg.example.yaml config/guide_epg.yaml
-# edit config/guide_epg.yaml — XMLTV source + channel_number_map
-#
-# equivalent: cp --remove-destination config/guide_epg.example.yaml config/guide_epg.yaml
-```
-
-Point `source` at your XMLTV feed (`file` or `url` + `compression`). Fill `channel_number_map` so each Guide favorite’s DirecTV major maps to the matching XMLTV channel id(s). Empty lists mean that channel stays in the Guide with blank now/next. When refreshing via the HA `shell_command`, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
+`config/guide_epg.example.yaml` is the offline fixture (no `grabber` key). Use it when you want to build from your own XMLTV file or URL instead of TV Passport. When refreshing via the HA `shell_command` without the grabber, use an **absolute** `source.file` path or a `url` — the process cwd is the HA config directory, not the repo root.
 
 #### 2. Build / refresh `guide_epg.json`
 
-CLI (from repo root):
+CLI (from repo root). This hits TV Passport, then writes now/next:
 
 ```bash
-.venv/bin/python scripts/avaccess/build_guide_epg.py \
+python3 scripts/avaccess/build_guide_epg.py \
   --config config/guide_epg.yaml \
   --out homeassistant/config/www/avaccess/guide_epg.json
 ```
@@ -214,17 +207,35 @@ Optional hourly refresh (example — add to `automations.yaml` or a package if d
 
 The panel fetches `/local/avaccess/guide_epg.json` on connect and about every **15 minutes**. If the feed is missing, unreadable, or `generatedAt` is older than **6 hours**, Guide still lists channels (numbers + names) and shows a muted banner: **Guide listings unavailable — channel list only**. Fresh feeds show **Now** / **Next** titles; search matches number, name, and those titles. Sport chips are unchanged.
 
-The checked-in default `guide_epg.json` uses a stale `generatedAt` so the degrade banner is obvious until you run the builder.
+The checked-in `guide_epg.json` is a snapshot from the last grab. If `generatedAt` is older than **6 hours**, Guide falls back to the channel list and the banner. Refresh with the builder above (or the HA shell command) to fill now/next again. Choosing a Guide channel and pressing Take plans a DirecTV tune to that major; the dry-run summary shows `Tune` plus the channel number. Games do not tune.
 
 ## Operator guide — Sports Routing panel
 
-The bartender panel uses a **top chip row** to switch browse modes:
+Staff handouts, with screenshots of the landscape iPad: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Same words in **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
 
-`NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
+On a landscape iPad (wider than 900px) the panel is three columns: a left rail (DirecTV sports, then **Guide** and **Now**), **Sources** in the middle, and **Displays** on the right, with **Take** along the bottom. The rail and the lists scroll by dragging. iPad Safari and the Home Assistant Companion use overlay scrollbars that fade, so the panel does not hide them. A desktop browser still draws a permanent bar; that is Chrome, not the iPad.
 
-- **Sport chips** — tap NFL, CFB, NBA, NHL, MLB, or WNBA to browse that sport’s game list.
-- **Guide** — opens the DirecTV channel lineup for ZIP **27403** with **now/next** when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
-- **TVs** — starts the **TV-first / adhoc** path (see below).
+- **Sports rail** — DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets chips in the Sources column (NFL, NCAA Football, NBA, NCAA Basketball (M), and so on). Each list is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
+- **Guide** — the TV Passport DirecTV lineup for ZIP **27403**, opened from the bottom of the left rail. Music audio, pay-per-view, barkers, and channels that are not in the package are left out. **Now/next** shows when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Now** — every TV and the program on it, also at the bottom of the left rail.
+- **Displays** — **All 35 TVs** (Preset 1), **4 Programs**, **9 Programs**, **Pick TVs**, or a named TV set (the adhoc path below). The on-screen button is **Take**. With Live commit off it is a dry run. **Sets**, at the bottom of the left rail, saves those names (Patio, Bar) on the iPad and, when Home Assistant is connected, through `shell_command.avaccess_save_tv_sets` into `custom_tv_sets.json`.
+- **No free box** — a named set or Pick TVs needs a free DirecTV box (ENC-01–ENC-10). If every selected TV is already on one box, Take reuses it and turns off any leftover TVs from that box. If not, the middle column lists the programs already on; choose one and Take becomes **Replace**. That box changes channel. TVs that were on the replaced program and are not in the set turn off. All 35, 4 Programs, and 9 Programs do not use this path.
+
+### Sports schedule refresh
+
+DirecTV returns **one calendar day** per request (`days=YYYY-MM-DD`). A full slate is those days merged on game id. The sports page customer type for this account is **Bars and Restaurants** (`bundles=20`). The response still includes residential and private-office packages. A channel is used only when one of its packages is marked for public viewing (`commercial_public`). Private-office packs such as Sports Choice are not tune targets. Greensboro locals **2, 8, 12, and 45** stay, because the commercial headend carries them even when DirecTV tags them with the residential MySports package. Out-of-market **NBA** games are the exception: they show up when the page is on the residential customer type with the **NBA League Pass** add-on, and those feeds are kept even though DirecTV marks the Premium numbers off-satellite. Residential-only tiers (Choice, Ultimate, Sports Pack, Peacock, ESPN Unlimited) are not tune targets. A Python download of DirecTV from the Home Assistant container is refused. Do not paste Cookie or XSRF values into a script.
+
+On Home Assistant OS, install and start the [Selenium Standalone add-on](https://github.com/davida72/selenium-homeassistant) so port **4444** is up. Each morning at 06:00 (Home Assistant local time) `shell_command.avaccess_refresh_sports` asks that browser for the next 8 days and writes `www/avaccess/sports_schedule.json`. The package is `packages/avaccess_sports.yaml`.
+
+A PC that can already open the sports page can pull the same file:
+
+```bash
+pip install playwright
+python3 scripts/avaccess/directv_sports.py --pull --ahead 8 \
+  --out homeassistant/config/www/avaccess/sports_schedule.json
+```
+
+`--ahead 8` is today through the next week in Eastern time (the Monday-night game can fall on the following UTC date). If a hidden window is refused, add `--headed`. A saved games response still works with `--file games-2026-10-25.json` (repeat `--file` for each day).
 
 Group presets and the adhoc TV grid are exclusive modes: bartenders plan either a group (Preset 1/2/3) or an adhoc TV set, not both at once.
 

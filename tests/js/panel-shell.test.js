@@ -66,6 +66,20 @@ test("panel shell renders short sports chips and DirecTV ZIP guide label", () =>
   assert.match(src, /DirecTV · ZIP \$\{escapeHtml\(SPECTRUM_ZIP\)\}/);
 });
 
+test("panel shell tunes a sports game from the DirecTV major", () => {
+  const src = readPanelSource();
+  assert.match(src, /\/local\/avaccess\/sports_schedule\.json/);
+  assert.match(src, /directv-sports-info/);
+  assert.match(src, /payload\.source === SPORTS_SOURCE/);
+  assert.match(src, /channelNumber: content\.channelNumber \? String\(content\.channelNumber\) : null/);
+  assert.match(
+    src,
+    /setInterval\(\(\) => \{\s*this\._loadGuideEpg\(\);\s*this\._loadSportsSchedule\(\);/
+  );
+  assert.match(src, /data-action="select-league"/);
+  assert.match(src, /game\.leagueId === leagueId/);
+});
+
 test("panel shell tracks selectedPresetId for TV-first preset send", () => {
   const src = readPanelSource();
   assert.match(src, /selectedPresetId/);
@@ -85,12 +99,30 @@ test("panel shell keeps radii at token scale and avoids amber assignment accents
   assert.doesNotMatch(src, /#fef3c7/i);
 });
 
-test("panel shell brands AVAccess Sports Routing and drops stub content picker", () => {
+test("panel shell brands the routing board and drops stub content picker", () => {
   const src = readPanelSource();
-  assert.match(src, /AVAccess · iPad/);
-  assert.match(src, /Sports Routing/);
+  assert.match(src, /class="routing"/);
+  assert.match(src, /class="room">Bar</);
+  assert.match(src, /<h2>Sources<\/h2>/);
+  assert.match(src, /<h2>Displays<\/h2>/);
+  assert.match(src, /data-action="send-destination"/);
+  assert.match(src, />Take</);
+  assert.match(src, /#0b5cab/);
+  assert.match(src, /height: calc\(100dvh - 64px\)/);
+  assert.match(src, /takes one program/);
+  assert.match(src, /Ready · /);
+  assert.match(src, /_formatTvList/);
+  assert.match(src, /_tvOccupancy/);
+  assert.match(src, /Live commit is off until the room inventory is set up/);
+  assert.match(src, /Tune \$\{/);
+  assert.match(src, /Now: /);
+  assert.match(src, /GUIDE_SEARCH_DELAY_MS/);
+  assert.match(src, /open-now/);
+  assert.match(src, /Now playing/);
+  assert.match(src, /_deepActiveElement/);
   assert.doesNotMatch(src, /open-content-picker/);
   assert.doesNotMatch(src, /Graphite routing shell/);
+  assert.doesNotMatch(src, /fonts\.googleapis\.com\/css2\?family=Sora/);
 });
 
 test("panel shell renders logos, route badges, and restores guide search focus", () => {
@@ -131,6 +163,9 @@ test("panel shell clears stale groupMode and routes adhoc destination through pl
     src,
     /programCapacity\s*>\s*1[\s\S]*?selectedTvs:\s*\[\s*\]/
   );
+  // A guide channel must not become a hidden 4-program pick after the rail moves to sports.
+  assert.match(src, /_programsForMultiPreset/);
+  assert.match(src, /onGuide \? content\.kind === "channel" : content\.kind === "game"/);
 });
 
 test("panel shell exposes live commit toggle and shell_command execute path", () => {
@@ -148,6 +183,8 @@ test("panel shell exposes live commit toggle and shell_command execute path", ()
 test("panel shell loads guide EPG feed and renders now/next columns", () => {
   const src = readPanelSource();
   assert.match(src, /guide_epg\.json/);
+  assert.match(src, /guide_channels\.json/);
+  assert.match(src, /tvpassport:5960D/);
   assert.match(src, /mergeGuideWithEpg/);
   assert.match(src, /guide unavailable|Guide listings unavailable/i);
   assert.match(src, /nowTitle|Now/);

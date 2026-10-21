@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import json
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -130,6 +131,32 @@ def load_config(path: Path) -> dict[str, Any]:
     return data
 
 
+def apply_grabber(cfg: dict[str, Any]) -> tuple[dict[str, Any], Path | None]:
+    """If config.grabber is set, download XMLTV and point source at that file.
+
+    Returns the config to build and a temp path the caller should delete.
+    """
+    grabber = cfg.get("grabber")
+    if not isinstance(grabber, dict) or not grabber.get("kind"):
+        return cfg, None
+    kind = str(grabber.get("kind"))
+    if kind != "tvpassport":
+        raise ValueError(f"Unsupported guide grabber: {kind}")
+    from scripts.avaccess.tvpassport import grab_xmltv
+
+    days = int(grabber.get("days") or 2)
+    xml_bytes = grab_xmltv(days=days)
+    handle = tempfile.NamedTemporaryFile(prefix="guide-", suffix=".xmltv", delete=False)
+    path = Path(handle.name)
+    try:
+        handle.write(xml_bytes)
+    finally:
+        handle.close()
+    merged = dict(cfg)
+    merged["source"] = {"file": str(path), "compression": "none"}
+    return merged, path
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -145,8 +172,10 @@ def main(argv: list[str] | None = None) -> int:
         help="Output JSON path (default: homeassistant/config/www/avaccess/guide_epg.json)",
     )
     args = parser.parse_args(argv)
+    grabbed: Path | None = None
     try:
         cfg = load_config(args.config)
+        cfg, grabbed = apply_grabber(cfg)
         payload = build_guide_epg(cfg)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(
@@ -156,6 +185,9 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError, yaml.YAMLError) as exc:
         print(f"build_guide_epg failed: {exc}", file=sys.stderr)
         return 1
+    finally:
+        if grabbed is not None:
+            grabbed.unlink(missing_ok=True)
     print(args.out)
     return 0
 

@@ -43,7 +43,7 @@ export const PRESETS = [
     mode: "preset_1",
     label: "Preset 1 — ALL",
     shortLabel: "ALL",
-    description: "One program on ENC-01 → all 35 TVs",
+    description: "All 35 TVs",
     programCapacity: 1,
     stripeCount: null,
     tvs: range(1, 35),
@@ -52,8 +52,8 @@ export const PRESETS = [
     id: "2_four_programs",
     mode: "preset_2",
     label: "Preset 2 — 4 Programs",
-    shortLabel: "4 Prog",
-    description: "Pick up to 4 programs; striped across ENC-01..04",
+    shortLabel: "4 Programs",
+    description: "Up to 4 programs",
     programCapacity: 4,
     stripeCount: 4,
     tvs: range(1, 35),
@@ -62,8 +62,8 @@ export const PRESETS = [
     id: "3_nine_programs",
     mode: "preset_3",
     label: "Preset 3 — 9 Programs",
-    shortLabel: "9 Prog",
-    description: "Pick up to 9 programs; striped across ENC-01..09",
+    shortLabel: "9 Programs",
+    description: "Up to 9 programs",
     programCapacity: 9,
     stripeCount: 9,
     tvs: range(1, 35),
@@ -146,16 +146,17 @@ export const SPORTS = [
   },
 ];
 
+// Fallback if guide_channels.json has not loaded. Numbers match the DirecTV lineup.
 export const GUIDE_CHANNELS = [
-  { id: "ch-fox", number: "4", name: "WGHP FOX", category: "Local" },
+  { id: "ch-fox", number: "8", name: "WGHP FOX", category: "Local" },
   { id: "ch-cbs", number: "2", name: "WFMY CBS", category: "Local" },
   { id: "ch-nbc", number: "12", name: "WXII NBC", category: "Local" },
   { id: "ch-abc", number: "45", name: "WXLV ABC", category: "Local" },
   { id: "ch-espn", number: "206", name: "ESPN", category: "Sports" },
-  { id: "ch-espn2", number: "207", name: "ESPN2", category: "Sports" },
-  { id: "ch-fs1", number: "400", name: "FS1", category: "Sports" },
+  { id: "ch-espn2", number: "209", name: "ESPN2", category: "Sports" },
+  { id: "ch-fs1", number: "219", name: "FS1", category: "Sports" },
   { id: "ch-tnt", number: "245", name: "TNT", category: "Sports" },
-  { id: "ch-nfl-a1", number: "705", name: "NFL Sunday Ticket 1", category: "Sports" },
+  { id: "ch-nfl-a1", number: "9554", name: "NFL Sunday Ticket 705", category: "Sports" },
 ];
 
 export const GUIDE_EPG_STALE_MS = 6 * 60 * 60 * 1000;

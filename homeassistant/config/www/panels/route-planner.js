@@ -28,11 +28,56 @@ function slot(index, encoderId, program, tvs) {
   };
 }
 
+export function listReplaceChoices(assignments) {
+  if (!assignments || typeof assignments !== "object") return [];
+  return Object.entries(assignments)
+    .filter(([, route]) => (route?.tvs?.length ?? 0) > 0)
+    .map(([id, route]) => ({
+      encoderId: route.encoderId || id,
+      label: route.label || route.encoderId || id,
+      channel: route.channel || "",
+      tvs: [...route.tvs].sort((a, b) => a - b),
+    }))
+    .sort((a, b) => String(a.encoderId).localeCompare(String(b.encoderId)));
+}
+
+function singleEncoderForTvs(assignments, tvs) {
+  if (!assignments || !tvs.length) return null;
+  let encoderId = null;
+  for (const tv of tvs) {
+    let found = null;
+    for (const [id, route] of Object.entries(assignments)) {
+      if (route?.tvs?.includes(tv)) {
+        found = route.encoderId || id;
+        break;
+      }
+    }
+    if (!found) return null;
+    if (encoderId && encoderId !== found) return null;
+    encoderId = found;
+  }
+  return encoderId;
+}
+
+function replacedProgram(assignments, encoderId, tvs) {
+  const route = assignments?.[encoderId];
+  if (!route) return null;
+  const oldTvs = [...(route.tvs || [])];
+  return {
+    encoderId,
+    label: route.label || encoderId,
+    channel: route.channel || "",
+    offTvs: oldTvs.filter((tv) => !tvs.includes(tv)).sort((a, b) => a - b),
+  };
+}
+
 export function buildRoutePlan({
   mode,
   programs,
   selectedTvs = [],
   busyEncoderIds = [],
+  assignments = null,
+  replaceEncoderId = null,
   commit = "dry_run",
 }) {
   const warnings = [];
@@ -67,13 +112,44 @@ export function buildRoutePlan({
     if (!list[0]) return { mode, commit, slots: [], warnings, error: "No program selected" };
     const tvs = [...new Set(selectedTvs)].sort((a, b) => a - b);
     if (tvs.length === 0) return { mode, commit, slots: [], warnings, error: "No TVs selected" };
-    const free = listFreeEncoders(busyEncoderIds, { includeSpare: true });
-    if (free.length === 0) return { mode, commit, slots: [], warnings, error: "No free encoders" };
+
+    let encoderId = null;
+    let replaced = null;
+    if (replaceEncoderId) {
+      const choices = listReplaceChoices(assignments);
+      if (!choices.some((choice) => choice.encoderId === replaceEncoderId)) {
+        return { mode, commit, slots: [], warnings, error: "Choose a program to replace" };
+      }
+      encoderId = replaceEncoderId;
+      replaced = replacedProgram(assignments, replaceEncoderId, tvs);
+    } else {
+      const covered = singleEncoderForTvs(assignments, tvs);
+      if (covered) {
+        encoderId = covered;
+        const info = replacedProgram(assignments, covered, tvs);
+        if (info?.offTvs?.length) replaced = info;
+      } else {
+        const free = listFreeEncoders(busyEncoderIds, { includeSpare: true });
+        if (free.length === 0) {
+          return {
+            mode,
+            commit,
+            slots: [],
+            warnings,
+            error: "No free encoders",
+            replaceChoices: listReplaceChoices(assignments),
+          };
+        }
+        encoderId = free[0];
+      }
+    }
+
     return {
       mode,
       commit,
-      slots: [slot(1, free[0], list[0], tvs)],
+      slots: [slot(1, encoderId, list[0], tvs)],
       warnings,
+      replaced,
     };
   }
 
