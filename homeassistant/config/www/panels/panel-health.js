@@ -498,7 +498,7 @@ class PanelHealth extends HTMLElement {
     const ready = this._inventoryLiveReady;
     const active = this._state.liveCommit;
     const tip = ready
-      ? "When on, Send tunes DirecTV (SHEF) and switches video (UDP) via Home Assistant"
+      ? "When on, Take tunes DirecTV (SHEF) and switches video (UDP) via Home Assistant"
       : LIVE_BLOCKED_REASON;
     // iPads never show title tooltips, so the hint carries the full reason inline.
     const switchError = ready ? this._liveCommitError : "";
@@ -506,8 +506,8 @@ class PanelHealth extends HTMLElement {
       ? switchError
       : ready
         ? active
-          ? "Live — Send changes the TVs"
-          : "Dry run — Send only previews the plan"
+          ? "LIVE — Take changes the TVs"
+          : "PRACTICE — Take only plans; TVs do not change"
         : LIVE_BLOCKED_REASON;
     return `
       <div class="live-commit-row">

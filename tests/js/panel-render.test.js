@@ -113,3 +113,17 @@ test("sports banner warns on the demo fallback and on a stale schedule", () => {
   panel.render();
   assert.ok(panel.innerHTML.includes(SPORTS_STALE_BANNER), "stale banner should render");
 });
+
+test("Live commit hint uses PRACTICE / LIVE and Take wording", () => {
+  const hint = (panel) => {
+    panel.render();
+    const match = panel.innerHTML.match(/<span class="live-commit-hint[^"]*" role="status">([^<]*)</);
+    assert.ok(match, "Live commit hint should render");
+    return match[1];
+  };
+  const { panel } = makePanel({ liveState: "off" });
+  assert.equal(hint(panel), "PRACTICE — Take only plans; TVs do not change");
+  panel.hass = hassWith(panel, "on");
+  assert.equal(hint(panel), "LIVE — Take changes the TVs");
+  assertRendered(panel, /Dry run|— Send/, { present: false });
+});
