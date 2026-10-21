@@ -10,25 +10,30 @@ This quickstart gives you an operator-ready iPad control surface for:
 
 Step-by-step to run this on the bar’s Home Assistant (real H25s, no `--ui-staging`): **[HA_LIVE.md](HA_LIVE.md)**.
 
-## 1) Put this project in Home Assistant config
+## 1) Where the files go
 
-On your HA host, place this repo under:
+Site install is **[HA_LIVE.md](HA_LIVE.md)**. Do not clone this repo over `/config`.
 
-```text
-/config/avaccess
-```
+- Git clone: `/share/avaccess-automator` (checkout `main`)
+- `/config/avaccess/scripts` → symlink to `scripts/avaccess`
+- `/config/www/panels/` and `/config/www/avaccess/` → the Sports Routing panel and its JSON
+- `/config/packages/` → `avaccess_routing.yaml`, `avaccess_sports.yaml`, `avaccess_guide.yaml`, plus the generated matrix package
+
+Sports Routing loads only a sports file whose `source` is `directv-sports-info`, and only a guide file whose `source` is `tvpassport:5960D`. The on-screen button is **Take**. Hold the iPad sideways. **Live commit** stays off until inventory hostnames are real.
+
+Commands below run from the clone, not from `/config`.
 
 ## 2) Create your local config files
 
 ```bash
-cd /config/avaccess
+cd /share/avaccess-automator
 cp config/inventory.example.yaml config/inventory.yaml
 cp config/channels.example.yaml config/channels.yaml
 rm -f config/directv.yaml
 cp --remove-destination config/directv.example.yaml config/directv.yaml
 ```
 
-`config/directv.yaml` is gitignored. `rm -f` drops a leftover symlink so the copy does not overwrite `directv.example.yaml`. Replace the placeholder `192.168.10.151`–`.160` addresses before Live Send.
+`config/directv.yaml` is gitignored. `rm -f` drops a leftover symlink so the copy does not overwrite `directv.example.yaml`. Replace the placeholder `192.168.10.151`–`.160` addresses before a live Take.
 
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
@@ -53,7 +58,7 @@ Open port **8123**, finish onboarding (default staging owner `operator` / `avacc
 ## 3) Generate HA package + dashboard YAML
 
 ```bash
-cd /config/avaccess
+cd /share/avaccess-automator
 python3 -m pip install pyyaml
 python3 scripts/generate_ha_bundle.py \
   --inventory config/inventory.yaml \
@@ -69,6 +74,8 @@ python3 scripts/generate_ha_bundle.py \
 homeassistant:
   packages: !include_dir_named packages
 ```
+
+The Sports Routing sidebar entry is the `panel_custom` block in [HA_LIVE.md](HA_LIVE.md) section 5 (`panel-health.js?v=30`). This quickstart does not replace that block.
 
 ## 5) Add dashboard YAML
 

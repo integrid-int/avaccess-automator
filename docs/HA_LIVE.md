@@ -6,10 +6,10 @@ There are two operator surfaces. You can enable both on one HA:
 
 | Surface | Sidebar | What it does live |
 |---------|---------|-------------------|
-| **Sports Routing** | `Sports Routing` → `/panel-health` | Bartender iPad panel. Striped presets, Guide now/next, Live Send (SHEF + UDP). |
+| **Sports Routing** | `Sports Routing` → `/panel-health` | Bar iPad panel. Hold it sideways. **Take** plans the route. **Live commit** stays off until the room inventory is filled in; then the same Take sends SHEF + UDP. |
 | **AVAccess Matrix** | `AVAccess Matrix` | Lovelace favorites (FOX / NFL afternoon / all Sunday), DirecTV SHEF tune, contiguous Preset 1/2/3, route to specific TVs. |
 
-Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
+Staff handouts for Sports Routing: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 ---
 
@@ -115,6 +115,69 @@ services:
 ```
 
 `network_mode: host` means HA is on `http://<host>:8123` with no port publish block. Matrix CLIs and `directv_shef.py` are mounted **beside** `/config/avaccess/scripts`, not inside that read-only directory. A file mount inside the scripts volume fails to start or hides the SHEF module.
+
+The scripts mount is read-only. That is fine. Sports Routing writes `custom_tv_sets.json` and refreshed JSON under `/config/www`, which is the config volume, not the scripts mount.
+
+---
+
+## 2b) Sports Routing files the iPad loads
+
+The `www` copy in step 2 is what the panel fetches. These files have to be present, and the panel ignores a file whose `source` is wrong:
+
+| URL | `source` | What breaks if it is missing or wrong |
+|-----|----------|----------------------------------------|
+| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=30` in `configuration.yaml`. |
+| `/local/avaccess/sports_schedule.json` | `directv-sports-info` | Sports rail stays empty. TV Passport must not be copied in as the sports file. |
+| `/local/avaccess/guide_channels.json` | `tvpassport:5960D` | Guide has no Greensboro lineup. |
+| `/local/avaccess/guide_epg.json` | fresh `generatedAt` | Guide still lists channels, with **Guide listings unavailable — channel list only**. |
+| `/local/avaccess/inventory.json` | no `REPLACE_ME` | **Live commit** stays disabled. Take still plans. |
+| `/local/avaccess/custom_tv_sets.json` | `tv-sets` | Optional. A new iPad has no Patio/Bar buttons until this file exists. |
+
+Copying `www` the first time is enough to boot the panel, including the checked-in sports and guide snapshots. Do not recopy `inventory.json` or `custom_tv_sets.json` on later updates. The repo inventory is still full of `REPLACE_ME`, and a recopy would turn Live commit back off and wipe saved TV sets.
+
+Packages that have to land in `/config/packages` (the step 2 `cp` of `packages/*.yaml` does this):
+
+- `avaccess_routing.yaml` — `input_boolean.avaccess_live_commit`, Take’s executor, and `shell_command.avaccess_save_tv_sets`
+- `avaccess_sports.yaml` — morning sports pull
+- `avaccess_guide.yaml` — now/next refresh
+
+### Sports list
+
+DirecTV refuses a plain Python download from the Home Assistant machine. Do not paste Cookie or XSRF values into a script.
+
+On Home Assistant OS, install and start the [Selenium Standalone add-on](https://github.com/davida72/selenium-homeassistant) so port **4444** is listening. `avaccess_sports.yaml` then runs `shell_command.avaccess_refresh_sports` every morning at 06:00 (HA local time) and writes `www/avaccess/sports_schedule.json`. The pull is ZIP **27403**, customer type Bars and Restaurants (`bundles=20`), eight days. Greensboro locals **2, 8, 12, and 45** stay. NBA League Pass feeds stay. “NBA mobile” does not.
+
+Home Assistant stops a `shell_command` at 60 seconds. If the morning run is killed, pull the file on a PC that can already open the DirecTV sports page, then copy it to the HA host:
+
+```bash
+pip install playwright
+python3 scripts/avaccess/directv_sports.py --pull --ahead 8 \
+  --out homeassistant/config/www/avaccess/sports_schedule.json
+# copy that file to /config/www/avaccess/sports_schedule.json
+```
+
+### Guide list and now/next
+
+The channel list is TV Passport lineup **5960D** (DirecTV, Greensboro). Music audio, pay-per-view, barkers, and channels that are not in the package are left out. Music video networks stay. Refresh from the git clone when the lineup changes:
+
+```bash
+python3 scripts/avaccess/directv_lineup.py \
+  --out /config/www/avaccess/guide_channels.json
+```
+
+Now/next for the main locals and sports channels is separate. From the HA host, cwd = `/config`:
+
+```bash
+python3 avaccess/run_build_guide_epg.py \
+  --config avaccess/config/guide_epg.yaml \
+  --out www/avaccess/guide_epg.json
+```
+
+Or Developer Tools → Actions → `shell_command.avaccess_refresh_guide_epg`. The panel reloads both JSON files on connect and about every 15 minutes. Listings older than 6 hours fall back to the channel list.
+
+### Named TV sets
+
+**Sets** on the iPad (Patio, Bar) is saved in that iPad’s `localStorage` (`avaccess-tv-sets-v1`). When Companion is connected, Save also calls `shell_command.avaccess_save_tv_sets`, which writes `/config/www/avaccess/custom_tv_sets.json`. A replacement iPad loads that file only when its own key is missing. `/config/www/avaccess/` must be writable by Home Assistant. The scripts directory can stay read-only.
 
 ---
 
@@ -248,7 +311,7 @@ Pass: probe JSON 200, `get-tuned` has `title` + `major`, after tune `major` is 2
 
 Then in HA **Activity**, tap **FOX Local** on AVAccess Matrix and confirm scripts **Ran** (not STAGING echo). All TVs should show local FOX.
 
-Leave bartender **Live commit** **off** until the same one-TV route works from **Sports Routing → Dry-run Send**, then enable Live for one Send.
+Leave **Live commit** off. On Sports Routing, pick one game, tap **All 35 TVs** or a single TV, and tap **Take**. The summary is a dry run: it names the DirecTV box and the channel, and the wall does not change. The yellow line reads **Live commit is off until the room inventory is set up** until `inventory.json` has real hostnames. After one TV routes from the command line, turn Live commit on and Take that same one-TV plan before using All 35.
 
 ---
 
@@ -256,10 +319,11 @@ Leave bartender **Live commit** **off** until the same one-TV route works from *
 
 1. Install **Home Assistant Companion**.
 2. Connect to `http://<ha-host>:8123` (or your TLS proxy).
-3. Sidebar: **AVAccess Matrix** (favorites) and **Sports Routing** (bartender planner).
-4. Add Matrix (or Sports Routing) to the home screen / default dashboard.
+3. Sidebar: **Sports Routing** for the bar, **AVAccess Matrix** for favorites.
+4. Hold the iPad **sideways** for Sports Routing. Below 900px wide the three columns stack and the buttons get small. Matrix favorites still fit portrait.
+5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=30` in this repo. Bump it when you copy a new `panel-health.js`, then restart Home Assistant.
 
-Operator cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
+Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 ---
 
@@ -273,14 +337,32 @@ Operator cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 | 4 | UDP reconnect from HA host changes **one** TV first |
 | 5 | FOX Local: all TVs + H25-01 on WGHP |
 | 6 | Now Playing entities match the DirecTV integration |
-| 7 | `input_boolean.avaccess_live_commit` is **off** except during a live Send |
-| 8 | iPad Companion opens both sidebars; tap targets work in portrait |
+| 7 | `input_boolean.avaccess_live_commit` is **off** except during a live Take |
+| 8 | Sports Routing is landscape. Take shows a dry-run summary. The wall does not change while the yellow line is up |
+| 9 | `sports_schedule.json` source is `directv-sports-info`. `guide_channels.json` source is `tvpassport:5960D` |
+| 10 | Selenium add-on is up on port 4444, or a PC pull has replaced `sports_schedule.json` |
+| 11 | Saving a named set writes `www/avaccess/custom_tv_sets.json` (`source` `tv-sets`) |
+
+---
+
+## Updating a box that is already live
+
+```bash
+cd /share/avaccess-automator
+git pull
+cp -a homeassistant/config/www/panels/. /config/www/panels/
+cp homeassistant/config/packages/avaccess_routing.yaml /config/packages/
+cp homeassistant/config/packages/avaccess_sports.yaml /config/packages/
+cp homeassistant/config/packages/avaccess_guide.yaml /config/packages/
+```
+
+Copy `sports_schedule.json` or `guide_channels.json` only when the HA host is not already refreshing them. Do not copy `inventory.json` or `custom_tv_sets.json` over the live files. If `panel-health.js` changed, bump `module_url` `?v=` in `configuration.yaml`, restart Home Assistant, and force-quit Companion.
 
 ---
 
 ## Rollback
 
-- **Tune only:** leave bartender **Live commit** off (Dry-run Send stays occupancy-only). Matrix still tunes via SHEF.
+- **Tune only:** leave **Live commit** off. Take stays a dry run. Matrix still tunes via SHEF.
 - **Whole UI:** keep the previous `/config/packages/avaccess_matrix.yaml` copy and restore it.
 - iTach IR is **not** on the operator path. `config/itach.example.yaml` and `scripts/send_xumo_ir_itach.py` remain in the repo only as unused leftovers.
 
@@ -290,5 +372,6 @@ Operator cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 - [HA_QUICKSTART.md](HA_QUICKSTART.md) — generator flags and helpers
 - [DIRECTV_H25_PATCH_AND_TEST_PLAN.md](DIRECTV_H25_PATCH_AND_TEST_PLAN.md) — tests B–F
-- [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md) — bartender-facing Matrix taps
+- [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) — Sports Routing handouts
+- [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md) — Matrix taps (older Sports Routing pictures)
 - [WEEKLY_SCHEDULE_SYNC.md](WEEKLY_SCHEDULE_SYNC.md) — ZIP 27403 local-first NFL slots

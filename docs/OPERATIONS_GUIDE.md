@@ -34,7 +34,7 @@ DirecTV guide for ZIP **27403** (not Spectrum / Xumo):
 
 ![Sports Routing Guide](images/operations/09-sports-routing-guide.png)
 
-Send Chiefs @ Bills to ALL 35 TVs. Leave **Live commit** off unless you mean to change the wall. **Dry-run Send** is occupancy only; Live Send SHEF-tunes the H25 then UDP-reconnects the TVs.
+Send a game to all 35 TVs with **Take**. Leave **Live commit** off unless you mean to change the wall. Take is a dry run until that switch is on; Live commit then SHEF-tunes the H25 and UDP-reconnects the TVs. The current staff steps are the two PDFs at the top of this page, not the older Sports Routing screenshots below.
 
 ![Sports Routing destination](images/operations/10-sports-routing-destination.png)
 
