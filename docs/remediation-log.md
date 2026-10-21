@@ -356,3 +356,19 @@ Retest against `http://127.0.0.1:8123/panel-health` only. Address bar in the scr
 | Console | ESPN CDN `ERR_CONNECTION_CLOSED` and a 404 for `custom_tv_sets.json` before a server copy exists. Environment, not a product defect | PASS |
 
 No product bug. Boolean stayed off. The written report names a different game than the all-TVs screenshot; the screenshot is the record. At 390px the inventory hint stacks one character wide. That width is not the bar iPad. The 1180px staff layout does not do that. Offline mode was not run.
+
+## Phase 5 — satisfied
+
+`docs/phase5-review.md`. Diff against `origin/main` `e2f97d3`. One fix, two WON'T FIX, no new BLOCKED.
+
+| ID | Disposition |
+|----|-------------|
+| F-4 | Removed the unreachable Dry-run Send screen (`9b715c1`). `render()` still builds `_renderRoutingBoard`. `panel-health.js` has no `_renderScreen` and no `Dry-run Send`. Cache `?v=35`. |
+| P5-H25-COPY | WON'T FIX. Site-plan wording. Staff copy is `STAFF_TRAINING.md`. |
+| P5-SPORTS-EMPTY | WON'T FIX. A missing sports file shows the demo slate and blocks Live Take. |
+
+Re-ran here: JS 107 pass / 0 fail. Python 164 OK. Live panel after copying the new file into the running instance: PRACTICE, Live commit OFF, yellow inventory line.
+
+## Phase 6 — merge to main
+
+Fast-forward `origin/main` to this branch. `main` had no commits that were not already in the branch. Post-merge smoke is the same tree: panel served from Home Assistant is 93685 bytes, no `Dry-run Send`, banner PRACTICE.
