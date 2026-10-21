@@ -340,4 +340,19 @@ The browser pass opened `http://127.0.0.1:8765/index.html`, the visual harness i
 | BUG-004 | Live commit button ignores clicks | Harness `callService` returns `{}` and does not change state. On HA the button is disabled while inventory has `REPLACE_ME`. |
 | BUG-005 | "Patio" rejected with "Name the set." | Patio is the empty-field placeholder. |
 
-Live check after that pass: boolean **off**, inventory has 90 `REPLACE_ME`. `http://127.0.0.1:8123/panel-health` shows **PRACTICE – TVs will not change**, **Live commit: OFF** (disabled), and the yellow line *Live commit is off until the room inventory is set up.* Screenshot: `/opt/cursor/artifacts/phase4-live-ha-banner.png`. No product change. Responsive and offline checks were skipped and still need a pass on port 8123.
+Live check after that pass: boolean **off**, inventory has 90 `REPLACE_ME`. `http://127.0.0.1:8123/panel-health` shows **PRACTICE – TVs will not change**, **Live commit: OFF** (disabled), and the yellow line *Live commit is off until the room inventory is set up.* Screenshot: `/opt/cursor/artifacts/phase4-live-ha-banner.png`. No product change.
+
+## Phase 4 — Chrome on live HA
+
+Retest against `http://127.0.0.1:8123/panel-health` only. Address bar in the screenshots is that URL. Report: `/opt/cursor/artifacts/phase4-chrome-live.md`.
+
+| Step | Evidence | Result |
+|------|----------|--------|
+| PRACTICE banner, Live commit OFF, yellow inventory line | `phase4-live-01-correct-practice-banner.png` | PASS |
+| Take all TVs | PRACTICE summary, ENC-01, Missouri State @ Delaware, TVs 1–35, Tune 208. `phase4-live-02-practice-summary-all-tvs.png` | PASS |
+| Now | Header names the route; listed TVs show that game or another practice assignment. `phase4-live-04-now-view-tv21.png` | PASS |
+| Sets | Empty name shows "Name the set." Save reads Save, not a truncated label. Corner Booths remains after Clear room state. `phase4-live-07`, `phase4-live-08` | PASS |
+| iPad landscape 1180×820 | Banner, hint, Take, and Corner Booths fit. `phase4-live-11-responsive-1180x820.png` | PASS |
+| Console | ESPN CDN `ERR_CONNECTION_CLOSED` and a 404 for `custom_tv_sets.json` before a server copy exists. Environment, not a product defect | PASS |
+
+No product bug. Boolean stayed off. The written report names a different game than the all-TVs screenshot; the screenshot is the record. At 390px the inventory hint stacks one character wide. That width is not the bar iPad. The 1180px staff layout does not do that. Offline mode was not run.
