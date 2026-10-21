@@ -42,7 +42,7 @@ _(per-WP commit entries follow)_
 |-------|-------|
 | Date | 2026-10-21 |
 | Findings | S0-SILENT-LIVE, S1-DOUBLE-TAP, S0-OCCUPANCY-IPAD (success-only local occupancy) |
-| Commit | `520bb13` (live-execute + `_sendPlan`; shared panel-health with WP-B). Log commit SHA recorded after this entry. |
+| Commit | code `520bb13` (live-execute + `_sendPlan`; shared panel-health with WP-B); log `c6ebd61` |
 | Verify | `node --test tests/js/*.test.js` → 70 pass / 0 fail |
 
 **Changes**
