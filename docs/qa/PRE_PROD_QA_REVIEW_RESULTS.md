@@ -1,6 +1,6 @@
 # Pre-Production QA Review Results — AVAccess Automator
 
-**Status:** PARTIAL — 7/10 specialist reports merged; 3 still running  
+**Status:** PARTIAL — 8/10 specialist reports merged; 2 still running  
 **Plan:** [PRE_PROD_QA_REVIEW_PLAN.md](./PRE_PROD_QA_REVIEW_PLAN.md)  
 **Review branch:** `cursor/pre-prod-qa-review-af45`  
 **Code under review:** `main` @ `e2f97d3`  
@@ -8,7 +8,7 @@
 
 ---
 
-## Executive verdict (interim — 7 specialists in)
+## Executive verdict (interim — 8 specialists in)
 
 | Question | Interim answer |
 |----------|----------------|
@@ -39,7 +39,7 @@ Strong convergence: reuse of a busy encoder blanks/retunes unintended TVs physic
 | Reliability | [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c) | running |
 | UI interaction | [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3) | **merged** |
 | Visual design | [Visual design review](bc-66c2e031-218f-512f-8cc1-66e105ce4588) | **merged** |
-| Overall design | [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34) | running |
+| Overall design | [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34) | **merged** |
 | Codebase | [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e) | **merged** |
 | Senior developer | [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e) | running |
 | Owner persona | [Owner persona review](bc-9b5be436-b5b1-53c3-b713-f818d583b824) | **merged** |
@@ -181,7 +181,36 @@ All Soft Launch items + unmistakable PRACTICE/LIVE banner; occupied TV ≥3:1 or
 
 ## 5. Overall design review
 
-_Pending — [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34)._
+**Source:** [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34)  
+**Verdict:** Live **not ready**. Dry-run soft launch acceptable with conditions. Layers individually sound (dry-run default, fail-closed inventory, SHEF-fail skips UDP); failures are **between** layers.
+
+### Three architectural blockers before Live
+
+1. **No shared on-air record** — occupancy/encoder allocation per iPad `localStorage`; Matrix, other iPads, VDirector uncoordinated.  
+2. **No hardware feedback** — panel never receives executor result.  
+3. **No real stop** — Live switch browser-only; documented kill switch does not stop an already-Live iPad.
+
+### S0
+
+**S0-1.** Panel can pick a box already on air and retune it (`listBusyEncoderIds` / `listFreeEncoders` from own storage only). Matrix “NFL Afternoon” + patio Pick TVs → mid-event wrong TVs. Until server occupancy: **one live surface + one iPad only**.
+
+### S1
+
+- Kill switch / boolean client-only; `_sendPlan` hard-codes `live: true`; `require_admin: false`  
+- Occupancy saved before Live; no `returnResponse`; UDP no ack; Now = belief  
+- No-channel games + demo sports fallback still sendable  
+- Replace “off” is a lie physically  
+- Same words, different layouts (stripe vs contiguous); Sunday Ticket **9554–9563 vs Matrix 705–713** channel disagreement  
+- No freeze / versioned rollback / VDirector fallback runbook  
+
+### S2–S4
+
+Deploy complexity beyond venue operator; dual inventory YAML/JSON drift; fragile unmonitored scrapes; no Take serialization; `inventory.json` unauthenticated under `/local`; `:stable` unpinned; broadcast gate accepts `255.255.255.255`; monolith + cache-bust skew; no CI.
+
+### Go-live conditions (architecture)
+
+**Dry-run now:** one iPad; Matrix only wall-changer; confirm Sunday Ticket major set on site.  
+**Before Live:** server occupancy from executor; server-enforced switch; `returnResponse` + success-only occupancy + `getTuned`; block no-channel / remove demo fallback; fix Replace semantics; game-day freeze + tagged releases + working kill + VDirector fallback; monitor sports/guide; on-site 1→4→9 TV proof + standby/packet-loss checks.
 
 ---
 
