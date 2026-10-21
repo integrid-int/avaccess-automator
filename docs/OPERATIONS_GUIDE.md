@@ -1,6 +1,6 @@
 # AVAccess iPad operations guide
 
-**Sports Routing staff training (current landscape layout):** **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** and **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — short handout, then the full guide, with pictures of named TV sets and replace. Same words in **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The older combined STAFF_TRAINING.pdf does not include Sets or Replace. The Sports Routing photos later in this file are an older layout. Matrix favorites below are unchanged.
+**Sports Routing staff training (current landscape layout):** **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** and **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — short handout, then the full guide, with pictures of named TV sets and replace. Same words in **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The older combined STAFF_TRAINING.pdf does not include Sets or Replace. The Sports Routing photos later in this file are an older layout and may be stale. Matrix favorites below are unchanged.
 
 Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures of the older layout).
 
@@ -10,8 +10,25 @@ Two sidebar surfaces:
 
 | Sidebar | Use it for |
 |---------|------------|
-| **Sports Routing** | Bartender panel. Pick a game or DirecTV channel, then ALL / 4-way / 9-way or specific TVs. |
-| **AVAccess Matrix** | One-tap favorites (FOX Local, NFL Afternoon, All Sunday), presets, program letters, route-to-TVs. |
+| **Sports Routing** | Bartender panel. Pick a game or DirecTV channel, then ALL / 4-way / 9-way or specific TVs. Live only while its header banner reads **LIVE – TVs WILL change**; otherwise **PRACTICE – TVs will not change**. |
+| **AVAccess Matrix** | One-tap favorites (FOX Local, NFL Afternoon, All Sunday), presets, program letters, route-to-TVs. **Always live** on the site HA. |
+
+### Which one changes the wall
+
+**AVAccess Matrix is always live.** On the site HA (package generated without `--ui-staging`), every favorite, preset, channel, and route tap sends SHEF to the H25 and UDP to the switch right away. There is no Live commit switch, no PRACTICE banner, and no inventory gate on Matrix. Its presets are **contiguous**: Preset 2 is four blocks of neighboring TVs (9 / 9 / 9 / 8), Preset 3 is eight blocks of 4 plus one of 3.
+
+**Sports Routing is live only behind the switch.** Its Take changes the wall only when `input_boolean.avaccess_live_commit` is on **and** the room inventory is filled in; the header then turns red. Its 4 Programs / 9 Programs are **striped** (TV 1, 5, 9, … on the first game), not contiguous like Matrix. The same game can land on different TVs depending on which screen you used.
+
+The two screens share colors. Before a shift, check the banner on Sports Routing and remember that Matrix has none.
+
+### Soft Launch
+
+While the bar is in Soft Launch (staff practicing on Sports Routing, wall run from Matrix):
+
+- Run the wall from **Matrix** only. Every tap there is real.
+- Use **Sports Routing** for practice. Its banner must read **PRACTICE – TVs will not change**. If it ever shows red **LIVE**, stop and tell the installer.
+- Practice Takes fill in each iPad’s **Now** list even though nothing moved. Before the first Live day, every iPad taps **Clear room state**.
+- Installer conditions (placeholders left in `inventory.json`, boolean off, host networking for Live) are in [HA_LIVE.md](HA_LIVE.md) section 7b.
 
 These pictures are from the live cloud staging instance (HA 2026.9). Taps run for real — scripts fire and show up in Activity. Hardware is stubbed in staging, so **Now Playing** reads `STAGING - DirecTV not connected` instead of the live program title. On the site HA, those cards show the actual H25 channel.
 
@@ -26,6 +43,8 @@ Desktop Matrix Control tab (favorites, presets, programs, channels, DirecTV Now 
 
 ## Sports Routing (bartender)
 
+> **These Sports Routing screenshots are stale.** They show an older layout: no PRACTICE / LIVE banner, Guide / Now / Sets not pinned at the top of the rail, and older button labels. Use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current screen. The Matrix pictures further down are current.
+
 NFL game list — tap a card, then choose a destination:
 
 ![Sports Routing NFL](images/operations/08-sports-routing-nfl.png)
@@ -34,7 +53,7 @@ DirecTV guide for ZIP **27403** (not Spectrum / Xumo):
 
 ![Sports Routing Guide](images/operations/09-sports-routing-guide.png)
 
-Send a game to all 35 TVs with **Take**. Leave **Live commit** off unless you mean to change the wall. Take is a dry run until that switch is on; Live commit then SHEF-tunes the H25 and UDP-reconnects the TVs. The current staff steps are the two PDFs at the top of this page, not the older Sports Routing screenshots below.
+Send a game to all 35 TVs with **Take**. Leave **Live commit** off unless you mean to change the wall. Take is a practice plan (**PRACTICE summary**) until that switch is on; with the red **LIVE** banner, Take SHEF-tunes the H25 and UDP-reconnects the TVs. Nothing on Sports Routing turns a TV off: TVs left on a retuned box keep showing it until reassigned. The current staff steps are the two PDFs at the top of this page, not the older Sports Routing screenshots below.
 
 ![Sports Routing destination](images/operations/10-sports-routing-destination.png)
 

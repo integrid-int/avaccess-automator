@@ -19,7 +19,7 @@ Site install is **[HA_LIVE.md](HA_LIVE.md)**. Do not clone this repo over `/conf
 - `/config/www/panels/` and `/config/www/avaccess/` → the Sports Routing panel and its JSON
 - `/config/packages/` → `avaccess_routing.yaml`, `avaccess_sports.yaml`, `avaccess_guide.yaml`, plus the generated matrix package
 
-Sports Routing loads only a sports file whose `source` is `directv-sports-info`, and only a guide file whose `source` is `tvpassport:5960D`. The on-screen button is **Take**. Hold the iPad sideways. **Live commit** stays off until inventory hostnames are real.
+Sports Routing loads only a sports file whose `source` is `directv-sports-info`, and only a guide file whose `source` is `tvpassport:5960D`. The on-screen button is **Take**. Hold the iPad sideways. **Live commit** stays off until inventory hostnames are real, and the header banner reads **PRACTICE – TVs will not change** until then.
 
 Commands below run from the clone, not from `/config`.
 
@@ -27,13 +27,13 @@ Commands below run from the clone, not from `/config`.
 
 ```bash
 cd /share/avaccess-automator
-cp config/inventory.example.yaml config/inventory.yaml
-cp config/channels.example.yaml config/channels.yaml
-rm -f config/directv.yaml
+rm -f config/inventory.yaml config/channels.yaml config/directv.yaml
+cp --remove-destination config/inventory.example.yaml config/inventory.yaml
+cp --remove-destination config/channels.example.yaml config/channels.yaml
 cp --remove-destination config/directv.example.yaml config/directv.yaml
 ```
 
-`config/directv.yaml` is gitignored. `rm -f` drops a leftover symlink so the copy does not overwrite `directv.example.yaml`. Replace the placeholder `192.168.10.151`–`.160` addresses before a live Take.
+A fresh clone ships `config/inventory.yaml` as a symlink to `inventory.example.yaml`. A plain `cp` onto a symlink writes through it, so your real hostnames land in the tracked example file and the next `git pull` fights you. `rm -f` drops the symlink, and `cp --remove-destination` will not follow one if it is still there. `config/directv.yaml` is gitignored. Replace the placeholder `192.168.10.151`–`.160` addresses before a live Take. The same commands are in [HA_LIVE.md](HA_LIVE.md) section 3.
 
 Edit:
 - `config/inventory.yaml` → real TX/RX hostnames/MACs/IPs
@@ -75,7 +75,7 @@ homeassistant:
   packages: !include_dir_named packages
 ```
 
-The Sports Routing sidebar entry is the `panel_custom` block in [HA_LIVE.md](HA_LIVE.md) section 5 (`panel-health.js?v=30`). This quickstart does not replace that block.
+The Sports Routing sidebar entry is the `panel_custom` block in [HA_LIVE.md](HA_LIVE.md) section 5 (`panel-health.js?v=33`). This quickstart does not replace that block.
 
 ## 5) Add dashboard YAML
 

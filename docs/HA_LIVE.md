@@ -6,8 +6,10 @@ There are two operator surfaces. You can enable both on one HA:
 
 | Surface | Sidebar | What it does live |
 |---------|---------|-------------------|
-| **Sports Routing** | `Sports Routing` → `/panel-health` | Bar iPad panel. Hold it sideways. **Take** plans the route. **Live commit** stays off until the room inventory is filled in; then the same Take sends SHEF + UDP. |
-| **AVAccess Matrix** | `AVAccess Matrix` | Lovelace favorites (FOX / NFL afternoon / all Sunday), DirecTV SHEF tune, contiguous Preset 1/2/3, route to specific TVs. |
+| **Sports Routing** | `Sports Routing` → `/panel-health` | Bar iPad panel. Hold it sideways. **Take** plans the route. The header banner reads **PRACTICE – TVs will not change** until the room inventory is filled in **and** `input_boolean.avaccess_live_commit` is on; then it reads **LIVE – TVs WILL change** and the same Take calls `script.avaccess_live_execute` (SHEF + UDP). |
+| **AVAccess Matrix** | `AVAccess Matrix` | Lovelace favorites (FOX / NFL afternoon / all Sunday), DirecTV SHEF tune, contiguous Preset 1/2/3, route to specific TVs. **Always live** once the package is generated without `--ui-staging`: there is no Live commit switch, no PRACTICE banner, and no inventory gate on Matrix. |
+
+**Which surface is live:** a Matrix tap changes the wall immediately. A Sports Routing Take changes the wall only while its banner says **LIVE**. The two screens look alike (same charcoal and blue), so during Soft Launch tell staff which one they are on.
 
 Staff handouts for Sports Routing: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
@@ -23,7 +25,9 @@ The HA host must sit on the **AV LAN** (or have routes + broadcast into it).
 | UDP **5010** broadcast | AVAccess switch | `msg_b_reconnect` presets and TV routes |
 | TCP **8123** | iPads | HA Companion / Safari |
 
-Docker **bridge** networking usually **cannot** send `255.255.255.255:5010`. For live matrix routing use **Home Assistant OS**, **host network**, or an HA VM that is a peer on `192.168.10.0/24`.
+**Live UDP needs Home Assistant OS or host networking.** Use **Home Assistant OS**, a container with `network_mode: host`, or an HA VM that is a peer on `192.168.10.0/24`.
+
+> **Warning — Docker bridge.** Both checked-in compose files (`homeassistant/docker-compose.yml` and `homeassistant/staging/docker-compose.yml`) use bridge networking with `ports: 8123:8123`. On a bridge, `sendto 255.255.255.255:5010` usually succeeds inside the container and never reaches the AV LAN. The executor sees no error, so the Live summary can report `ok` while the TVs do not switch. SHEF (TCP 8080) may still work, so the H25 changes channel and the wall does not follow. Do not run Live from a bridge container. Use the host-network compose in section 2.
 
 Do **not** use `scripts/prepare_ha_staging.py` on this box.
 
@@ -126,11 +130,11 @@ The `www` copy in step 2 is what the panel fetches. These files have to be prese
 
 | URL | `source` | What breaks if it is missing or wrong |
 |-----|----------|----------------------------------------|
-| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=30` in `configuration.yaml`. |
+| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=33` in `configuration.yaml`. |
 | `/local/avaccess/sports_schedule.json` | `directv-sports-info` | Sports rail stays empty. TV Passport must not be copied in as the sports file. |
 | `/local/avaccess/guide_channels.json` | `tvpassport:5960D` | Guide has no Greensboro lineup. |
 | `/local/avaccess/guide_epg.json` | fresh `generatedAt` | Guide still lists channels, with **Guide listings unavailable — channel list only**. |
-| `/local/avaccess/inventory.json` | no `REPLACE_ME` | **Live commit** stays disabled. Take still plans. |
+| `/local/avaccess/inventory.json` | no `REPLACE_ME` | **Live commit** stays disabled and the banner stays **PRACTICE**. Take still plans. Leaving the placeholders in is how Soft Launch keeps Live blocked (section 7b). |
 | `/local/avaccess/custom_tv_sets.json` | `tv-sets` | Optional. A new iPad has no Patio/Bar buttons until this file exists. |
 
 Copying `www` the first time is enough to boot the panel, including the checked-in sports and guide snapshots. Do not recopy `inventory.json` or `custom_tv_sets.json` on later updates. The repo inventory is still full of `REPLACE_ME`, and a recopy would turn Live commit back off and wipe saved TV sets.
@@ -140,6 +144,19 @@ Packages that have to land in `/config/packages` (the step 2 `cp` of `packages/*
 - `avaccess_routing.yaml` — `input_boolean.avaccess_live_commit`, `script.avaccess_live_execute` (Live Take; refuses unless the boolean is on), Take’s executor, and `shell_command.avaccess_save_tv_sets`. The panel’s **Live commit** button turns that boolean on/off in HA, so every iPad shows the same state.
 - `avaccess_sports.yaml` — morning sports pull
 - `avaccess_guide.yaml` — now/next refresh
+
+### How Live is gated (Sports Routing only)
+
+There is one Live switch for the whole room: `input_boolean.avaccess_live_commit` (starts **off** after every HA restart, `initial: false`).
+
+1. The panel’s **Live commit: ON / OFF** button calls `input_boolean.turn_on` / `turn_off`. Every iPad re-reads the boolean on each Home Assistant update, so turning it on from one iPad turns it on for all of them. The button is disabled while `inventory.json` still has `REPLACE_ME`.
+2. A Take is Live only when the boolean is on **and** `inventory.json` is Live-ready. The banner follows the same rule. Otherwise the Take is a practice plan and the summary is headed **PRACTICE summary**.
+3. Live Take calls `script.avaccess_live_execute` with the plan (base64) and waits for its response. The script (`mode: single`) runs `shell_command.avaccess_execute_route_plan` with `live: true` only while the boolean is on. If it is off, the script returns `returncode` 3 and *Live Commit is off in Home Assistant. Nothing was sent.* without running the shell command.
+4. The shell command passes `--live-commit on|off` from the boolean at call time, and `run_execute_route_plan.py` refuses `--live` unless it reads `on`. Calling the shell command directly from Developer Tools cannot bypass the switch.
+5. On Live, UDP hostnames are always re-read from `config/inventory.yaml`; hostnames inside the plan are ignored. A program with no DirecTV channel blocks Take, and the executor rejects a live slot with no tune. A SHEF tune that fails or does not verify (`/tv/getTuned`) fails that slot before any UDP is sent.
+6. The panel saves occupancy only for slots that come back `ok`. A nonzero `returncode`, a missing report, or `ok: false` shows an error in the summary. Take is locked (**Sending…**) until the response arrives.
+
+With `mode: single`, a second Live Take from another iPad while one is running gets no report and shows a failure. Nothing is sent for that second Take.
 
 ### Sports list
 
@@ -185,7 +202,7 @@ Or Developer Tools → Actions → `shell_command.avaccess_refresh_guide_epg`. T
 
 From the **git clone** (`/share/avaccess-automator` or repo root):
 
-`config/directv.yaml` is gitignored. `rm -f` drops a symlink first; `cp --remove-destination` will not follow one into `directv.example.yaml`. Then edit real H25 IPs. Do not leave the placeholder `192.168.10.151`–`.160` addresses in place.
+A fresh clone ships `config/inventory.yaml` as a symlink to `inventory.example.yaml`. A plain `cp` onto that symlink writes through it and edits the tracked example. Always `rm -f` first; `cp --remove-destination` will not follow a symlink either. `config/directv.yaml` is gitignored. Then edit real H25 IPs. Do not leave the placeholder `192.168.10.151`–`.160` addresses in place.
 
 ```bash
 rm -f config/inventory.yaml config/directv.yaml config/channels.yaml config/schedule_sync.yaml
@@ -265,7 +282,7 @@ panel_custom:
     sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=30
+    module_url: /local/panels/panel-health.js?v=33
     require_admin: false
     config:
       environment: live
@@ -315,7 +332,33 @@ Pass: probe JSON 200, `get-tuned` has `title` + `major`, after tune `major` is 2
 
 Then in HA **Activity**, tap **FOX Local** on AVAccess Matrix and confirm scripts **Ran** (not STAGING echo). All TVs should show local FOX.
 
-Leave **Live commit** off. On Sports Routing, pick one game, tap **All 35 TVs** or a single TV, and tap **Take**. The summary is a dry run: it names the DirecTV box and the channel, and the wall does not change. The yellow line reads **Live commit is off until the room inventory is set up** until `inventory.json` has real hostnames. After one TV routes from the command line, turn Live commit on and Take that same one-TV plan before using All 35.
+Leave **Live commit** off. On Sports Routing, pick one game, tap **All 35 TVs** or a single TV, and tap **Take**. The banner reads **PRACTICE – TVs will not change** and the summary is headed **PRACTICE summary**: it names the DirecTV box and the channel, and the wall does not change. The yellow line reads **Live commit is off until the room inventory is set up** until `inventory.json` has real hostnames. After one TV routes from the command line, follow section 7b before the first Live Take.
+
+---
+
+## 7b) Soft Launch, then the first Live Take
+
+**Soft Launch** is staff using Sports Routing for practice on the real HA while the wall is still driven by Matrix or by hand.
+
+Conditions while in Soft Launch:
+
+- Leave `REPLACE_ME` in `/config/www/avaccess/inventory.json` (do not export the real inventory to `www` yet). The **Live commit** button stays disabled, the banner stays **PRACTICE – TVs will not change**, and even a boolean turned on from Developer Tools cannot make a panel Take live.
+- Keep `input_boolean.avaccess_live_commit` **off**.
+- Check that every iPad shows the slate **PRACTICE** banner at the top. If any iPad shows the red **LIVE – TVs WILL change** banner, stop and turn the boolean off.
+- Matrix is **not** in practice mode. Anyone tapping AVAccess Matrix changes the wall. Say so in training.
+- Practice Takes write occupancy to each iPad’s `localStorage` (`avaccess-bartender-panel-v2`). It is per-iPad and it is fiction: no box was tuned.
+
+Leaving Soft Launch (first Live Take):
+
+1. Confirm the host is HA OS or host-network (section 0). Do not go Live from a Docker bridge container.
+2. Run the section 7 smoke test from the command line, one TV first.
+3. **Wipe practice occupancy on every iPad.** Tap **Clear room state** (next to Live commit) on each iPad, or clear Companion’s data. Otherwise the planner treats practice routes as real busy boxes and can pick, or refuse, the wrong encoder. Clear room state does not delete named TV sets (`avaccess-tv-sets-v1`).
+4. Export the real inventory to `/config/www/avaccess/inventory.json` (section 3) and reload the panel. The **Live commit** button becomes enabled.
+5. Turn **Live commit: ON**. Every iPad banner turns red: **LIVE – TVs WILL change**.
+6. Take one game to one TV. The summary is headed **Live summary** and each slot shows `ok`. Check the wall. Then try All 35.
+7. Use one iPad for Live. Occupancy is still per-iPad (no server ledger), so a second iPad does not know which boxes the first one tuned.
+
+To go back to practice at any time, turn **Live commit** off. Every iPad returns to **PRACTICE**.
 
 ---
 
@@ -325,7 +368,7 @@ Leave **Live commit** off. On Sports Routing, pick one game, tap **All 35 TVs** 
 2. Connect to `http://<ha-host>:8123` (or your TLS proxy).
 3. Sidebar: **Sports Routing** for the bar, **AVAccess Matrix** for favorites.
 4. Hold the iPad **sideways** for Sports Routing. Below 900px wide the three columns stack and the buttons get small. Matrix favorites still fit portrait.
-5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=30` in this repo. Bump it when you copy a new `panel-health.js`, then restart Home Assistant.
+5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=33` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
 
 Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
@@ -342,7 +385,10 @@ Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_G
 | 5 | FOX Local: all TVs + H25-01 on WGHP |
 | 6 | Now Playing entities match the DirecTV integration |
 | 7 | `input_boolean.avaccess_live_commit` is **off** except during a live Take |
-| 8 | Sports Routing is landscape. Take shows a dry-run summary. The wall does not change while the yellow line is up |
+| 8 | Sports Routing is landscape. Banner reads **PRACTICE – TVs will not change**. Take shows a **PRACTICE summary**. The wall does not change while the yellow line is up |
+| 8b | HA runs on HA OS or `network_mode: host` (not a Docker bridge) before any Live Take |
+| 8c | **Clear room state** tapped on every iPad before the first Live Take (section 7b) |
+| 8d | Staff know Matrix taps are always live; Sports Routing is live only under the red **LIVE** banner |
 | 9 | `sports_schedule.json` source is `directv-sports-info`. `guide_channels.json` source is `tvpassport:5960D` |
 | 10 | Selenium add-on is up on port 4444, or a PC pull has replaced `sports_schedule.json` |
 | 11 | Saving a named set writes `www/avaccess/custom_tv_sets.json` (`source` `tv-sets`) |
@@ -366,7 +412,7 @@ Copy `sports_schedule.json` or `guide_channels.json` only when the HA host is no
 
 ## Rollback
 
-- **Tune only:** leave **Live commit** off. Take stays a dry run. Matrix still tunes via SHEF.
+- **Tune only:** turn **Live commit** off. Every iPad returns to **PRACTICE** and Take stays a practice plan. Matrix still tunes via SHEF and still routes; it has no practice mode.
 - **Whole UI:** keep the previous `/config/packages/avaccess_matrix.yaml` copy and restore it.
 - iTach IR is **not** on the operator path. `config/itach.example.yaml` and `scripts/send_xumo_ir_itach.py` remain in the repo only as unused leftovers.
 
