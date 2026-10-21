@@ -5,6 +5,9 @@
 #   Current Program: Allow
 
 timeout_seconds: 4
+# Route executor confirms each tune via /tv/getTuned before UDP; a mismatch
+# fails that slot. Set false only if a receiver is slow to report the new channel.
+verify_tune: true
 
 receivers:
   H25-01:

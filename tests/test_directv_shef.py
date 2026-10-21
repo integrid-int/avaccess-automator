@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import URLError
@@ -18,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from scripts import directv_shef as shef
 from scripts.directv_shef import parse_channel, shef_get, summarize_tuned
 from scripts.generate_ha_bundle import build_package, load_yaml, resolve_presets
 
@@ -75,6 +78,263 @@ class ShefGetTests(unittest.TestCase):
         with patch("scripts.directv_shef.urllib.request.urlopen", boom):
             with self.assertRaises(SystemExit):
                 shef_get("192.168.10.151", 8080, "/info/mode")
+
+    def test_socket_timeout_names_host(self) -> None:
+        def slow(*_args, **_kwargs):
+            raise TimeoutError("timed out")
+
+        with patch("scripts.directv_shef.urllib.request.urlopen", slow):
+            with self.assertRaises(SystemExit) as ctx:
+                shef_get("192.168.10.151", 8080, "/tv/tune")
+        self.assertIn("192.168.10.151", str(ctx.exception))
+
+    def test_http_200_with_error_body_status_raises(self) -> None:
+        body = {"status": {"code": 403, "commandResult": 1, "msg": "Forbidden."}}
+        with patch("scripts.directv_shef.urllib.request.urlopen", _fake_urlopen(lambda _url: body)):
+            with self.assertRaises(SystemExit) as ctx:
+                shef_get("192.168.10.151", 8080, "/tv/tune", {"major": 206})
+        self.assertIn("403", str(ctx.exception))
+        self.assertIn("Forbidden", str(ctx.exception))
+
+
+def _fake_urlopen(responder, calls: list | None = None):
+    """urlopen stand-in; ``responder(url)`` returns the JSON body dict."""
+
+    class FakeResp:
+        def __init__(self, payload: dict) -> None:
+            self._payload = payload
+
+        def read(self) -> bytes:
+            return json.dumps(self._payload).encode()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+    def fake(req, timeout=0):  # noqa: ANN001
+        if calls is not None:
+            calls.append(req.full_url)
+        return FakeResp(responder(req.full_url))
+
+    return fake
+
+
+_OK = {"code": 200, "commandResult": 0, "msg": "OK."}
+_RECV = {"id": "H25-01", "host": "192.168.10.151", "port": 8080, "client_addr": "0"}
+
+
+class CheckShefStatusTests(unittest.TestCase):
+    def test_success(self) -> None:
+        shef.check_shef_status({"status": dict(_OK)}, "u", require=True)
+
+    def test_non_200_code_rejected(self) -> None:
+        for code in (403, 500, "404"):
+            with self.subTest(code=code):
+                with self.assertRaises(SystemExit):
+                    shef.check_shef_status({"status": {"code": code, "msg": "x"}}, "u")
+
+    def test_nonzero_command_result_rejected(self) -> None:
+        with self.assertRaises(SystemExit):
+            shef.check_shef_status({"status": {"code": 200, "commandResult": 1}}, "u")
+
+    def test_invalid_code_rejected(self) -> None:
+        for status in ({"msg": "OK."}, {"code": "OK"}, "OK"):
+            with self.subTest(status=status):
+                with self.assertRaises(SystemExit):
+                    shef.check_shef_status({"status": status}, "u")
+
+    def test_missing_status_only_rejected_when_required(self) -> None:
+        shef.check_shef_status({"major": 206}, "u")
+        with self.assertRaises(SystemExit):
+            shef.check_shef_status({}, "u", require=True)
+
+
+class TuneStatusTests(unittest.TestCase):
+    def test_cmd_tune_requires_status(self) -> None:
+        with patch("scripts.directv_shef.urllib.request.urlopen", _fake_urlopen(lambda _u: {})):
+            with self.assertRaises(SystemExit):
+                shef.cmd_tune(_RECV, 206, 65535, 1.0)
+
+    def test_cmd_tune_ok(self) -> None:
+        with patch(
+            "scripts.directv_shef.urllib.request.urlopen",
+            _fake_urlopen(lambda _u: {"status": dict(_OK)}),
+        ):
+            self.assertEqual(shef.cmd_tune(_RECV, 206, 65535, 1.0)["status"]["code"], 200)
+
+
+class VerifyTunedTests(unittest.TestCase):
+    def test_tuned_matches(self) -> None:
+        self.assertTrue(shef.tuned_matches({"major": 206, "minor": 65535}, 206, 65535))
+        self.assertTrue(shef.tuned_matches({"major": "206"}, 206, 65535))
+        self.assertTrue(shef.tuned_matches({"major": 229, "minor": 1}, 229, 1))
+        self.assertFalse(shef.tuned_matches({"major": 229, "minor": 2}, 229, 1))
+        self.assertFalse(shef.tuned_matches({"major": 212}, 206, 65535))
+        self.assertFalse(shef.tuned_matches({}, 206, 65535))
+
+    def test_retries_until_receiver_reports_channel(self) -> None:
+        reports = iter([{"major": 212}, {"major": 206}])
+
+        def responder(url: str) -> dict:
+            self.assertIn("/tv/getTuned", url)
+            return {"status": dict(_OK), **next(reports)}
+
+        sleeps: list[float] = []
+        with patch("scripts.directv_shef.urllib.request.urlopen", _fake_urlopen(responder)):
+            tuned = shef.verify_tuned(_RECV, 206, 65535, 1.0, sleep=sleeps.append)
+        self.assertEqual(tuned["major"], 206)
+        self.assertEqual(sleeps, [shef.VERIFY_DELAY_S])
+
+    def test_mismatch_raises_after_attempts(self) -> None:
+        calls: list[str] = []
+        with patch(
+            "scripts.directv_shef.urllib.request.urlopen",
+            _fake_urlopen(lambda _u: {"status": dict(_OK), "major": 212, "callsign": "ESPN2"}, calls),
+        ):
+            with self.assertRaises(SystemExit) as ctx:
+                shef.verify_tuned(_RECV, 206, 65535, 1.0, attempts=3, sleep=lambda _s: None)
+        self.assertEqual(len(calls), 3)
+        self.assertIn("expected ch=206", str(ctx.exception))
+        self.assertIn("ESPN2", str(ctx.exception))
+
+    def test_tune_and_verify_without_verify_skips_get_tuned(self) -> None:
+        calls: list[str] = []
+        with patch(
+            "scripts.directv_shef.urllib.request.urlopen",
+            _fake_urlopen(lambda _u: {"status": dict(_OK)}, calls),
+        ):
+            result = shef.tune_and_verify(_RECV, 206, 65535, 1.0, verify=False)
+        self.assertNotIn("tuned", result)
+        self.assertEqual(len(calls), 1)
+        self.assertIn("/tv/tune", calls[0])
+
+    def test_cli_tune_verify_mismatch_exits_nonzero(self) -> None:
+        def responder(url: str) -> dict:
+            if "/tv/getTuned" in url:
+                return {"status": dict(_OK), "major": 212}
+            return {"status": dict(_OK)}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = Path(tmp) / "directv.yaml"
+            cfg.write_text(
+                yaml.safe_dump(
+                    {
+                        "encoder_to_receiver": {"ENC-01": "H25-01"},
+                        "receivers": {"H25-01": {"host": "192.168.10.151"}},
+                    }
+                )
+            )
+            argv = ["directv_shef.py", "--config", str(cfg), "tune", "--encoder", "ENC-01",
+                    "--channel", "206", "--verify"]
+            with patch.object(sys, "argv", argv), patch(
+                "scripts.directv_shef.urllib.request.urlopen", _fake_urlopen(responder)
+            ), patch("scripts.directv_shef.time.sleep", lambda _s: None), redirect_stdout(io.StringIO()):
+                with self.assertRaises(SystemExit) as ctx:
+                    shef.main()
+        self.assertIn("verify failed", str(ctx.exception.code))
+
+
+class ExecutorShefStatusTests(unittest.TestCase):
+    """Live executor: a failed or unconfirmed SHEF tune fails the slot before UDP."""
+
+    def _inventory(self) -> dict:
+        return {
+            "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010},
+            "encoders": [
+                {"id": "ENC-01", "hostname": "IPE935-AAA"},
+                {"id": "ENC-02", "hostname": "IPE935-BBB"},
+            ],
+            "receivers": [
+                {"id": "RX-01", "hostname": "IPD935-001"},
+                {"id": "RX-02", "hostname": "IPD935-002"},
+            ],
+        }
+
+    def _directv(self, **extra) -> dict:
+        return {
+            "encoder_to_receiver": {"ENC-01": "H25-01", "ENC-02": "H25-02"},
+            "receivers": {
+                "H25-01": {"host": "192.168.10.151"},
+                "H25-02": {"host": "192.168.10.152"},
+            },
+            "timeout_seconds": 1,
+            **extra,
+        }
+
+    def _plan(self) -> dict:
+        def slot(index: int, enc: str, tx: str, tv: int, channel: str) -> dict:
+            return {
+                "index": index,
+                "encoderId": enc,
+                "program": {"id": f"g{index}", "label": f"Game {index}", "channelNumber": channel},
+                "tvs": [tv],
+                "tune": {"channelNumber": channel},
+                "udp": {"txHostname": tx, "rxHostnames": [f"IPD935-00{tv}"]},
+                "status": "planned",
+            }
+
+        return {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [slot(1, "ENC-01", "IPE935-AAA", 1, "206"), slot(2, "ENC-02", "IPE935-BBB", 2, "212")],
+            "warnings": [],
+        }
+
+    def _run(self, responder, directv: dict | None = None):
+        from scripts.avaccess import execute_route_plan as erp
+
+        udp: list[str] = []
+        with patch("scripts.directv_shef.urllib.request.urlopen", _fake_urlopen(responder)), patch.object(
+            erp, "send_udp_reconnect", lambda **kw: udp.append(kw["tx_hostname"])
+        ), patch("scripts.directv_shef.time.sleep", lambda _s: None):
+            report = erp.execute_plan(
+                self._plan(),
+                inventory=self._inventory(),
+                directv=directv or self._directv(),
+                live=True,
+            )
+        return report, udp
+
+    def test_error_body_status_fails_slot_without_udp(self) -> None:
+        def responder(url: str) -> dict:
+            if "192.168.10.151" in url and "/tv/tune" in url:
+                return {"status": {"code": 403, "commandResult": 1, "msg": "Forbidden."}}
+            if "/tv/getTuned" in url:
+                return {"status": dict(_OK), "major": 212, "minor": 65535}
+            return {"status": dict(_OK)}
+
+        report, udp = self._run(responder)
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["slots"][0]["status"], "error")
+        self.assertIn("403", report["slots"][0]["error"])
+        self.assertEqual(report["slots"][1]["status"], "ok")
+        self.assertEqual(udp, ["IPE935-BBB"])
+
+    def test_verify_mismatch_fails_slot_without_udp(self) -> None:
+        def responder(url: str) -> dict:
+            if "/tv/getTuned" in url:
+                return {"status": dict(_OK), "major": 212, "minor": 65535}
+            return {"status": dict(_OK)}
+
+        report, udp = self._run(responder)
+        self.assertEqual(report["slots"][0]["status"], "error")
+        self.assertIn("verify failed", report["slots"][0]["error"])
+        self.assertEqual(report["slots"][1]["status"], "ok")
+        self.assertEqual(udp, ["IPE935-BBB"])
+
+    def test_verify_disabled_skips_get_tuned(self) -> None:
+        urls: list[str] = []
+
+        def responder(url: str) -> dict:
+            urls.append(url)
+            return {"status": dict(_OK)}
+
+        report, udp = self._run(responder, directv=self._directv(verify_tune=False))
+        self.assertTrue(report["ok"], report)
+        self.assertEqual(udp, ["IPE935-AAA", "IPE935-BBB"])
+        self.assertFalse(any("/tv/getTuned" in u for u in urls))
 
 
 class BundleGenerationTests(unittest.TestCase):

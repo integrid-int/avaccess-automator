@@ -69,7 +69,12 @@ def send_directv_tune(
     dry_run: bool = False,
     timeout: float | None = None,
 ) -> Any:
-    """Module-level SHEF tuner (monkeypatch target for tests)."""
+    """Module-level SHEF tuner (monkeypatch target for tests).
+
+    Raises on non-success SHEF body status, and (unless ``verify_tune: false``
+    in directv config) when /tv/getTuned does not confirm the channel, so the
+    caller fails the slot before any UDP send.
+    """
     shef = _load_shef_module()
     try:
         major, minor = shef.parse_channel(str(channel))
@@ -90,8 +95,9 @@ def send_directv_tune(
             "minor": minor,
             "host": recv.get("host"),
         }
+    verify = bool(directv.get("verify_tune", True))
     try:
-        return shef.cmd_tune(recv, major, minor, timeout)
+        return shef.tune_and_verify(recv, major, minor, timeout, verify=verify)
     except SystemExit as exc:
         raise RuntimeError(str(exc) or "SHEF tune failed") from exc
 

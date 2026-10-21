@@ -590,6 +590,82 @@ def test_dry_run_empty_tune_does_not_preflight(monkeypatch):
     assert calls == ["udp"]
 
 
+def _fake_shef_urlopen(responder):
+    class FakeResp:
+        def __init__(self, payload):
+            self._payload = payload
+
+        def read(self):
+            return json.dumps(self._payload).encode()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+    return lambda req, timeout=0: FakeResp(responder(req.full_url))
+
+
+def test_live_shef_error_body_status_fails_slot_before_udp(monkeypatch):
+    udp = []
+    monkeypatch.setattr(
+        "scripts.directv_shef.urllib.request.urlopen",
+        _fake_shef_urlopen(
+            lambda _url: {"status": {"code": 403, "commandResult": 1, "msg": "Forbidden."}}
+        ),
+    )
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+
+    report = erp.execute_plan(
+        _one_slot_plan(),
+        inventory=_valid_live_inventory(),
+        directv=_live_directv(),
+        live=True,
+    )
+    assert report["ok"] is False
+    assert report["slots"][0]["status"] == "error"
+    assert "403" in report["slots"][0]["error"]
+    assert udp == []
+
+
+def test_cli_live_shef_unverified_tune_exit_1_without_udp(monkeypatch, tmp_path, capsys):
+    udp = []
+
+    def responder(url):
+        if "/tv/getTuned" in url:
+            return {"status": {"code": 200, "commandResult": 0}, "major": 212, "minor": 65535}
+        return {"status": {"code": 200, "commandResult": 0, "msg": "OK."}}
+
+    monkeypatch.setattr("scripts.directv_shef.urllib.request.urlopen", _fake_shef_urlopen(responder))
+    monkeypatch.setattr("scripts.directv_shef.time.sleep", lambda _s: None)
+    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
+    inv_path = tmp_path / "inv.yaml"
+    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+    directv_path = tmp_path / "directv.yaml"
+    directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
+
+    code = erp.main(
+        [
+            "--inventory",
+            str(inv_path),
+            "--directv-config",
+            str(directv_path),
+            "--plan-file",
+            str(plan_path),
+            "--live",
+        ]
+    )
+    assert code == 1
+    assert udp == []
+    report = json.loads(capsys.readouterr().out)
+    assert report["slots"][0]["status"] == "error"
+    assert "verify failed" in report["slots"][0]["error"]
+
+
 def test_itach_example_is_unused_leftover():
     path = ROOT / "config" / "itach.example.yaml"
     assert path.is_file()
