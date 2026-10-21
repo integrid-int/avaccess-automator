@@ -1,6 +1,6 @@
 # Pre-Production QA Review Results — AVAccess Automator
 
-**Status:** PARTIAL — 8/10 specialist reports merged; 2 still running  
+**Status:** PARTIAL — 9/10 specialist reports merged; Reliability still running  
 **Plan:** [PRE_PROD_QA_REVIEW_PLAN.md](./PRE_PROD_QA_REVIEW_PLAN.md)  
 **Review branch:** `cursor/pre-prod-qa-review-af45`  
 **Code under review:** `main` @ `e2f97d3`  
@@ -8,15 +8,15 @@
 
 ---
 
-## Executive verdict (interim — 8 specialists in)
+## Executive verdict (interim — 9 specialists in)
 
 | Question | Interim answer |
 |----------|----------------|
-| Enable **Live Send** on next game day? | **NO-GO** — S0 reuse/replace wall semantics + silent Live failure + per-iPad occupancy; Security S1s unfixed |
-| Soft Launch (**dry-run only**) on iPad? | **Conditional GO** — fix scroll-jump if present on site; correct training “off” copy; PRACTICE label; visual token/logo/fold; Matrix off bartender iPads |
-| Overall | Dry-run training only; `HA_LIVE.md` alone insufficient until S0/S1 ops gaps closed |
+| Enable **Live Send** on next game day? | **NO-GO** — Senior + cross-specialist S0s (patio retunes bar; “off” fiction; browser occupancy; silent Live failure) |
+| Soft Launch (**dry-run only**) on iPad? | **GO as training only** — not the bartender live path this weekend; keep remotes/VDirector (or Matrix only after site smoke) for wall changes |
+| Overall | Do not take the pager on Live; dry-run soft launch as training tool only |
 
-Strong convergence: reuse of a busy encoder blanks/retunes unintended TVs physically while UI says “off”; Live Take often looks successful without wall truth; occupancy is browser-local.
+Senior agrees with Security/UI/Code/Arch/FOH/Owner: core model unsafe for Live until free-box preference, server occupancy, visible failures, and real kill switch land.
 
 ---
 
@@ -41,7 +41,7 @@ Strong convergence: reuse of a busy encoder blanks/retunes unintended TVs physic
 | Visual design | [Visual design review](bc-66c2e031-218f-512f-8cc1-66e105ce4588) | **merged** |
 | Overall design | [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34) | **merged** |
 | Codebase | [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e) | **merged** |
-| Senior developer | [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e) | running |
+| Senior developer | [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e) | **merged** |
 | Owner persona | [Owner persona review](bc-9b5be436-b5b1-53c3-b713-f818d583b824) | **merged** |
 | Bartender persona | [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e) | **merged** |
 | Ops runbook | [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a) | **merged** |
@@ -250,7 +250,50 @@ Canonical symlink tree; pure planner/assignment tests; placeholder defaults; str
 
 ## 7. Senior developer perspective
 
-_Pending — [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e)._
+**Source:** [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e)  
+**Verdict:** Live **do not ship**. Soft launch dry-run **training only** — not bartenders’ way to change TVs this weekend. Would **not** take the pager. Repros in `/opt/cursor/artifacts/senior-review/`.
+
+### S0 (reproduced)
+
+1. **Patio after All-35 reuses ENC-01** — `singleEncoderForTvs` before free-box lookup; no pre-Take warn; wall flips all 35; test only covers all-busy case.  
+2. **“Turns off” is fiction** — executor never reads `plan.replaced`; Now lies.  
+3. **Free-box = per-iPad guess** — cache clear (post-update), second iPad, Matrix, VDirector, remotes all desync; even one iPad + 4 Programs leaves ~17/35 wrong in panel belief.
+
+### S1
+
+4. Failed Live looks successful (`returnResponse` absent; HA only logs exit; occupancy pre-saved; DEBUG-only stdout).  
+5. “ok” ≠ TVs changed (UDP no ack; SHEF body/`getTuned` unused; CLI `--verify` not wired).  
+6. Live silently drops to dry-run on Companion reload (toggle never writes boolean; entity `initial: false`).  
+7. Live interlock iPad-only; any user can `live: true`.  
+8. LIVE/dry-run look alike (broken CSS vars).  
+9. No in-flight Take guard (60s, double executor).  
+10. 212/552 games no channel — still Takeable → leftover content (repro: HSN).  
+11. Full re-render on `hass` → scroll jump / mistaps.  
+12. Live never proven on real wall; UI churn Oct 20–21; training forbids Live.
+
+### S2–S4
+
+Two surfaces/no shared state; stale sports unnoticed; shallow preflight + inventory symlink trap; deploy skew (`main` symlink, `?v=` dance, `:stable`); public-repo `/local` + unvalidated b64 args; UDP session always starts at 1; regex-only live tests; monolith; `SPECTRUM_ZIP`.
+
+### Risks refused on-call
+
+Patio Take mid-game; “Live summary” with no change; panel↔wall drift with no resync; Live quietly off after reload; double-tap 60s Takes.
+
+### What’s well done
+
+Safe defaults; per-slot continue + SHEF-fail skips UDP; panel `udp: null` → server enrich; escaping/atomic sports write; pure planner tests; striping JS↔Python match; honest `HA_LIVE.md`.
+
+### Minimum bar for Live yes
+
+1. Never retune shared box without explicit listed confirmation; prefer free box; make “off” real or stop claiming it  
+2. Server room state from executor only + resync  
+3. Visible Live failures + success-only occupancy + tune readback before UDP  
+4. Server Live boolean + unmistakable LIVE UI + single-flight Take  
+5. Block no-channel; sports freshness; stop full re-render  
+6. Written wall acceptance: 1 TV → named-set after All-35 → 4 Programs → 35; back-to-back same box; unplugged H25 shows fail; Matrix+panel together  
+7. Live staff sheet; tagged release; pinned HA image; clear localStorage before Live  
+
+**This weekend:** remotes + VDirector as live path; Matrix only if `HA_LIVE.md` §7 smoke passes on site.
 
 ---
 
