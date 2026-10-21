@@ -8,7 +8,7 @@
 
 **Tech Stack:** Home Assistant custom panel (JS), `scripts/avaccess/*` (Python), HA `shell_command` / `input_boolean`, Node test runner, unittest/pytest.
 
-**Branch:** `remediation/2026-10-21`  
+**Branch:** `cursor/remediation-2026-10-21-af45` (user alias: `remediation/2026-10-21`)  
 **Source reviews:** `docs/qa/PRE_PROD_QA_REVIEW_RESULTS.md`, `docs/qa/RELIABILITY_REVIEW.md`, `docs/qa/PRE_PROD_QA_REVIEW_PLAN.md`  
 **Loop cap:** 5 iterations per review/fix loop  
 **Models:** Planning/acceptance = inherit / Grok high when Opus/GPT unavailable; core logic = Grok high or Composer; mechanical/docs = Composer fast / Sonnet if available.

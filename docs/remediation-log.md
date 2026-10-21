@@ -1,6 +1,6 @@
 # Remediation Log
 
-**Branch:** `remediation/2026-10-21`  
+**Branch:** `cursor/remediation-2026-10-21-af45` (alias `remediation/2026-10-21`)  
 **Rule:** Never merge/push to `main` until Phase 6.
 
 ---
