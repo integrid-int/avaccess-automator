@@ -94,3 +94,24 @@ _(per-WP commit entries follow)_
 **Tests:** `tests/test_directv_shef.py` (status, timeout, verify retry/mismatch, CLI `--verify`, executor end-to-end via fake urlopen: 403 body and getTuned mismatch fail slot with no UDP, other slot still routes); `tests/test_execute_route_plan.py` (403 body → slot error, CLI unverified tune → exit 1, no UDP); new `tests/test_apply_preset.py` (9 cases incl. all example presets passing when commissioned).
 
 **Risk / follow-up:** verify adds up to ~1 s per slot when the H25 is slow to report; with 9 slots plus 4 s SHEF timeouts the 60 s HA shell timeout is still the outer bound. A stale `/config/avaccess/directv_shef.py` copy without `tune_and_verify` fails every live slot closed (AttributeError) — redeploy both files together.
+
+---
+
+## WP-D — Server Live interlock & plan safety
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S1-LIVE-BOOLEAN, S1-B64-SHELL, S1-UDP-TRUST |
+| Commit | `482e66a` (interlock, b64, re-enrich, panel, tests), `4589c17` (README / HA_LIVE) |
+| Verify | `node --test tests/js/*.test.js` 78/78; `python3 -m unittest tests.test_live_interlock` 23/23; full Python suite (pytest-style modules via offline shim, PyPI unreachable) 151/151. New tests fail on pre-fix code (14 failures + 23 errors Python, 6 JS) and pass on the branch. |
+
+**Changes**
+- **S1-LIVE-BOOLEAN:** new `script.avaccess_live_execute` (`mode: single`) in `avaccess_routing.yaml`: runs `shell_command.avaccess_execute_route_plan` with `live: true` only when `input_boolean.avaccess_live_commit` is `on`; otherwise returns a failed report (`returncode` 3, `errors: ["Live Commit is off in Home Assistant. Nothing was sent."]`) without calling the shell. Defense in depth: the shell_command template renders `--live-commit on|off` from `is_state(...)` at call time and `run_execute_route_plan.py` refuses `--live` (exit 3, JSON report) unless it reads `on`, so calling the shell_command directly cannot bypass the boolean.
+- Panel: Live Take calls `script.avaccess_live_execute` (returnResponse) instead of the raw shell_command. **Live commit** button calls `input_boolean.turn_on/turn_off`; panel state is re-derived from `hass.states` on every `hass` update, every `render()`, and at the start of `_sendPlan` (one-shot `_liveCommitSynced` removed). Toggle failure shows “Could not change Live commit in Home Assistant.” Cache-bust `panel-health.js?v=32`, `live-execute.js?v=21`.
+- **S1-B64-SHELL:** HA shlex-splits templated shell_commands (no shell), so the real risk was argument injection (e.g. `plan_b64="… --inventory /x"`). `plan_b64` / `sets_b64` now render only if they match `^[A-Za-z0-9+/]+={0,2}$` and are single-quoted; otherwise an empty arg. Python decodes strictly (`validate=True`, alphabet regex) and rejects bad payloads (executor exit 2; `save_tv_sets` exits without writing). `allow_abbrev=False` on both parsers so `--liv` cannot alias `--live`.
+- **S1-UDP-TRUST:** `execute_plan(live=True)` always runs `enrich_route_plan`, overwriting caller `udp` hostnames from inventory (dry-run unchanged: enrich only when `udp` is null).
+
+**Tests:** `tests/test_live_interlock.py` (live UDP overwrite, strict b64, CLI injection exit 2, `--liv` rejected, `save_tv_sets` rejection, wrapper gate on/off/missing, real `avaccess_routing.yaml` templates rendered with Jinja + `shlex.split` like HA for gate and injection cases, script structure); `tests/js/live-commit-sync.test.js` (instantiates `PanelHealth` with a DOM stub: resync on every hass update, toggle writes `input_boolean`, failure path, Live Take calls the script); `live-execute.test.js` / `panel-shell.test.js` updated for the script path.
+
+**Risk / follow-up:** not exercised on a real HA instance. Script `response_variable` + `stop` needs HA ≥ 2023.7 (compose uses `stable`). With `mode: single`, a second concurrent Live Take from another iPad gets no report and shows a failure (nothing sent). Turning the boolean on now affects every iPad (intended: one shared server truth).
