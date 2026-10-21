@@ -457,6 +457,8 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 - Results: `docs/qa/PRE_PROD_QA_REVIEW_RESULTS.md`  
 - Node test log: `/opt/cursor/artifacts/node-test-results.txt`  
 - Test gate notes: `/opt/cursor/artifacts/automated-test-gate.md`  
+- Senior repros: `/opt/cursor/artifacts/senior-review/` (`repro_output.log`, `repro_patio.mjs`, `repro_presets.mjs`, `exec_patio.py`)  
+
 
 ## Appendix B — Change log
 
@@ -467,3 +469,4 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 | +Bartender | FOH Soft Launch only; silent encoder-reuse blanking elevated; Matrix vs Routing staff trap |
 | +UI/Code/Ops | S0 reuse/replace + silent Live + browser occupancy confirmed across three lenses; HA_LIVE insufficient alone |
 | +Architecture | Three between-layer blockers; Sunday Ticket channel set disagreement (9554–9563 vs 705–713) |
+| +Senior | Do-not-ship Live; pager refused; patio/4P/no-channel repros; Soft Launch = training only |
