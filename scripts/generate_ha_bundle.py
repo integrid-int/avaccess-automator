@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import copy
 import re
 from pathlib import Path
 from typing import Any
@@ -39,7 +40,6 @@ PRESET_DISPLAY_NAMES = {
 
 # Valid MDI names (mdi:television-multiple does not exist and renders blank).
 ROUTE_ICON = "mdi:monitor-multiple"
-SELECTED_ICON = "mdi:check-circle"
 
 
 def friendly_preset_name(preset_key: str) -> str:
@@ -603,32 +603,32 @@ def _selectable_buttons(
     entity: str,
     option: str,
 ) -> list[dict[str, Any]]:
-    """Two button variants so the tile matching the input_select state looks selected.
-
-    Built-in `visibility` conditions swap the icon to a check mark; no custom cards needed.
-    """
-    return [
-        _key_button(name, icon, tap_action, [{"condition": "state", "entity": entity, "state_not": option}]),
-        _key_button(name, SELECTED_ICON, tap_action, [{"condition": "state", "entity": entity, "state": option}]),
-    ]
+    """One key. The card turns blue when the input_select matches this option."""
+    del icon  # Stock HA icons are not the bar-panel key. The custom card paints the latch.
+    return [_key_card(name, tap_action, variant="choice", selected_entity=entity, selected_state=option)]
 
 
-def _key_button(
+def _key_card(
     name: str,
-    icon: str,
     tap_action: dict[str, Any],
-    visibility: list[dict[str, Any]] | None = None,
+    *,
+    variant: str,
+    detail: str | None = None,
+    selected_entity: str | None = None,
+    selected_state: str | None = None,
 ) -> dict[str, Any]:
-    """Wide key, same role as a routing-panel button. The check icon marks the latched choice."""
+    """Charcoal key from the Sports Routing panel. Action keys stay blue."""
     card: dict[str, Any] = {
-        "type": "button",
+        "type": "custom:avaccess-key",
         "name": name,
-        "icon": icon,
-        "icon_height": "28px",
+        "variant": variant,
         "tap_action": tap_action,
     }
-    if visibility is not None:
-        card["visibility"] = visibility
+    if detail:
+        card["detail"] = detail
+    if selected_entity:
+        card["selected_entity"] = selected_entity
+        card["selected_state"] = selected_state
     return card
 
 
@@ -701,6 +701,10 @@ def _now_playing_cards(encoder_media_player: dict[str, Any], ui_staging: bool) -
     ]
 
 
+def _label(text: str, variant: str = "section") -> dict[str, Any]:
+    return {"type": "custom:avaccess-label", "text": text, "variant": variant}
+
+
 def _selection_card(title: str) -> dict[str, Any]:
     return {
         "type": "entities",
@@ -730,10 +734,6 @@ def _panel_view(title: str, path: str, cards: list[dict[str, Any]]) -> dict[str,
     }
 
 
-def _heading(title: str) -> dict[str, Any]:
-    return {"type": "markdown", "content": f"### {title}"}
-
-
 def _keys(title: str, cards: list[dict[str, Any]], columns: int) -> dict[str, Any]:
     card: dict[str, Any] = {"type": "grid", "columns": columns, "square": False, "cards": cards}
     if title:
@@ -742,29 +742,30 @@ def _keys(title: str, cards: list[dict[str, Any]], columns: int) -> dict[str, An
 
 
 def _route_actions_card() -> dict[str, Any]:
-    return {
-        "type": "grid",
-        "title": "Route Actions",
-        "columns": 3,
-        "square": False,
-        "cards": [
-            _key_button(
+    return _keys(
+        "",
+        [
+            _key_card(
                 "Tune Selected Program",
-                "mdi:remote-tv",
                 {"action": "call-service", "service": "script.avaccess_tune_selected_channel"},
+                variant="action",
+                detail="Changes the DirecTV box only",
             ),
-            _key_button(
+            _key_card(
                 "Route Program → TVs",
-                ROUTE_ICON,
                 {"action": "call-service", "service": "script.avaccess_route_selected_program_to_tvs"},
+                variant="action",
+                detail="Points the TVs at that box",
             ),
-            _key_button(
+            _key_card(
                 "Apply Preset",
-                "mdi:video-switch",
                 {"action": "call-service", "service": "script.avaccess_apply_selected_preset"},
+                variant="action",
+                detail="Changes which TVs watch which box",
             ),
         ],
-    }
+        1,
+    )
 
 
 def build_dashboard(
@@ -826,13 +827,14 @@ def build_dashboard(
                 else str(favorite_key)
             )
             favorite_buttons.append(
-                _key_button(
+                _key_card(
                     fav_label,
-                    "mdi:star",
                     {
                         "action": "call-service",
                         "service": f"script.avaccess_favorite_{fav_slug}",
                     },
+                    variant="favorite",
+                    detail="Runs now",
                 )
             )
 
@@ -840,24 +842,22 @@ def build_dashboard(
     # and the route keys scrolled off the top. The same route keys sit under Bar and again
     # after the lists so a commit is still on screen.
     control_cards: list[dict[str, Any]] = [
-        _selection_card("Bar"),
-        *now_playing,
+        _label("Bar", "room"),
+        _selection_card("Selected"),
+        *copy.deepcopy(now_playing),
+        _label("Actions"),
         _route_actions_card(),
-        _heading("Displays"),
-        _keys("Presets", preset_buttons, 3),
-        _heading("Sources"),
-        _keys("Programs", program_buttons, 3),
-        _keys("Channels", channel_buttons, 4),
+        _label("Displays"),
+        _keys("", preset_buttons, 2),
+        _label("Sources"),
+        _keys("", program_buttons, 2),
+        _keys("", channel_buttons, 2),
     ]
     if favorite_buttons:
         control_cards.extend(
             [
-                _heading("Scenes"),
-                {
-                    "type": "markdown",
-                    "content": "Scenes run as soon as you tap them.",
-                },
-                _keys("", favorite_buttons, 3),
+                _label("Favorites"),
+                _keys("", favorite_buttons, 1),
             ]
         )
     control_cards.append(_route_actions_card())
@@ -878,18 +878,19 @@ def build_dashboard(
             buttons = _build_channel_buttons(channels, [str(c) for c in page_channels], icon="mdi:television-play")
             if not buttons:
                 continue
-            channel_columns = 4 if len(page_channels) > 6 else 2
-            page_cards: list[dict[str, Any]] = []
+            channel_columns = 2
+            page_cards: list[dict[str, Any]] = [_label("Bar", "room")]
             if page_desc:
                 page_cards.append({"type": "markdown", "content": page_desc})
             page_cards.extend(
                 [
-                    _selection_card("Bar"),
-                    *now_playing,
-                    _heading("Displays"),
+                    _selection_card("Selected"),
+                    *copy.deepcopy(now_playing),
+                    _label("Actions"),
                     _route_actions_card(),
-                    _heading("Sources"),
-                    _keys(f"{page_title} Channels", buttons, channel_columns),
+                    _label("Sources"),
+                    _keys(page_title, buttons, channel_columns),
+                    _label("Actions"),
                     _route_actions_card(),
                 ]
             )

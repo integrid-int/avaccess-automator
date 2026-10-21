@@ -1,5 +1,7 @@
 # Matches the Sports Routing panel: graphite field, charcoal keys, blue latch.
 Avaccess Routing:
+  primary-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif
+  ha-font-family-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif
   primary-color: "#0b5cab"
   accent-color: "#1470d4"
   primary-background-color: "#101010"

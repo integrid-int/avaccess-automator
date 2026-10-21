@@ -83,8 +83,7 @@ Use one of these approaches:
 
 - **YAML dashboard mode**: point a dashboard to `/config/dashboards/avaccess_matrix.yaml`
 - **Raw config editor**: paste the generated dashboard YAML into a dashboard
-- **Polished mockup version**: use `homeassistant/dashboards/avaccess_matrix_dashboard_pretty.example.yaml`
-  as a starting point, then adjust entity IDs.
+- The generated dashboard is the current Matrix. `avaccess_matrix_dashboard_pretty.example.yaml` is an older mockup. Do not start a new install from it.
 
 ## 6) Restart Home Assistant
 

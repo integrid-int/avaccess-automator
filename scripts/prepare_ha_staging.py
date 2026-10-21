@@ -40,6 +40,8 @@ homeassistant:
 
 frontend:
   themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/avaccess/matrix-style.js?v=1
 
 http:
   use_x_forwarded_for: true

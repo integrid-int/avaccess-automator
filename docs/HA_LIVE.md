@@ -247,6 +247,10 @@ homeassistant:
   unit_system: us_customary
   currency: USD
 
+frontend:
+  extra_module_url:
+    - /local/avaccess/matrix-style.js?v=1
+
 lovelace:
   dashboards:
     avaccess-matrix:
@@ -267,7 +271,7 @@ panel_custom:
       environment: live
 ```
 
-If `packages:` is already set, only add the dashboard + `panel_custom` blocks.
+If `packages:` is already set, only add the dashboard, the `frontend` module, and `panel_custom`. The module paints Matrix keys in the same charcoal and blue as Sports Routing. Copy `www/avaccess/matrix-style.js` with the rest of `www`.
 
 Restart Home Assistant (**Developer tools → YAML → Restart**, or reboot the container).
 

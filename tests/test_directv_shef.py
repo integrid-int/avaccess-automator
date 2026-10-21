@@ -167,7 +167,7 @@ def _iter_cards(cards: list | None):
 def _buttons_calling(view: dict, service: str) -> list[dict]:
     found: list[dict] = []
     for card in _iter_cards(view.get("cards")):
-        if card.get("type") != "button":
+        if card.get("type") not in {"button", "custom:avaccess-key"}:
             continue
         tap = card.get("tap_action") or {}
         if tap.get("service") == service or str(tap.get("service", "")).startswith(service):
@@ -225,15 +225,17 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 dumped = yaml.safe_dump(view, allow_unicode=True)
                 self.assertIsNone(view.get("icon"), view.get("title"))
                 self.assertIn("Sources", dumped, view.get("title"))
-                self.assertIn("Displays", dumped, view.get("title"))
-                self.assertIn("Route Actions", dumped, view.get("title"))
+                self.assertIn("Actions", dumped, view.get("title"))
+                if view.get("path") == "av-control":
+                    self.assertIn("Displays", dumped, view.get("title"))
+                self.assertIn("custom:avaccess-key", dumped, view.get("title"))
                 self.assertIn("Route Program → TVs", dumped, view.get("title"))
                 self.assertGreaterEqual(dumped.count("Route Program → TVs"), 2, view.get("title"))
                 self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))
                 tune_services = {
                     (card.get("tap_action") or {}).get("service", "")
                     for card in _iter_cards(view.get("cards"))
-                    if card.get("type") == "button"
+                    if card.get("type") in {"button", "custom:avaccess-key"}
                     and str((card.get("tap_action") or {}).get("service", "")).startswith("script.avaccess_tune_")
                 }
                 self.assertEqual(tune_services, {"script.avaccess_tune_selected_channel"}, view.get("title"))
@@ -259,7 +261,6 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 for button in _buttons_calling(control, "input_select.select_option")
                 if (button.get("tap_action") or {}).get("data", {}).get("entity_id")
                 == "input_select.avaccess_active_preset"
-                and button["visibility"][0].get("state_not")
             ]
             self.assertEqual(
                 [button["name"] for button in preset_buttons],
@@ -274,19 +275,14 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 for button in _buttons_calling(control, "input_select.select_option")
                 if (button.get("tap_action") or {}).get("data", {}).get("entity_id")
                 == "input_select.avaccess_channel"
-                and button["visibility"][0].get("state_not")
             ]
             self.assertIn("ESPN", [button["name"] for button in channel_buttons])
 
-            # Each program has an unselected + selected variant swapped by visibility conditions.
-            program_buttons = [
-                button
-                for button in _buttons_calling(control, "script.avaccess_set_program")
-                if button["visibility"][0].get("state_not")
-            ]
+            program_buttons = _buttons_calling(control, "script.avaccess_set_program")
             self.assertEqual([button["name"] for button in program_buttons], [f"Program {letter}" for letter in "ABCDEFGHI"])
             for button in program_buttons:
-                self.assertEqual(button["visibility"][0]["state_not"], button["name"])
+                self.assertEqual(button["variant"], "choice")
+                self.assertEqual(button["selected_state"], button["name"])
             for button, key in zip(program_buttons, "abcdefghi", strict=True):
                 self.assertEqual(button["tap_action"]["service"], "script.avaccess_set_program")
                 self.assertEqual(button["tap_action"]["data"]["program"], f"program_{key}")
@@ -319,7 +315,8 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             titles = {view.get("title") for view in dashboard.get("views", [])}
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
-            self.assertIn("Route Actions", dumped_dash)
+            self.assertIn("Actions", dumped_dash)
+            self.assertIn("custom:avaccess-key", dumped_dash)
             self.assertIn("Route Program → TVs", dumped_dash)
             self.assertIn("All 9 receivers", dumped_dash)
 

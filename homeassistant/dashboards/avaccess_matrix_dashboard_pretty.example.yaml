@@ -1,5 +1,6 @@
-# AVAccess iPad dashboard (polished example)
-# Copy into a Lovelace dashboard YAML file, then adjust entities/sensors as needed.
+# Older Lovelace mockup. Do not install this.
+# The current Matrix is the dashboard written by scripts/generate_ha_bundle.py.
+# It uses the Sports Routing charcoal keys (www/avaccess/matrix-style.js).
 
 title: AVAccess Matrix
 views:
