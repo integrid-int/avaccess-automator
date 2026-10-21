@@ -161,3 +161,32 @@ _(per-WP commit entries follow)_
 **BLOCKED — PDF rebuild:** `reportlab` is not installed and PyPI is unreachable (`pip install reportlab` SSL EOF; no apt package). `docs/STAFF_QUICK_START.pdf` and `docs/STAFF_FULL_GUIDE.pdf` are **not** rebuilt and still contain the old “turn off” / “Off” / DRY-RUN SUMMARY text. Rebuild with `pip install reportlab && python3 scripts/build_staff_pdfs.py` on a machine with PyPI access. `docs/STAFF_TRAINING.pdf` (legacy combined, `build_staff_training_pdf.py`) and `docs/AVACCESS_OPERATORS_GUIDE.pdf` were not edited; both are already marked superseded/older layout. Staff screenshots (`docs/images/staff/*`) predate the PRACTICE banner, pinned rail, and Unassigned wording; recapture is Phase 7.
 
 **Not in this WP:** README Path A / Path B still describe the older multi-screen flow (destination screen, TVs chip); only button labels were synced. Not checked against a real HA instance.
+
+---
+
+## WP-H — Test hardening
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S2-TESTS-SHALLOW |
+| Commit | `6e5b23d` (Python tests unittest-safe), `fe9232c` (panel-driven JS tests, regex cleanup, reuse-warning period), log commit (this entry + README test commands) |
+| Verify | `node --test tests/js/*.test.js` → 100 pass / 0 fail (was 87; 15 new, 2 superseded regex tests removed). `python3 -m unittest discover -s tests -p 'test_*.py' -q` → 151 OK, no import errors (was 86 run + 3 modules failing to import `pytest`; 65 bare `test_*` functions were silently skipped). |
+
+**Python: unittest now runs everything.** `unittest discover` never collected bare `def test_*` functions, so 65 tests in 12 modules (all 20 executor live-path tests in `test_execute_route_plan.py`, plus enrich, inventory_lib, HA wrappers, sports, guide, panels validation) only ran under pytest, which is not installed here or reachable from PyPI. Each module's tests now sit in a `unittest.TestCase` (pytest still collects them). `tmp_path` → `TemporaryDirectory` in `setUp`; `monkeypatch.setattr` → `self.patch` over `unittest.mock.patch`; `capsys` → `redirect_stdout` in `run_main`; `pytest.raises` → `assertRaises`/`assertRaisesRegex` (`excinfo.exception`). Test and assert counts match the originals file by file. Mutation check: disabling `_missing_tune_errors` fails 3 executor tests under plain unittest. The sports Selenium test now closes its local HTTP server socket (`ResourceWarning`).
+
+**JS: the real panel is driven through Take.** New `tests/js/panel-harness.js` stubs `HTMLElement`, `customElements`, and `localStorage` (records write order) so `<panel-health>` can be built, rendered to a string, and sent through `_sendPlan` with a fake `hass.callService`.
+- `panel-send.test.js` (8): Live partial failure (exit 1, ENC-01 error / ENC-02 ok) saves only ENC-02, nothing is in storage while the script is pending, and the Live summary shows the error; context-only response (HA dropped `returnResponse`) saves nothing and shows "no report"; second Take / `_sendDestination` / `_sendTvFirst` while in flight makes no second script call and the Take button renders disabled, `aria-busy`, "Sending…"; Live Take of a game with no channel never calls HA; demo fallback blocks Live but allows PRACTICE; boolean switched off after arming makes Take run PRACTICE with zero service calls; patio (TVs 8–10) after All 35 sends ENC-02 with no Confirm step and ENC-01 keeps 32 TVs; no free encoders + shared box shows "Tap Confirm to continue." and the Confirm label first, then sends ENC-03 on the second Take.
+- `panel-render.test.js` (7): PRACTICE/LIVE banner text, `data-commit-mode`, and `routing is-live` from rendered HTML (incl. boolean on + inventory not ready → PRACTICE; `render()` re-reads the boolean); rail renders Guide/Now/Sets in `rail-pinned` before every sport in `rail-sports`; unchanged `hass` push skips the `innerHTML` write and a changed push restores scroll of matching keys; demo-fallback and stale sports banners render.
+- Removed brittle source regexes these replace: `_sendPlan` body slicing (`live-execute.test.js`), `_sendPlan…takeBlockReason…callService` (`take-guards`, `panel-shell`), header/rail/`render()` method slicing (`panel-shell`). CSS-only checks stay as source regexes.
+- **Mutation matrix** (re-introduce pre-fix behavior one at a time, run the new files): 12 of 14 caught: save-before-Live, save-whole-plan, no in-flight lock, no `_sendPlan` Take guard, both channel guards removed, `_sendPlan` trusting the cached flag, reuse-before-free, no Confirm gate, `render()` not resyncing, sports above Guide/Now/Sets, no scroll restore, rebuild on every push. Not caught by the new files: planner-only channel guard removed (the panel guard still blocks; the 4 existing `buildRoutePlan` channel tests catch it), and the banner dropping its inventory check (equivalent mutant: `_state.liveCommit` already folds in readiness on every render).
+
+**Product fix found by the tests:** the reuse warning read "…until reassigned Tap Confirm to continue." (no period). Now "…until reassigned. Tap Confirm to continue.", matching `STAFF_TRAINING.md`. Cache-bust **not** bumped (`panel-health.js?v=33`, cosmetic only); bump with the next panel change.
+
+**Remaining gaps**
+- Nothing runs against a real HA frontend: `callService` 6-arg `returnResponse` and the script's `response_variable` are only exercised with fakes (BLOCK-SITE-WALL).
+- Multi-iPad occupancy is untested by design (BLOCK-SERVER-LEDGER); tests cover one panel's `localStorage` only.
+- Logo fallback (`_onLogoError`, initials swap) is covered only by the WP-F headless Chrome harness, not by `node --test`.
+- `_sendDestination`'s non-planner branch (`applyAssignment` with no service call) has no test; it needs `destMode: "presets"` with no `groupMode`, which leaves Take disabled in the UI.
+- `live-commit-sync.test.js` still has its own DOM stub; it could move to `panel-harness.js`.
+- The converted Python modules were not run under pytest here (no pytest); pytest collects `unittest.TestCase` natively.

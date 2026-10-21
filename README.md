@@ -330,6 +330,8 @@ Notes:
 ### Run automated tests
 
 ```bash
-.venv/bin/python -m pytest tests/test_validate_panels.py -q
-python3 -m unittest tests.test_directv_shef tests.test_ha_staging_config tests.test_offline_plan -v
+python3 -m unittest discover -s tests -p 'test_*.py' -q
+node --test tests/js/*.test.js
 ```
+
+Every Python test is a `unittest.TestCase`, so pytest is optional (`.venv/bin/python -m pytest tests -q` runs the same tests). The JS tests run on Node 22; `tests/js/panel-harness.js` stubs the DOM so `panel-send.test.js` and `panel-render.test.js` can drive the real panel.
