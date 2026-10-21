@@ -73,3 +73,24 @@ _(per-WP commit entries follow)_
 - Executor: live preflight `_missing_tune_errors`; live slot guard skips UDP when tune missing; CLI exit 2.
 - Tests: `tests/test_execute_route_plan_live_tune.py`, JS take-guards.
 
+
+---
+
+## WP-E — SHEF status + Matrix preset preflight
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S1-SHEF-STATUS, S1-PRESET-PARTIAL |
+| Commit | `ab8d938` (SHEF status + verify), `69d33db` (apply_preset preflight) |
+| Verify | `python3 -m unittest tests.test_directv_shef tests.test_apply_preset` 41/41; `unittest discover` 66 OK (3 pytest-only modules not importable: PyPI unreachable); pytest-style `test_execute_route_plan`, `test_enrich_plan`, `test_ha_route_wrappers`, `test_directv_sports` via offline pytest shim 42/42 |
+
+**Changes**
+- `directv_shef.check_shef_status`: body `status.code` must be 200 and `commandResult` (when present) 0; `shef_get` applies it to every call; `/tv/tune` additionally requires a `status` block. Socket timeouts now raise `SHEF connection failed for <url>` instead of a bare `timed out`.
+- `verify_tuned` / `tune_and_verify`: poll `/tv/getTuned` (3 attempts, 0.5 s apart) until major (and minor when given) match. CLI `tune --verify` now exits non-zero on mismatch.
+- Executor `send_directv_tune` calls `tune_and_verify`; SHEF `SystemExit` → slot `error` before UDP, other slots continue (exit 1). `verify_tune: false` in `directv.yaml` skips getTuned (documented in `config/directv.example.yaml`; default on).
+- `apply_preset.plan_preset_messages`: validates every route (unknown ENC/RX, empty/REPLACE_ME/non-ASCII/whitespace/`:` hostnames, non-list routes, RX on two encoders, preset without routes) and builds all payloads before `send_udp` runs; all errors reported in one `failed preflight; nothing sent` message. Sessions stay sequential over non-empty routes.
+
+**Tests:** `tests/test_directv_shef.py` (status, timeout, verify retry/mismatch, CLI `--verify`, executor end-to-end via fake urlopen: 403 body and getTuned mismatch fail slot with no UDP, other slot still routes); `tests/test_execute_route_plan.py` (403 body → slot error, CLI unverified tune → exit 1, no UDP); new `tests/test_apply_preset.py` (9 cases incl. all example presets passing when commissioned).
+
+**Risk / follow-up:** verify adds up to ~1 s per slot when the H25 is slow to report; with 9 slots plus 4 s SHEF timeouts the 60 s HA shell timeout is still the outer bound. A stale `/config/avaccess/directv_shef.py` copy without `tune_and_verify` fails every live slot closed (AttributeError) — redeploy both files together.
