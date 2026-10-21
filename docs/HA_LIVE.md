@@ -11,7 +11,7 @@ There are two operator surfaces. You can enable both on one HA:
 
 **Which surface is live:** a Matrix tap changes the wall immediately. A Sports Routing Take changes the wall only while its banner says **LIVE**. The two screens look alike (same charcoal and blue), so during Soft Launch tell staff which one they are on.
 
-Staff handouts for Sports Routing: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
+Staff handouts for Sports Routing: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) _(PDFs pending rebuild; use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current UI.)_. Day-of-game taps for Matrix: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 ---
 
@@ -370,7 +370,7 @@ To go back to practice at any time, turn **Live commit** off. Every iPad returns
 4. Hold the iPad **sideways** for Sports Routing. Below 900px wide the three columns stack and the buttons get small. Matrix favorites still fit portrait.
 5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=34` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
 
-Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf). Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
+Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) _(PDFs pending rebuild; use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current UI.)_. Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 
 ---
 
@@ -422,6 +422,6 @@ Copy `sports_schedule.json` or `guide_channels.json` only when the HA host is no
 
 - [HA_QUICKSTART.md](HA_QUICKSTART.md) — generator flags and helpers
 - [DIRECTV_H25_PATCH_AND_TEST_PLAN.md](DIRECTV_H25_PATCH_AND_TEST_PLAN.md) — tests B–F
-- [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) — Sports Routing handouts
+- [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) — Sports Routing handouts _(PDFs pending rebuild; use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current UI.)_
 - [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md) — Matrix taps (older Sports Routing pictures)
 - [WEEKLY_SCHEDULE_SYNC.md](WEEKLY_SCHEDULE_SYNC.md) — ZIP 27403 local-first NFL slots

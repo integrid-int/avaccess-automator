@@ -1,6 +1,6 @@
 # AVAccess iPad operations guide
 
-**Sports Routing staff training (current landscape layout):** **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** and **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — short handout, then the full guide, with pictures of named TV sets and replace. Same words in **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The older combined STAFF_TRAINING.pdf does not include Sets or Replace. The Sports Routing photos later in this file are an older layout and may be stale. Matrix favorites below are unchanged.
+**Sports Routing staff training (current landscape layout):** **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** and **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** _(PDFs pending rebuild; use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current UI.)_ — short handout, then the full guide, with pictures of named TV sets and replace. Source text: **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The older combined STAFF_TRAINING.pdf does not include Sets or Replace. The Sports Routing photos later in this file are an older layout and may be stale. Matrix favorites below are unchanged.
 
 Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures of the older layout).
 
@@ -53,7 +53,7 @@ DirecTV guide for ZIP **27403** (not Spectrum / Xumo):
 
 ![Sports Routing Guide](images/operations/09-sports-routing-guide.png)
 
-Send a game to all 35 TVs with **Take**. Leave **Live commit** off unless you mean to change the wall. Take is a practice plan (**PRACTICE summary**) until that switch is on; with the red **LIVE** banner, Take SHEF-tunes the H25 and UDP-reconnects the TVs. Nothing on Sports Routing turns a TV off: TVs left on a retuned box keep showing it until reassigned. The current staff steps are the two PDFs at the top of this page, not the older Sports Routing screenshots below.
+Send a game to all 35 TVs with **Take**. Leave **Live commit** off unless you mean to change the wall. Take is a practice plan (**PRACTICE summary**) until that switch is on; with the red **LIVE** banner, Take SHEF-tunes the H25 and UDP-reconnects the TVs. Nothing on Sports Routing turns a TV off: TVs left on a retuned box keep showing it until reassigned. The current staff steps are in [STAFF_TRAINING.md](STAFF_TRAINING.md) (the two PDFs at the top of this page are pending rebuild), not the older Sports Routing screenshots below.
 
 ![Sports Routing destination](images/operations/10-sports-routing-destination.png)
 

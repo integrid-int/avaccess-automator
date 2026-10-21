@@ -30,7 +30,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
 - **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=34`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
-- Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
+- Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)** _(PDFs pending rebuild; use [docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md) for the current UI.)_ Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
 
 The bartender **Sports Routing** panel is the production iPad UI (`/panel-health`, striped `RoutePlan`). Lovelace Matrix is the SHEF/favorites surface; generate it with `--profile numeric_v1` so Preset 1/2/3 match the operations guide (contiguous splits). Inventory `mapping_profiles.active` stays `striped_v1` for Track B. Matrix has no Live commit gate: on the site HA (no `--ui-staging`) every Matrix tap is live SHEF + UDP. Only Sports Routing has the PRACTICE / LIVE switch.
@@ -212,7 +212,7 @@ The checked-in `guide_epg.json` is a snapshot from the last grab. If `generatedA
 
 ## Operator guide — Sports Routing panel
 
-Staff handouts, with screenshots of the landscape iPad: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Same words in **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
+Staff handouts, with screenshots of the landscape iPad: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)** _(PDFs pending rebuild; use [docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md) for the current UI.)_ Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
 
 On a landscape iPad (wider than 900px) the panel is three columns: a left rail (**Guide**, **Now**, and **Sets** pinned at the top, then DirecTV sports in their own scrolling list), **Sources** in the middle, and **Displays** on the right, with **Take** along the bottom. The rail and the lists scroll by dragging. iPad Safari and the Home Assistant Companion use overlay scrollbars that fade, so the panel does not hide them. A desktop browser still draws a permanent bar; that is Chrome, not the iPad.
 

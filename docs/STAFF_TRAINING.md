@@ -2,10 +2,10 @@
 
 Printable handouts, with the pictures:
 
-- **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** — the short version staff can keep at the bar.
-- **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — every button, including named TV sets and replacing a program when every DirecTV box is in use.
+- **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** — the short version staff can keep at the bar. _(PDF pending rebuild; use this page, STAFF_TRAINING.md, for the current UI.)_
+- **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — every button, including named TV sets and replacing a program when every DirecTV box is in use. _(PDF pending rebuild; use this page, STAFF_TRAINING.md, for the current UI.)_
 
-This page is the same training in text. If this page and a PDF disagree, this page is current. The older combined file, STAFF_TRAINING.pdf, does not include Sets or Replace. Use the two PDFs above.
+This page is the same training in text. If this page and a PDF disagree, this page is current. The older combined file, STAFF_TRAINING.pdf, does not include Sets or Replace. Until the two PDFs above are rebuilt, train from this page.
 
 Hold the iPad **sideways**. Open the Home Assistant app, sign in, and tap **Sports Routing** in the sidebar.
 
