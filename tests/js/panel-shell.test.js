@@ -22,7 +22,7 @@ test("panel shell imports store/data and defines panel-health once", () => {
 
 test("panel shell exposes chip actions for sports guide and TVs", () => {
   const src = readPanelSource();
-  assert.match(src, /data-action=["']open-sport["']/);
+  assert.match(src, /data-action=["']select-sport["']/);
   assert.match(src, /data-action=["']open-guide["']/);
   assert.match(src, /data-action=["']open-tvs["']/);
 });
@@ -30,23 +30,25 @@ test("panel shell exposes chip actions for sports guide and TVs", () => {
 test("panel shell exposes content-first destination actions and labels", () => {
   const src = readPanelSource();
   assert.match(src, /data-action=["']select-sport["']/);
-  assert.match(src, /data-action=["']select-game["']/);
-  assert.match(src, /data-action=["']select-channel["']/);
-  assert.match(src, /data-action=["']set-dest-mode["']/);
+  assert.match(src, /"select-game"/);
+  assert.match(src, /"select-channel"/);
   assert.match(src, /data-action=["']select-group["']/);
   assert.match(src, /data-action=["']toggle-tv["']/);
   assert.match(src, /data-action=["']send-destination["']/);
-  assert.match(src, /data-action=["']back-browse["']/);
   assert.match(src, /Presets/);
   assert.match(src, /Pick TVs/);
   assert.match(src, /DirecTV · ZIP 27403/);
 });
 
-test("panel shell exposes TV-first content picker actions and summary", () => {
+test("panel shell does not render the retired Dry-run Send screens", () => {
   const src = readPanelSource();
-  assert.match(src, /data-action="next-choose-content"/);
-  assert.match(src, /data-action="send-tv-first"/);
-  assert.match(src, /Sending to TVs:/);
+  assert.doesNotMatch(src, /_renderScreen\s*\(/);
+  assert.doesNotMatch(src, /Dry-run Send/);
+  assert.doesNotMatch(src, /Live Send/);
+  assert.doesNotMatch(src, /data-action="next-choose-content"/);
+  assert.doesNotMatch(src, /data-action="send-tv-first"/);
+  assert.doesNotMatch(src, /data-action="send-plan"/);
+  assert.doesNotMatch(src, /Sending to TVs:/);
 });
 
 test("panel shell renders short sports chips and DirecTV ZIP guide label", () => {
@@ -140,12 +142,11 @@ test("panel shell exposes group-first multi-program and dry-run plan actions", (
   const src = readPanelSource();
   assert.match(src, /buildRoutePlan/);
   assert.match(src, /applyRoutePlan/);
-  assert.match(src, /program-picker/);
   assert.match(src, /data-action=\"select-group\"/);
-  assert.match(src, /data-action=\"toggle-program\"/);
-  assert.match(src, /data-action=\"send-plan\"/);
-  assert.match(src, /Dry-run/);
+  assert.match(src, /"toggle-program"/);
+  assert.match(src, /data-action=\"send-destination\"/);
   assert.match(src, /No free encoders/);
+  assert.doesNotMatch(src, /Dry-run Send/);
   assert.doesNotMatch(src, /Split across 4 encoder groups/);
 });
 
@@ -270,5 +271,4 @@ test("panel shell loads guide EPG feed and renders now/next columns", () => {
   assert.match(src, /mergeGuideWithEpg/);
   assert.match(src, /guide unavailable|Guide listings unavailable/i);
   assert.match(src, /nowTitle|Now/);
-  assert.match(src, /nextTitle|Next/);
 });

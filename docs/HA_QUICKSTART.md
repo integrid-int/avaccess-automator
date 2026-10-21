@@ -75,7 +75,7 @@ homeassistant:
   packages: !include_dir_named packages
 ```
 
-The Sports Routing sidebar entry is the `panel_custom` block in [HA_LIVE.md](HA_LIVE.md) section 5 (`panel-health.js?v=34`). This quickstart does not replace that block.
+The Sports Routing sidebar entry is the `panel_custom` block in [HA_LIVE.md](HA_LIVE.md) section 5 (`panel-health.js?v=35`). This quickstart does not replace that block.
 
 ## 5) Add dashboard YAML
 

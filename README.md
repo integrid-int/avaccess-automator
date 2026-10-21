@@ -28,7 +28,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Panel validator: `scripts/validate_panels.py`
 - Automated tests: `tests/test_validate_panels.py`
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
-- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=34`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
+- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=35`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
 - Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)** _(PDFs pending rebuild; use [docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md) for the current UI.)_ Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
@@ -333,7 +333,7 @@ Each TV shows one route at a time. PRACTICE plans, and the `ok` slots of a Live 
 
 ### Cache refresh after UI updates
 
-The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=34`) and restart Home Assistant if needed. On the iPad, force-quit Companion or clear its cache so it does not serve a stale `panel-health.js`. Copy `www/panels/`. Do not recopy `inventory.json` or `custom_tv_sets.json` over the live files. The site steps are [docs/HA_LIVE.md](docs/HA_LIVE.md).
+The panel is loaded via `module_url` in `homeassistant/config/configuration.yaml`. After a UI deploy, bump the query string (currently `?v=35`) and restart Home Assistant if needed. On the iPad, force-quit Companion or clear its cache so it does not serve a stale `panel-health.js`. Copy `www/panels/`. Do not recopy `inventory.json` or `custom_tv_sets.json` over the live files. The site steps are [docs/HA_LIVE.md](docs/HA_LIVE.md).
 
 ## Panel validation workflows
 
