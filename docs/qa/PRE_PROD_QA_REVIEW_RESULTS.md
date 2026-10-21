@@ -378,6 +378,8 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 8. **OPS** Emergency/freeze/rollback addendum to HA_LIVE; fix Docker path or document HA OS only  
 9. **OWN/FOH/VIS** PRACTICE/LIVE on Take; Matrix vs Routing staff story  
 10. **VIS** Resolve CSS tokens for Live/chip state  
+11. **ARCH** Resolve Sunday Ticket channel set (sports/guide 9554–9563 vs Matrix favorites 705–713) before NFL Live  
+12. **ARCH** Until server occupancy: one live surface + one iPad only
 
 ### Soft Launch (dry-run) gate
 
@@ -421,3 +423,4 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 | Partial merge | Security, Visual, Owner reports merged; interim NO-GO for Live |
 | +Bartender | FOH Soft Launch only; silent encoder-reuse blanking elevated; Matrix vs Routing staff trap |
 | +UI/Code/Ops | S0 reuse/replace + silent Live + browser occupancy confirmed across three lenses; HA_LIVE insufficient alone |
+| +Architecture | Three between-layer blockers; Sunday Ticket channel set disagreement (9554–9563 vs 705–713) |
