@@ -496,6 +496,9 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 - Node test log: `/opt/cursor/artifacts/node-test-results.txt`  
 - Test gate notes: `/opt/cursor/artifacts/automated-test-gate.md`  
 - Senior repros: `/opt/cursor/artifacts/senior-review/` (`repro_output.log`, `repro_patio.mjs`, `repro_presets.mjs`, `exec_patio.py`)  
+- Reliability full report (repo copy): `docs/qa/RELIABILITY_REVIEW.md`  
+- Human summary canvas: [Pre-prod QA verdict](https://cursor.com/canvas/store-ea37c98e-d617-41e2-967c-6eba2a1ca7b0/97124073-08a4-4c33-9771-a78db3907fe1)  
+
 
 
 ## Appendix B — Change log
