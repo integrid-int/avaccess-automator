@@ -115,3 +115,26 @@ _(per-WP commit entries follow)_
 **Tests:** `tests/test_live_interlock.py` (live UDP overwrite, strict b64, CLI injection exit 2, `--liv` rejected, `save_tv_sets` rejection, wrapper gate on/off/missing, real `avaccess_routing.yaml` templates rendered with Jinja + `shlex.split` like HA for gate and injection cases, script structure); `tests/js/live-commit-sync.test.js` (instantiates `PanelHealth` with a DOM stub: resync on every hass update, toggle writes `input_boolean`, failure path, Live Take calls the script); `live-execute.test.js` / `panel-shell.test.js` updated for the script path.
 
 **Risk / follow-up:** not exercised on a real HA instance. Script `response_variable` + `stop` needs HA ≥ 2023.7 (compose uses `stable`). With `mode: single`, a second concurrent Live Take from another iPad gets no report and shows a failure (nothing sent). Turning the boolean on now affects every iPad (intended: one shared server truth).
+
+---
+
+## WP-F — Visual / UX Soft Launch blockers
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Findings | S1-VIS-TOKENS, S1-SCROLL-JUMP, S2-LOGO-FALLBACK, S2-RAIL-FOLD |
+| Commit | `601c170` (panel, `panel-view.js`, cache bump, tests) |
+| Verify | `node --test tests/js/*.test.js` 87/87 (9 new: 4 behavioral in `panel-view.test.js`, 5 source checks in `panel-shell.test.js`). Headless Chrome 1024×768 harness with fake `hass` and the repo's real `sports_schedule.json`: computed colors, rail positions, logo fallback, scroll retention all as below. |
+
+**Changes**
+- **S1-VIS-TOKENS:** the panel renders into light DOM (no shadow root), so `:host` never matched and every `var(--…)` was unset. Tokens now live on `panel-health { … }`; `.routing` remaps the light browse tokens to the dark board palette (`--cyan #0b5cab`, `--muted #c8c8c8`, `--surface #1a1a1a`, `--live #b91c1c`) so shared rules (`.plan-warning`, `.tv-toolbar span`) stay legible instead of turning grey-on-black. Active league chip: filled blue with a light inset ring. **Live commit** button reads `Live commit: ON|OFF`; ON is filled red, OFF is outlined.
+- **PRACTICE / LIVE banner:** always in the header next to “Bar”. `PRACTICE – TVs will not change` (slate) unless Live commit is on **and** inventory is Live-ready, then `LIVE – TVs WILL change` (red) plus a red top stripe on the board. Same rule as `_sendPlan` (`commitModeBanner` in new `panel-view.js`).
+- **S2-LOGO-FALLBACK:** all team logos go through `_teamLogoHtml`. Empty URLs (most of the current DirecTV slate) render an initials tile directly; a capture-phase `error` listener swaps a failed `<img>` for the tile and remembers the URL so later renders skip it.
+- **S2-RAIL-FOLD:** rail is `rail-pinned` (Guide, Now, Sets) above `rail-sports` (scrolls on its own). With the current 14-sport slate, Guide used to sit at ~780 px, below the fold on an iPad in landscape; now Sets ends at ~340 px.
+- **S1-SCROLL-JUMP:** `render()` builds the HTML first and returns without touching the DOM when it matches the last render (most `hass` pushes). Otherwise it captures `scrollTop/scrollLeft` of `[data-scroll-key]` containers (sources bank, displays bank, rail sports, plan summary, league chips) and restores them after `innerHTML`. Source keys include screen/sport/league/search, so switching lists still opens at the top.
+- Cache-bust `panel-health.js?v=33` in `configuration.yaml` and `prepare_ha_staging.py`; new module imported as `panel-view.js?v=1`.
+
+**Browser evidence (harness):** active chip `rgb(11,92,171)`; Live ON toggle and banner `rgb(185,28,28)`; Guide/Now/Sets bottoms 248/294/340 px of a 681 px viewport; sources scrolled to 400 px and rail to 120 px both survive an unchanged and a changed `hass` push (unchanged push keeps the same DOM node); sport switch resets sources to 0; broken URL → `MS` tile, empty URLs → `MTS`/`FIU`, valid image kept; ESPN URLs (no egress in the sandbox) all fell back to initials.
+
+**Not in this WP:** docs still cite `?v=30` (WP-G). Legacy `_render*Screen` methods remain unreachable dead code (not removed, to keep scope). Not checked on a physical iPad / HA Companion.
