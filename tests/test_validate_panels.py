@@ -1,3 +1,5 @@
+import tempfile
+import unittest
 from pathlib import Path
 
 from scripts.validate_panels import validate_panels
@@ -35,71 +37,73 @@ def _write_panel_asset(config_dir: Path, element_name: str = "test-panel") -> No
     )
 
 
-def test_validate_panels_accepts_valid_configuration(tmp_path: Path) -> None:
-    config_dir = tmp_path / "config"
-    _write_config(config_dir)
-    _write_panel_asset(config_dir)
+class ValidatePanelsTests(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.tmp_path = Path(tmp.name)
 
-    errors = validate_panels(config_dir)
+    def test_validate_panels_accepts_valid_configuration(self) -> None:
+        config_dir = self.tmp_path / "config"
+        _write_config(config_dir)
+        _write_panel_asset(config_dir)
 
-    assert errors == []
+        errors = validate_panels(config_dir)
 
+        assert errors == []
 
-def test_validate_panels_rejects_missing_panel_asset(tmp_path: Path) -> None:
-    config_dir = tmp_path / "config"
-    _write_config(config_dir)
+    def test_validate_panels_rejects_missing_panel_asset(self) -> None:
+        config_dir = self.tmp_path / "config"
+        _write_config(config_dir)
 
-    errors = validate_panels(config_dir)
+        errors = validate_panels(config_dir)
 
-    assert len(errors) == 1
-    assert "Panel module is missing" in errors[0]
+        assert len(errors) == 1
+        assert "Panel module is missing" in errors[0]
 
+    def test_validate_panels_rejects_non_local_module_url(self) -> None:
+        config_dir = self.tmp_path / "config"
+        _write_config(config_dir, module_url="https://example.com/panel.js")
 
-def test_validate_panels_rejects_non_local_module_url(tmp_path: Path) -> None:
-    config_dir = tmp_path / "config"
-    _write_config(config_dir, module_url="https://example.com/panel.js")
+        errors = validate_panels(config_dir)
 
-    errors = validate_panels(config_dir)
+        assert len(errors) == 1
+        assert "must start with `/local/`" in errors[0]
 
-    assert len(errors) == 1
-    assert "must start with `/local/`" in errors[0]
+    def test_validate_panels_requires_matching_custom_element_name(self) -> None:
+        config_dir = self.tmp_path / "config"
+        _write_config(config_dir)
+        _write_panel_asset(config_dir, element_name="another-panel")
 
+        errors = validate_panels(config_dir)
 
-def test_validate_panels_requires_matching_custom_element_name(tmp_path: Path) -> None:
-    config_dir = tmp_path / "config"
-    _write_config(config_dir)
-    _write_panel_asset(config_dir, element_name="another-panel")
+        assert len(errors) == 1
+        assert "does not define matching custom element" in errors[0]
 
-    errors = validate_panels(config_dir)
+    def test_validate_panels_handles_home_assistant_include_tags(self) -> None:
+        config_dir = self.tmp_path / "config"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config_dir.joinpath("configuration.yaml").write_text(
+            "\n".join(
+                [
+                    "default_config:",
+                    "frontend:",
+                    "  themes: !include_dir_merge_named themes",
+                    "automation: !include automations.yaml",
+                    "script: !include scripts.yaml",
+                    "scene: !include scenes.yaml",
+                    "panel_custom:",
+                    "  - name: test-panel",
+                    "    sidebar_title: Test Panel",
+                    "    sidebar_icon: mdi:view-dashboard",
+                    "    url_path: test-panel",
+                    "    module_url: /local/panels/test-panel.js",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        _write_panel_asset(config_dir)
 
-    assert len(errors) == 1
-    assert "does not define matching custom element" in errors[0]
+        errors = validate_panels(config_dir)
 
-
-def test_validate_panels_handles_home_assistant_include_tags(tmp_path: Path) -> None:
-    config_dir = tmp_path / "config"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    config_dir.joinpath("configuration.yaml").write_text(
-        "\n".join(
-            [
-                "default_config:",
-                "frontend:",
-                "  themes: !include_dir_merge_named themes",
-                "automation: !include automations.yaml",
-                "script: !include scripts.yaml",
-                "scene: !include scenes.yaml",
-                "panel_custom:",
-                "  - name: test-panel",
-                "    sidebar_title: Test Panel",
-                "    sidebar_icon: mdi:view-dashboard",
-                "    url_path: test-panel",
-                "    module_url: /local/panels/test-panel.js",
-            ]
-        ),
-        encoding="utf-8",
-    )
-    _write_panel_asset(config_dir)
-
-    errors = validate_panels(config_dir)
-
-    assert errors == []
+        assert errors == []

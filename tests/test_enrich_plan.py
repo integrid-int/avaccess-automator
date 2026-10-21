@@ -1,6 +1,5 @@
 import copy
-
-import pytest
+import unittest
 
 from scripts.avaccess.enrich_plan import enrich_route_plan
 
@@ -43,20 +42,20 @@ def _sample_plan():
     }
 
 
-def test_enrich_fills_udp_hostnames():
-    plan = _sample_plan()
-    out = enrich_route_plan(plan, MINI_INV)
-    slot = out["slots"][0]
-    assert slot["udp"]["txHostname"] == "IPE935-BBB"
-    assert slot["udp"]["rxHostnames"] == ["IPD935-001", "IPD935-005"]
-    assert slot["tune"]["channelNumber"] == "206"
-    # Original plan must not be mutated
-    assert plan["slots"][0]["udp"] is None
-    assert plan["slots"][0]["tune"] is None
+class EnrichPlanTests(unittest.TestCase):
+    def test_enrich_fills_udp_hostnames(self):
+        plan = _sample_plan()
+        out = enrich_route_plan(plan, MINI_INV)
+        slot = out["slots"][0]
+        assert slot["udp"]["txHostname"] == "IPE935-BBB"
+        assert slot["udp"]["rxHostnames"] == ["IPD935-001", "IPD935-005"]
+        assert slot["tune"]["channelNumber"] == "206"
+        # Original plan must not be mutated
+        assert plan["slots"][0]["udp"] is None
+        assert plan["slots"][0]["tune"] is None
 
-
-def test_enrich_raises_on_invalid_inventory():
-    bad_inv = copy.deepcopy(MINI_INV)
-    bad_inv["encoders"][1]["hostname"] = "IPE935-REPLACE_ME"
-    with pytest.raises(ValueError, match="REPLACE_ME"):
-        enrich_route_plan(_sample_plan(), bad_inv)
+    def test_enrich_raises_on_invalid_inventory(self):
+        bad_inv = copy.deepcopy(MINI_INV)
+        bad_inv["encoders"][1]["hostname"] = "IPE935-REPLACE_ME"
+        with self.assertRaisesRegex(ValueError, "REPLACE_ME"):
+            enrich_route_plan(_sample_plan(), bad_inv)

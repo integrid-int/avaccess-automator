@@ -1,155 +1,17 @@
 import base64
+import io
 import json
+import tempfile
+import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
-import pytest
 import yaml
 
 from scripts.avaccess import execute_route_plan as erp
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def test_dry_run_sequences_shef_then_udp(monkeypatch):
-    calls = []
-    monkeypatch.setattr(
-        erp,
-        "send_directv_tune",
-        lambda **kw: calls.append(("shef", kw["channel"], kw["encoder_id"])),
-    )
-    monkeypatch.setattr(
-        erp,
-        "send_udp_reconnect",
-        lambda **kw: calls.append(
-            ("udp", kw["tx_hostname"], tuple(kw["rx_hostnames"]))
-        ),
-    )
-
-    plan = {
-        "mode": "preset_2",
-        "commit": "dry_run",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {
-                    "id": "g1",
-                    "label": "A",
-                    "channel": "FOX",
-                    "channelNumber": "206",
-                },
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": {"txHostname": "IPE935-AAA", "rxHostnames": ["IPD935-001"]},
-                "status": "planned",
-            },
-            {
-                "index": 2,
-                "encoderId": "ENC-02",
-                "program": {
-                    "id": "g2",
-                    "label": "B",
-                    "channel": "CBS",
-                    "channelNumber": "2",
-                },
-                "tvs": [2],
-                "tune": {"channelNumber": "2"},
-                "udp": {"txHostname": "IPE935-BBB", "rxHostnames": ["IPD935-002"]},
-                "status": "planned",
-            },
-        ],
-        "warnings": [],
-    }
-    report = erp.execute_plan(
-        plan,
-        inventory={
-            "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}
-        },
-        directv={},
-        live=False,
-    )
-    assert [c[0] for c in calls] == ["shef", "udp", "shef", "udp"]
-    assert calls[0][1] == "206"
-    assert report["slots"][0]["status"] == "ok"
-    assert report["ok"] is True
-
-
-def test_continues_after_slot_error(monkeypatch):
-    def boom_shef(**kw):
-        if kw["encoder_id"] == "ENC-01":
-            raise RuntimeError("shef failed")
-        return None
-
-    monkeypatch.setattr(erp, "send_directv_tune", boom_shef)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "dry_run",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {"id": "g1", "channelNumber": "206"},
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
-                "status": "planned",
-            },
-            {
-                "index": 2,
-                "encoderId": "ENC-02",
-                "program": {"id": "g2", "channelNumber": "2"},
-                "tvs": [2],
-                "tune": {"channelNumber": "2"},
-                "udp": {"txHostname": "TX-B", "rxHostnames": ["RX-B"]},
-                "status": "planned",
-            },
-        ],
-        "warnings": [],
-    }
-    report = erp.execute_plan(
-        plan,
-        inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
-        directv={},
-        live=False,
-    )
-    assert report["ok"] is False
-    assert report["slots"][0]["status"] == "error"
-    assert report["slots"][0]["error"] == "shef failed"
-    assert report["slots"][0]["message"] == "shef failed"
-    assert report["slots"][1]["status"] == "ok"
-    assert "error" not in report["slots"][1]
-    assert any("shef failed" in e for e in report["errors"])
-
-
-def test_live_preflight_fails_on_bad_inventory(monkeypatch):
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {"id": "g1", "channelNumber": "206"},
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": None,
-                "status": "planned",
-            }
-        ],
-        "warnings": [],
-    }
-    inv = {
-        "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010},
-        "encoders": [{"id": "ENC-01", "hostname": "IPE935-REPLACE_ME"}],
-        "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
-    }
-    with pytest.raises(erp.PreflightError):
-        erp.execute_plan(plan, inventory=inv, directv={}, live=True)
 
 
 def _valid_live_inventory() -> dict:
@@ -179,232 +41,6 @@ def _one_slot_plan() -> dict:
     }
 
 
-def test_live_preflight_fails_when_h25_unmapped(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(
-            _one_slot_plan(),
-            inventory=_valid_live_inventory(),
-            directv={"encoder_to_receiver": {}, "receivers": {}},
-            live=True,
-        )
-    assert any("no DirecTV" in e or "mapped" in e for e in excinfo.value.errors)
-    assert calls == []
-
-
-def test_live_preflight_fails_when_h25_host_empty(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(
-            _one_slot_plan(),
-            inventory=_valid_live_inventory(),
-            directv={
-                "encoder_to_receiver": {"ENC-01": "H25-01"},
-                "receivers": {"H25-01": {"host": "  "}},
-            },
-            live=True,
-        )
-    assert any("empty host" in e for e in excinfo.value.errors)
-    assert calls == []
-
-
-def test_cli_live_unmapped_h25_exit_2(monkeypatch, tmp_path, capsys):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    plan_path = tmp_path / "plan.json"
-    plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
-    inv_path = tmp_path / "inv.yaml"
-    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
-    directv_path = tmp_path / "directv.yaml"
-    directv_path.write_text(
-        "encoder_to_receiver: {}\nreceivers: {}\n",
-        encoding="utf-8",
-    )
-
-    code = erp.main(
-        [
-            "--inventory",
-            str(inv_path),
-            "--directv-config",
-            str(directv_path),
-            "--plan-file",
-            str(plan_path),
-            "--live",
-        ]
-    )
-    assert code == 2
-    assert calls == []
-    report = json.loads(capsys.readouterr().out)
-    assert any("no DirecTV" in e or "mapped" in e for e in report["errors"])
-
-
-def test_live_preflight_fails_on_missing_network(monkeypatch):
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {"id": "g1", "channelNumber": "206"},
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
-                "status": "planned",
-            }
-        ],
-        "warnings": [],
-    }
-    inv = {
-        "network": {},
-        "encoders": [{"id": "ENC-01", "hostname": "IPE935-AAA"}],
-        "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
-    }
-    with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(plan, inventory=inv, directv={}, live=True)
-    assert any("broadcast" in e for e in excinfo.value.errors)
-    assert any("udp_switch_port" in e for e in excinfo.value.errors)
-
-
-def test_cli_dry_run_exit_0(monkeypatch, tmp_path, capsys):
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "dry_run",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {"id": "g1", "channelNumber": "206"},
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
-                "status": "planned",
-            }
-        ],
-        "warnings": [],
-    }
-    plan_path = tmp_path / "plan.json"
-    plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    inv_path = tmp_path / "inv.yaml"
-    inv_path.write_text(
-        "network:\n  broadcast: 255.255.255.255\n  udp_switch_port: 5010\n"
-        "encoders: []\nreceivers: []\n",
-        encoding="utf-8",
-    )
-    directv_path = tmp_path / "directv.yaml"
-    directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
-
-    code = erp.main(
-        [
-            "--inventory",
-            str(inv_path),
-            "--directv-config",
-            str(directv_path),
-            "--plan-file",
-            str(plan_path),
-            "--dry-run",
-        ]
-    )
-    assert code == 0
-    out = json.loads(capsys.readouterr().out)
-    assert out["ok"] is True
-
-
-def test_cli_plan_b64_live_preflight_exit_2(monkeypatch, tmp_path, capsys):
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: None)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: None)
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": None,
-                "status": "planned",
-            }
-        ],
-        "warnings": [],
-    }
-    inv_path = tmp_path / "inv.yaml"
-    inv_path.write_text(
-        "network:\n  broadcast: 255.255.255.255\n  udp_switch_port: 5010\n"
-        "encoders:\n  - {id: ENC-01, hostname: IPE935-REPLACE_ME}\n"
-        "receivers:\n  - {id: RX-01, hostname: IPD935-001}\n",
-        encoding="utf-8",
-    )
-    directv_path = tmp_path / "directv.yaml"
-    directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
-    b64 = base64.b64encode(json.dumps(plan).encode("utf-8")).decode("ascii")
-
-    code = erp.main(
-        [
-            "--inventory",
-            str(inv_path),
-            "--directv-config",
-            str(directv_path),
-            "--plan-b64",
-            b64,
-            "--live",
-        ]
-    )
-    assert code == 2
-
-
-def test_dry_run_shef_uses_example_config_without_network():
-    plan = {
-        "mode": "adhoc",
-        "commit": "dry_run",
-        "slots": [
-            {
-                "index": 1,
-                "encoderId": "ENC-01",
-                "program": {"id": "g1", "channelNumber": "206"},
-                "tvs": [1],
-                "tune": {"channelNumber": "206"},
-                "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
-                "status": "planned",
-            }
-        ],
-        "warnings": [],
-    }
-    directv = yaml.safe_load((ROOT / "config" / "directv.example.yaml").read_text())
-    report = erp.execute_plan(
-        plan,
-        inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
-        directv=directv,
-        live=False,
-    )
-    assert report["ok"] is True
-    assert report["slots"][0]["status"] == "ok"
-
-
-def test_directv_example_exists():
-    path = ROOT / "config" / "directv.example.yaml"
-    assert path.is_file()
-    text = path.read_text(encoding="utf-8")
-    assert "encoder_to_receiver" in text
-    assert "ENC-01" in text
-    assert "H25-01" in text
-
-
 def _live_directv() -> dict:
     return {
         "encoder_to_receiver": {"ENC-01": "H25-01", "ENC-02": "H25-02"},
@@ -432,164 +68,6 @@ def _slot(*, encoder_id="ENC-01", tune=None, tvs=None, index=1, label="A @ B"):
     }
 
 
-def test_live_preflight_rejects_empty_tune_without_udp(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw)))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append(("udp", kw)))
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [_slot(tune=None)],
-        "warnings": [],
-    }
-    with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(
-            plan,
-            inventory=_valid_live_inventory(),
-            directv=_live_directv(),
-            live=True,
-        )
-    assert any("tune" in e.lower() or "channel" in e.lower() for e in excinfo.value.errors)
-    assert calls == []
-
-
-def test_live_preflight_rejects_blank_tune_channel(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [_slot(tune={"channelNumber": "  "})],
-        "warnings": [],
-    }
-    with pytest.raises(erp.PreflightError):
-        erp.execute_plan(
-            plan,
-            inventory=_valid_live_inventory(),
-            directv=_live_directv(),
-            live=True,
-        )
-    assert calls == []
-
-
-def test_live_mixed_slots_missing_tune_is_preflight_no_udp(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
-    monkeypatch.setattr(
-        erp,
-        "send_udp_reconnect",
-        lambda **kw: calls.append(("udp", kw["tx_hostname"])),
-    )
-    plan = {
-        "mode": "preset_2",
-        "commit": "live",
-        "slots": [
-            _slot(encoder_id="ENC-01", tune={"channelNumber": "206"}, index=1),
-            _slot(encoder_id="ENC-02", tune=None, index=2, tvs=[2], label="Open game"),
-        ],
-        "warnings": [],
-    }
-    with pytest.raises(erp.PreflightError) as excinfo:
-        erp.execute_plan(
-            plan,
-            inventory=_valid_live_inventory(),
-            directv=_live_directv(),
-            live=True,
-        )
-    assert any("ENC-02" in e for e in excinfo.value.errors)
-    assert calls == []
-
-
-def test_live_slot_guard_skips_udp_when_tune_missing_after_preflight(monkeypatch):
-    """Defense in depth: a live slot with empty tune must error without UDP."""
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
-    monkeypatch.setattr(
-        erp,
-        "send_udp_reconnect",
-        lambda **kw: calls.append(("udp", kw["tx_hostname"])),
-    )
-    monkeypatch.setattr(erp, "_missing_tune_errors", lambda plan: [])
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [_slot(tune=None)],
-        "warnings": [],
-    }
-    report = erp.execute_plan(
-        plan,
-        inventory=_valid_live_inventory(),
-        directv=_live_directv(),
-        live=True,
-    )
-    assert report["ok"] is False
-    assert report["slots"][0]["status"] == "error"
-    assert "tune" in report["slots"][0]["error"].lower() or "channel" in report["slots"][0]["error"].lower()
-    assert calls == []
-
-
-def test_cli_live_empty_tune_exit_2(monkeypatch, tmp_path, capsys):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append(kw))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "live",
-        "slots": [_slot(tune=None)],
-        "warnings": [],
-    }
-    plan_path = tmp_path / "plan.json"
-    plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    inv_path = tmp_path / "inv.yaml"
-    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
-    directv_path = tmp_path / "directv.yaml"
-    directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
-
-    code = erp.main(
-        [
-            "--inventory",
-            str(inv_path),
-            "--directv-config",
-            str(directv_path),
-            "--plan-file",
-            str(plan_path),
-            "--live",
-        ]
-    )
-    assert code == 2
-    assert calls == []
-    report = json.loads(capsys.readouterr().out)
-    assert report["ok"] is False
-    assert any("tune" in e.lower() or "channel" in e.lower() for e in report["errors"])
-
-
-def test_dry_run_empty_tune_does_not_preflight(monkeypatch):
-    calls = []
-    monkeypatch.setattr(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
-
-    plan = {
-        "mode": "adhoc",
-        "commit": "dry_run",
-        "slots": [_slot(tune=None)],
-        "warnings": [],
-    }
-    report = erp.execute_plan(
-        plan,
-        inventory=_valid_live_inventory(),
-        directv=_live_directv(),
-        live=False,
-    )
-    assert report["ok"] is True
-    assert "shef" not in calls
-    assert calls == ["udp"]
-
-
 def _fake_shef_urlopen(responder):
     class FakeResp:
         def __init__(self, payload):
@@ -607,68 +85,594 @@ def _fake_shef_urlopen(responder):
     return lambda req, timeout=0: FakeResp(responder(req.full_url))
 
 
-def test_live_shef_error_body_status_fails_slot_before_udp(monkeypatch):
-    udp = []
-    monkeypatch.setattr(
-        "scripts.directv_shef.urllib.request.urlopen",
-        _fake_shef_urlopen(
-            lambda _url: {"status": {"code": 403, "commandResult": 1, "msg": "Forbidden."}}
-        ),
-    )
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+class ExecuteRoutePlanTests(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.tmp_path = Path(tmp.name)
 
-    report = erp.execute_plan(
-        _one_slot_plan(),
-        inventory=_valid_live_inventory(),
-        directv=_live_directv(),
-        live=True,
-    )
-    assert report["ok"] is False
-    assert report["slots"][0]["status"] == "error"
-    assert "403" in report["slots"][0]["error"]
-    assert udp == []
+    def patch(self, target, *args):
+        """Patch (obj, "name", value) or ("pkg.mod.name", value) until the test ends."""
+        patcher = mock.patch.object(target, *args) if len(args) == 2 else mock.patch(target, *args)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
+    def run_main(self, argv):
+        """Return (exit code, stdout) from erp.main."""
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = erp.main(argv)
+        return code, buf.getvalue()
 
-def test_cli_live_shef_unverified_tune_exit_1_without_udp(monkeypatch, tmp_path, capsys):
-    udp = []
+    def test_dry_run_sequences_shef_then_udp(self):
+        calls = []
+        self.patch(
+            erp,
+            "send_directv_tune",
+            lambda **kw: calls.append(("shef", kw["channel"], kw["encoder_id"])),
+        )
+        self.patch(
+            erp,
+            "send_udp_reconnect",
+            lambda **kw: calls.append(
+                ("udp", kw["tx_hostname"], tuple(kw["rx_hostnames"]))
+            ),
+        )
 
-    def responder(url):
-        if "/tv/getTuned" in url:
-            return {"status": {"code": 200, "commandResult": 0}, "major": 212, "minor": 65535}
-        return {"status": {"code": 200, "commandResult": 0, "msg": "OK."}}
+        plan = {
+            "mode": "preset_2",
+            "commit": "dry_run",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {
+                        "id": "g1",
+                        "label": "A",
+                        "channel": "FOX",
+                        "channelNumber": "206",
+                    },
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": {"txHostname": "IPE935-AAA", "rxHostnames": ["IPD935-001"]},
+                    "status": "planned",
+                },
+                {
+                    "index": 2,
+                    "encoderId": "ENC-02",
+                    "program": {
+                        "id": "g2",
+                        "label": "B",
+                        "channel": "CBS",
+                        "channelNumber": "2",
+                    },
+                    "tvs": [2],
+                    "tune": {"channelNumber": "2"},
+                    "udp": {"txHostname": "IPE935-BBB", "rxHostnames": ["IPD935-002"]},
+                    "status": "planned",
+                },
+            ],
+            "warnings": [],
+        }
+        report = erp.execute_plan(
+            plan,
+            inventory={
+                "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}
+            },
+            directv={},
+            live=False,
+        )
+        assert [c[0] for c in calls] == ["shef", "udp", "shef", "udp"]
+        assert calls[0][1] == "206"
+        assert report["slots"][0]["status"] == "ok"
+        assert report["ok"] is True
 
-    monkeypatch.setattr("scripts.directv_shef.urllib.request.urlopen", _fake_shef_urlopen(responder))
-    monkeypatch.setattr("scripts.directv_shef.time.sleep", lambda _s: None)
-    monkeypatch.setattr(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+    def test_continues_after_slot_error(self):
+        def boom_shef(**kw):
+            if kw["encoder_id"] == "ENC-01":
+                raise RuntimeError("shef failed")
+            return None
 
-    plan_path = tmp_path / "plan.json"
-    plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
-    inv_path = tmp_path / "inv.yaml"
-    inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
-    directv_path = tmp_path / "directv.yaml"
-    directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
+        self.patch(erp, "send_directv_tune", boom_shef)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: None)
 
-    code = erp.main(
-        [
-            "--inventory",
-            str(inv_path),
-            "--directv-config",
-            str(directv_path),
-            "--plan-file",
-            str(plan_path),
-            "--live",
-        ]
-    )
-    assert code == 1
-    assert udp == []
-    report = json.loads(capsys.readouterr().out)
-    assert report["slots"][0]["status"] == "error"
-    assert "verify failed" in report["slots"][0]["error"]
+        plan = {
+            "mode": "adhoc",
+            "commit": "dry_run",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {"id": "g1", "channelNumber": "206"},
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                    "status": "planned",
+                },
+                {
+                    "index": 2,
+                    "encoderId": "ENC-02",
+                    "program": {"id": "g2", "channelNumber": "2"},
+                    "tvs": [2],
+                    "tune": {"channelNumber": "2"},
+                    "udp": {"txHostname": "TX-B", "rxHostnames": ["RX-B"]},
+                    "status": "planned",
+                },
+            ],
+            "warnings": [],
+        }
+        report = erp.execute_plan(
+            plan,
+            inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
+            directv={},
+            live=False,
+        )
+        assert report["ok"] is False
+        assert report["slots"][0]["status"] == "error"
+        assert report["slots"][0]["error"] == "shef failed"
+        assert report["slots"][0]["message"] == "shef failed"
+        assert report["slots"][1]["status"] == "ok"
+        assert "error" not in report["slots"][1]
+        assert any("shef failed" in e for e in report["errors"])
 
+    def test_live_preflight_fails_on_bad_inventory(self):
+        self.patch(erp, "send_directv_tune", lambda **kw: None)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: None)
 
-def test_itach_example_is_unused_leftover():
-    path = ROOT / "config" / "itach.example.yaml"
-    assert path.is_file()
-    text = path.read_text(encoding="utf-8")
-    assert "encoder_to_output" in text
-    assert "ENC-01" in text
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {"id": "g1", "channelNumber": "206"},
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": None,
+                    "status": "planned",
+                }
+            ],
+            "warnings": [],
+        }
+        inv = {
+            "network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010},
+            "encoders": [{"id": "ENC-01", "hostname": "IPE935-REPLACE_ME"}],
+            "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
+        }
+        with self.assertRaises(erp.PreflightError):
+            erp.execute_plan(plan, inventory=inv, directv={}, live=True)
+
+    def test_live_preflight_fails_when_h25_unmapped(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        with self.assertRaises(erp.PreflightError) as excinfo:
+            erp.execute_plan(
+                _one_slot_plan(),
+                inventory=_valid_live_inventory(),
+                directv={"encoder_to_receiver": {}, "receivers": {}},
+                live=True,
+            )
+        assert any("no DirecTV" in e or "mapped" in e for e in excinfo.exception.errors)
+        assert calls == []
+
+    def test_live_preflight_fails_when_h25_host_empty(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        with self.assertRaises(erp.PreflightError) as excinfo:
+            erp.execute_plan(
+                _one_slot_plan(),
+                inventory=_valid_live_inventory(),
+                directv={
+                    "encoder_to_receiver": {"ENC-01": "H25-01"},
+                    "receivers": {"H25-01": {"host": "  "}},
+                },
+                live=True,
+            )
+        assert any("empty host" in e for e in excinfo.exception.errors)
+        assert calls == []
+
+    def test_cli_live_unmapped_h25_exit_2(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        plan_path = self.tmp_path / "plan.json"
+        plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
+        inv_path = self.tmp_path / "inv.yaml"
+        inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+        directv_path = self.tmp_path / "directv.yaml"
+        directv_path.write_text(
+            "encoder_to_receiver: {}\nreceivers: {}\n",
+            encoding="utf-8",
+        )
+
+        code, stdout = self.run_main(
+            [
+                "--inventory",
+                str(inv_path),
+                "--directv-config",
+                str(directv_path),
+                "--plan-file",
+                str(plan_path),
+                "--live",
+            ]
+        )
+        assert code == 2
+        assert calls == []
+        report = json.loads(stdout)
+        assert any("no DirecTV" in e or "mapped" in e for e in report["errors"])
+
+    def test_live_preflight_fails_on_missing_network(self):
+        self.patch(erp, "send_directv_tune", lambda **kw: None)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: None)
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {"id": "g1", "channelNumber": "206"},
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                    "status": "planned",
+                }
+            ],
+            "warnings": [],
+        }
+        inv = {
+            "network": {},
+            "encoders": [{"id": "ENC-01", "hostname": "IPE935-AAA"}],
+            "receivers": [{"id": "RX-01", "hostname": "IPD935-001"}],
+        }
+        with self.assertRaises(erp.PreflightError) as excinfo:
+            erp.execute_plan(plan, inventory=inv, directv={}, live=True)
+        assert any("broadcast" in e for e in excinfo.exception.errors)
+        assert any("udp_switch_port" in e for e in excinfo.exception.errors)
+
+    def test_cli_dry_run_exit_0(self):
+        self.patch(erp, "send_directv_tune", lambda **kw: None)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: None)
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "dry_run",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {"id": "g1", "channelNumber": "206"},
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                    "status": "planned",
+                }
+            ],
+            "warnings": [],
+        }
+        plan_path = self.tmp_path / "plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        inv_path = self.tmp_path / "inv.yaml"
+        inv_path.write_text(
+            "network:\n  broadcast: 255.255.255.255\n  udp_switch_port: 5010\n"
+            "encoders: []\nreceivers: []\n",
+            encoding="utf-8",
+        )
+        directv_path = self.tmp_path / "directv.yaml"
+        directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
+
+        code, stdout = self.run_main(
+            [
+                "--inventory",
+                str(inv_path),
+                "--directv-config",
+                str(directv_path),
+                "--plan-file",
+                str(plan_path),
+                "--dry-run",
+            ]
+        )
+        assert code == 0
+        out = json.loads(stdout)
+        assert out["ok"] is True
+
+    def test_cli_plan_b64_live_preflight_exit_2(self):
+        self.patch(erp, "send_directv_tune", lambda **kw: None)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: None)
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": None,
+                    "status": "planned",
+                }
+            ],
+            "warnings": [],
+        }
+        inv_path = self.tmp_path / "inv.yaml"
+        inv_path.write_text(
+            "network:\n  broadcast: 255.255.255.255\n  udp_switch_port: 5010\n"
+            "encoders:\n  - {id: ENC-01, hostname: IPE935-REPLACE_ME}\n"
+            "receivers:\n  - {id: RX-01, hostname: IPD935-001}\n",
+            encoding="utf-8",
+        )
+        directv_path = self.tmp_path / "directv.yaml"
+        directv_path.write_text("receivers: {}\nencoder_to_receiver: {}\n")
+        b64 = base64.b64encode(json.dumps(plan).encode("utf-8")).decode("ascii")
+
+        code, stdout = self.run_main(
+            [
+                "--inventory",
+                str(inv_path),
+                "--directv-config",
+                str(directv_path),
+                "--plan-b64",
+                b64,
+                "--live",
+            ]
+        )
+        assert code == 2
+
+    def test_dry_run_shef_uses_example_config_without_network(self):
+        plan = {
+            "mode": "adhoc",
+            "commit": "dry_run",
+            "slots": [
+                {
+                    "index": 1,
+                    "encoderId": "ENC-01",
+                    "program": {"id": "g1", "channelNumber": "206"},
+                    "tvs": [1],
+                    "tune": {"channelNumber": "206"},
+                    "udp": {"txHostname": "TX-A", "rxHostnames": ["RX-A"]},
+                    "status": "planned",
+                }
+            ],
+            "warnings": [],
+        }
+        directv = yaml.safe_load((ROOT / "config" / "directv.example.yaml").read_text())
+        report = erp.execute_plan(
+            plan,
+            inventory={"network": {"broadcast": "255.255.255.255", "udp_switch_port": 5010}},
+            directv=directv,
+            live=False,
+        )
+        assert report["ok"] is True
+        assert report["slots"][0]["status"] == "ok"
+
+    def test_directv_example_exists(self):
+        path = ROOT / "config" / "directv.example.yaml"
+        assert path.is_file()
+        text = path.read_text(encoding="utf-8")
+        assert "encoder_to_receiver" in text
+        assert "ENC-01" in text
+        assert "H25-01" in text
+
+    def test_live_preflight_rejects_empty_tune_without_udp(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw)))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append(("udp", kw)))
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [_slot(tune=None)],
+            "warnings": [],
+        }
+        with self.assertRaises(erp.PreflightError) as excinfo:
+            erp.execute_plan(
+                plan,
+                inventory=_valid_live_inventory(),
+                directv=_live_directv(),
+                live=True,
+            )
+        assert any("tune" in e.lower() or "channel" in e.lower() for e in excinfo.exception.errors)
+        assert calls == []
+
+    def test_live_preflight_rejects_blank_tune_channel(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [_slot(tune={"channelNumber": "  "})],
+            "warnings": [],
+        }
+        with self.assertRaises(erp.PreflightError):
+            erp.execute_plan(
+                plan,
+                inventory=_valid_live_inventory(),
+                directv=_live_directv(),
+                live=True,
+            )
+        assert calls == []
+
+    def test_live_mixed_slots_missing_tune_is_preflight_no_udp(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
+        self.patch(
+            erp,
+            "send_udp_reconnect",
+            lambda **kw: calls.append(("udp", kw["tx_hostname"])),
+        )
+        plan = {
+            "mode": "preset_2",
+            "commit": "live",
+            "slots": [
+                _slot(encoder_id="ENC-01", tune={"channelNumber": "206"}, index=1),
+                _slot(encoder_id="ENC-02", tune=None, index=2, tvs=[2], label="Open game"),
+            ],
+            "warnings": [],
+        }
+        with self.assertRaises(erp.PreflightError) as excinfo:
+            erp.execute_plan(
+                plan,
+                inventory=_valid_live_inventory(),
+                directv=_live_directv(),
+                live=True,
+            )
+        assert any("ENC-02" in e for e in excinfo.exception.errors)
+        assert calls == []
+
+    def test_live_slot_guard_skips_udp_when_tune_missing_after_preflight(self):
+        """Defense in depth: a live slot with empty tune must error without UDP."""
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(("shef", kw["encoder_id"])))
+        self.patch(
+            erp,
+            "send_udp_reconnect",
+            lambda **kw: calls.append(("udp", kw["tx_hostname"])),
+        )
+        self.patch(erp, "_missing_tune_errors", lambda plan: [])
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [_slot(tune=None)],
+            "warnings": [],
+        }
+        report = erp.execute_plan(
+            plan,
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=True,
+        )
+        assert report["ok"] is False
+        assert report["slots"][0]["status"] == "error"
+        assert "tune" in report["slots"][0]["error"].lower() or "channel" in report["slots"][0]["error"].lower()
+        assert calls == []
+
+    def test_cli_live_empty_tune_exit_2(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append(kw))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "live",
+            "slots": [_slot(tune=None)],
+            "warnings": [],
+        }
+        plan_path = self.tmp_path / "plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        inv_path = self.tmp_path / "inv.yaml"
+        inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+        directv_path = self.tmp_path / "directv.yaml"
+        directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
+
+        code, stdout = self.run_main(
+            [
+                "--inventory",
+                str(inv_path),
+                "--directv-config",
+                str(directv_path),
+                "--plan-file",
+                str(plan_path),
+                "--live",
+            ]
+        )
+        assert code == 2
+        assert calls == []
+        report = json.loads(stdout)
+        assert report["ok"] is False
+        assert any("tune" in e.lower() or "channel" in e.lower() for e in report["errors"])
+
+    def test_dry_run_empty_tune_does_not_preflight(self):
+        calls = []
+        self.patch(erp, "send_directv_tune", lambda **kw: calls.append("shef"))
+        self.patch(erp, "send_udp_reconnect", lambda **kw: calls.append("udp"))
+
+        plan = {
+            "mode": "adhoc",
+            "commit": "dry_run",
+            "slots": [_slot(tune=None)],
+            "warnings": [],
+        }
+        report = erp.execute_plan(
+            plan,
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=False,
+        )
+        assert report["ok"] is True
+        assert "shef" not in calls
+        assert calls == ["udp"]
+
+    def test_live_shef_error_body_status_fails_slot_before_udp(self):
+        udp = []
+        self.patch(
+            "scripts.directv_shef.urllib.request.urlopen",
+            _fake_shef_urlopen(
+                lambda _url: {"status": {"code": 403, "commandResult": 1, "msg": "Forbidden."}}
+            ),
+        )
+        self.patch(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+
+        report = erp.execute_plan(
+            _one_slot_plan(),
+            inventory=_valid_live_inventory(),
+            directv=_live_directv(),
+            live=True,
+        )
+        assert report["ok"] is False
+        assert report["slots"][0]["status"] == "error"
+        assert "403" in report["slots"][0]["error"]
+        assert udp == []
+
+    def test_cli_live_shef_unverified_tune_exit_1_without_udp(self):
+        udp = []
+
+        def responder(url):
+            if "/tv/getTuned" in url:
+                return {"status": {"code": 200, "commandResult": 0}, "major": 212, "minor": 65535}
+            return {"status": {"code": 200, "commandResult": 0, "msg": "OK."}}
+
+        self.patch("scripts.directv_shef.urllib.request.urlopen", _fake_shef_urlopen(responder))
+        self.patch("scripts.directv_shef.time.sleep", lambda _s: None)
+        self.patch(erp, "send_udp_reconnect", lambda **kw: udp.append(kw))
+
+        plan_path = self.tmp_path / "plan.json"
+        plan_path.write_text(json.dumps(_one_slot_plan()), encoding="utf-8")
+        inv_path = self.tmp_path / "inv.yaml"
+        inv_path.write_text(yaml.safe_dump(_valid_live_inventory()), encoding="utf-8")
+        directv_path = self.tmp_path / "directv.yaml"
+        directv_path.write_text(yaml.safe_dump(_live_directv()), encoding="utf-8")
+
+        code, stdout = self.run_main(
+            [
+                "--inventory",
+                str(inv_path),
+                "--directv-config",
+                str(directv_path),
+                "--plan-file",
+                str(plan_path),
+                "--live",
+            ]
+        )
+        assert code == 1
+        assert udp == []
+        report = json.loads(stdout)
+        assert report["slots"][0]["status"] == "error"
+        assert "verify failed" in report["slots"][0]["error"]
+
+    def test_itach_example_is_unused_leftover(self):
+        path = ROOT / "config" / "itach.example.yaml"
+        assert path.is_file()
+        text = path.read_text(encoding="utf-8")
+        assert "encoder_to_output" in text
+        assert "ENC-01" in text
