@@ -86,7 +86,8 @@ Compose binds these into the HA config tree (see `homeassistant/docker-compose.y
 For local Core (no Docker), the same paths are available via checked-in symlinks under `homeassistant/config/avaccess/`. The HA package `packages/avaccess_routing.yaml` exposes:
 
 - `input_boolean.avaccess_live_commit` (default **off**)
-- `shell_command.avaccess_execute_route_plan` → `avaccess/run_execute_route_plan.py`
+- `script.avaccess_live_execute` — Live Take entry point; runs the executor only while the boolean is on
+- `shell_command.avaccess_execute_route_plan` → `avaccess/run_execute_route_plan.py` (renders `--live-commit on|off` from the boolean; the wrapper refuses `--live` unless it is `on`)
 
 #### 1. Inventory hostnames
 
@@ -128,9 +129,9 @@ Output: `homeassistant/config/www/avaccess/inventory.json` (served as `/local/av
 | Mode | How | Behavior |
 |------|-----|----------|
 | **Dry-run** (default) | Panel **Live commit** off; HA `input_boolean.avaccess_live_commit` off | Builds/summarizes `RoutePlan`, updates local occupancy only — no SHEF/UDP |
-| **Live** | Panel **Live commit** on **and** inventory JSON live-ready | After local apply, posts plan to `shell_command.avaccess_execute_route_plan` (`plan_b64` + `live: true`) for SHEF `/tv/tune` → UDP reconnect per slot |
+| **Live** | HA `input_boolean.avaccess_live_commit` on **and** inventory JSON live-ready | Calls `script.avaccess_live_execute` (`plan_b64`), which refuses unless the boolean is on, then SHEF `/tv/tune` → UDP reconnect per slot (UDP hostnames always re-read from inventory) |
 
-The panel toggle syncs once from `input_boolean.avaccess_live_commit` when `hass` is available. If Live is requested but inventory is not ready, Take still applies locally and records a warning: `Live blocked: inventory not ready`. The on-screen button is **Take**, not Send.
+The panel's **Live commit** button turns `input_boolean.avaccess_live_commit` on/off in HA and re-reads it on every state update, so all iPads agree. If Live is requested but inventory is not ready, Take still applies locally and records a warning: `Live blocked: inventory not ready`. The on-screen button is **Take**, not Send.
 
 Home Assistant `shell_command` often does **not** return script stdout to `hass.callService`. The panel best-effort parses stdout when present and merges per-slot statuses into the Live summary; otherwise check the CLI JSON report or Home Assistant logs for detailed per-slot live results.
 
@@ -244,7 +245,7 @@ Group presets and the adhoc TV grid are exclusive modes: bartenders plan either 
 Every Send builds a `RoutePlan`, shows the summary (program → encoder → TV list), and updates local slot/TV occupancy in the browser.
 
 - **Dry-run Send** (default) — occupancy only; no SHEF or UDP.
-- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json` with all ENC/RX hostnames + network fields); then Send calls HA `shell_command.avaccess_execute_route_plan` for live SHEF tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing. When the UI cannot capture shell stdout, use the CLI JSON report or HA logs for per-slot live results.
+- **Live Send** — enable **Live commit** (gated on `/local/avaccess/inventory.json` with all ENC/RX hostnames + network fields); then Send calls HA `script.avaccess_live_execute` for live SHEF tune + UDP reconnect. Keep `input_boolean.avaccess_live_commit` off unless you intend live routing. When the UI cannot capture shell stdout, use the CLI JSON report or HA logs for per-slot live results.
 
 ### Preset 1 — ALL (one program → all TVs)
 

@@ -137,7 +137,7 @@ Copying `www` the first time is enough to boot the panel, including the checked-
 
 Packages that have to land in `/config/packages` (the step 2 `cp` of `packages/*.yaml` does this):
 
-- `avaccess_routing.yaml` — `input_boolean.avaccess_live_commit`, Take’s executor, and `shell_command.avaccess_save_tv_sets`
+- `avaccess_routing.yaml` — `input_boolean.avaccess_live_commit`, `script.avaccess_live_execute` (Live Take; refuses unless the boolean is on), Take’s executor, and `shell_command.avaccess_save_tv_sets`. The panel’s **Live commit** button turns that boolean on/off in HA, so every iPad shows the same state.
 - `avaccess_sports.yaml` — morning sports pull
 - `avaccess_guide.yaml` — now/next refresh
 
