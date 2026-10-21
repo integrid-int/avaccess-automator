@@ -1,6 +1,8 @@
 # AVAccess iPad operations guide
 
-Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures).
+**Sports Routing staff training (current landscape layout):** **[STAFF_TRAINING.md](STAFF_TRAINING.md)** — quick start, then the full guide, with pictures. The Sports Routing photos later in this file are an older layout. Matrix favorites below are unchanged.
+
+Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures of the older layout).
 
 This is the day-of-game playbook for Home Assistant on the iPad. It drives **10 DirecTV H25 boxes** (through 10 AVAccess encoders) onto **35 TVs**. There is **no IR**. Tune is SHEF IP; routing is UDP to the matrix.
 

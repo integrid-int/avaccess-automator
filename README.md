@@ -210,13 +210,14 @@ The checked-in `guide_epg.json` is a snapshot from the last grab. If `generatedA
 
 ## Operator guide — Sports Routing panel
 
-The bartender panel uses a **top chip row** to switch browse modes:
+Staff walkthrough, with screenshots of the landscape iPad: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
 
-`NFL · CFB · NBA · NHL · MLB · WNBA · Guide · TVs`
+On a landscape iPad (wider than 900px) the panel is three columns: a left rail (DirecTV sports, then **Guide** and **Now**), **Sources** in the middle, and **Displays** on the right, with **Take** along the bottom. The rail and the lists scroll by dragging. iPad Safari and the Home Assistant Companion use overlay scrollbars that fade, so the panel does not hide them. A desktop browser still draws a permanent bar; that is Chrome, not the iPad.
 
-- **Sport chips** — the live picker follows DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets a second row (NFL, NCAA Football, NBA, NCAA Basketball (M), EPL, and so on). Each row is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
-- **Guide** — opens the TV Passport DirecTV lineup for ZIP **27403**. Music, pay-per-view, barkers, and channels that are not in the package are left out. **Now/next** shows when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
-- **TVs** — starts the **TV-first / adhoc** path (see below).
+- **Sports rail** — DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets chips in the Sources column (NFL, NCAA Football, NBA, NCAA Basketball (M), and so on). Each list is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
+- **Guide** — the TV Passport DirecTV lineup for ZIP **27403**, opened from the bottom of the left rail. Music audio, pay-per-view, barkers, and channels that are not in the package are left out. **Now/next** shows when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
+- **Now** — every TV and the program on it, also at the bottom of the left rail.
+- **Displays** — **All 35 TVs** (Preset 1), **4 Programs**, **9 Programs**, or **Pick TVs** (the adhoc path below). The on-screen button is **Take**. With Live commit off it is a dry run.
 
 ### Sports schedule refresh
 
