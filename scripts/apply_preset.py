@@ -98,6 +98,100 @@ def send_udp(payload: bytes, broadcast: str, port: int, dry_run: bool) -> None:
         sock.close()
 
 
+def _hostname_error(kind: str, item_id: str, item: dict) -> str | None:
+    hostname = str(item.get("hostname") or "").strip()
+    if not hostname:
+        return f"{kind} {item_id} has no hostname"
+    if "REPLACE_ME" in hostname:
+        return f"{item_id} still has REPLACE_ME placeholders"
+    try:
+        hostname.encode("ascii")
+    except UnicodeEncodeError:
+        return f"{kind} {item_id} hostname is not ASCII: {hostname!r}"
+    if any(ch.isspace() or ch == ":" for ch in hostname):
+        return f"{kind} {item_id} hostname has invalid characters: {hostname!r}"
+    return None
+
+
+def plan_preset_messages(
+    inventory: dict,
+    preset_name: str,
+    mapping_profile: str | None,
+) -> tuple[str | None, list[tuple[str, int, bytes]], list[str]]:
+    """Validate every route in the preset and build all UDP payloads.
+
+    Returns (profile, messages, skipped) where messages are
+    (encoder_id, rx_count, payload). Raises SystemExit listing every
+    problem found, so no datagram is sent for a partially valid preset.
+    """
+    encoders = index_by_id(inventory.get("encoders") or [])
+    receivers = index_by_id(inventory.get("receivers") or [])
+    selected_profile, presets = resolve_presets(inventory, mapping_profile)
+    if preset_name not in presets:
+        raise SystemExit(
+            f"Unknown preset '{preset_name}'. Available: {', '.join(presets)}"
+        )
+
+    preset = presets[preset_name]
+    routes = preset.get("routes") if isinstance(preset, dict) else None
+    if not isinstance(routes, dict) or not routes:
+        raise SystemExit(f"Preset '{preset_name}' has no routes")
+
+    errors: list[str] = []
+    skipped: list[str] = []
+    validated: list[tuple[str, str, list[str]]] = []
+    claimed_rx: dict[str, str] = {}
+    for enc_id, rx_ids in routes.items():
+        enc_id = str(enc_id)
+        if not rx_ids:
+            skipped.append(enc_id)
+            continue
+        if not isinstance(rx_ids, list):
+            errors.append(f"{enc_id}: receivers must be a list")
+            continue
+        route_errors: list[str] = []
+        enc = encoders.get(enc_id)
+        if enc is None:
+            route_errors.append(f"{enc_id}: unknown encoder")
+        else:
+            err = _hostname_error("encoder", enc_id, enc)
+            if err:
+                route_errors.append(err)
+        rx_hostnames: list[str] = []
+        for rx_id in rx_ids:
+            rx_id = str(rx_id)
+            rx = receivers.get(rx_id)
+            if rx is None:
+                route_errors.append(f"{enc_id}: unknown receiver {rx_id}")
+                continue
+            err = _hostname_error("receiver", rx_id, rx)
+            if err:
+                route_errors.append(err)
+                continue
+            owner = claimed_rx.get(rx_id)
+            if owner is not None:
+                route_errors.append(f"{rx_id} assigned to both {owner} and {enc_id}")
+                continue
+            claimed_rx[rx_id] = enc_id
+            rx_hostnames.append(str(rx["hostname"]).strip())
+        if route_errors:
+            errors.extend(route_errors)
+            continue
+        validated.append((enc_id, str(enc["hostname"]).strip(), rx_hostnames))
+
+    if errors:
+        raise SystemExit(
+            f"Preset '{preset_name}' failed preflight; nothing sent:\n  "
+            + "\n  ".join(errors)
+        )
+
+    messages = [
+        (enc_id, len(rx_hostnames), build_message(tx, session, rx_hostnames))
+        for session, (enc_id, tx, rx_hostnames) in enumerate(validated, start=1)
+    ]
+    return selected_profile, messages, skipped
+
+
 def apply_preset(
     inventory: dict,
     preset_name: str,
@@ -105,42 +199,22 @@ def apply_preset(
     delay_s: float,
     mapping_profile: str | None,
 ) -> None:
-    encoders = index_by_id(inventory["encoders"])
-    receivers = index_by_id(inventory["receivers"])
-    selected_profile, presets = resolve_presets(inventory, mapping_profile)
-    if preset_name not in presets:
-        raise SystemExit(
-            f"Unknown preset '{preset_name}'. Available: {', '.join(presets)}"
-        )
+    selected_profile, messages, skipped = plan_preset_messages(
+        inventory, preset_name, mapping_profile
+    )
     if selected_profile:
         print(f"using mapping profile: {selected_profile}")
+    for enc_id in skipped:
+        print(f"skip {enc_id}: no receivers listed")
 
     net = inventory.get("network", {})
     broadcast = net.get("broadcast", "255.255.255.255")
     port = int(net.get("udp_switch_port", 5010))
 
-    routes = presets[preset_name]["routes"]
-    session = 1
-    for enc_id, rx_ids in routes.items():
-        if not rx_ids:
-            print(f"skip {enc_id}: no receivers listed")
-            continue
-        enc = encoders[enc_id]
-        rx_hostnames = []
-        for rx_id in rx_ids:
-            rx = receivers[rx_id]
-            for key in ("hostname",):
-                if "REPLACE_ME" in str(rx.get(key, "")):
-                    raise SystemExit(f"{rx_id} still has REPLACE_ME placeholders")
-            rx_hostnames.append(rx["hostname"])
-        if "REPLACE_ME" in enc["hostname"]:
-            raise SystemExit(f"{enc_id} still has REPLACE_ME placeholders")
-
-        payload = build_message(enc["hostname"], session, rx_hostnames)
-        print(f"\n=== {enc_id} -> {len(rx_hostnames)} RXs (session {session}) ===")
+    for session, (enc_id, rx_count, payload) in enumerate(messages, start=1):
+        print(f"\n=== {enc_id} -> {rx_count} RXs (session {session}) ===")
         send_udp(payload, broadcast, port, dry_run=dry_run)
-        session += 1
-        if delay_s > 0 and session <= len(routes):
+        if delay_s > 0 and session < len(messages):
             time.sleep(delay_s)
 
 
