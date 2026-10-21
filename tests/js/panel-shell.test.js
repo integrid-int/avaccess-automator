@@ -101,7 +101,7 @@ test("panel shell keeps radii at token scale and avoids amber assignment accents
 
 test("panel shell brands the routing board and drops stub content picker", () => {
   const src = readPanelSource();
-  assert.match(src, /class="routing"/);
+  assert.match(src, /class="routing(?:"|\$\{)/);
   assert.match(src, /class="room">Bar</);
   assert.match(src, /<h2>Sources<\/h2>/);
   assert.match(src, /<h2>Displays<\/h2>/);
@@ -226,6 +226,86 @@ test("panel shell prefers free encoders and confirms leftover TVs keep the retun
   assert.doesNotMatch(src, /turn off/);
   assert.doesNotMatch(src, />Off</);
   assert.doesNotMatch(src, /goes off/);
+});
+
+function methodSource(src, name, nextName) {
+  const start = src.indexOf(`  ${name}(`);
+  const end = src.indexOf(`  ${nextName}(`, start + 1);
+  assert.ok(start >= 0 && end > start, `${name} method should exist before ${nextName}`);
+  return src.slice(start, end);
+}
+
+test("panel shell resolves CSS tokens outside a shadow root", () => {
+  const src = readPanelSource();
+  // The panel renders into light DOM, so :host never matches and its vars never resolve.
+  assert.doesNotMatch(src, /:host\b/);
+  assert.doesNotMatch(src, /attachShadow/);
+  assert.match(src, /\n\s*panel-health \{(?:\s*--[\w-]+: [^;]+;)*?\s*--cyan: \$\{TOKENS\.accent\}/);
+  assert.match(src, /\.routing\s*\{[^}]*--cyan:[^}]*--muted:[^}]*--live:/);
+  assert.match(src, /\.routing \.chip\.is-active\s*\{[^}]*background:\s*var\(--cyan\)/);
+  assert.match(src, /\.live-commit-toggle\.is-active\s*\{[^}]*background:\s*var\(--live\)/);
+  assert.match(src, /Live commit: \$\{active \? "ON" : "OFF"\}/);
+});
+
+test("panel shell shows a persistent PRACTICE vs LIVE banner in the header", () => {
+  const src = readPanelSource();
+  assert.match(src, /from\s+["']\.\/panel-view\.js(\?v=\d+)?["']/);
+  assert.match(src, /commitModeBanner\(\{/);
+  const header = src.match(/<header class="routing-top">[\s\S]*?<\/header>/);
+  assert.ok(header, "routing header should exist");
+  assert.match(header[0], /mode-banner is-\$\{banner\.mode\}/);
+  assert.match(header[0], /escapeHtml\(banner\.text\)/);
+  assert.match(src, /class="routing\$\{banner\.mode === "live" \? " is-live" : ""\}"/);
+  assert.match(src, /\.routing \.mode-banner\.is-live\s*\{[^}]*background:\s*var\(--live\)/);
+  assert.match(src, /\.routing \.mode-banner\.is-practice\s*\{/);
+});
+
+test("panel shell pins Guide, Now, and Sets above the sports rail", () => {
+  const src = readPanelSource();
+  const rail = methodSource(src, "_renderRail", "_renderReplaceChoices");
+  const order = ["rail-pinned", "open-guide", "open-now", "open-sets", "rail-sports", "select-sport"].map(
+    (marker) => rail.indexOf(marker)
+  );
+  for (const index of order) assert.ok(index >= 0, "rail marker missing");
+  assert.deepEqual([...order].sort((a, b) => a - b), order, "Guide/Now/Sets must render before sports");
+  assert.match(src, /\.rail-sports\s*\{[^}]*overflow-y:\s*auto/);
+  assert.match(src, /\.rail-pinned\s*\{[^}]*flex:\s*0 0 auto/);
+});
+
+test("panel shell falls back to team initials when a logo is missing or fails", () => {
+  const src = readPanelSource();
+  assert.match(src, /teamInitials/);
+  assert.match(src, /_teamLogoHtml\(/);
+  assert.equal(
+    (src.match(/<img class="team-logo"/g) || []).length,
+    1,
+    "every team logo goes through _teamLogoHtml"
+  );
+  assert.match(src, /data-initials="\$\{escapeAttr\(initials\)\}"/);
+  assert.match(src, /addEventListener\("error", this\._boundLogoError, true\)/);
+  assert.match(src, /removeEventListener\("error", this\._boundLogoError, true\)/);
+  assert.match(src, /_failedLogos\.add\(/);
+  assert.match(src, /_failedLogos\.has\(/);
+  assert.match(src, /team-initials/);
+  assert.match(src, /img\.replaceWith\(tile\)/);
+});
+
+test("panel shell preserves scroll positions across hass-driven re-renders", () => {
+  const src = readPanelSource();
+  const render = src.match(/\n  render\(\) \{[\s\S]*?\n  \}\n/);
+  assert.ok(render, "render method should exist");
+  const body = render[0];
+  const skip = body.indexOf("this._renderedHtml");
+  const capture = body.indexOf("captureScrollPositions(this)");
+  const write = body.indexOf("this.innerHTML = html");
+  const restore = body.indexOf("restoreScrollPositions(this, scroll)");
+  assert.ok(skip >= 0 && skip < write, "identical HTML must skip the innerHTML wipe");
+  assert.ok(capture >= 0 && capture < write, "scroll must be captured before innerHTML");
+  assert.ok(restore > write, "scroll must be restored after innerHTML");
+  for (const key of ["rail-sports", "displays:", "summary", "league-chips:"]) {
+    assert.ok(src.includes(`data-scroll-key="${key}`), `missing scroll key ${key}`);
+  }
+  assert.match(src, /data-scroll-key="\$\{escapeAttr\(this\._sourcesScrollKey\(\)\)\}"/);
 });
 
 test("panel shell loads guide EPG feed and renders now/next columns", () => {

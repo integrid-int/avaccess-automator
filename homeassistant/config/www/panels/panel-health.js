@@ -40,6 +40,12 @@ import {
   runDryRunSend,
   runLiveSendSafe,
 } from "./live-execute.js?v=21";
+import {
+  captureScrollPositions,
+  commitModeBanner,
+  restoreScrollPositions,
+  teamInitials,
+} from "./panel-view.js?v=1";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -103,6 +109,9 @@ class PanelHealth extends HTMLElement {
     this._assignments = createEmptyAssignments();
     this._boundClick = this._onClick.bind(this);
     this._boundInput = this._onInput.bind(this);
+    this._boundLogoError = this._onLogoError.bind(this);
+    this._failedLogos = new Set();
+    this._renderedHtml = null;
     this._eventsBound = false;
     this._inventoryLiveReady = false;
     this._inventoryLoaded = false;
@@ -148,6 +157,8 @@ class PanelHealth extends HTMLElement {
     if (!this._eventsBound) {
       this.addEventListener("click", this._boundClick);
       this.addEventListener("input", this._boundInput);
+      // Image error events do not bubble; capture them on the way down.
+      this.addEventListener("error", this._boundLogoError, true);
       this._eventsBound = true;
     }
     this._loadInventoryLiveReady();
@@ -168,6 +179,7 @@ class PanelHealth extends HTMLElement {
     if (this._eventsBound) {
       this.removeEventListener("click", this._boundClick);
       this.removeEventListener("input", this._boundInput);
+      this.removeEventListener("error", this._boundLogoError, true);
       this._eventsBound = false;
     }
     if (this._guideEpgTimer) {
@@ -482,7 +494,7 @@ class PanelHealth extends HTMLElement {
           ${ready ? "" : "disabled aria-disabled=\"true\""}
           aria-pressed="${active ? "true" : "false"}"
         >
-          Live commit
+          Live commit: ${active ? "ON" : "OFF"}
         </button>
         <span class="live-commit-hint ${ready && !switchError ? "" : "is-blocked"}" role="status">${escapeHtml(hint)}</span>
         <button type="button" class="link-button" data-action="clear-room-state">Clear room state</button>
@@ -558,6 +570,26 @@ class PanelHealth extends HTMLElement {
     return `<span class="route-badge">${escapeHtml(label)}</span>`;
   }
 
+  _teamLogoHtml(url, name, size) {
+    const initials = teamInitials(name);
+    if (!url || this._failedLogos.has(url)) {
+      return `<span class="team-logo team-initials" aria-hidden="true">${escapeHtml(initials)}</span>`;
+    }
+    return `<img class="team-logo" src="${escapeAttr(url)}" alt="" width="${size}" height="${size}" loading="lazy" data-initials="${escapeAttr(initials)}">`;
+  }
+
+  _onLogoError(event) {
+    const img = event.target;
+    if (img?.tagName !== "IMG" || !img.classList.contains("team-logo")) return;
+    const url = img.getAttribute("src");
+    if (url) this._failedLogos.add(url);
+    const tile = document.createElement("span");
+    tile.className = "team-logo team-initials";
+    tile.setAttribute("aria-hidden", "true");
+    tile.textContent = img.dataset.initials || "?";
+    img.replaceWith(tile);
+  }
+
   _renderGameCard(
     game,
     { kicker, selected = false, cta = "Choose destination", action = "select-game" } = {}
@@ -570,12 +602,12 @@ class PanelHealth extends HTMLElement {
         <span class="matchup">
           ${game.home
             ? `<span class="team">
-            <img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="36" height="36" loading="lazy">
+            ${this._teamLogoHtml(game.awayLogo, game.away, 36)}
             <span>${escapeHtml(game.away)}</span>
           </span>
           <span class="at" aria-hidden="true">@</span>
           <span class="team">
-            <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="36" height="36" loading="lazy">
+            ${this._teamLogoHtml(game.homeLogo, game.home, 36)}
             <span>${escapeHtml(game.home)}</span>
           </span>`
             : `<span class="team"><span>${escapeHtml(game.away)}</span></span>`}
@@ -623,7 +655,7 @@ class PanelHealth extends HTMLElement {
         `
       ),
     ];
-    return `<nav class="chips league-chips" aria-label="Leagues">${buttons.join("")}</nav>`;
+    return `<nav class="chips league-chips" aria-label="Leagues" data-scroll-key="league-chips:${escapeAttr(sport?.id ?? "")}">${buttons.join("")}</nav>`;
   }
 
   _selectedContentLabel() {
@@ -1597,7 +1629,7 @@ class PanelHealth extends HTMLElement {
         }</p>`
       : "";
     return `
-      <aside class="dry-run-summary" aria-live="polite">
+      <aside class="dry-run-summary" aria-live="polite" data-scroll-key="summary">
         <div class="dry-run-heading">
           <p class="eyebrow">${summaryLabel}</p>
           <button type="button" class="link-button" data-action="dismiss-plan">Dismiss</button>
@@ -2016,8 +2048,8 @@ class PanelHealth extends HTMLElement {
     const on = this._sourceIsOn(game.id) ? " on" : "";
     const action = this._isMultiPreset() ? "toggle-program" : "select-game";
     const logos = game.home
-      ? `<img class="team-logo" src="${escapeAttr(game.awayLogo)}" alt="" width="28" height="28">
-          <img class="team-logo" src="${escapeAttr(game.homeLogo)}" alt="" width="28" height="28">`
+      ? `${this._teamLogoHtml(game.awayLogo, game.away, 28)}
+          ${this._teamLogoHtml(game.homeLogo, game.home, 28)}`
       : "";
     const league = game.leagueTitle ? `${game.leagueTitle} · ` : "";
     return `
@@ -2086,19 +2118,23 @@ class PanelHealth extends HTMLElement {
     const onSets = this._state.screen === "edit-sets";
     return `
       <nav class="rail" aria-label="Source types">
-        ${this._sports().map(
-          (item) => `
-            <button
-              type="button"
-              class="${!onGuide && !onNow && !onSets && item.id === this._state.sportId ? "on" : ""}"
-              data-action="select-sport"
-              data-value="${escapeAttr(item.id)}"
-            >${escapeHtml(item.chipTitle ?? item.title)}</button>
-          `
-        ).join("")}
-        <button type="button" class="${onGuide ? "on" : ""}" data-action="open-guide">Guide</button>
-        <button type="button" class="${onNow ? "on" : ""}" data-action="open-now">Now</button>
-        <button type="button" class="${this._state.screen === "edit-sets" ? "on" : ""}" data-action="open-sets">Sets</button>
+        <div class="rail-pinned">
+          <button type="button" class="${onGuide ? "on" : ""}" data-action="open-guide">Guide</button>
+          <button type="button" class="${onNow ? "on" : ""}" data-action="open-now">Now</button>
+          <button type="button" class="${onSets ? "on" : ""}" data-action="open-sets">Sets</button>
+        </div>
+        <div class="rail-sports" data-scroll-key="rail-sports">
+          ${this._sports().map(
+            (item) => `
+              <button
+                type="button"
+                class="${!onGuide && !onNow && !onSets && item.id === this._state.sportId ? "on" : ""}"
+                data-action="select-sport"
+                data-value="${escapeAttr(item.id)}"
+              >${escapeHtml(item.chipTitle ?? item.title)}</button>
+            `
+          ).join("")}
+        </div>
       </nav>
     `;
   }
@@ -2121,6 +2157,15 @@ class PanelHealth extends HTMLElement {
       <p class="now-count">The box you tap retunes. TVs that were on it and are not in ${escapeHtml(this._destinationName())} keep showing the retuned program until reassigned.</p>
       <div class="keys">${rows}</div>
     `;
+  }
+
+  // A different list (sport, league, search, screen) gets a new key so it opens at the top.
+  _sourcesScrollKey() {
+    const { screen, sportId, leagueId, guideQuery } = this._state;
+    if (screen === "edit-sets" || screen === "now-playing") return `sources:${screen}`;
+    if (this._showReplaceSheet()) return "sources:replace";
+    if (screen === "browse-guide") return `sources:browse-guide:${guideQuery}`;
+    return `sources:browse-sport:${this._activeSport()?.id ?? sportId}:${leagueId || "all"}`;
   }
 
   _renderSources() {
@@ -2311,8 +2356,8 @@ class PanelHealth extends HTMLElement {
     return `
       <div class="board">
         ${this._renderRail()}
-        <section class="bank">${this._renderSources()}</section>
-        <section class="bank displays">
+        <section class="bank" data-scroll-key="${escapeAttr(this._sourcesScrollKey())}">${this._renderSources()}</section>
+        <section class="bank displays" data-scroll-key="displays:${this._state.screen === "edit-sets" ? "sets" : "routing"}">
           ${this._state.screen === "edit-sets" ? "" : "<h2>Displays</h2>"}
           ${this._renderDisplays()}
         </section>
@@ -2325,12 +2370,15 @@ class PanelHealth extends HTMLElement {
     if (!this.isConnected) return;
     this._syncLiveCommitFromHass();
 
-    const guideSearchCaret = this._captureGuideSearchCaret();
-    const setNameCaret = this._captureNamedCaret("set-name");
+    const banner = commitModeBanner({
+      liveCommit: this._state.liveCommit,
+      inventoryLiveReady: this._inventoryLiveReady,
+    });
 
-    this.innerHTML = `
+    const html = `
       <style>
-        :host {
+        /* Rendered into light DOM (no shadow root), so tokens live on the element itself. */
+        panel-health {
           --canvas: ${TOKENS.canvas};
           --graphite: ${TOKENS.stage};
           --surface: ${TOKENS.surfaceBrowse};
@@ -2344,6 +2392,7 @@ class PanelHealth extends HTMLElement {
           --muted-stage: ${TOKENS.textMutedStage};
           --radius-sm: ${TOKENS.radiusSm};
           --radius-md: ${TOKENS.radiusMd};
+          --live: #b91c1c;
           display: block;
           min-height: 100%;
           color: var(--text);
@@ -2754,8 +2803,9 @@ class PanelHealth extends HTMLElement {
         }
 
         .live-commit-toggle.is-active {
-          background: var(--cyan);
-          border-color: var(--cyan);
+          background: var(--live);
+          border-color: #fecaca;
+          box-shadow: 0 0 0 2px var(--live);
           color: white;
         }
 
@@ -2898,7 +2948,15 @@ class PanelHealth extends HTMLElement {
           }
         }
 
+        /* The routing board is dark; remap the light browse tokens so shared rules stay legible. */
         .routing {
+          --graphite: #101010;
+          --surface: #1a1a1a;
+          --text: #f3f3f3;
+          --cyan: #0b5cab;
+          --cyan-soft: #2a2a2a;
+          --muted: #c8c8c8;
+          --live: #b91c1c;
           background: #101010;
           box-sizing: border-box;
           color: #f3f3f3;
@@ -2926,7 +2984,69 @@ class PanelHealth extends HTMLElement {
 
         .routing .status {
           color: #c8c8c8;
+          flex: 1 1 auto;
           font-size: 16px;
+          min-width: 0;
+          text-align: right;
+        }
+
+        .routing.is-live {
+          box-shadow: inset 0 4px 0 var(--live);
+        }
+
+        .routing .mode-banner {
+          align-self: center;
+          border-radius: 3px;
+          color: #ffffff;
+          flex: 0 0 auto;
+          font-size: 15px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          padding: 6px 14px;
+          white-space: nowrap;
+        }
+
+        .routing .mode-banner.is-practice {
+          background: #2f3b4a;
+          box-shadow: inset 0 0 0 1px #64748b;
+        }
+
+        .routing .mode-banner.is-live {
+          background: var(--live);
+          box-shadow: 0 0 0 2px #fecaca;
+        }
+
+        .routing .chip {
+          background: #2a2a2a;
+          border-radius: 3px;
+          color: #c8c8c8;
+        }
+
+        .routing .chip.is-active {
+          background: var(--cyan);
+          box-shadow: inset 0 0 0 2px #d7e7f8;
+          color: #ffffff;
+          font-weight: 700;
+        }
+
+        .routing .live-commit-toggle:not(.is-active) {
+          background: transparent;
+          border-color: #555555;
+          color: #c8c8c8;
+        }
+
+        .team-logo.team-initials {
+          align-items: center;
+          background: #3a3a3a;
+          box-sizing: border-box;
+          color: #f3f3f3;
+          display: inline-flex;
+          font-size: 11px;
+          font-weight: 800;
+          justify-content: center;
+          letter-spacing: 0;
+          line-height: 1;
+          overflow: hidden;
         }
 
         .routing .live-commit-row,
@@ -2969,8 +3089,27 @@ class PanelHealth extends HTMLElement {
           display: flex;
           flex-direction: column;
           min-height: 0;
-          overflow: auto;
+          overflow: hidden;
           padding: 8px 0;
+        }
+
+        .rail-pinned,
+        .rail-sports {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .rail-pinned {
+          border-bottom: 1px solid #242424;
+          flex: 0 0 auto;
+          margin-bottom: 6px;
+          padding-bottom: 6px;
+        }
+
+        .rail-sports {
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow-y: auto;
         }
 
         .rail button {
@@ -3233,7 +3372,23 @@ class PanelHealth extends HTMLElement {
             border-bottom: 1px solid #242424;
             border-right: 0;
             flex-direction: row;
+          }
+
+          .rail-pinned,
+          .rail-sports {
+            flex-direction: row;
+          }
+
+          .rail-pinned {
+            border-bottom: 0;
+            border-right: 1px solid #242424;
+            margin: 0 6px 0 0;
+            padding: 0 6px 0 0;
+          }
+
+          .rail-sports {
             overflow-x: auto;
+            overflow-y: hidden;
           }
 
           .rail button {
@@ -3257,9 +3412,10 @@ class PanelHealth extends HTMLElement {
         }
       </style>
 
-      <div class="routing">
+      <div class="routing${banner.mode === "live" ? " is-live" : ""}">
         <header class="routing-top">
           <div class="room">Bar</div>
+          <div class="mode-banner is-${banner.mode}" role="status" data-commit-mode="${banner.mode}">${escapeHtml(banner.text)}</div>
           <div class="status">${escapeHtml(this._routeStatusLabel())}</div>
           ${
             this._panel?.config?.debug
@@ -3273,6 +3429,17 @@ class PanelHealth extends HTMLElement {
       </div>
     `;
 
+    // HA pushes hass on every entity change; most pushes change nothing on screen.
+    if (html === this._renderedHtml && this.firstElementChild) return;
+
+    const guideSearchCaret = this._captureGuideSearchCaret();
+    const setNameCaret = this._captureNamedCaret("set-name");
+    const scroll = captureScrollPositions(this);
+
+    this.innerHTML = html;
+    this._renderedHtml = html;
+
+    restoreScrollPositions(this, scroll);
     this._restoreGuideSearchCaret(guideSearchCaret);
     this._restoreNamedCaret("set-name", setNameCaret);
   }
