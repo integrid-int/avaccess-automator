@@ -11,6 +11,7 @@ import {
 } from "./assignment-store.js?v=18";
 import {
   GUIDE_CHANNELS,
+  PRACTICE_STORAGE_KEY,
   PRESETS,
   SPECTRUM_ZIP,
   SPORTS,
@@ -23,7 +24,7 @@ import {
   SPORTS_FALLBACK_BANNER,
   SPORTS_STALE_BANNER,
   takeBlockReason,
-} from "./panel-data.js?v=20";
+} from "./panel-data.js?v=21";
 import {
   buildRoutePlan,
   leftoverTvsKeepShowingCopy,
@@ -107,6 +108,7 @@ class PanelHealth extends HTMLElement {
     this._panel = null;
     this._state = { ...DEFAULT_STATE };
     this._assignments = createEmptyAssignments();
+    this._assignmentsKey = null;
     this._boundClick = this._onClick.bind(this);
     this._boundInput = this._onInput.bind(this);
     this._boundLogoError = this._onLogoError.bind(this);
@@ -152,7 +154,7 @@ class PanelHealth extends HTMLElement {
   }
 
   connectedCallback() {
-    this._assignments = this._loadAssignments();
+    this._reloadAssignments();
     this._tvSets = this._loadTvSetsFromStorage() ?? [];
     if (!this._eventsBound) {
       this.addEventListener("click", this._boundClick);
@@ -192,17 +194,37 @@ class PanelHealth extends HTMLElement {
     }
   }
 
-  _loadAssignments() {
-    const storage = this._storage();
-    return storage ? loadAssignments(storage, STORAGE_KEY) : createEmptyAssignments();
+  // PRACTICE and LIVE keep separate occupancy stores; _assignments always holds
+  // the store for the mode the panel is in.
+  _occupancyKey() {
+    return this._state.liveCommit && this._inventoryLiveReady ? STORAGE_KEY : PRACTICE_STORAGE_KEY;
   }
 
-  _saveAssignments(assignments) {
+  _reloadAssignments() {
+    const key = this._occupancyKey();
+    const storage = this._storage();
+    this._assignmentsKey = key;
+    this._assignments = storage ? loadAssignments(storage, key) : createEmptyAssignments();
+  }
+
+  _syncOccupancyStore() {
+    if (this._assignmentsKey === this._occupancyKey()) return;
+    this._reloadAssignments();
+    // Replace and Confirm choices were made against the other mode's boxes.
+    this._state = { ...this._state, ...this._clearReplaceChoice() };
+  }
+
+  // `key` is the store the assignments were derived from. A Live send that
+  // finishes after the mode switched still lands in the Live store only.
+  _saveAssignments(assignments, key = this._assignmentsKey ?? this._occupancyKey()) {
     const storage = this._storage();
     if (storage) {
-      saveAssignments(storage, STORAGE_KEY, assignments);
+      saveAssignments(storage, key, assignments);
     }
-    this._assignments = assignments;
+    this._assignmentsKey ??= key;
+    if (key === this._assignmentsKey) {
+      this._assignments = assignments;
+    }
   }
 
   _loadTvSetsFromStorage() {
@@ -255,6 +277,7 @@ class PanelHealth extends HTMLElement {
     if (storage) {
       try {
         storage.removeItem(STORAGE_KEY);
+        storage.removeItem(PRACTICE_STORAGE_KEY);
       } catch {
         // Occupancy is local to this iPad; a blocked store still resets the panel.
       }
@@ -441,11 +464,13 @@ class PanelHealth extends HTMLElement {
   // Home Assistant's boolean is the only source of truth; the panel never holds
   // a local Live flag that could disagree with what the server will allow.
   _syncLiveCommitFromHass() {
-    if (!this._inventoryLoaded || !this._hass?.states) return;
-    const liveCommit = liveCommitFromStates(this._hass.states, this._inventoryLiveReady);
-    if (this._state.liveCommit !== liveCommit) {
-      this._state = { ...this._state, liveCommit };
+    if (this._inventoryLoaded && this._hass?.states) {
+      const liveCommit = liveCommitFromStates(this._hass.states, this._inventoryLiveReady);
+      if (this._state.liveCommit !== liveCommit) {
+        this._state = { ...this._state, liveCommit };
+      }
     }
+    this._syncOccupancyStore();
   }
 
   async _toggleLiveCommit() {
@@ -1246,6 +1271,7 @@ class PanelHealth extends HTMLElement {
     // Shared-box reuse/replace: leftover TVs keep the retuned program. Confirm first.
     if (this._gateReuseConfirm(plan)) return;
 
+    const occupancyKey = this._assignmentsKey;
     this._sending = true;
     this._sendLock.tryBegin();
     this.render();
@@ -1257,11 +1283,12 @@ class PanelHealth extends HTMLElement {
       const warnedPlan = { ...plan, warnings };
 
       let lastPlan;
-      let nextAssignments = this._assignments;
+      const startAssignments = this._assignments;
+      let nextAssignments = startAssignments;
       if (liveRequested && liveReady) {
         const result = await runLiveSendSafe({
           plan: warnedPlan,
-          assignments: this._assignments,
+          assignments: startAssignments,
           callService: this.hass?.callService?.bind(this.hass),
         });
         lastPlan = result.lastPlan;
@@ -1269,7 +1296,7 @@ class PanelHealth extends HTMLElement {
       } else {
         const result = runDryRunSend({
           plan: warnedPlan,
-          assignments: this._assignments,
+          assignments: startAssignments,
         });
         lastPlan = result.lastPlan;
         nextAssignments = result.assignments;
@@ -1277,8 +1304,8 @@ class PanelHealth extends HTMLElement {
 
       this._sending = false;
       this._sendLock.end();
-      if (nextAssignments !== this._assignments) {
-        this._saveAssignments(nextAssignments);
+      if (nextAssignments !== startAssignments) {
+        this._saveAssignments(nextAssignments, occupancyKey);
       }
 
       this._setState({

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { applyRoutePlan, createEmptyAssignments } from "../../homeassistant/config/www/panels/assignment-store.js";
 import { LIVE_COMMIT_ENTITY } from "../../homeassistant/config/www/panels/live-execute.js";
+import { PRACTICE_STORAGE_KEY, STORAGE_KEY } from "../../homeassistant/config/www/panels/panel-data.js";
 import { buildRoutePlan, stripedTvs } from "../../homeassistant/config/www/panels/route-planner.js";
 import {
   assertRendered,
@@ -15,6 +16,7 @@ import {
   scriptReport,
   selectAdhoc,
   selectPreset,
+  setLiveState,
   storage,
   takeButton,
 } from "./panel-harness.js";
@@ -25,6 +27,11 @@ function program(id, channelNumber) {
 
 function okFor(...encoderIds) {
   return scriptReport(0, { ok: true, slots: encoderIds.map((encoderId) => ({ encoderId, status: "ok" })) });
+}
+
+async function okForEverySlot(domain, _service, data) {
+  if (domain !== "script") return undefined;
+  return okFor(...decodePlanB64(data.plan_b64).slots.map((slot) => slot.encoderId));
 }
 
 test("Live Take saves only slots the server reported ok, and only after the script returns", async () => {
@@ -223,4 +230,142 @@ test("reusing a shared box with no free encoders needs Confirm before Live is se
   assert.deepEqual(plan.slots.map((slot) => [slot.encoderId, slot.tvs]), [["ENC-03", [1, 3, 5]]]);
   assert.deepEqual(plan.replaced.offTvs, [2, 4, 6]);
   assert.equal(panel._state.reuseConfirmKey, null);
+});
+
+test("a PRACTICE Take writes only the practice occupancy store, never the Live key", async () => {
+  resetStorage();
+  const { panel, calls } = makePanel({ liveState: "off" });
+  selectAdhoc(panel, channel("206", "ESPN"), [1, 2]);
+
+  await panel._sendPlan();
+
+  assert.deepEqual(calls, []);
+  assert.equal(panel._state.lastPlan.practice, true);
+  assert.equal(storage.getItem(STORAGE_KEY), null);
+  assert.ok(!storage.writes.includes(STORAGE_KEY), "practice must not write the Live key");
+  assert.deepEqual(storage.writes, [PRACTICE_STORAGE_KEY]);
+  assert.deepEqual(storage.savedPracticeAssignments()["ENC-01"].tvs, [1, 2]);
+  assert.deepEqual(panel._assignments["ENC-01"].tvs, [1, 2]);
+});
+
+test("Live Take after PRACTICE Takes sees only Live occupancy: claims ENC-01 with no Confirm", async () => {
+  resetStorage();
+  const { panel, calls } = makePanel({ liveState: "off", callService: okForEverySlot });
+  selectPreset(panel, "preset_1", [program("g-all", "206")]);
+  await panel._sendPlan();
+  selectAdhoc(panel, channel("212", "NFL"), [8, 9, 10]);
+  await panel._sendPlan();
+  assert.deepEqual(calls, []);
+  const practiceAfter = storage.getItem(PRACTICE_STORAGE_KEY);
+  assert.deepEqual(Object.keys(JSON.parse(practiceAfter)).sort(), ["ENC-01", "ENC-02"]);
+
+  setLiveState(panel, "on");
+  assert.equal(panel._state.liveCommit, true);
+  assert.deepEqual(panel._assignments, createEmptyAssignments(), "switching to Live loads the Live store, not a merge");
+
+  selectAdhoc(panel, channel("612", "ESPN2"), [1, 3, 5]);
+  await panel._sendPlan();
+
+  const sent = scriptCalls(calls);
+  assert.equal(sent.length, 1, "practice routes must not trigger a reuse Confirm");
+  const plan = decodePlanB64(sent[0][2].plan_b64);
+  assert.deepEqual(plan.slots.map((slot) => [slot.encoderId, slot.tvs]), [["ENC-01", [1, 3, 5]]]);
+  assert.equal(plan.replaced ?? null, null);
+  assert.deepEqual(Object.keys(storage.savedAssignments()), ["ENC-01"]);
+  assert.deepEqual(storage.savedAssignments()["ENC-01"].tvs, [1, 3, 5]);
+  assert.equal(storage.getItem(PRACTICE_STORAGE_KEY), practiceAfter);
+});
+
+test("a full PRACTICE room asks for Confirm in PRACTICE but not once Live is on", async () => {
+  resetStorage();
+  storage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(busyRoom()));
+  storage.writes.length = 0;
+  const { panel, calls } = makePanel({ liveState: "off", callService: okForEverySlot });
+
+  selectAdhoc(panel, channel("612", "ESPN2"), [1, 3, 5]);
+  await panel._sendPlan();
+  assert.equal(panel._state.reuseConfirmKey, "ENC-03:2,4,6", "practice occupancy is still used in PRACTICE");
+  assert.deepEqual(takeButton(panel).label, "Confirm");
+
+  setLiveState(panel, "on");
+  assert.equal(panel._state.reuseConfirmKey, null, "a Confirm from PRACTICE does not carry into Live");
+  selectAdhoc(panel, channel("612", "ESPN2"), [1, 3, 5]);
+  await panel._sendPlan();
+
+  const sent = scriptCalls(calls);
+  assert.equal(sent.length, 1);
+  assert.deepEqual(
+    decodePlanB64(sent[0][2].plan_b64).slots.map((slot) => [slot.encoderId, slot.tvs]),
+    [["ENC-01", [1, 3, 5]]]
+  );
+  assert.ok(!storage.writes.includes(PRACTICE_STORAGE_KEY));
+});
+
+test("a PRACTICE Take after a Live Take leaves Live occupancy untouched", async () => {
+  resetStorage();
+  const { panel, calls } = makePanel({ liveState: "on", callService: okForEverySlot });
+  selectAdhoc(panel, channel("206", "ESPN"), [1, 2]);
+  await panel._sendPlan();
+  assert.equal(scriptCalls(calls).length, 1);
+  const liveAfter = storage.getItem(STORAGE_KEY);
+  assert.deepEqual(JSON.parse(liveAfter)["ENC-01"].tvs, [1, 2]);
+
+  setLiveState(panel, "off");
+  assert.deepEqual(panel._assignments, createEmptyAssignments());
+  selectAdhoc(panel, channel("212", "NFL"), [1, 2, 3]);
+  await panel._sendPlan();
+
+  assert.equal(scriptCalls(calls).length, 1, "PRACTICE calls nothing");
+  assert.equal(storage.getItem(STORAGE_KEY), liveAfter);
+  assert.equal(storage.savedPracticeAssignments()["ENC-01"].channel, "212");
+  assert.deepEqual(storage.savedPracticeAssignments()["ENC-01"].tvs, [1, 2, 3]);
+
+  setLiveState(panel, "on");
+  assert.deepEqual(panel._assignments, JSON.parse(liveAfter), "back in Live, the panel reloads the Live store");
+});
+
+test("a Live send that finishes after Live is turned off saves to the Live store only", async () => {
+  resetStorage();
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const { panel } = makePanel({
+    liveState: "on",
+    callService: async (...args) => {
+      await gate;
+      return okForEverySlot(...args);
+    },
+  });
+  selectAdhoc(panel, channel("206", "ESPN"), [4, 5]);
+  const pending = panel._sendPlan();
+  setLiveState(panel, "off");
+  release();
+  await pending;
+
+  assert.deepEqual(storage.savedAssignments()["ENC-01"].tvs, [4, 5]);
+  assert.equal(storage.getItem(PRACTICE_STORAGE_KEY), null);
+  assert.deepEqual(panel._assignments, createEmptyAssignments(), "the panel stays on the PRACTICE store");
+});
+
+test("Clear room state removes both the Live and the practice occupancy keys", async () => {
+  resetStorage();
+  const { panel } = makePanel({ liveState: "on", callService: okForEverySlot });
+  selectAdhoc(panel, channel("206", "ESPN"), [1, 2]);
+  await panel._sendPlan();
+  setLiveState(panel, "off");
+  selectAdhoc(panel, channel("212", "NFL"), [3, 4]);
+  await panel._sendPlan();
+  storage.setItem("avaccess-tv-sets-v1", JSON.stringify({ source: "tv-sets", sets: [] }));
+  assert.ok(storage.getItem(STORAGE_KEY));
+  assert.ok(storage.getItem(PRACTICE_STORAGE_KEY));
+
+  panel._clearRoomState();
+
+  assert.equal(storage.getItem(STORAGE_KEY), null);
+  assert.equal(storage.getItem(PRACTICE_STORAGE_KEY), null);
+  assert.ok(storage.getItem("avaccess-tv-sets-v1"), "TV sets survive Clear room state");
+  assert.deepEqual(panel._assignments, createEmptyAssignments());
+  setLiveState(panel, "on");
+  assert.deepEqual(panel._assignments, createEmptyAssignments());
 });

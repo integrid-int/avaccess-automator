@@ -1,5 +1,7 @@
 export const SPECTRUM_ZIP = "27403"; // market ZIP for local-affiliate / blackout rules
 export const STORAGE_KEY = "avaccess-bartender-panel-v2";
+// PRACTICE Takes tune nothing, so their routes must never count as busy boxes in Live.
+export const PRACTICE_STORAGE_KEY = "avaccess-bartender-panel-practice-v1";
 
 export const TOKENS = {
   canvas: "#f4f6f8",

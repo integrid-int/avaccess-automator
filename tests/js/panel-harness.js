@@ -2,7 +2,7 @@
 // rendered to an HTML string, and driven through _sendPlan under node --test.
 import assert from "node:assert/strict";
 import { LIVE_COMMIT_ENTITY } from "../../homeassistant/config/www/panels/live-execute.js";
-import { STORAGE_KEY } from "../../homeassistant/config/www/panels/panel-data.js";
+import { PRACTICE_STORAGE_KEY, STORAGE_KEY } from "../../homeassistant/config/www/panels/panel-data.js";
 
 const registry = new Map();
 
@@ -45,9 +45,13 @@ export class MemoryStorage {
   removeItem(key) {
     this.items.delete(key);
   }
-  savedAssignments() {
-    const raw = this.getItem(STORAGE_KEY);
+  /** Live occupancy, or `PRACTICE_STORAGE_KEY` for the practice store. */
+  savedAssignments(key = STORAGE_KEY) {
+    const raw = this.getItem(key);
     return raw ? JSON.parse(raw) : null;
+  }
+  savedPracticeAssignments() {
+    return this.savedAssignments(PRACTICE_STORAGE_KEY);
   }
 }
 
@@ -92,6 +96,15 @@ export function makePanel({ liveState = "on", callService = async () => undefine
     },
   };
   return { panel, calls };
+}
+
+/** HA flips the Live commit boolean and pushes a new hass object. */
+export function setLiveState(panel, liveState) {
+  const { states } = panel.hass;
+  panel.hass = {
+    ...panel.hass,
+    states: { ...states, [LIVE_COMMIT_ENTITY]: { ...states[LIVE_COMMIT_ENTITY], state: liveState } },
+  };
 }
 
 export function scriptCalls(calls) {
