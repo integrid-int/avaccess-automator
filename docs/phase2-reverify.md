@@ -1,4 +1,84 @@
-# Phase 2 — Re-verify findings (iteration 1 of 5)
+# Phase 2 — Re-verify findings
+
+Iteration 2 is current. Iteration 1 is kept below for history.
+
+## Iteration 2 of 5
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Branch | `cursor/remediation-2026-10-21-af45` |
+| Code verified at | `71e04b714e2ccb1d8f0c1f6fa370d95e49884d15` (`71e04b7`) |
+| Changes since iteration 1 | F-1a `6280e01` (code + tests), `eca1ec2` (docs); F-3 `a9af537`; F-2 `71e04b7` |
+| JS tests | `node --test tests/js/*.test.js` → **107 pass / 0 fail** (was 100; +6 occupancy, +1 hint) |
+| Python tests | `python3 -m unittest discover -s tests -p 'test_*.py' -q` → **151 OK** |
+
+**Result (22 findings-table rows):** PASS 20 · FAIL 0 · BLOCKED 2 · WON'T FIX 0
+
+**S0/S1 FAIL:** none. S0-OCCUPANCY-IPAD moved FAIL → PASS. S0-OFF-FICTION stays BLOCKED on the PDF rebuild only.
+
+### Findings
+
+| ID | Severity | Status | Evidence | Gap (if FAIL) |
+|----|----------|--------|----------|---------------|
+| S0-SILENT-LIVE | S0 | PASS | `_sendPlan` now saves through `_saveAssignments(nextAssignments, occupancyKey)`, still after `runLiveSendSafe` returns, and `occupancyPlanFromLiveResult` still keeps only `ok` slots. Iteration 1 tests pass. Mutation re-run: saving every slot → JS 100 pass / 7 fail (same as iteration 1). | — |
+| S0-NO-CHANNEL | S0 | PASS | Unchanged since iteration 1: `takeBlockReason` path in `_sendPlan` and executor preflight untouched; `panel-send.test.js` / `take-guards.test.js` / `test_execute_route_plan_live_tune.py` pass. | — |
+| S0-OCCUPANCY-IPAD | S0 | **PASS** | F-1a. `panel-data.js` adds `PRACTICE_STORAGE_KEY = "avaccess-bartender-panel-practice-v1"`; Live stays `STORAGE_KEY = "avaccess-bartender-panel-v2"`. `panel-health.js` `_occupancyKey()` picks Live only when `liveCommit` and inventory ready. `_syncLiveCommitFromHass` ends with `_syncOccupancyStore`, which reloads `_assignments` from the target key on a mode change (no merge) and clears Replace/Confirm choices. `_sendPlan` captures the store key before the await, so a Live send that finishes after Live is turned off saves to the Live key only. `_clearRoomState` removes both keys. Planner busy encoders and Now read `_assignments`, so they follow the mode. Tests (`panel-send.test.js`, real panel through Take): practice Take writes only the practice key; Live Take after practice Takes claims ENC-01 with one script call and no `replaced`; a full practice room asks Confirm in PRACTICE but not after Live arms; practice Take after a Live Take leaves the Live key byte-identical and Live reloads it; in-flight Live send survives a mode flip; Clear room state removes both keys and keeps TV sets. Mutations: one shared key → 6 fail; Clear without the practice key → 1 fail. Docs: `HA_LIVE.md` 7b (bullet, step 3, return-to-practice line, checklist 8c), `README.md` occupancy + Now + Live gating, `OPERATIONS_GUIDE.md` Soft Launch, `STAFF_TRAINING.md` Clear room state / Now / troubleshooting say the stores are separate and Clear wipes both. Cache-bust `panel-health.js?v=34` (`configuration.yaml`, `prepare_ha_staging.py`, docs); `panel-data.js?v=21`. Single-iPad Live and BLOCK-SERVER-LEDGER unchanged. | — |
+| S0-REUSE-BAR | S0 | PASS | Unchanged since iteration 1 (`route-planner.js` untouched); `_gateReuseConfirm` unchanged. Reuse tests pass, plus the new full-practice-room test shows Confirm comes only from the current mode's store. | — |
+| S0-OFF-FICTION | S0 | BLOCKED | UI and Markdown still pass: the `rg` sweep of `docs/*.md`, `README.md`, `scripts/build_staff_pdfs.py`, and panel JS finds only negations ("do not turn off") and the boolean being **off**. F-2 done: every PDF link carries the pending-rebuild note. **Blocked:** `STAFF_QUICK_START.pdf` and `STAFF_FULL_GUIDE.pdf` are unchanged since iteration 1; decoded text still has "turn off" (quick start) and "DRY-RUN" (full guide). `pip install reportlab` → "No matching distribution found". | — |
+| S1-LIVE-BOOLEAN | S1 | PASS | Unchanged since iteration 1 for the gate (`avaccess_routing.yaml`, wrapper). `_syncLiveCommitFromHass` still sets `liveCommit` only from `liveCommitFromStates`; it now also syncs the occupancy store. `live-commit-sync.test.js`, `test_live_interlock.py`, and "Take re-reads the HA boolean…" pass. | — |
+| S1-B64-SHELL | S1 | PASS | Unchanged since iteration 1: YAML and Python untouched; `test_live_interlock.py` passes. | — |
+| S1-UDP-TRUST | S1 | PASS | Unchanged since iteration 1: `execute_route_plan.py` untouched since `94cbb66`; tests pass. | — |
+| S1-SHEF-STATUS | S1 | PASS | Unchanged since iteration 1: `directv_shef.py` / executor untouched; tests pass. | — |
+| S1-PRESET-PARTIAL | S1 | PASS | Unchanged since iteration 1: `apply_preset.py` untouched; `test_apply_preset.py` passes. | — |
+| S1-DOUBLE-TAP | S1 | PASS | `_sending` / `createInFlightLock` unchanged. "a second Take while Live is in flight…" passes; the new in-flight mode-flip test also goes through the lock. | — |
+| S1-DEMO-FALLBACK | S1 | PASS | Unchanged since iteration 1; "demo sports fallback blocks Live Take but still allows a PRACTICE Take" passes. | — |
+| S1-VIS-TOKENS | S1 | PASS | Unchanged since iteration 1 (CSS and `commitModeBanner` untouched); `panel-shell.test.js`, `panel-render.test.js` banner tests pass. | — |
+| S1-SCROLL-JUMP | S1 | PASS | Unchanged since iteration 1; scroll tests pass. | — |
+| S1-MATRIX-CONFUSION | S1 | PASS | `OPERATIONS_GUIDE.md` still has "Which one changes the wall" / "AVAccess Matrix is always live"; `STAFF_TRAINING.md` still says Matrix has no PRACTICE mode. | — |
+| S1-INVENTORY-TRAP | S1 | PASS | Unchanged since iteration 1: `cp --remove-destination` in `HA_QUICKSTART.md` and `HA_LIVE.md` section 3. | — |
+| S1-DOCKER-UDP | S1 | PASS | Unchanged since iteration 1: `HA_LIVE.md` section 0 "Live UDP needs Home Assistant OS or host networking" and "Warning — Docker bridge". | — |
+| S2-LOGO-FALLBACK | S2 | PASS | Unchanged since iteration 1; tests pass. | — |
+| S2-RAIL-FOLD | S2 | PASS | Unchanged since iteration 1; tests pass. | — |
+| S2-SPORTS-STALE | S2 | PASS | Unchanged since iteration 1; tests pass. | — |
+| S2-TESTS-SHALLOW | S2 | PASS | Harness still drives the real panel. New occupancy tests use the real `_sendPlan` and a recording `localStorage` (`savedPracticeAssignments`, `setLiveState` helpers). JS 107, Python 151. | — |
+| BLOCK-SITE-* | — | BLOCKED | Unchanged: needs the site (wall, `msg_b_reconnect` eviction, host NIC / Docker UDP, Sunday channel set). | — |
+
+### Recommended tasks from iteration 1
+
+| Task | Status | Evidence |
+|------|--------|----------|
+| F-1a separate practice occupancy | PASS | See S0-OCCUPANCY-IPAD. |
+| F-2 PDF links point at `STAFF_TRAINING.md` | PASS | All 8 lines with `STAFF_QUICK_START.pdf` / `STAFF_FULL_GUIDE.pdf` links (14 links: `README.md` 2 lines, `HA_LIVE.md` 3, `OPERATIONS_GUIDE.md` 1, `STAFF_TRAINING.md` 2) carry "PDFs pending rebuild; use STAFF_TRAINING.md for the current UI". `rg "STAFF_(QUICK_START\|FULL_GUIDE)\.pdf" … \| rg -v "pending rebuild"` returns nothing. `OPERATIONS_GUIDE.md` Sports Routing paragraph and `STAFF_TRAINING.md` intro now name `STAFF_TRAINING.md` as current. The PDF content itself is still BLOCKED. |
+| F-3 Live commit hint copy | PASS | `_renderLiveCommitToggle` hint is "PRACTICE — Take only plans; TVs do not change" / "LIVE — Take changes the TVs"; tooltip says Take. Test `panel-render.test.js` "Live commit hint uses PRACTICE / LIVE and Take wording" renders both modes and asserts no "Dry run" / "— Send". Ships in `?v=34`. |
+| F-4 dead render path | Open (not required) | Not done. `_renderScreen` / `_planSendLabel` "Dry-run Send" are still unreachable. Leave for Phase 5 diff review. |
+
+### Allowed BLOCKED items (outside the findings table, still open)
+
+| Item | Status | Note |
+|------|--------|------|
+| BLOCK-SERVER-LEDGER | BLOCKED | Occupancy is still per-iPad `localStorage` (now two keys per iPad). Live stays single-iPad. |
+| PDF rebuild | BLOCKED | `reportlab` not installable. Blocks S0-OFF-FICTION. `scripts/build_staff_pdfs.py` text is updated for F-1a, so the next rebuild picks it up. |
+| Real HA `returnResponse` integration | BLOCKED | Still tested with offline fakes only. |
+
+### Commands run (iteration 2)
+
+```bash
+git checkout cursor/remediation-2026-10-21-af45            # HEAD 71e04b7
+node --test tests/js/*.test.js                             # 107 pass / 0 fail
+python3 -m unittest discover -s tests -p 'test_*.py' -q    # Ran 151 tests, OK
+pip install reportlab                                      # No matching distribution (PDF rebuild stays BLOCKED)
+git diff --stat 94cbb66 HEAD -- live-execute.js route-planner.js assignment-store.js \
+  scripts/execute_route_plan.py docs/STAFF_*.pdf homeassistant/packages   # empty
+# Mutation checks (each reverted; tree clean afterwards)
+#   panel-health.js _occupancyKey always STORAGE_KEY        : JS 100 pass / 6 fail
+#   panel-health.js Clear room state skips practice key     : JS 105 pass / 1 fail
+#   live-execute.js occupancy filter -> all slots           : JS 100 pass / 7 fail
+```
+
+---
+
+## Iteration 1 of 5 (superseded)
 
 | Field | Value |
 |-------|-------|
@@ -15,7 +95,7 @@
 
 ---
 
-## Findings
+### Findings
 
 | ID | Severity | Status | Evidence | Gap (if FAIL) |
 |----|----------|--------|----------|---------------|
@@ -42,7 +122,7 @@
 | S2-TESTS-SHALLOW | S2 | PASS | `tests/js/panel-harness.js` drives the real `<panel-health>` through Take (`panel-send.test.js` 8, `panel-render.test.js` 7). Python bare `test_*` functions are now `unittest.TestCase`, and discover runs 151 with no import errors. Independent mutation spot-check in this pass: 4 of 4 caught (save-all-live-slots → 7 JS fails; reuse-before-free → 3 JS fails; live trusts caller udp → 1 Py fail; no live tune preflight → 6 Py fails). | — |
 | BLOCK-SITE-* | — | BLOCKED | Needs the site: real wall (BLOCK-SITE-WALL), `msg_b_reconnect` eviction (BLOCK-SITE-RECONNECT), host NIC / Docker UDP (BLOCK-SITE-BROADCAST), and the Sunday channel set (BLOCK-SITE-SUNDAY-CH). Listed in `docs/remediation-plan.md` "Out of scope / BLOCKED pending site". | — |
 
-### Allowed BLOCKED items (outside the findings table, still open)
+#### Allowed BLOCKED items (outside the findings table, still open)
 
 | Item | Status | Note |
 |------|--------|------|
@@ -52,9 +132,9 @@
 
 ---
 
-## S0/S1 FAIL — gaps and proposed fix tasks
+### S0/S1 FAIL — gaps and proposed fix tasks
 
-### S0-OCCUPANCY-IPAD
+#### S0-OCCUPANCY-IPAD
 
 **Gap:** Practice (dry-run) Takes persist fictional occupancy into the same `localStorage` key that Live uses (`avaccess-bartender-panel-v2`). Nothing clears that occupancy on load or when Live arms. A practice Take done while the boolean is off overwrites real Live occupancy. The only mitigation is the manual **Clear room state** step on every iPad.
 
@@ -67,7 +147,7 @@ Note for the coordinator: WP-A step 4 in the plan says "prefer: dry-run applies 
 
 Either way, update the `HA_LIVE.md` 7b practice-occupancy bullet and step 3, `README.md` occupancy paragraph, `OPERATIONS_GUIDE.md` Soft Launch bullet, and `STAFF_TRAINING.md` Clear room state text to match.
 
-### Recommended (not needed to clear an S0/S1)
+#### Recommended (not needed to clear an S0/S1)
 
 | Task | Why | Files |
 |------|-----|-------|
@@ -77,7 +157,7 @@ Either way, update the `HA_LIVE.md` 7b practice-occupancy bullet and step 3, `RE
 
 ---
 
-## Commands run
+### Commands run
 
 ```bash
 git checkout cursor/remediation-2026-10-21-af45 && git pull origin cursor/remediation-2026-10-21-af45   # HEAD 94cbb66

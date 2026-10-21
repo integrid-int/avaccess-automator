@@ -211,3 +211,36 @@ _(per-WP commit entries follow)_
 - Minor copy observations, not findings: F-3 (Live commit hint still says "Dry run — Send"), F-4 (unreachable `_renderScreen` path keeps "Dry-run Send").
 
 **Next:** coordinator spawns a fix agent for S0-OCCUPANCY-IPAD (or records WON'T FIX), then Phase 2 iteration 2.
+
+## Fix F-1a / F-2 / F-3 (S0-OCCUPANCY-IPAD)
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Commits | `6280e01` F-1a code + tests, `eca1ec2` F-1a docs, `a9af537` F-3, `71e04b7` F-2 |
+
+- **F-1a:** PRACTICE and Live occupancy are separate `localStorage` stores. PRACTICE reads and writes `avaccess-bartender-panel-practice-v1` (`PRACTICE_STORAGE_KEY`, `panel-data.js`); Live (Live commit on and inventory ready) reads and writes `avaccess-bartender-panel-v2` (`STORAGE_KEY`). `_syncLiveCommitFromHass` → `_syncOccupancyStore` reloads `_assignments` from the target key on a mode change, with no merge, and clears Replace/Confirm choices. `_sendPlan` saves to the key captured before the await, so a Live send that finishes after Live is turned off still lands in the Live store. **Clear room state** removes both keys (TV sets kept). Planner busy encoders and Now follow `_assignments`, so they are mode-specific. Docs: `HA_LIVE.md` 7b and checklist 8c, `README.md`, `OPERATIONS_GUIDE.md` Soft Launch, `STAFF_TRAINING.md`, and the `build_staff_pdfs.py` source text. Cache-bust `panel-health.js?v=34`, `panel-data.js?v=21`.
+- **Tests:** 6 new `panel-send.test.js` cases on the real panel: practice Take does not write the Live key; Live Take after practice Takes claims ENC-01 with no Confirm; a full practice room needs Confirm only in PRACTICE; practice Take after a Live Take leaves the Live key unchanged and Live reloads it; in-flight Live send survives a mode flip; Clear room state removes both keys. Harness gains `savedPracticeAssignments()` and `setLiveState()`. Mutations: shared key → 6 fail; Clear skips practice key → 1 fail.
+- **F-3:** Live commit hint reads "PRACTICE — Take only plans; TVs do not change" / "LIVE — Take changes the TVs"; tooltip says Take. New `panel-render.test.js` case. Same `?v=34`.
+- **F-2:** every `STAFF_QUICK_START.pdf` / `STAFF_FULL_GUIDE.pdf` link in `README.md`, `HA_LIVE.md`, `OPERATIONS_GUIDE.md`, `STAFF_TRAINING.md` says the PDFs are pending rebuild and points at `STAFF_TRAINING.md`. The PDFs themselves are unchanged (`reportlab` still not installable).
+- **Verify:** `node --test tests/js/*.test.js` → 107 pass / 0 fail. `python3 -m unittest discover -s tests -p 'test_*.py' -q` → 151 OK.
+- F-4 (dead `_renderScreen` path) not done; left for Phase 5.
+
+## Phase 2 — Re-verify, iteration 2 of 5
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| HEAD verified | `71e04b714e2ccb1d8f0c1f6fa370d95e49884d15` (`71e04b7`) |
+| Report | `docs/phase2-reverify.md` (iteration 2 section) |
+| Verify | JS 107 pass / 0 fail. Python 151 OK. Mutations: shared occupancy key → 6 fail; Clear skips practice key → 1 fail; save every Live slot → 7 fail. |
+
+**Counts (22 findings-table rows):** PASS **20** · FAIL **0** · BLOCKED **2** · WON'T FIX **0**
+
+- **PASS — S0-OCCUPANCY-IPAD** (was FAIL): F-1a separate stores, mode-switch reload, Clear wipes both; tests and docs above.
+- **BLOCKED — S0-OFF-FICTION:** UI and Markdown pass, and F-2 (PDF links note) is PASS. The PDF content still says "turn off" / "DRY-RUN" until the rebuild.
+- **BLOCKED — BLOCK-SITE-\*** unchanged.
+- F-3 PASS. F-4 open (not required).
+- Still BLOCKED outside the table: BLOCK-SERVER-LEDGER, PDF rebuild, real HA `returnResponse` integration.
+
+**Next:** no S0/S1 FAIL remains. Rebuild the staff PDFs on a machine with PyPI access to clear S0-OFF-FICTION; site items stay BLOCKED.
