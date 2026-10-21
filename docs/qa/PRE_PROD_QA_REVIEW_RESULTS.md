@@ -1,6 +1,6 @@
 # Pre-Production QA Review Results — AVAccess Automator
 
-**Status:** PARTIAL — 9/10 specialist reports merged; Reliability still running  
+**Status:** COMPLETE — 10/10 specialist reports merged  
 **Plan:** [PRE_PROD_QA_REVIEW_PLAN.md](./PRE_PROD_QA_REVIEW_PLAN.md)  
 **Review branch:** `cursor/pre-prod-qa-review-af45`  
 **Code under review:** `main` @ `e2f97d3`  
@@ -8,15 +8,23 @@
 
 ---
 
-## Executive verdict (interim — 9 specialists in)
+## Executive verdict (FINAL)
 
-| Question | Interim answer |
-|----------|----------------|
-| Enable **Live Send** on next game day? | **NO-GO** — Senior + cross-specialist S0s (patio retunes bar; “off” fiction; browser occupancy; silent Live failure) |
-| Soft Launch (**dry-run only**) on iPad? | **GO as training only** — not the bartender live path this weekend; keep remotes/VDirector (or Matrix only after site smoke) for wall changes |
-| Overall | Do not take the pager on Live; dry-run soft launch as training tool only |
+| Question | Answer |
+|----------|--------|
+| Enable **Live Send** on next game day? | **NO-GO** |
+| Soft Launch (**dry-run only**) on iPad? | **GO with conditions** — training tool only; not the wall-change path |
+| Overall | Do not take the pager on Live. Keep remotes/VDirector (Matrix only after on-site smoke) for real routing until S0s clear. |
 
-Senior agrees with Security/UI/Code/Arch/FOH/Owner: core model unsafe for Live until free-box preference, server occupancy, visible failures, and real kill switch land.
+**Unanimous across Security, Reliability, UI, Visual, Architecture, Codebase, Senior, Owner, Bartender, Ops:** dry-run default is sound; Live is unsafe under ordinary bar conditions (silent wrong content / false “done” / browser-local occupancy / shared-encoder retunes).
+
+### Soft Launch conditions (must keep)
+
+1. Leave `inventory.json` un-exported (`REPLACE_ME`) so Live toggle stays disabled  
+2. Leave `inventory.yaml` on example so executor preflight refuses  
+3. Wipe iPad `localStorage` key `avaccess-bartender-panel-v2` before any later Live enable (dry-run Writes occupancy)  
+4. PRACTICE labeling / staff know Take does not change TVs; Matrix off bartender iPads or trained as live-only  
+5. Prefer fixing scroll-jump / CSS tokens / logos before heavy training (non-blocking if schedule forces)
 
 ---
 
@@ -24,8 +32,8 @@ Senior agrees with Security/UI/Code/Arch/FOH/Owner: core model unsafe for Live u
 
 | Suite | Result | Evidence |
 |-------|--------|----------|
-| `node --test tests/js/*.test.js` | **39/39 pass** | `/opt/cursor/artifacts/node-test-results.txt` |
-| `pytest tests/` | **BLOCKED** | PyPI HTTPS SSL failure in review VM |
+| `node --test tests/js/*.test.js` | **39/39 pass** | `/opt/cursor/artifacts/node-test-results.txt` (+ reliability `js_tests.log`) |
+| Python tests | **Partial** | PyPI/pytest install blocked; Reliability ran 31 unittest-style + 45 pytest-style via shim — all pass; gaps remain (see §2) |
 | Snyk dependency scan | **BLOCKED** | MCP namespace error |
 | Live HA / computerUse UI | **NOT RUN** | No AV-LAN HA in this environment |
 
@@ -36,7 +44,7 @@ Senior agrees with Security/UI/Code/Arch/FOH/Owner: core model unsafe for Live u
 | Workstream | Agent | Status |
 |------------|-------|--------|
 | Security | [Security pre-prod review](bc-4fe1d506-1809-5ca8-b2d9-f3f4c3d90243) | **merged** |
-| Reliability | [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c) | running |
+| Reliability | [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c) | **merged** |
 | UI interaction | [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3) | **merged** |
 | Visual design | [Visual design review](bc-66c2e031-218f-512f-8cc1-66e105ce4588) | **merged** |
 | Overall design | [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34) | **merged** |
@@ -108,7 +116,33 @@ XSS on normal paths largely escaped; SSRF not attacker-controlled from panel; `d
 
 ## 2. Reliability review
 
-_Pending — [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c)._
+**Source:** [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c)  
+**Full report:** `/opt/cursor/artifacts/reliability_review.md` (+ probes/logs in same folder)  
+**Verdict:** Live **NO-GO**; dry-run soft launch **GO with conditions** (inventory gates left closed; wipe occupancy before Live).
+
+### S0
+
+1. **Live result never reaches panel** — `callService` without `returnResponse`; HA logs nonzero exit only; `parseLiveExecuteReport` → null; occupancy saved first. Exit 2/1/crash all look like clean Live summary.  
+2. **No-channel games live-routed without tune** — `tune: null` → skip SHEF, still UDP, mark `ok`; 212/552 + all 25 demo fallbacks; panel does not block Take.  
+3. **Occupancy per-iPad only** — second iPad / cache clear reallocates busy ENC; no executor lock.
+
+### S1
+
+Kill switch not enforced; shared-encoder retune + false “Off”; occupancy drift (dry-run writes too) / no reset; double-tap / 60s kill mid-plan; Docker bridge silent UDP fail; inventory symlink trap with JSON/YAML disagree + `directv` placeholder IPs pass.
+
+### S2–S4
+
+Even with response wired, merge treats exit-2 as warnings-only; UDP no ack/session=1; SHEF body ignored; sports/guide refresh fragility; shell_command path never dry-run exercised in runbook; doc drift. **Partial-failure logic itself is correct** (SHEF fail skips UDP for slot; others continue; exit codes right) — just never surfaced.
+
+### Key verification tests for fix agent (of 23 in full report)
+
+- Panel: request response; exit 2/1/empty → error + success-only occupancy; single-flight; block null channel; HA boolean gates; free encoder on shared subset; dry-run doesn’t write occupancy; shared server ledger  
+- Python: no-tune errors with no UDP; <55s deadline; file lock; placeholder/symlink exit 2; bad broadcast exit 2; empty sports leave file; atomic EPG  
+- On site: Developer Tools dry-run with response; packet capture; shared-encoder physical test  
+
+### Uncovered physical risks
+
+`msg_b_reconnect` eviction semantics; session/spacing; H25 standby; SHEF latency; broadcast NIC; ENC↔H25 pairing; Companion cache vs localStorage; scrape stability; compose symlink mount; `:stable` pin.
 
 ---
 
@@ -407,7 +441,7 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 
 ---
 
-## Aggregated must-fix backlog (interim — 7 specialists)
+## Aggregated must-fix backlog (FINAL — all 10 specialists)
 
 ### Block Live Send
 
@@ -444,10 +478,14 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 
 ## Handoff for next agent
 
-1. Wait for remaining 7 specialist merges into this file, then freeze verdict  
-2. Remediation branch from `main`; fix S0/S1 first  
-3. Re-run `node --test tests/js` + full pytest after fixes  
-4. Do not enable Live on opening weekend without Owner conditions 1–6  
+1. This file is frozen as the remediation backlog source of truth (verdict FINAL)  
+2. Open a remediation branch from `main`; fix S0 cluster first (silent Live result, no-channel Take, browser occupancy, shared-encoder reuse, “off” fiction)  
+3. Then Security S1s (UDP from inventory, b64 quoting, server live boolean) and Ops runbook addendum  
+4. Re-run `node --test tests/js` + full pytest; add the Reliability suggested tests  
+5. Do **not** enable Live without Senior minimum bar + Owner conditions 1–6 + on-site HA_LIVE §7 smoke  
+6. Soft Launch training may proceed under Soft Launch conditions above  
+7. Full reliability detail: `/opt/cursor/artifacts/reliability_review.md`; senior repros: `/opt/cursor/artifacts/senior-review/`  
+8. Copy of reliability report also at `docs/qa/RELIABILITY_REVIEW.md` if present in this PR
 
 ---
 
@@ -470,3 +508,5 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 | +UI/Code/Ops | S0 reuse/replace + silent Live + browser occupancy confirmed across three lenses; HA_LIVE insufficient alone |
 | +Architecture | Three between-layer blockers; Sunday Ticket channel set disagreement (9554–9563 vs 705–713) |
 | +Senior | Do-not-ship Live; pager refused; patio/4P/no-channel repros; Soft Launch = training only |
+| +Reliability | Final S0 trio confirmed with panel/executor probes; verdict COMPLETE 10/10 |
+| FINAL | Live NO-GO; Soft Launch GO with inventory gates left closed |
