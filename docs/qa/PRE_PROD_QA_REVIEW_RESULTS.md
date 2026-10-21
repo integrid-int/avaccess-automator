@@ -1,6 +1,6 @@
 # Pre-Production QA Review Results — AVAccess Automator
 
-**Status:** PARTIAL — 3/10 specialist reports merged; 7 still running  
+**Status:** PARTIAL — 4/10 specialist reports merged; 6 still running  
 **Plan:** [PRE_PROD_QA_REVIEW_PLAN.md](./PRE_PROD_QA_REVIEW_PLAN.md)  
 **Review branch:** `cursor/pre-prod-qa-review-af45`  
 **Code under review:** `main` @ `e2f97d3`  
@@ -43,7 +43,7 @@ Converging signals so far (Security + Owner + Visual): dry-run default is correc
 | Codebase | [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e) | running |
 | Senior developer | [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e) | running |
 | Owner persona | [Owner persona review](bc-9b5be436-b5b1-53c3-b713-f818d583b824) | **merged** |
-| Bartender persona | [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e) | running |
+| Bartender persona | [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e) | **merged** |
 | Ops runbook | [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a) | running |
 
 ---
@@ -209,7 +209,44 @@ Sports list morning scrape fragility; blackout/feed guidance missing; training r
 
 ## 9. Bartender / server perspective
 
-_Pending — [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e)._
+**Source:** [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e)  
+**Verdict:** Soft Launch only. Not Live. Unusable as a rush tool until Take moves TVs (or is unmistakably labeled practice).
+
+### Tap counts (code/docs)
+
+| Goal | Approx taps |
+|------|-------------|
+| Game on every TV | 4–6 (sport→game→All 35→Take→Dismiss) |
+| Game on Patio | ~5 |
+| Game on 4 specific TVs | ~9 + Dismiss |
+| Guide channel | Guide buried in rail + keyboard + row + dest + Take |
+
+Best case ~3 once on the right sport; Take clears selection so multi-zone same-game needs two full passes.
+
+### S0
+
+1. **Take is practice** — Live off, inventory `REPLACE_ME`; PDFs say wall will not change. Unusable mid-rush.  
+2. **Matrix actually fires** while handouts steer staff to Sports Routing only — wrong app is the real one.
+
+### S1
+
+3. **Silent box takeover** — Patio after All-35 can reuse ENC-01 and report `replaced: … off 32 TVs` even with free encoders; Take line does not warn.  
+4. Fixing one TV can retune whole shared box.  
+5. **Now = planned localStorage**, not picture truth; stale plans feed Replace choices.  
+6. No undo / tap-Now-to-fix; only full re-pick.  
+7. Same labels, different layouts: Matrix contiguous vs Routing striped “4 Programs”; FOX naming drift across dashboards.
+
+### S2–S4
+
+Guide/Now/Sets buried under ~17 rail buttons; jargon (Take, Live commit, Dry-run, ENC-01); Delete set no confirm; named set can’t tweak grid in place; no live double-tap guard; sets per-iPad; small grey text / dense TV grid / portrait unverified; stale PDFs; unreachable old screens in `panel-health.js`.
+
+### Top 5 bartender demands
+
+1. Label PRACTICE on Take until Live; then per-box Sending/On/Failed + block double-tap  
+2. Never silently blank other TVs — free box first, or red “turns OFF N TVs” + second confirm  
+3. Recovery: tappable Now, Undo, panic restore; confirm All-35  
+4. One vocabulary / one staff app; zone-first (Patio); drop Preset/Programs/commit jargon  
+5. Pin Guide/Now/Sets; larger TV targets; Delete confirm; glare-friendly contrast; real iPad test  
 
 ---
 
