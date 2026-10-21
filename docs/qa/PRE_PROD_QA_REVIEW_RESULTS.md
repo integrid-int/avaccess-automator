@@ -1,6 +1,6 @@
 # Pre-Production QA Review Results — AVAccess Automator
 
-**Status:** PARTIAL — 4/10 specialist reports merged; 6 still running  
+**Status:** PARTIAL — 7/10 specialist reports merged; 3 still running  
 **Plan:** [PRE_PROD_QA_REVIEW_PLAN.md](./PRE_PROD_QA_REVIEW_PLAN.md)  
 **Review branch:** `cursor/pre-prod-qa-review-af45`  
 **Code under review:** `main` @ `e2f97d3`  
@@ -8,15 +8,15 @@
 
 ---
 
-## Executive verdict (interim — 3 specialists in)
+## Executive verdict (interim — 7 specialists in)
 
 | Question | Interim answer |
 |----------|----------------|
-| Enable **Live Send** on next game day? | **NO-GO** without S1 security fixes + on-site proof + manager Live controls |
-| Soft Launch (**dry-run only**) on iPad? | **Conditional GO** — fix visual token/logo/fold issues first; keep Live off |
-| Overall | Training/dry-run only until remaining specialists confirm; do not default Live for opening weekend |
+| Enable **Live Send** on next game day? | **NO-GO** — S0 reuse/replace wall semantics + silent Live failure + per-iPad occupancy; Security S1s unfixed |
+| Soft Launch (**dry-run only**) on iPad? | **Conditional GO** — fix scroll-jump if present on site; correct training “off” copy; PRACTICE label; visual token/logo/fold; Matrix off bartender iPads |
+| Overall | Dry-run training only; `HA_LIVE.md` alone insufficient until S0/S1 ops gaps closed |
 
-Converging signals so far (Security + Owner + Visual): dry-run default is correct; Live path has defense-in-depth gaps; panel↔wall truth gap is the #1 business risk; visual system drifted from approved Graphite+Cyan and has broken CSS variables.
+Strong convergence: reuse of a busy encoder blanks/retunes unintended TVs physically while UI says “off”; Live Take often looks successful without wall truth; occupancy is browser-local.
 
 ---
 
@@ -37,14 +37,14 @@ Converging signals so far (Security + Owner + Visual): dry-run default is correc
 |------------|-------|--------|
 | Security | [Security pre-prod review](bc-4fe1d506-1809-5ca8-b2d9-f3f4c3d90243) | **merged** |
 | Reliability | [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4d3388c) | running |
-| UI interaction | [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3) | running |
+| UI interaction | [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3) | **merged** |
 | Visual design | [Visual design review](bc-66c2e031-218f-512f-8cc1-66e105ce4588) | **merged** |
 | Overall design | [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c34) | running |
-| Codebase | [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e) | running |
+| Codebase | [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e) | **merged** |
 | Senior developer | [Senior developer ship review](bc-a29dd362-80ee-5ac7-aaba-d5d2f452b43e) | running |
 | Owner persona | [Owner persona review](bc-9b5be436-b5b1-53c3-b713-f818d583b824) | **merged** |
 | Bartender persona | [Bartender persona review](bc-8802d5da-4b0b-5150-a485-c06a9cfb4d6e) | **merged** |
-| Ops runbook | [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a) | running |
+| Ops runbook | [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a) | **merged** |
 
 ---
 
@@ -114,7 +114,35 @@ _Pending — [Reliability failure-mode review](bc-5eb95651-bb29-5c1c-ad45-b2b9e4
 
 ## 3. UI review
 
-_Pending — [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3)._
+**Source:** [UI interaction review](bc-99819c78-c158-53b9-b984-00e1d13dcaf3)  
+**Verdict:** Soft Launch **conditional GO**; Live **NO-GO**. JS tests 39/39; planner simulation confirmed S0/S1.
+
+### S0
+
+1. **Pick one TV / named set can retune every TV on that box** — `singleEncoderForTvs` before free encoders; Take line does not warn; training presents as normal.
+
+### S1
+
+2. **“Off” in UI ≠ off on wall** — executor never disconnects `replaced`/`leftover` TVs; they keep showing retuned box. Training copy wrong.  
+3. **Failed Live Take looks like success** — no `returnResponse`; occupancy saved first; Take stays tappable (double-send).  
+4. **No-channel games still Takeable** — 212/552 games lack channel; Live routes to untuned box.  
+5. **Scroll jump** — `hass` → full `innerHTML` re-render; risk wrong-row tap under HA state churn (verify on site).  
+6. **Matrix looks like practice, fires live** — separate occupancy; undermines dry-run training.
+
+### S2–S4
+
+Guide/Now/Sets buried; 4/9 Programs lack order map; Replace impact hidden; Guide search empty/keyboard issues; weak Live commit control; demo sports fallback without banner; small TV cells; practice occupancy pollutes Live; Take/Send label mix; Spectrum/Xumo spec drift; dual-entry not exclusive; preset naming drift.
+
+### Soft Launch conditions (UI)
+
+- Confirm/fix scroll jump on site HA  
+- Correct training “turn off / stay showing” lines  
+- Keep Matrix off bartender iPads (or explicit live-surface training)  
+- Clear practice occupancy each shift  
+
+### Live blockers (UI)
+
+Free-box preference or pre-Take warn; physical re-route or stop calling TVs “off”; Live report + post-success occupancy + busy state; block no-channel Take; HA-enforced Live gate + reset; single-TV wall proof.
 
 ---
 
@@ -159,7 +187,35 @@ _Pending — [Architecture overall design](bc-89a16bb0-f850-5cf8-a281-b693cccb3c
 
 ## 6. Codebase review
 
-_Pending — [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e)._
+**Source:** [Codebase structure audit](bc-1fa21211-ce44-5de7-879c-8c7acfe0677e)  
+**Verdict:** Live **NO-GO**. Dry-run reasonable. Senior code-health **4/10**. Symlink layout is canonical (not duplicated source); UDP logic still duplicated across Matrix CLIs.
+
+### S0
+
+1. Reuse/replace changes unselected physical TVs (`offTvs` browser-only; executor ignores `replaced`).  
+2. Free-encoder authority is per-browser `localStorage` — empty/stale iPad can retune ENC-01 in use.
+
+### S1
+
+3. Live boolean not server interlock; `require_admin: false`.  
+4. Matrix `apply_preset` partially routes before full validation fails.  
+5. Track B trusts caller-supplied UDP hostnames (confirmed runtime).  
+6. SHEF JSON without success `status.code` still proceeds to UDP.  
+7. Untunable games Live-routable (`tune: null` still reconnects).  
+8. Browser state committed before physical outcome.  
+9. No single-flight / idempotency.
+
+### S2–S4
+
+`panel-health.js` monolith; panel-shell tests are regex-only; `validate_panels.py` shallow; inventory symlink + Quickstart `cp` trap; sports no freshness guard; iTach dead path broken in deploy topology; staging misses `avaccess_routing.yaml`; Spectrum naming drift; unpinned deps / floating `:stable`.
+
+### Coverage gaps (high)
+
+`panel-health` workflows, concurrency, Live auth, pre-enriched UDP rejection, SHEF status/verify, physical reuse/replace, Matrix preset atomicity, sports staleness, full HA deploy CI.
+
+### Positives
+
+Canonical symlink tree; pure planner/assignment tests; placeholder defaults; strong sports/guide fixture tests; detailed ops docs.
 
 ---
 
@@ -252,42 +308,63 @@ Guide/Now/Sets buried under ~17 rail buttons; jargon (Take, Live commit, Dry-run
 
 ## 10. Ops / go-live runbook audit
 
-_Pending — [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a)._
+**Source:** [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a)  
+**Verdict:** `HA_LIVE.md` **not sufficient alone** for production. Integrator can boot HA OS path and one-TV smoke; missing emergency/fallback, freeze, solid rollback; Docker path broken/contradictory.
+
+### S0
+
+1. **Failed Live Take looks successful** — `callService` without `returnResponse`; nonzero exit not surfaced; occupancy saved pre-call; runbook never requires HA log/wall check after Live Take (only step-7 one-TV visual).
+
+### S1
+
+2. **Docker live path self-contradicts** — relative paths from wrong cwd; checked-in compose is bridge test stack; UDP silent-fail; `/config` as checkout vs “don’t clone over `/config`”.  
+3. **Tracked placeholder inventory symlink** — `git pull` / reset restores `REPLACE_ME`; panel JSON gate can disagree with YAML; gate never checks `directv.yaml`.  
+4. **`HA_QUICKSTART.md` `cp` without `--remove-destination`** edits example via symlink (HA_LIVE correct).  
+5. **Live commit ownership unclear** — per-iPad memory; one-way sync from boolean; staff guides say can’t turn on; no live-ops handout.  
+6. **No emergency procedure** — HA/iPad/Wi-Fi down, frozen H25, black wall, VDirector only in PLAN.md.  
+7. **Rollback incomplete** — no backup step before Matrix overwrite; Matrix always-live no kill switch.  
+8. **No change freeze** — scripts symlink means `git pull` hot-swaps executor; tracks `main` not tag.
+
+### S2–S4
+
+Stale CLI copies on update; network L2/broadcast underspecified; 60s shell timeout on multi-SHEF; two occupancy truths; staging/live confusion + published staging creds; test plan vs ops guide live-pointing contradiction; unowned daily data jobs; `:stable` unpinned; missing backup/timezone/iPad Guided Access checklist items.
+
+### Game-day emergency checklist gaps (none exist today)
+
+Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare ENC; black-wall UDP/FOX reset; Live kill procedure; freeze window; escalation contacts; rollback artifacts; staff vs manager vs integrator ownership split.
 
 ---
 
-## Aggregated must-fix backlog (interim from Security + Visual + Owner)
+## Aggregated must-fix backlog (interim — 7 specialists)
 
 ### Block Live Send
 
-1. **SEC** Always bind live UDP hostnames from inventory  
-2. **SEC** Quote/validate `plan_b64`/`sets_b64` (no raw shell interpolation)  
-3. **SEC** Server-enforce live commit boolean (or equivalent)  
-4. **SEC/OWN** Restrict who can Live (manager-only / AuthZ)  
-5. **OPS/OWN** Real inventory + directv; export inventory.json; host-network UDP proof  
-6. **OWN** On-site one-TV Live proof with written pass  
-7. **OWN/VIS** Persistent PRACTICE vs LIVE banner; clarify dry-run does nothing to TVs  
-8. **REL/OWN** Address Now-vs-wall / occupancy-before-ack (pending Reliability detail)  
-9. **VIS** Resolve CSS tokens so Live toggle / active chips are unambiguous  
-10. **OWN** Named on-call + Matrix vs Routing “which is real” staff clarity  
+1. **S0 UI/CODE/FOH** Prefer free encoder or hard warn+confirm before shared-box reuse; physical detach/black for “off” TVs or stop claiming off  
+2. **S0 CODE** Centralize occupancy (or single-iPad + hard reset SOP) — no per-browser free-ENC authority for Live  
+3. **S0 OPS/UI** Surface Live failures (`returnResponse` / job entity); save occupancy only after success; busy/double-tap guard  
+4. **SEC** Always bind live UDP from inventory; quote/validate b64; server-enforce live boolean  
+5. **SEC/OWN** Manager-only Live AuthZ  
+6. **CODE** Validate SHEF status before UDP; block no-channel Live Take; Matrix `apply_preset` full preflight  
+7. **OPS/OWN** Real inventory+directv; host-network UDP; written one-TV→35 proof  
+8. **OPS** Emergency/freeze/rollback addendum to HA_LIVE; fix Docker path or document HA OS only  
+9. **OWN/FOH/VIS** PRACTICE/LIVE on Take; Matrix vs Routing staff story  
+10. **VIS** Resolve CSS tokens for Live/chip state  
 
 ### Soft Launch (dry-run) gate
 
-1. **VIS** Fix CSS variable resolution  
-2. **VIS** Logo initials fallback  
-3. **VIS** Guide/Now/Sets + TV grid fold issues at iPad landscape  
-4. Keep Live commit **off**; staff drill 10 minutes  
-5. Confirm Staff PDF matches current Charcoal+Blue UI (Operations guide still has old cyan screenshots — mark stale or refresh)  
+1. **UI** Confirm/fix scroll jump on site HA  
+2. **UI/FOH** Correct training “off/stay showing” copy; clear practice occupancy each shift  
+3. **VIS** CSS tokens; logo fallback; Guide/Now/Sets + TV fold  
+4. **FOH** PRACTICE on Take; Live off; Matrix off bartender iPads (or explicit training)  
+5. Fix Quickstart inventory `cp` trap; mark stale Operations screenshots  
 
-### Before first big event (should-fix)
+### Before first big event
 
-- Re-approve visual system or rewrite spec  
-- Occupied-TV contrast + non-hue selection  
-- Matrix always-lit action keys  
-- Document boolean is not kill switch until fixed  
-- Game-weekend change freeze  
-- Panic all-to-FOX path  
-- Spare iPad / backup config  
+- Change freeze + HA backup before pulls  
+- Panic all-to-FOX + spare iPad  
+- Sports freshness banner; Delete confirm  
+- Re-approve visual system; deepen panel behavioral tests / CI  
+- Staging must include routing package if used for Live rehearsal  
 
 ---
 
@@ -313,3 +390,4 @@ _Pending — [Ops runbook audit](bc-9baef8d3-bb96-5b62-b377-f795aa99cf2a)._
 |------|------|
 | Review start | Plan authored; 10 agents dispatched; node 39/39; pytest/Snyk blocked |
 | Partial merge | Security, Visual, Owner reports merged; interim NO-GO for Live |
+| +Bartender | FOH Soft Launch only; silent encoder-reuse blanking elevated; Matrix vs Routing staff trap |
