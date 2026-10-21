@@ -275,6 +275,28 @@ After Phase 3 completes, remaining phases (4–8 and any fix loops) use **Grok e
 | `8bcee90` | PR-08 | HA OS update steps skipped the copied `run_*.py` / `directv_shef.py`; the pre-WP-D wrapper rejects `--live-commit` (exit 2, no report), so Live would fail after a `git pull`. Update now backs up and recopies; rollback is four ordered steps (boolean off, placeholder `inventory.json`, restore backup + SHA, Matrix). |
 | `cf9c5e3` | PR-04, PR-06 | README configuration reference (all config files, Live boolean, all env vars; two were undocumented). `requirements-dev.txt`: `pytest>=9.0.3`, `PyYAML>=6.0`, `jinja2>=3.1.6` (HA template tests skipped without jinja2). New `requirements-docs.txt`: `reportlab>=3.6.13`, `pillow>=13.0.0`. Floors from the GitHub Advisory Database (`gh api graphql`); Snyk MCP was in error state and PyPI unreachable, so the floors were not install-tested. |
 
-**Still BLOCKED:** PDF rebuild / S0-OFF-FICTION (PyPI SSL EOF); BLOCK-SERVER-LEDGER; real HA `returnResponse`; BLOCK-SITE-WALL / RECONNECT / BROADCAST / SUNDAY-CH.
+**Still BLOCKED:** PDF rebuild / S0-OFF-FICTION (PyPI SSL EOF); BLOCK-SERVER-LEDGER; a successful Live Take on real hardware; BLOCK-SITE-WALL / RECONNECT / BROADCAST / SUNDAY-CH. The Live-off `return_response` path was later observed on the VM instance (next section). That does not clear a successful Live Take.
 
-**Next:** Phase 4 (Chrome primary flows). On site before Soft Launch: HA `check_config`, placeholder `inventory.json`, boolean off.
+**Next:** Phase 4 (Chrome primary flows) against the live instance below. On site before Soft Launch: HA `check_config`, placeholder `inventory.json`, boolean off.
+
+## Live HA instance for remaining tests
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| URL | `http://127.0.0.1:8123/panel-health` |
+| Core | Home Assistant 2026.10.2, `state=RUNNING`, location AVAccess Staging |
+| Process | tmux session `ha-staging`, launcher `/home/ubuntu/ha/run-hass.sh` |
+| Config | `homeassistant/staging/config` (gitignored) |
+| Sign-in | user `operator`. This instance was onboarded before PR-03 removed the published staging password. The password is not reprinted in git. Fresh login tokens expire in 1800 seconds. A bearer token for this VM is `/home/ubuntu/ha/access-token` (outside the repo). |
+| Live boolean | `input_boolean.avaccess_live_commit` is **off** |
+
+Chrome signed in and loaded Sports Routing: PRACTICE banner, guide rows, Live commit OFF, Take present.
+
+`POST /api/services/script/avaccess_live_execute?return_response` with `plan_b64` `e30=` (`{}`) returned HTTP 200. `service_response.returncode` is 3 and stdout starts `Live Commit is off - refusing Live Send.` The script log stops at "Live Commit is off" and does not call the executor. That is a real HA `return_response` round trip of the gate.
+
+The official frontend wheel is not on this VM (release assets blocked). The page is the staging shell at `/home/ubuntu/ha/frontend` (`frontend.development_repo`). `panel_custom.component_name` is `custom`; the module defines `_panel_custom.name` (`panel-health`). The shell creates that element.
+
+Package `avaccess_matrix` did not merge (`template:` is a list; HA expects a dict). Matrix scripts and the three `input_select` helpers are registered (50 entities total). `default_config` and several built-ins failed on missing wheels. Sports Routing does not need them.
+
+Do not send Live UDP from this process. There is no wall and no H25. Shell commands are the repo scripts through the `/workspace` bind. Inventory placeholders stay, so Live stays gated.
