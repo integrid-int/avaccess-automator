@@ -22,3 +22,7 @@ shell_command:
     --directv-config avaccess/config/directv.yaml
     --plan-b64 {{ plan_b64 }}
     {% if live is true or live == True or live == 'true' %}--live{% else %}--dry-run{% endif %}
+  avaccess_save_tv_sets: >-
+    python3 avaccess/scripts/save_tv_sets.py
+    --sets-b64 {{ sets_b64 }}
+    --out www/avaccess/custom_tv_sets.json
