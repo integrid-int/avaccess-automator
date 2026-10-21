@@ -249,3 +249,32 @@ _(per-WP commit entries follow)_
 
 After Phase 3 completes, remaining phases (4–8 and any fix loops) use **Grok extra-high fast** (`grok-4.7-xhigh-fast`) only. Do not launch Opus/GPT sub-agents. Phase 3 itself was already running and is allowed to finish.
 
+
+---
+
+## Phase 3 — Production readiness
+
+| Field | Value |
+|-------|-------|
+| Date | 2026-10-21 |
+| Plan | `docs/prod-readiness-plan.md` (`bf7b5b6`) |
+| Report | `docs/prod-readiness-report.md` |
+| Started at | `c02d617` (+ `0d5cc1a` model-policy note) |
+| Iterations | 2 of 5 |
+| Verify | `node --test tests/js/*.test.js` → 107 pass / 0 fail. `python3 -m unittest discover -s tests -p 'test_*.py'` → 164 OK (was 151; +13). 50 `.py` compile, 19 `.js` pass `node --check`, 24 YAML + 4 JSON parse, `validate_panels.py` passes. HA `check_config` N/A (no Docker, no HA package). |
+
+**Verdict:** Soft Launch **ready with conditions** (placeholder `inventory.json`, boolean off, train from `STAFF_TRAINING.md`, HA `check_config` at install, staff told Matrix is always live). Live **not ready**: BLOCKED on BLOCK-SITE-\* and a real HA `returnResponse` round trip; after that, single-iPad only (BLOCK-SERVER-LEDGER).
+
+**Counts (PR-01…PR-10, PR-09 split a/b = 11 rows):** iteration 1: PASS 3 · FAIL 6 · BLOCKED 2. Final: PASS 9 · FAIL 0 · BLOCKED 2 (PR-09b, PR-10).
+
+| Commit | Criterion | Change |
+|--------|-----------|--------|
+| `4de70d1` | PR-07, PR-05 | HA kills `shell_command` at 60 s and the panel gets no report. Bench (`tests/bench_live_latency.py`, real CLI vs fake H25s): slow `/tv/getTuned` went from killed at 60 s with 5 TV groups switched and no report, to 35 s with a full report (3 ok, 6 "Not attempted", UDP count = ok count). Executor starts a slot only if its worst case (17 s at `timeout_seconds` 4) fits a 50 s budget (`--time-budget`); too-long SHEF timeout fails preflight; `elapsedMs` on report and slots. `tests/test_live_time_budget.py` (8, all fail pre-fix). |
+| `4bf42db` | PR-05 | `script.avaccess_live_execute` keeps 50 traces (HA default 5); each trace holds the executor report. `HA_LIVE.md` "How Live is gated" items 7–8. 1 test. |
+| `60477b8` | PR-03 | `complete_ha_onboarding.py` applied a fixed owner password that six docs published (two next to port-forward 8123). Now `--password`, `AVACCESS_HA_OWNER_PASSWORD`, or a generated one printed once after success; dry-run redacts. Docs scrubbed with a rotate note. 4 tests (3 fail + 1 error pre-fix). The old value remains in git history. |
+| `8bcee90` | PR-08 | HA OS update steps skipped the copied `run_*.py` / `directv_shef.py`; the pre-WP-D wrapper rejects `--live-commit` (exit 2, no report), so Live would fail after a `git pull`. Update now backs up and recopies; rollback is four ordered steps (boolean off, placeholder `inventory.json`, restore backup + SHA, Matrix). |
+| `cf9c5e3` | PR-04, PR-06 | README configuration reference (all config files, Live boolean, all env vars; two were undocumented). `requirements-dev.txt`: `pytest>=9.0.3`, `PyYAML>=6.0`, `jinja2>=3.1.6` (HA template tests skipped without jinja2). New `requirements-docs.txt`: `reportlab>=3.6.13`, `pillow>=13.0.0`. Floors from the GitHub Advisory Database (`gh api graphql`); Snyk MCP was in error state and PyPI unreachable, so the floors were not install-tested. |
+
+**Still BLOCKED:** PDF rebuild / S0-OFF-FICTION (PyPI SSL EOF); BLOCK-SERVER-LEDGER; real HA `returnResponse`; BLOCK-SITE-WALL / RECONNECT / BROADCAST / SUNDAY-CH.
+
+**Next:** Phase 4 (Chrome primary flows). On site before Soft Launch: HA `check_config`, placeholder `inventory.json`, boolean off.
