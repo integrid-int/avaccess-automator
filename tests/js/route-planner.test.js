@@ -5,8 +5,16 @@ import {
   buildRoutePlan,
   listFreeEncoders,
   listReplaceChoices,
+  leftoverTvsKeepShowingCopy,
+  planNeedsReuseConfirm,
+  reuseConfirmKey,
 } from "../../homeassistant/config/www/panels/route-planner.js";
-import { applyRoutePlan, createEmptyAssignments, getAssignmentForTv } from "../../homeassistant/config/www/panels/assignment-store.js";
+import {
+  applyRoutePlan,
+  createEmptyAssignments,
+  getAssignmentForTv,
+  listBusyEncoderIds,
+} from "../../homeassistant/config/www/panels/assignment-store.js";
 
 test("stripedTvs preset 2 maps ENC-01 and ENC-04", () => {
   assert.deepEqual(stripedTvs(4, 1), [1, 5, 9, 13, 17, 21, 25, 29, 33]);
@@ -38,6 +46,7 @@ test("buildRoutePlan preset_2 caps at 4 programs", () => {
     id: `g${i}`,
     label: `Game ${i}`,
     channel: "FOX",
+    channelNumber: "206",
   }));
   const plan = buildRoutePlan({
     mode: "preset_2",
@@ -65,7 +74,7 @@ test("buildRoutePlan adhoc errors when no free encoders", () => {
   const busy = listFreeEncoders([]);
   const plan = buildRoutePlan({
     mode: "adhoc",
-    programs: [{ kind: "game", id: "g1", label: "A @ B", channel: "FOX" }],
+    programs: [{ kind: "game", id: "g1", label: "A @ B", channel: "FOX", channelNumber: "206" }],
     selectedTvs: [1],
     busyEncoderIds: busy,
   });
@@ -73,7 +82,7 @@ test("buildRoutePlan adhoc errors when no free encoders", () => {
   assert.match(plan.error, /No free encoders/i);
 });
 
-test("buildRoutePlan tunes a guide channel and skips a game without a number", () => {
+test("buildRoutePlan tunes a guide channel and rejects a game without a number", () => {
   const channel = buildRoutePlan({
     mode: "preset_1",
     programs: [{ kind: "channel", id: "ch-espn", label: "206 ESPN", channel: "206", channelNumber: "206" }],
@@ -87,7 +96,8 @@ test("buildRoutePlan tunes a guide channel and skips a game without a number", (
     selectedTvs: [],
     busyEncoderIds: [],
   });
-  assert.equal(game.slots[0].tune, null);
+  assert.equal(game.slots.length, 0);
+  assert.match(game.error, /no DirecTV channel/i);
 });
 
 function busyRoom() {
@@ -115,7 +125,7 @@ function busyRoom() {
   return assignments;
 }
 
-test("buildRoutePlan reuses the box when every selected TV is already on it", () => {
+test("buildRoutePlan reuses the box when every selected TV is already on it and none are free", () => {
   const assignments = busyRoom();
   const plan = buildRoutePlan({
     mode: "adhoc",
@@ -129,6 +139,61 @@ test("buildRoutePlan reuses the box when every selected TV is already on it", ()
   assert.deepEqual(plan.slots[0].tvs, [1, 3, 5]);
   assert.deepEqual(plan.replaced.offTvs, [2, 4, 6]);
   assert.equal(plan.replaced.label, "49ers @ Falcons");
+  assert.equal(planNeedsReuseConfirm(plan), true);
+  assert.match(leftoverTvsKeepShowingCopy(plan.replaced), /3 TVs will keep showing the retuned program until reassigned/);
+  assert.equal(reuseConfirmKey(plan), "ENC-03:2,4,6");
+});
+
+test("buildRoutePlan patio after All-35 claims a free encoder when any are free", () => {
+  const all35 = buildRoutePlan({
+    mode: "preset_1",
+    programs: [{ kind: "game", id: "g1", label: "Game on all 35", channel: "FOX", channelNumber: "206" }],
+    selectedTvs: [],
+    busyEncoderIds: [],
+  });
+  assert.equal(all35.slots[0].encoderId, "ENC-01");
+  assert.equal(all35.slots[0].tvs.length, 35);
+
+  const assignments = applyRoutePlan(createEmptyAssignments(), all35);
+  const patioTvs = [8, 9, 10];
+  const plan = buildRoutePlan({
+    mode: "adhoc",
+    programs: [{ kind: "game", id: "duke", label: "Tennessee @ Duke", channel: "612", channelNumber: "612" }],
+    selectedTvs: patioTvs,
+    busyEncoderIds: listBusyEncoderIds(assignments),
+    assignments,
+  });
+  assert.equal(plan.error, undefined);
+  assert.equal(plan.slots[0].encoderId, "ENC-02");
+  assert.notEqual(plan.slots[0].encoderId, "ENC-01");
+  assert.deepEqual(plan.slots[0].tvs, patioTvs);
+  assert.ok(!plan.replaced?.offTvs?.length);
+  assert.equal(planNeedsReuseConfirm(plan), false);
+
+  const next = applyRoutePlan(assignments, plan);
+  assert.deepEqual(next["ENC-02"].tvs, patioTvs);
+  assert.equal(getAssignmentForTv(next, 1).encoderId, "ENC-01");
+  assert.equal(getAssignmentForTv(next, 8).encoderId, "ENC-02");
+});
+
+test("buildRoutePlan does not reuse a shared box when a free encoder exists", () => {
+  const assignments = {
+    "ENC-01": {
+      encoderId: "ENC-01",
+      label: "Game on all 35",
+      channel: "206",
+      tvs: Array.from({ length: 35 }, (_, i) => i + 1),
+    },
+  };
+  const plan = buildRoutePlan({
+    mode: "adhoc",
+    programs: [{ kind: "channel", id: "ch-espn", label: "ESPN", channel: "ESPN", channelNumber: "206" }],
+    selectedTvs: [22],
+    busyEncoderIds: ["ENC-01"],
+    assignments,
+  });
+  assert.equal(plan.slots[0].encoderId, "ENC-02");
+  assert.ok(!plan.replaced?.offTvs?.length);
 });
 
 test("buildRoutePlan does not reuse a box when the TVs span two programs", () => {
@@ -145,7 +210,7 @@ test("buildRoutePlan does not reuse a box when the TVs span two programs", () =>
   assert.equal(plan.replaceChoices.length, 10);
 });
 
-test("buildRoutePlan replace uses the chosen box and reports TVs that turn off", () => {
+test("buildRoutePlan replace uses the chosen box even when free encoders exist", () => {
   const assignments = busyRoom();
   assignments["ENC-01"].tvs = [7, 8];
   const plan = buildRoutePlan({
@@ -193,7 +258,7 @@ test("listReplaceChoices skips encoders with no TVs", () => {
 test("buildRoutePlan preset_1 uses ENC-01 and all TVs", () => {
   const plan = buildRoutePlan({
     mode: "preset_1",
-    programs: [{ kind: "game", id: "g1", label: "A @ B", channel: "FOX" }],
+    programs: [{ kind: "game", id: "g1", label: "A @ B", channel: "FOX", channelNumber: "206" }],
     selectedTvs: [],
     busyEncoderIds: [],
   });

@@ -102,13 +102,13 @@ The name shows under Displays on Sports and on Guide, under All 35 TVs, 4 Progra
 
 **All 35 TVs**, **4 Programs**, and **9 Programs** do not get stuck. They reuse their own boxes. **Pick TVs** and a named set need a free box (ENC-01 through ENC-10).
 
-If every TV you picked is already on exactly one box, Take reuses that box. No chooser. TVs that were on that box but are not in the set turn off, because one box is one channel.
+If a free DirecTV box exists, Take uses that free box. The other TVs stay on their current program. Take only reuses a shared box when none are free, or when you tap **Replace**. That reuse needs Confirm. TVs that were on that box but are not in the set keep showing the retuned program until they are reassigned. The wall does not power them off.
 
-If the TVs are not already one box and no box is free, Take stays gray. The header says **All DirecTV boxes are in use**. The middle column becomes **Choose a program** and lists what is on, with the channel and the TVs. Tap the one that should go off. Take becomes **Replace**.
+If the TVs are not already one box and no box is free, Take stays gray. The header says **All DirecTV boxes are in use**. The middle column becomes **Choose a program** and lists what is on, with the channel and the TVs. Tap the one to retune. Take becomes **Replace**.
 
 ![Choose a program: the 49ers row is selected, Patio stays on the right, Replace is ready](images/staff/11-replace.png)
 
-The summary names the box, the new program, the set’s TVs, the channel, and an off line for the program you replaced.
+The summary names the box, the new program, the set’s TVs, the channel, and a still-on-retuned-box line for TVs that keep the old box until reassigned.
 
 ![Dry-run summary: Duke on Patio, 49ers off TVs 1 through 6](images/staff/12-replace-done.png)
 
@@ -200,7 +200,7 @@ If you only pick two games, ENC-03 and ENC-04 are left alone, and the TVs in tho
 
 **Named sets.** **Sets** at the bottom of the left rail saves a name and a list of TVs (Patio is 8, 9, and 10 in the pictures). Save needs a name and at least one TV. Eight sets is the limit. Duplicate names are refused. The button then appears under Displays on Sports and Guide. Tap one program, tap the set, tap Take. A TV can belong to more than one set; the later Take wins on a shared TV. Delete removes the button only. It does not clear a route that already happened. The iPad keeps the list. When Home Assistant is connected, the same save writes `custom_tv_sets.json` so a replacement iPad can load it.
 
-**No free box.** Pick TVs and a named set are the only paths that need a free box. If every selected TV is already on exactly one box, Take reuses that box and the summary names any leftover TVs that turn off. If the selection spans more than one box and none are free, the middle column lists the programs already on. Tap one. Take becomes **Replace**. The summary is one line for the new plan and one off line for the program you replaced, for example `49ers @ Falcons off · TVs 1–6`. Other programs stay. All 35, 4 Programs, and 9 Programs overwrite their own boxes and never open this chooser.
+**No free box.** Pick TVs and a named set are the only paths that need a free box. If a free box exists, Take claims it even when the selected TVs already share a box (Patio after All 35 uses ENC-02, not ENC-01). If every selected TV is already on exactly one box and none are free, Take asks you to Confirm before reusing that box. The summary names leftover TVs that keep showing the retuned program until reassigned. If the selection spans more than one box and none are free, the middle column lists the programs already on. Tap one. Take becomes **Replace**. The summary is one line for the new plan and one still-on-retuned-box line, for example `49ers @ Falcons still on retuned box · TVs 1–6`. Other programs stay. All 35, 4 Programs, and 9 Programs overwrite their own boxes and never open this chooser. Use **Clear room state** if this iPad’s Now list is stale.
 
 You plan either a preset or a TV pick, not both. The header and the line above Take are the check before you press the button.
 
@@ -218,7 +218,7 @@ When a manager later turns Live commit on, the same Take sends the channel chang
 
 ### Now
 
-**Now** is the room status, not a channel you can tune. It lists TVs 1 through 35. A TV with a plan shows the program name and the channel. A TV with nothing planned says **Off** and **No program**. The count at the top is how many of the 35 are on.
+**Now** is this iPad’s assignment list, not a power switch. It lists TVs 1 through 35. A TV with a plan shows the program name and the channel. A TV with nothing on this iPad’s plan says **Unassigned** and **Still showing last box until reassigned**. The count at the top is how many of the 35 are assigned here.
 
 While **Pick TVs** is open, the number buttons on the right also show the channel under the TV number (the pictures show **612 ACC** on 1, 3, 5, and 7).
 
@@ -237,5 +237,5 @@ While **Pick TVs** is open, the number buttons on the right also show the channe
 | **Guide listings unavailable — channel list only** | The channel list is fine. Program titles are stale. Search by name or number still works. |
 | Search returns nothing | Try the channel number, or clear the box. Titles change; yesterday’s show will not match. |
 | Take stays gray | You still need a game or channel, and a destination (All 35, 4 Programs with at least one pick, 9 Programs with at least one pick, Pick TVs, or a named set). |
-| **All DirecTV boxes are in use** | Pick TVs or a named set, and no free box. The middle column says **Choose a program**. Tap the one that should go off. Take becomes **Replace**. All 35, 4 Programs, and 9 Programs do not hit this. |
+| **All DirecTV boxes are in use** | Pick TVs or a named set, and no free box. The middle column says **Choose a program**. Tap the one to retune. Take becomes **Replace**, then Confirm if leftover TVs keep the retuned program. All 35, 4 Programs, and 9 Programs do not hit this. |
 | **8 sets is the limit** | Delete a set before saving another. Delete only removes the button. |

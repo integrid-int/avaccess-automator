@@ -16,13 +16,38 @@ export function listFreeEncoders(busyEncoderIds, { includeSpare = true } = {}) {
   return pool.filter((id) => !busy.has(id));
 }
 
+function programHasTuneChannel(program) {
+  const n = program?.channelNumber;
+  return n != null && String(n).trim() !== "";
+}
+
+function missingChannelError(programs) {
+  const missing = (Array.isArray(programs) ? programs : []).filter(
+    (program) => program && !programHasTuneChannel(program)
+  );
+  if (!missing.length) return "";
+  if (missing.length === 1) {
+    const label = missing[0].label || missing[0].id || "selected program";
+    return `Cannot Take: ${label} has no DirecTV channel`;
+  }
+  return `Cannot Take: ${missing.length} selected programs have no DirecTV channel`;
+}
+
+function finishPlan(plan, programs) {
+  const error = missingChannelError(programs);
+  if (!error) return plan;
+  return { ...plan, slots: [], error };
+}
+
 function slot(index, encoderId, program, tvs) {
   return {
     index,
     encoderId,
     program,
     tvs: [...tvs].sort((a, b) => a - b),
-    tune: program.channelNumber ? { channelNumber: String(program.channelNumber) } : null,
+    tune: programHasTuneChannel(program)
+      ? { channelNumber: String(program.channelNumber).trim() }
+      : null,
     udp: null,
     status: "planned",
   };
@@ -71,6 +96,24 @@ function replacedProgram(assignments, encoderId, tvs) {
   };
 }
 
+export function leftoverTvsKeepShowingCopy(replaced) {
+  const count = replaced?.offTvs?.length ?? 0;
+  if (!count) return "";
+  const tvs = count === 1 ? "1 TV" : `${count} TVs`;
+  return `${tvs} will keep showing the retuned program until reassigned`;
+}
+
+export function planNeedsReuseConfirm(plan) {
+  return (plan?.replaced?.offTvs?.length ?? 0) > 0;
+}
+
+export function reuseConfirmKey(plan) {
+  const off = plan?.replaced?.offTvs ?? [];
+  if (!off.length) return "";
+  const encoderId = plan.slots?.[0]?.encoderId ?? plan.replaced?.encoderId ?? "";
+  return `${encoderId}:${off.join(",")}`;
+}
+
 export function buildRoutePlan({
   mode,
   programs,
@@ -85,12 +128,15 @@ export function buildRoutePlan({
 
   if (mode === "preset_1") {
     if (!list[0]) return { mode, commit, slots: [], warnings, error: "No program selected" };
-    return {
-      mode,
-      commit,
-      slots: [slot(1, "ENC-01", list[0], Array.from({ length: 35 }, (_, i) => i + 1))],
-      warnings,
-    };
+    return finishPlan(
+      {
+        mode,
+        commit,
+        slots: [slot(1, "ENC-01", list[0], Array.from({ length: 35 }, (_, i) => i + 1))],
+        warnings,
+      },
+      [list[0]]
+    );
   }
 
   if (mode === "preset_2" || mode === "preset_3") {
@@ -100,12 +146,15 @@ export function buildRoutePlan({
       warnings.push(`Ignored ${list.length - n} extra program(s); cap is ${n}`);
     }
     const chosen = list.slice(0, n);
-    return {
-      mode,
-      commit,
-      slots: chosen.map((program, i) => slot(i + 1, encoderIdForOrdinal(i + 1), program, stripedTvs(n, i + 1))),
-      warnings,
-    };
+    return finishPlan(
+      {
+        mode,
+        commit,
+        slots: chosen.map((program, i) => slot(i + 1, encoderIdForOrdinal(i + 1), program, stripedTvs(n, i + 1))),
+        warnings,
+      },
+      chosen
+    );
   }
 
   if (mode === "adhoc") {
@@ -123,14 +172,16 @@ export function buildRoutePlan({
       encoderId = replaceEncoderId;
       replaced = replacedProgram(assignments, replaceEncoderId, tvs);
     } else {
-      const covered = singleEncoderForTvs(assignments, tvs);
-      if (covered) {
-        encoderId = covered;
-        const info = replacedProgram(assignments, covered, tvs);
-        if (info?.offTvs?.length) replaced = info;
+      const free = listFreeEncoders(busyEncoderIds, { includeSpare: true });
+      if (free.length > 0) {
+        encoderId = free[0];
       } else {
-        const free = listFreeEncoders(busyEncoderIds, { includeSpare: true });
-        if (free.length === 0) {
+        const covered = singleEncoderForTvs(assignments, tvs);
+        if (covered) {
+          encoderId = covered;
+          const info = replacedProgram(assignments, covered, tvs);
+          if (info?.offTvs?.length) replaced = info;
+        } else {
           return {
             mode,
             commit,
@@ -140,17 +191,19 @@ export function buildRoutePlan({
             replaceChoices: listReplaceChoices(assignments),
           };
         }
-        encoderId = free[0];
       }
     }
 
-    return {
-      mode,
-      commit,
-      slots: [slot(1, encoderId, list[0], tvs)],
-      warnings,
-      replaced,
-    };
+    return finishPlan(
+      {
+        mode,
+        commit,
+        slots: [slot(1, encoderId, list[0], tvs)],
+        warnings,
+        ...(replaced ? { replaced } : {}),
+      },
+      [list[0]]
+    );
   }
 
   return { mode, commit, slots: [], warnings, error: `Unknown mode: ${mode}` };

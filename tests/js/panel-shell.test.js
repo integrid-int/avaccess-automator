@@ -170,14 +170,56 @@ test("panel shell clears stale groupMode and routes adhoc destination through pl
 
 test("panel shell exposes live commit toggle and shell_command execute path", () => {
   const src = readPanelSource();
+  const liveSrc = readFileSync(
+    new URL("../../homeassistant/config/www/panels/live-execute.js", import.meta.url),
+    "utf8"
+  );
   assert.match(src, /liveCommit/);
-  assert.match(src, /avaccess_execute_route_plan/);
+  assert.match(src, /runLiveSendSafe|live-execute/);
+  assert.match(liveSrc, /avaccess_execute_route_plan/);
+  assert.match(liveSrc, /returnResponse|true,\s*true/);
   assert.match(src, /Live Send|live commit/i);
   assert.match(src, /inventory\.json/);
   assert.match(src, /networkIssues|udp_switch_port/);
-  assert.match(src, /parseLiveExecuteReport|mergeLiveReportIntoPlan/);
+  assert.match(src, /parseLiveExecuteReport|mergeLiveReportIntoPlan|runLiveSendSafe|live-execute/);
   assert.match(src, /Live summary/);
   assert.match(src, /plan\.commit\s*===\s*["']live["']/);
+});
+
+test("panel shell blocks Take without a channel and banners demo sports fallback", () => {
+  const src = readPanelSource();
+  assert.match(src, /takeBlockReason/);
+  assert.match(src, /_usingSportsFallback/);
+  assert.match(src, /sports-schedule-banner/);
+  assert.match(src, /SPORTS_FALLBACK_BANNER/);
+  assert.match(src, /SPORTS_STALE_BANNER/);
+  assert.match(src, /isSportsScheduleFresh/);
+  assert.match(src, /sportsStatus/);
+  assert.match(src, /sportsGeneratedAt/);
+  // Live Take must not callService when the Take guard fires.
+  assert.match(
+    src,
+    /_sendPlan\(\)[\s\S]*takeBlockReason\([\s\S]*callService/
+  );
+});
+
+test("panel shell prefers free encoders and confirms leftover TVs keep the retuned box", () => {
+  const src = readPanelSource();
+  assert.match(src, /data-action=["']clear-room-state["']/);
+  assert.match(src, /Clear room state/);
+  assert.match(src, /_clearRoomState/);
+  assert.match(src, /_gateReuseConfirm/);
+  assert.match(src, /reuseConfirmKey/);
+  assert.match(src, /leftoverTvsKeepShowingCopy/);
+  assert.match(src, /keep showing the retuned program until reassigned/);
+  assert.match(src, /still on retuned box/);
+  assert.match(src, /Unassigned/);
+  assert.match(src, /Still showing last box until reassigned/);
+  assert.match(src, /STORAGE_KEY/);
+  assert.match(src, /removeItem\(STORAGE_KEY\)/);
+  assert.doesNotMatch(src, /turn off/);
+  assert.doesNotMatch(src, />Off</);
+  assert.doesNotMatch(src, /goes off/);
 });
 
 test("panel shell loads guide EPG feed and renders now/next columns", () => {

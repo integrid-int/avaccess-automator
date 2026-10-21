@@ -8,6 +8,9 @@ import {
   filterGuideChannels,
   mergeGuideWithEpg,
   isGuideEpgFresh,
+  isSportsScheduleFresh,
+  SPORTS_STALE_MS,
+  takeBlockReason,
 } from "../../homeassistant/config/www/panels/panel-data.js";
 
 test("spectrum zip is 27403 and sports include nhl/mlb/wnba", () => {
@@ -67,6 +70,25 @@ test("mergeGuideWithEpg marks unavailable when stale", () => {
   const { epgAvailable } = mergeGuideWithEpg(GUIDE_CHANNELS, feed, nowMs);
   assert.equal(epgAvailable, false);
   assert.equal(isGuideEpgFresh(feed, nowMs), false);
+});
+
+test("sports schedule older than 24h is stale", () => {
+  const nowMs = Date.parse("2026-10-22T00:00:00Z");
+  assert.equal(SPORTS_STALE_MS, 24 * 60 * 60 * 1000);
+  assert.equal(isSportsScheduleFresh({ generatedAt: "2026-10-21T00:00:00Z" }, nowMs), true);
+  assert.equal(isSportsScheduleFresh({ generatedAt: "2026-10-20T23:59:59Z" }, nowMs), false);
+});
+
+test("takeBlockReason is exported for the panel Take guard", () => {
+  assert.equal(typeof takeBlockReason, "function");
+  assert.equal(
+    takeBlockReason({
+      programs: [{ id: "g1", label: "A @ B", channelNumber: "206" }],
+      liveCommit: true,
+      usingSportsFallback: false,
+    }),
+    ""
+  );
 });
 
 test("filterGuideChannels matches now/next titles", () => {

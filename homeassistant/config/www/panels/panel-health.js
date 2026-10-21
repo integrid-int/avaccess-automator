@@ -17,10 +17,27 @@ import {
   STORAGE_KEY,
   TOKENS,
   filterGuideChannels,
+  isSportsScheduleFresh,
   mergeGuideWithEpg,
   range,
-} from "./panel-data.js?v=19";
-import { buildRoutePlan, listReplaceChoices, stripedTvs } from "./route-planner.js?v=19";
+  SPORTS_FALLBACK_BANNER,
+  SPORTS_STALE_BANNER,
+  takeBlockReason,
+} from "./panel-data.js?v=20";
+import {
+  buildRoutePlan,
+  leftoverTvsKeepShowingCopy,
+  listReplaceChoices,
+  planNeedsReuseConfirm,
+  reuseConfirmKey,
+  stripedTvs,
+} from "./route-planner.js?v=20";
+import {
+  createInFlightLock,
+  isTakeArmed,
+  runDryRunSend,
+  runLiveSendSafe,
+} from "./live-execute.js?v=20";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -40,6 +57,7 @@ const DEFAULT_STATE = {
   selectedTvSetId: null,
   replaceEncoderId: null,
   replaceDismissed: false,
+  reuseConfirmKey: null,
   draftSetId: null,
   draftName: "",
   draftTvs: [],
@@ -90,9 +108,13 @@ class PanelHealth extends HTMLElement {
     this.guideEpgAvailable = false;
     this.guideChannels = null;
     this.sportsSchedule = null;
+    this.sportsGeneratedAt = null;
+    this.sportsStatus = "loading";
     this._guideEpgTimer = null;
     this._guideSearchTimer = null;
     this._guideQueryDraft = null;
+    this._sendLock = createInFlightLock();
+    this._sending = false;
   }
 
   get hass() {
@@ -210,7 +232,31 @@ class PanelHealth extends HTMLElement {
   }
 
   _clearReplaceChoice() {
-    return { replaceEncoderId: null, replaceDismissed: false };
+    return { replaceEncoderId: null, replaceDismissed: false, reuseConfirmKey: null };
+  }
+
+  _clearRoomState() {
+    const storage = this._storage();
+    if (storage) {
+      try {
+        storage.removeItem(STORAGE_KEY);
+      } catch {
+        // Occupancy is local to this iPad; a blocked store still resets the panel.
+      }
+    }
+    this._assignments = createEmptyAssignments();
+    this._setState({
+      lastPlan: null,
+      ...this._clearReplaceChoice(),
+    });
+  }
+
+  _gateReuseConfirm(plan) {
+    if (!planNeedsReuseConfirm(plan)) return false;
+    const key = reuseConfirmKey(plan);
+    if (this._state.reuseConfirmKey === key) return false;
+    this._setState({ lastPlan: plan, reuseConfirmKey: key });
+    return true;
   }
 
   _storage() {
@@ -295,16 +341,50 @@ class PanelHealth extends HTMLElement {
           payload.sports.length
         ) {
           this.sportsSchedule = payload.sports;
+          this.sportsGeneratedAt = payload.generatedAt ?? null;
+          this.sportsStatus = "ok";
+          if (this.isConnected) this.render();
+          return;
         }
       }
     } catch {
       this.sportsSchedule = this.sportsSchedule || null;
+    }
+    if (!this.sportsSchedule?.length) {
+      this.sportsGeneratedAt = null;
+      this.sportsStatus = "fallback";
     }
     if (this.isConnected) this.render();
   }
 
   _sports() {
     return this.sportsSchedule?.length ? this.sportsSchedule : SPORTS;
+  }
+
+  _usingSportsFallback() {
+    return this.sportsStatus !== "ok";
+  }
+
+  _sportsScheduleBannerHtml() {
+    if (this.sportsStatus === "fallback") {
+      return `<div class="sports-schedule-banner" role="status">${escapeHtml(SPORTS_FALLBACK_BANNER)}</div>`;
+    }
+    if (
+      this.sportsStatus === "ok" &&
+      !isSportsScheduleFresh({ generatedAt: this.sportsGeneratedAt })
+    ) {
+      return `<div class="sports-schedule-banner" role="status">${escapeHtml(SPORTS_STALE_BANNER)}</div>`;
+    }
+    return "";
+  }
+
+  _selectedProgramsForTake() {
+    if (this._isMultiPreset() && this._state.selectedPrograms.length) {
+      return this._state.selectedPrograms;
+    }
+    if (this._state.selectedPrograms?.length) return this._state.selectedPrograms;
+    const program = this._toProgram(this._state.selectedContent);
+    return program ? [program] : [];
   }
 
   _guideFeedState() {
@@ -355,6 +435,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _planSendLabel() {
+    if (this._sending) return "Sending…";
     return this._state.liveCommit ? "Live Send" : "Dry-run Send";
   }
 
@@ -383,6 +464,7 @@ class PanelHealth extends HTMLElement {
           Live commit
         </button>
         <span class="live-commit-hint ${ready ? "" : "is-blocked"}" role="status">${escapeHtml(hint)}</span>
+        <button type="button" class="link-button" data-action="clear-room-state">Clear room state</button>
       </div>
     `;
   }
@@ -535,6 +617,15 @@ class PanelHealth extends HTMLElement {
     if (!target) return;
 
     const { action, value } = target.dataset;
+    if (
+      this._sending &&
+      (action === "send-destination" ||
+        action === "save-route" ||
+        action === "send-plan" ||
+        action === "send-tv-first")
+    ) {
+      return;
+    }
     if (action === "open-sport" || action === "select-sport") {
       // A guide row must not stay selected after the rail moves to a sport,
       // unless staff are already building a 4- or 9-program list.
@@ -721,8 +812,12 @@ class PanelHealth extends HTMLElement {
       this._sendPlan();
       return;
     }
+    if (action === "clear-room-state") {
+      this._clearRoomState();
+      return;
+    }
     if (action === "dismiss-plan") {
-      this._setState({ lastPlan: null });
+      this._setState({ lastPlan: null, reuseConfirmKey: null });
       return;
     }
     if (action === "back-browse") {
@@ -1055,6 +1150,7 @@ class PanelHealth extends HTMLElement {
   }
 
   async _sendPlan() {
+    if (this._sending) return;
     const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
     if (!groupMode) return;
     let programs = this._state.selectedPrograms;
@@ -1064,6 +1160,18 @@ class PanelHealth extends HTMLElement {
     const liveRequested = this._state.liveCommit;
     const liveReady = this._inventoryLiveReady;
     const commit = liveRequested && liveReady ? "live" : "dry_run";
+    const takeBlock = takeBlockReason({
+      programs,
+      liveCommit: liveRequested,
+      usingSportsFallback: this._usingSportsFallback(),
+    });
+    if (takeBlock) {
+      this._setState({
+        lastPlan: { mode: groupMode, commit, slots: [], warnings: [], error: takeBlock },
+        groupMode,
+      });
+      return;
+    }
     const plan = buildRoutePlan({
       mode: groupMode,
       programs,
@@ -1082,53 +1190,69 @@ class PanelHealth extends HTMLElement {
       return;
     }
 
-    const warnings = [...(plan.warnings ?? [])];
-    if (liveRequested && !liveReady) {
-      warnings.push(LIVE_BLOCKED_WARNING);
-    }
+    // Shared-box reuse/replace: leftover TVs keep the retuned program. Confirm first.
+    if (this._gateReuseConfirm(plan)) return;
 
-    const assignments = applyRoutePlan(this._assignments, plan);
-    this._saveAssignments(assignments);
+    this._sending = true;
+    this._sendLock.tryBegin();
+    this.render();
+    try {
+      const warnings = [...(plan.warnings ?? [])];
+      if (liveRequested && !liveReady) {
+        warnings.push(LIVE_BLOCKED_WARNING);
+      }
+      const warnedPlan = { ...plan, warnings };
 
-    let lastPlan = { ...plan, warnings };
-    if (liveRequested && liveReady && this.hass?.callService) {
-      try {
-        const plan_b64 = btoa(unescape(encodeURIComponent(JSON.stringify(plan))));
-        const response = await this.hass.callService(
-          "shell_command",
-          "avaccess_execute_route_plan",
-          {
-            plan_b64,
-            live: true,
-          }
-        );
-        const report = parseLiveExecuteReport(response);
-        if (report) {
-          lastPlan = mergeLiveReportIntoPlan(lastPlan, report);
-        }
-      } catch (error) {
-        const message = `Live execute failed: ${error?.message ?? error}`;
-        warnings.push(message);
-        lastPlan = { ...lastPlan, warnings, error: lastPlan.error ?? message };
+      let lastPlan;
+      let nextAssignments = this._assignments;
+      if (liveRequested && liveReady) {
+        const result = await runLiveSendSafe({
+          plan: warnedPlan,
+          assignments: this._assignments,
+          callService: this.hass?.callService?.bind(this.hass),
+        });
+        lastPlan = result.lastPlan;
+        nextAssignments = result.assignments;
+      } else {
+        const result = runDryRunSend({
+          plan: warnedPlan,
+          assignments: this._assignments,
+        });
+        lastPlan = result.lastPlan;
+        nextAssignments = result.assignments;
+      }
+
+      this._sending = false;
+      this._sendLock.end();
+      if (nextAssignments !== this._assignments) {
+        this._saveAssignments(nextAssignments);
+      }
+
+      this._setState({
+        lastPlan,
+        selectedPrograms: [],
+        selectedContent: null,
+        groupMode: null,
+        destMode: "presets",
+        selectedPresetId: null,
+        selectedTvSetId: null,
+        selectedTvs: [],
+        replaceEncoderId: null,
+        replaceDismissed: false,
+        reuseConfirmKey: null,
+        screen: this._browseScreenForContent(),
+      });
+    } finally {
+      if (this._sending) {
+        this._sending = false;
+        this._sendLock.end();
+        if (this.isConnected) this.render();
       }
     }
-
-    this._setState({
-      lastPlan,
-      selectedPrograms: [],
-      selectedContent: null,
-      groupMode: null,
-      destMode: "presets",
-      selectedPresetId: null,
-      selectedTvSetId: null,
-      selectedTvs: [],
-      replaceEncoderId: null,
-      replaceDismissed: false,
-      screen: this._browseScreenForContent(),
-    });
   }
 
   _sendDestination() {
+    if (this._sending) return;
     const content = this._state.selectedContent;
     if (!content) return;
 
@@ -1171,6 +1295,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _sendTvFirst() {
+    if (this._sending) return;
     if (!this._state.selectedContent || this._state.selectedTvs.length === 0) return;
     if (this._shouldSendViaPlan()) {
       this._state = {
@@ -1325,7 +1450,10 @@ class PanelHealth extends HTMLElement {
         : null;
     const noFreeEncoders = speculative?.error === "No free encoders";
     const sendDisabled =
-      !content || this._state.selectedTvs.length === 0 || Boolean(speculative?.error);
+      this._sending ||
+      !content ||
+      this._state.selectedTvs.length === 0 ||
+      Boolean(speculative?.error);
     const sendLabel = this._destinationSendLabel(viaPlan);
     return `
       <section class="screen">
@@ -1409,7 +1537,7 @@ class PanelHealth extends HTMLElement {
   _renderDryRunSummary() {
     const plan = this._state.lastPlan;
     if (!plan) return "";
-    const summaryLabel = plan.commit === "live" ? "Live summary" : "Dry-run summary";
+    const summaryLabel = plan.commit === "live" ? "Live summary" : "PRACTICE summary";
     const error = plan.error
       ? `<p class="plan-error">${escapeHtml(plan.error)}</p>`
       : "";
@@ -1438,8 +1566,14 @@ class PanelHealth extends HTMLElement {
         `;
       })
       .join("");
-    const replaced = plan.replaced?.offTvs?.length
-      ? `<li><b>${escapeHtml(plan.replaced.label)}</b> off · ${escapeHtml(this._formatTvList(plan.replaced.offTvs))}</li>`
+    const leftoverCount = plan.replaced?.offTvs?.length ?? 0;
+    const replaced = leftoverCount
+      ? `<li><b>${escapeHtml(plan.replaced.label)}</b> still on retuned box · ${escapeHtml(this._formatTvList(plan.replaced.offTvs))}</li>`
+      : "";
+    const leftoverWarning = leftoverCount
+      ? `<p class="plan-warning">${escapeHtml(leftoverTvsKeepShowingCopy(plan.replaced))}${
+          this._state.reuseConfirmKey === reuseConfirmKey(plan) ? " Tap Confirm to continue." : ""
+        }</p>`
       : "";
     return `
       <aside class="dry-run-summary" aria-live="polite">
@@ -1449,6 +1583,7 @@ class PanelHealth extends HTMLElement {
         </div>
         ${error}
         ${warnings}
+        ${leftoverWarning}
         ${slots || replaced ? `<ul class="plan-slots">${slots}${replaced}</ul>` : ""}
         ${!plan.error && !slots ? "<p>No slots planned.</p>" : ""}
       </aside>
@@ -1460,7 +1595,9 @@ class PanelHealth extends HTMLElement {
     const heading = preset?.label ?? "Programs";
     const speculative = this._speculativePlan();
     const sendDisabled =
-      this._state.selectedPrograms.length === 0 || Boolean(speculative?.error);
+      this._sending ||
+      this._state.selectedPrograms.length === 0 ||
+      Boolean(speculative?.error);
     return `
       <section class="screen">
         <div class="screen-heading">
@@ -1499,6 +1636,7 @@ class PanelHealth extends HTMLElement {
   _renderSportsProgramOptions() {
     const selectedIds = new Set(this._state.selectedPrograms.map((item) => item.id));
     return `
+      ${this._sportsScheduleBannerHtml()}
       <div class="content-stack">
         ${this._sports().map(
           (sport) => `
@@ -1558,6 +1696,7 @@ class PanelHealth extends HTMLElement {
         : null;
     const noFreeEncoders = speculative?.error === "No free encoders";
     const sendDisabled =
+      this._sending ||
       !this._state.selectedContent ||
       this._state.selectedTvs.length === 0 ||
       Boolean(speculative?.error);
@@ -1765,6 +1904,14 @@ class PanelHealth extends HTMLElement {
   }
 
   _takeError() {
+    if (this._hasSource()) {
+      const block = takeBlockReason({
+        programs: this._selectedProgramsForTake(),
+        liveCommit: this._state.liveCommit,
+        usingSportsFallback: this._usingSportsFallback(),
+      });
+      if (block) return block;
+    }
     const preset = this._activePreset();
     if (
       preset &&
@@ -1808,6 +1955,13 @@ class PanelHealth extends HTMLElement {
     if (this._state.screen === "edit-sets") return "";
     if (this._needsReplace()) return "All DirecTV boxes are in use. Choose one to replace.";
     if (!this._hasSource() || !this._hasDisplay()) return "";
+    const preview = this._adhocPreview();
+    if (
+      planNeedsReuseConfirm(preview) &&
+      this._state.reuseConfirmKey === reuseConfirmKey(preview)
+    ) {
+      return leftoverTvsKeepShowingCopy(preview.replaced);
+    }
     if (this._state.replaceEncoderId) {
       const choice = listReplaceChoices(this._assignments).find(
         (item) => item.encoderId === this._state.replaceEncoderId
@@ -1878,9 +2032,13 @@ class PanelHealth extends HTMLElement {
   _renderNowPlaying() {
     const rows = range(1, 35).map((tv) => {
       const assignment = getAssignmentForTv(this._assignments, tv);
-      const program = assignment?.label ? String(assignment.label) : "Off";
+      const program = assignment?.label ? String(assignment.label) : "Unassigned";
       const channel = assignment ? String(assignment.channel || "").trim() : "";
-      const detail = channel && channel !== program ? channel : assignment ? "On" : "No program";
+      const detail = channel && channel !== program
+        ? channel
+        : assignment
+          ? "On this iPad's plan"
+          : "Still showing last box until reassigned";
       return `
         <div class="key now-row${assignment ? "" : " off"}">
           <span class="mark">${tv}</span>
@@ -1894,7 +2052,7 @@ class PanelHealth extends HTMLElement {
     const onCount = range(1, 35).filter((tv) => getAssignmentForTv(this._assignments, tv)).length;
     return `
       <h2>Now playing</h2>
-      <p class="now-count">${onCount} of 35 TVs on</p>
+      <p class="now-count">${onCount} of 35 TVs assigned on this iPad</p>
       <div class="keys" aria-label="Now playing">
         ${rows.join("")}
       </div>
@@ -1939,7 +2097,7 @@ class PanelHealth extends HTMLElement {
       .join("");
     return `
       <h2>Choose a program</h2>
-      <p class="now-count">The one you tap goes off. TVs that were on it and are not in ${escapeHtml(this._destinationName())} turn off.</p>
+      <p class="now-count">The box you tap retunes. TVs that were on it and are not in ${escapeHtml(this._destinationName())} keep showing the retuned program until reassigned.</p>
       <div class="keys">${rows}</div>
     `;
   }
@@ -1966,6 +2124,7 @@ class PanelHealth extends HTMLElement {
     const games = this._gamesFor(sport);
     return `
       <h2>Sources</h2>
+      ${this._sportsScheduleBannerHtml()}
       ${this._renderLeagueChips(sport)}
       <div class="keys">
         ${games.length
@@ -2079,7 +2238,12 @@ class PanelHealth extends HTMLElement {
     const error = this._takeError();
     const needsReplace = this._needsReplace();
     const ready = this._hasSource() && this._hasDisplay() && !error && !needsReplace;
-    const label = this._state.replaceEncoderId ? "Replace" : "Take";
+    const sending = Boolean(this._sending);
+    const armed = isTakeArmed({ ready, sending });
+    const preview = this._adhocPreview();
+    const confirming =
+      planNeedsReuseConfirm(preview) && this._state.reuseConfirmKey === reuseConfirmKey(preview);
+    const label = sending ? "Sending…" : confirming ? "Confirm" : this._state.replaceEncoderId ? "Replace" : "Take";
     const reopen = needsReplace && this._state.replaceDismissed
       ? `<button type="button" class="link-button reopen-replace" data-action="reopen-replace">Choose a program to replace</button>`
       : "";
@@ -2090,9 +2254,10 @@ class PanelHealth extends HTMLElement {
         ${reopen}
         <button
           type="button"
-          class="take${ready ? " ready" : ""}"
+          class="take${armed ? " ready" : ""}"
           data-action="send-destination"
-          ${ready ? "" : "disabled aria-disabled=\"true\""}
+          ${armed ? "" : "disabled aria-disabled=\"true\""}
+          aria-busy="${sending ? "true" : "false"}"
         >${label}</button>
       </footer>
     `;
@@ -2409,7 +2574,8 @@ class PanelHealth extends HTMLElement {
           margin: 0 0 8px;
         }
 
-        .guide-epg-banner {
+        .guide-epg-banner,
+        .sports-schedule-banner {
           color: var(--muted);
           font-weight: 700;
           margin: 0 0 12px;
@@ -2549,7 +2715,7 @@ class PanelHealth extends HTMLElement {
           border-radius: var(--radius-md);
           display: grid;
           gap: 10px;
-          grid-template-columns: auto minmax(0, 1fr);
+          grid-template-columns: auto minmax(0, 1fr) auto;
           margin-bottom: 12px;
           padding: 8px;
         }
@@ -2765,6 +2931,7 @@ class PanelHealth extends HTMLElement {
 
         .routing .live-commit-row {
           flex: 0 0 auto;
+          grid-template-columns: auto minmax(0, 1fr) auto;
         }
 
         .board {
@@ -2979,7 +3146,8 @@ class PanelHealth extends HTMLElement {
         }
 
         .routing .search span,
-        .routing .guide-epg-banner {
+        .routing .guide-epg-banner,
+        .routing .sports-schedule-banner {
           color: #c8c8c8;
         }
 
@@ -3180,66 +3348,6 @@ function isInventoryLiveReady(inventory) {
     if (hostnameIssue(rxId, deviceById(receivers, rxId))) return false;
   }
   return true;
-}
-
-function extractShellCommandStdout(response) {
-  if (response == null) return null;
-  if (typeof response === "string") return response;
-  if (typeof response !== "object") return null;
-  if (typeof response.stdout === "string") return response.stdout;
-  if (typeof response.output === "string") return response.output;
-  const nested = response.response;
-  if (nested && typeof nested === "object") {
-    if (typeof nested.stdout === "string") return nested.stdout;
-    if (typeof nested.output === "string") return nested.output;
-  }
-  return null;
-}
-
-function parseLiveExecuteReport(response) {
-  const stdout = extractShellCommandStdout(response);
-  if (!stdout || typeof stdout !== "string") return null;
-  const lines = stdout
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-  for (let i = lines.length - 1; i >= 0; i -= 1) {
-    try {
-      const parsed = JSON.parse(lines[i]);
-      if (parsed && typeof parsed === "object" && Array.isArray(parsed.slots)) {
-        return parsed;
-      }
-    } catch {
-      // keep scanning for a JSON report line
-    }
-  }
-  return null;
-}
-
-function mergeLiveReportIntoPlan(plan, report) {
-  const reportSlots = Array.isArray(report?.slots) ? report.slots : [];
-  const slots = (plan.slots ?? []).map((slot, index) => {
-    const match =
-      reportSlots.find((item) => item?.encoderId && item.encoderId === slot.encoderId) ??
-      reportSlots[index];
-    if (!match || typeof match !== "object") return slot;
-    const next = { ...slot };
-    if (match.status) next.status = match.status;
-    const err = match.error ?? match.message;
-    if (err) {
-      next.error = err;
-      next.message = err;
-    } else if (match.status === "ok") {
-      delete next.error;
-      delete next.message;
-    }
-    return next;
-  });
-  const warnings = [...(plan.warnings ?? [])];
-  for (const err of report?.errors ?? []) {
-    if (err && !warnings.includes(err)) warnings.push(String(err));
-  }
-  return { ...plan, slots, warnings };
 }
 
 if (!customElements.get("panel-health")) {

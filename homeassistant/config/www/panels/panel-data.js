@@ -160,6 +160,11 @@ export const GUIDE_CHANNELS = [
 ];
 
 export const GUIDE_EPG_STALE_MS = 6 * 60 * 60 * 1000;
+export const SPORTS_STALE_MS = 24 * 60 * 60 * 1000;
+export const SPORTS_FALLBACK_BANNER =
+  "Sports listings unavailable — showing demo games. Live Take is blocked.";
+export const SPORTS_STALE_BANNER =
+  "Sports listings are stale (older than 24 hours).";
 
 export function isGuideEpgFresh(feed, nowMs = Date.now()) {
   if (!feed || !feed.generatedAt) return false;
@@ -184,6 +189,44 @@ export function mergeGuideWithEpg(channels, feed, nowMs = Date.now()) {
       return merged;
     }),
   };
+}
+
+export function isSportsScheduleFresh(feed, nowMs = Date.now()) {
+  if (!feed || !feed.generatedAt) return false;
+  const generatedMs = Date.parse(feed.generatedAt);
+  if (Number.isNaN(generatedMs)) return false;
+  return nowMs - generatedMs <= SPORTS_STALE_MS;
+}
+
+export function programHasTuneChannel(program) {
+  if (!program || typeof program !== "object") return false;
+  const n = program.channelNumber;
+  return n != null && String(n).trim() !== "";
+}
+
+export function programsMissingTuneChannel(programs) {
+  return (Array.isArray(programs) ? programs : []).filter(
+    (program) => program && !programHasTuneChannel(program)
+  );
+}
+
+export function takeBlockReason({
+  programs = [],
+  liveCommit = false,
+  usingSportsFallback = false,
+} = {}) {
+  const missing = programsMissingTuneChannel(programs);
+  if (missing.length === 1) {
+    const label = missing[0].label || missing[0].id || "selected program";
+    return `Cannot Take: ${label} has no DirecTV channel`;
+  }
+  if (missing.length > 1) {
+    return `Cannot Take: ${missing.length} selected programs have no DirecTV channel`;
+  }
+  if (liveCommit && usingSportsFallback) {
+    return "Live Take blocked: sports listings unavailable (demo schedule)";
+  }
+  return "";
 }
 
 export function filterGuideChannels(channels, query) {
