@@ -1,6 +1,11 @@
 # Sports Routing — staff training
 
-Printable copy, with the pictures: **[STAFF_TRAINING.pdf](STAFF_TRAINING.pdf)** (14 pages). That is the handout. This page is the same guide in text.
+Printable handouts, with the pictures:
+
+- **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** — the short version staff can keep at the bar.
+- **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — every button, including named TV sets and replacing a program when every DirecTV box is in use.
+
+This page is the same training in text. The older combined file, STAFF_TRAINING.pdf, does not include Sets or Replace. Use the two PDFs above.
 
 Hold the iPad **sideways**. Open the Home Assistant app, sign in, and tap **Sports Routing** in the sidebar.
 
@@ -18,7 +23,7 @@ The screen is three columns, plus **Take** along the bottom.
 
 | Column | What you use it for |
 |---|---|
-| Left | A sport (Football, Basketball, and the rest). Swipe down for **Guide** and **Now**. |
+| Left | A sport (Football, Basketball, and the rest). Swipe down for **Guide**, **Now**, and **Sets**. |
 | Middle | The games, or the channel list |
 | Right | Where it goes: every TV, a split, or TVs you pick |
 
@@ -83,6 +88,32 @@ The line above Take reads **2 programs → 4 Programs**. **9 Programs** is the s
 
 A game that has no channel number can still be in the list. **Take** will not tune it.
 
+### A named set of TVs
+
+Swipe the left column to **Sets**. Type a name such as Patio (24 characters at most), tap the TV numbers, then **Save**. You need at least one TV. Eight sets is the limit. The same name cannot be saved twice. A TV can be in more than one set.
+
+![Sets editor with Patio and TVs 8, 9, and 10 selected](images/staff/09-tv-sets.png)
+
+The name shows under Displays on Sports and on Guide, under All 35 TVs, 4 Programs, 9 Programs, and Pick TVs. Tap the game, tap **Patio**, tap **Take**. Only the TVs in the set change. **Delete** removes the button. It does not clear TVs that were already routed.
+
+![Duke selected, Patio highlighted, Take ready](images/staff/10-set-ready.png)
+
+### When every DirecTV box is in use
+
+**All 35 TVs**, **4 Programs**, and **9 Programs** do not get stuck. They reuse their own boxes. **Pick TVs** and a named set need a free box (ENC-01 through ENC-10).
+
+If every TV you picked is already on exactly one box, Take reuses that box. No chooser. TVs that were on that box but are not in the set turn off, because one box is one channel.
+
+If the TVs are not already one box and no box is free, Take stays gray. The header says **All DirecTV boxes are in use**. The middle column becomes **Choose a program** and lists what is on, with the channel and the TVs. Tap the one that should go off. Take becomes **Replace**.
+
+![Choose a program: the 49ers row is selected, Patio stays on the right, Replace is ready](images/staff/11-replace.png)
+
+The summary names the box, the new program, the set’s TVs, the channel, and an off line for the program you replaced.
+
+![Dry-run summary: Duke on Patio, 49ers off TVs 1 through 6](images/staff/12-replace-done.png)
+
+Dismiss on the banner leaves the game and the set selected. Only the box you chose changes. Other programs stay.
+
 ---
 
 ## 2. Full guide
@@ -101,9 +132,9 @@ Sports Routing is the screen staff use during a game. **AVAccess Matrix** (favor
 
 - **Bar** is the room name. The top right is **No route** until a plan is ready, then a one-line description of what Take will do.
 - **Live commit** is the switch that would send the plan to the DirecTV boxes and the TVs. It is off, and the yellow line says why. Leave it off.
-- **Left rail.** DirecTV’s own sports, in this order: Football, Basketball, Baseball, Hockey, Soccer, Rugby, Racing, Combat, Golf, Tennis, Cricket, Volleyball, Rodeo, Raquet Ball. **Guide** and **Now** are under that list. Swipe the rail. There is no permanent scrollbar.
+- **Left rail.** DirecTV’s own sports, in this order: Football, Basketball, Baseball, Hockey, Soccer, Rugby, Racing, Combat, Golf, Tennis, Cricket, Volleyball, Rodeo, Raquet Ball. **Guide**, **Now**, and **Sets** are under that list. Swipe the rail. There is no permanent scrollbar.
 - **Sources** (middle). League chips, then the games. On Guide, this column is the channel list and the search box. On Now, it is the TV-by-TV list.
-- **Displays** (right). **All 35 TVs**, **4 Programs**, **9 Programs**, or **Pick TVs**. Only one of these is active. Choosing a preset clears a TV pick, and choosing Pick TVs leaves the preset.
+- **Displays** (right). **All 35 TVs**, **4 Programs**, **9 Programs**, **Pick TVs**, or a named set such as **Patio**. Only one of these is active. Choosing a preset clears a set. Choosing a set clears the preset. Pick TVs is the one-off number grid.
 - **Take** (bottom). Gray and disabled until a program and a destination are both chosen. Blue means the plan is ready. The sentence above the button is the same plan.
 
 ### Sports
@@ -165,7 +196,11 @@ If you only pick two games, ENC-03 and ENC-04 are left alone, and the TVs in tho
 
 **9 Programs** (Preset 3). Same rule, up to nine games, nine boxes (ENC-01 through ENC-09). TVs are striped by nine: TV 1 with the first game, TV 2 with the second, TV 10 with the first game again.
 
-**Pick TVs.** Choose the exact set. Tap numbers, tap again to remove, or **Clear TVs**. This uses the lowest free DirecTV box from ENC-01 through ENC-10. ENC-10 is the spare. If every box is already in use, Take stays blocked and the panel says **No free encoders**.
+**Pick TVs.** Choose the exact screens for this one plan. Tap numbers, tap again to remove, or **Clear TVs**. This uses the lowest free DirecTV box from ENC-01 through ENC-10. ENC-10 is the spare.
+
+**Named sets.** **Sets** at the bottom of the left rail saves a name and a list of TVs (Patio is 8, 9, and 10 in the pictures). Save needs a name and at least one TV. Eight sets is the limit. Duplicate names are refused. The button then appears under Displays on Sports and Guide. Tap one program, tap the set, tap Take. A TV can belong to more than one set; the later Take wins on a shared TV. Delete removes the button only. It does not clear a route that already happened. The iPad keeps the list. When Home Assistant is connected, the same save writes `custom_tv_sets.json` so a replacement iPad can load it.
+
+**No free box.** Pick TVs and a named set are the only paths that need a free box. If every selected TV is already on exactly one box, Take reuses that box and the summary names any leftover TVs that turn off. If the selection spans more than one box and none are free, the middle column lists the programs already on. Tap one. Take becomes **Replace**. The summary is one line for the new plan and one off line for the program you replaced, for example `49ers @ Falcons off · TVs 1–6`. Other programs stay. All 35, 4 Programs, and 9 Programs overwrite their own boxes and never open this chooser.
 
 You plan either a preset or a TV pick, not both. The header and the line above Take are the check before you press the button.
 
@@ -201,5 +236,6 @@ While **Pick TVs** is open, the number buttons on the right also show the channe
 | **No games in this slate** | DirecTV has nothing in that sport for the days that were loaded. Try another sport, or Guide. |
 | **Guide listings unavailable — channel list only** | The channel list is fine. Program titles are stale. Search by name or number still works. |
 | Search returns nothing | Try the channel number, or clear the box. Titles change; yesterday’s show will not match. |
-| Take stays gray | You still need a game or channel, and a destination (All 35, 4 Programs with at least one pick, 9 Programs with at least one pick, or at least one TV). |
-| **No free encoders** | All ten DirecTV boxes are already assigned. Clear a plan or use a preset instead of Pick TVs. |
+| Take stays gray | You still need a game or channel, and a destination (All 35, 4 Programs with at least one pick, 9 Programs with at least one pick, Pick TVs, or a named set). |
+| **All DirecTV boxes are in use** | Pick TVs or a named set, and no free box. The middle column says **Choose a program**. Tap the one that should go off. Take becomes **Replace**. All 35, 4 Programs, and 9 Programs do not hit this. |
+| **8 sets is the limit** | Delete a set before saving another. Delete only removes the button. |

@@ -163,6 +163,9 @@ test("panel shell clears stale groupMode and routes adhoc destination through pl
     src,
     /programCapacity\s*>\s*1[\s\S]*?selectedTvs:\s*\[\s*\]/
   );
+  // A guide channel must not become a hidden 4-program pick after the rail moves to sports.
+  assert.match(src, /_programsForMultiPreset/);
+  assert.match(src, /onGuide \? content\.kind === "channel" : content\.kind === "game"/);
 });
 
 test("panel shell exposes live commit toggle and shell_command execute path", () => {

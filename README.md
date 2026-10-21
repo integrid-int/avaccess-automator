@@ -13,7 +13,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
   - **Preset 1 — ALL** — one program → `ENC-01` → all 35 TVs
   - **Preset 2 — 4 Programs** — pick up to 4 programs; striped across `ENC-01`…`ENC-04`; unused encoder slots omitted / left unchanged
   - **Preset 3 — 9 Programs** — pick up to 9 programs; striped across `ENC-01`…`ENC-09`; unused encoder slots omitted / left unchanged
-- **Pick TVs (adhoc)** — multi-select TVs 1–35; planner claims the lowest-index free encoder (`ENC-01`…`ENC-10`); errors with **No free encoders** if none are free
+- **Pick TVs (adhoc)** and **named TV sets** — multi-select TVs 1–35, or a saved set such as Patio; planner claims the lowest free encoder (`ENC-01`…`ENC-10`). If every selected TV is already on one box, that box is reused. If none are free, staff choose a program to replace.
 - **Hybrid Send (Track B)** — default **Dry-run Send** builds a `RoutePlan`, shows the summary, and updates local occupancy; optional **Live Send** SHEF-tunes the matching H25 then UDP-reconnects when inventory is live-ready
 - Dual entry paths remain for Preset 1 and adhoc; Preset 2/3 are **group-first → multi-program picker → Send**
 - Clean, large-target UI for bartender speed
@@ -30,7 +30,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
 - **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — make this live on site Home Assistant (H25 SHEF + matrix + bartender panel)
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
-- Sports Routing staff handout: **[docs/STAFF_TRAINING.pdf](docs/STAFF_TRAINING.pdf)** (quick start and full guide, with screenshots). Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
+- Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**
 - Cloud HA UI staging: `scripts/prepare_ha_staging.py` (port 8123, `--ui-staging` stubs)
 
 The bartender **Sports Routing** panel is the production iPad UI (`/panel-health`, striped `RoutePlan`). Lovelace Matrix is the SHEF/favorites surface; generate it with `--profile numeric_v1` so Preset 1/2/3 match the operations guide (contiguous splits). Inventory `mapping_profiles.active` stays `striped_v1` for Track B.
@@ -211,14 +211,15 @@ The checked-in `guide_epg.json` is a snapshot from the last grab. If `generatedA
 
 ## Operator guide — Sports Routing panel
 
-Staff handout, with screenshots of the landscape iPad: **[docs/STAFF_TRAINING.pdf](docs/STAFF_TRAINING.pdf)**. Same words in **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
+Staff handouts, with screenshots of the landscape iPad: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)**. Same words in **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**.
 
 On a landscape iPad (wider than 900px) the panel is three columns: a left rail (DirecTV sports, then **Guide** and **Now**), **Sources** in the middle, and **Displays** on the right, with **Take** along the bottom. The rail and the lists scroll by dragging. iPad Safari and the Home Assistant Companion use overlay scrollbars that fade, so the panel does not hide them. A desktop browser still draws a permanent bar; that is Chrome, not the iPad.
 
 - **Sports rail** — DirecTV’s own categories (Football, Basketball, Soccer, and the rest of the sports page). A category with more than one league gets chips in the Sources column (NFL, NCAA Football, NBA, NCAA Basketball (M), and so on). Each list is filled from `/local/avaccess/sports_schedule.json` for ZIP **27403**, and that file has to come from DirecTV sports-info (`source: directv-sports-info`). TV Passport is not a sports source. The panel reloads that file on connect and about every **15 minutes**. A game with no satellite major stays on the list and does not tune.
 - **Guide** — the TV Passport DirecTV lineup for ZIP **27403**, opened from the bottom of the left rail. Music audio, pay-per-view, barkers, and channels that are not in the package are left out. **Now/next** shows when `guide_epg.json` is fresh. Search matches channel number, name, and now/next titles. If EPG is missing or older than **6 hours**, channels still list with a muted “Guide listings unavailable” banner.
 - **Now** — every TV and the program on it, also at the bottom of the left rail.
-- **Displays** — **All 35 TVs** (Preset 1), **4 Programs**, **9 Programs**, or **Pick TVs** (the adhoc path below). The on-screen button is **Take**. With Live commit off it is a dry run.
+- **Displays** — **All 35 TVs** (Preset 1), **4 Programs**, **9 Programs**, **Pick TVs**, or a named TV set (the adhoc path below). The on-screen button is **Take**. With Live commit off it is a dry run. **Sets**, at the bottom of the left rail, saves those names (Patio, Bar) on the iPad and, when Home Assistant is connected, through `shell_command.avaccess_save_tv_sets` into `custom_tv_sets.json`.
+- **No free box** — a named set or Pick TVs needs a free DirecTV box (ENC-01–ENC-10). If every selected TV is already on one box, Take reuses it and turns off any leftover TVs from that box. If not, the middle column lists the programs already on; choose one and Take becomes **Replace**. That box changes channel. TVs that were on the replaced program and are not in the set turn off. All 35, 4 Programs, and 9 Programs do not use this path.
 
 ### Sports schedule refresh
 

@@ -536,12 +536,16 @@ class PanelHealth extends HTMLElement {
 
     const { action, value } = target.dataset;
     if (action === "open-sport" || action === "select-sport") {
+      // A guide row must not stay selected after the rail moves to a sport,
+      // unless staff are already building a 4- or 9-program list.
+      const dropChannel = !this._isMultiPreset() && this._state.selectedContent?.kind === "channel";
       this._setState({
         screen: "browse-sport",
         sportId: value || this._state.sportId,
         leagueId: "all",
         contentMode: "sports",
         entryPath: "content",
+        ...(dropChannel ? { selectedContent: null, selectedPrograms: [] } : {}),
       });
       return;
     }
@@ -841,6 +845,15 @@ class PanelHealth extends HTMLElement {
     return PRESETS.find((item) => item.id === this._state.selectedPresetId) ?? null;
   }
 
+  _programsForMultiPreset() {
+    if (this._state.selectedPrograms.length) return this._state.selectedPrograms;
+    const content = this._state.selectedContent;
+    if (!content) return [];
+    const onGuide = this._state.screen === "browse-guide";
+    const matches = onGuide ? content.kind === "channel" : content.kind === "game";
+    return matches ? [this._toProgram(content)] : [];
+  }
+
   _programCapacity() {
     const preset = this._activePreset();
     if (preset) return preset.programCapacity;
@@ -884,11 +897,7 @@ class PanelHealth extends HTMLElement {
     const preset = PRESETS.find((item) => item.id === presetId);
     if (!preset) return;
     if (preset.programCapacity > 1) {
-      const selectedPrograms = this._state.selectedPrograms.length
-        ? this._state.selectedPrograms
-        : this._state.selectedContent
-          ? [this._toProgram(this._state.selectedContent)]
-          : [];
+      const selectedPrograms = this._programsForMultiPreset();
       this._setState({
         groupMode: preset.mode,
         selectedPresetId: presetId,
@@ -1126,10 +1135,9 @@ class PanelHealth extends HTMLElement {
     // Planner modes (including leftover preset_2/3) never fall through to applyAssignment.
     if (this._shouldSendViaPlan()) {
       const groupMode = this._state.destMode === "tvs" ? "adhoc" : this._state.groupMode;
-      const programs =
-        (groupMode === "preset_2" || groupMode === "preset_3") && this._state.selectedPrograms.length > 0
-          ? this._state.selectedPrograms
-          : [this._toProgram(content)];
+      const multi = groupMode === "preset_2" || groupMode === "preset_3";
+      if (multi && this._state.selectedPrograms.length === 0) return;
+      const programs = multi ? this._state.selectedPrograms : [this._toProgram(content)];
       this._state = {
         ...this._state,
         groupMode,
@@ -1697,9 +1705,7 @@ class PanelHealth extends HTMLElement {
   }
 
   _hasSource() {
-    if (this._isMultiPreset()) {
-      return this._state.selectedPrograms.length > 0 || Boolean(this._state.selectedContent);
-    }
+    if (this._isMultiPreset()) return this._state.selectedPrograms.length > 0;
     return Boolean(this._state.selectedContent);
   }
 
@@ -1810,8 +1816,17 @@ class PanelHealth extends HTMLElement {
       const oldLabel = choice?.label || "that program";
       return `Replace ${oldLabel} with ${source} on ${this._destinationName()}`;
     }
+    if (this._isMultiPreset() && this._state.selectedPrograms.length === 0) return "";
     let source = this._selectedContentLabel();
-    if (this._state.selectedPrograms.length > 1) {
+    const listed = this._isMultiPreset() ? this._state.selectedPrograms : null;
+    if (listed && listed.length > 1) {
+      source = `${listed.length} programs`;
+    } else if (listed && listed.length === 1) {
+      const program = listed[0];
+      const tune = program?.channelNumber ? `Tune ${program.channelNumber}` : "";
+      source = program?.label || source;
+      if (tune) source = `${source} · ${tune}`;
+    } else if (this._state.selectedPrograms.length > 1) {
       source = `${this._state.selectedPrograms.length} programs`;
     } else {
       const program =

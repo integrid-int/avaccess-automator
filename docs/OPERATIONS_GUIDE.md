@@ -1,6 +1,6 @@
 # AVAccess iPad operations guide
 
-**Sports Routing staff training (current landscape layout):** **[STAFF_TRAINING.pdf](STAFF_TRAINING.pdf)** — quick start, then the full guide, with pictures. Same words in **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The Sports Routing photos later in this file are an older layout. Matrix favorites below are unchanged.
+**Sports Routing staff training (current landscape layout):** **[STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf)** and **[STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf)** — short handout, then the full guide, with pictures of named TV sets and replace. Same words in **[STAFF_TRAINING.md](STAFF_TRAINING.md)**. The older combined STAFF_TRAINING.pdf does not include Sets or Replace. The Sports Routing photos later in this file are an older layout. Matrix favorites below are unchanged.
 
 Printable photo playbook: **[AVACCESS_OPERATORS_GUIDE.pdf](AVACCESS_OPERATORS_GUIDE.pdf)** (11 pages, with pictures of the older layout).
 
