@@ -391,3 +391,4 @@ Pre-game probe; Live Take wall/log confirm; manual fallback; H25 reboot/spare EN
 | Review start | Plan authored; 10 agents dispatched; node 39/39; pytest/Snyk blocked |
 | Partial merge | Security, Visual, Owner reports merged; interim NO-GO for Live |
 | +Bartender | FOH Soft Launch only; silent encoder-reuse blanking elevated; Matrix vs Routing staff trap |
+| +UI/Code/Ops | S0 reuse/replace + silent Live + browser occupancy confirmed across three lenses; HA_LIVE insufficient alone |
