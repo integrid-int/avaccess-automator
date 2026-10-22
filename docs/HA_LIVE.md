@@ -95,7 +95,13 @@ Do not commit those copies. If `/share` is not writable, use `/config/avaccess-a
 
 ### Docker Compose on an AV-LAN host
 
-Use `homeassistant/docker-compose.yml` **with host networking** (edit, do not leave the test `ports:` bridge):
+Use the checked-in host-network compose (do **not** leave the test `ports:` bridge in `homeassistant/docker-compose.yml`):
+
+```bash
+docker compose -f homeassistant/docker-compose.host.yml up -d
+```
+
+That file is `homeassistant/docker-compose.host.yml`: `network_mode: host`, container `avaccess-ha`, TZ `America/New_York`, and the same bind mounts as below. Equivalent hand-written compose:
 
 ```yaml
 services:
@@ -105,22 +111,38 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./homeassistant/config:/config
-      - ./scripts/avaccess:/config/avaccess/scripts:ro
-      - ./scripts/apply_preset.py:/config/avaccess/apply_preset.py:ro
-      - ./scripts/directv_shef.py:/config/avaccess/directv_shef.py:ro
-      - ./scripts/route_targets.py:/config/avaccess/route_targets.py:ro
-      - ./scripts/generate_ha_bundle.py:/config/avaccess/generate_ha_bundle.py:ro
-      - ./scripts/refresh_ha_weekly.py:/config/avaccess/refresh_ha_weekly.py:ro
-      - ./scripts/sync_weekly_schedule.py:/config/avaccess/sync_weekly_schedule.py:ro
-      - ./config:/config/avaccess/config
+      - ./config:/config
+      - ../scripts/avaccess:/config/avaccess/scripts:ro
+      - ../scripts/apply_preset.py:/config/avaccess/apply_preset.py:ro
+      - ../scripts/directv_shef.py:/config/avaccess/directv_shef.py:ro
+      - ../scripts/route_targets.py:/config/avaccess/route_targets.py:ro
+      - ../scripts/generate_ha_bundle.py:/config/avaccess/generate_ha_bundle.py:ro
+      - ../scripts/refresh_ha_weekly.py:/config/avaccess/refresh_ha_weekly.py:ro
+      - ../scripts/sync_weekly_schedule.py:/config/avaccess/sync_weekly_schedule.py:ro
+      - ../config:/config/avaccess/config
     environment:
       TZ: America/New_York
 ```
 
+Run it from the repo root with `-f homeassistant/docker-compose.host.yml` so `./config` is `homeassistant/config` and `../scripts` is the repo `scripts/` tree.
+
 `network_mode: host` means HA is on `http://<host>:8123` with no port publish block. Matrix CLIs and `directv_shef.py` are mounted **beside** `/config/avaccess/scripts`, not inside that read-only directory. A file mount inside the scripts volume fails to start or hides the SHEF module.
 
 The scripts mount is read-only. That is fine. Sports Routing writes `custom_tv_sets.json` and refreshed JSON under `/config/www`, which is the config volume, not the scripts mount.
+
+#### Raspberry Pi (`gaps`)
+
+From a laptop that can SSH to the Pi (default `pi@gaps`):
+
+```bash
+# first time — prefer --rsync if the Pi has no GitHub credentials
+./scripts/deploy_gaps_pi.sh --init --rsync
+
+# later updates (keeps site YAML / inventory.json / custom_tv_sets.json)
+./scripts/deploy_gaps_pi.sh --rsync
+```
+
+`--git` (default) runs `git clone` / `git pull` on the Pi instead. Override host/user/path with `--host`, `--user`, `--dir`, or `DEPLOY_HOST` / `DEPLOY_USER` / `DEPLOY_DIR`. The Pi needs Docker Engine + the `compose` plugin and an SSH key in `BatchMode`. After `--init`, edit `config/inventory.yaml` and `config/directv.yaml` on the Pi before any Live Take (section 3).
 
 ---
 

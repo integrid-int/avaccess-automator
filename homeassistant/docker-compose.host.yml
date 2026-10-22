@@ -1,0 +1,28 @@
+# Live Home Assistant on an AV-LAN host (Raspberry Pi, NUC, …).
+# Host networking is required so UDP broadcast to the AVAccess switch reaches
+# the LAN. Do not use the bridge `ports:` compose for Live Takes.
+#
+# From the repo root on the Pi:
+#   docker compose -f homeassistant/docker-compose.host.yml up -d
+#
+# HA UI: http://<host>:8123  (Sports Routing → /panel-health)
+
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: avaccess-ha
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./config:/config
+      - ../scripts/avaccess:/config/avaccess/scripts:ro
+      - ../scripts/apply_preset.py:/config/avaccess/apply_preset.py:ro
+      - ../scripts/directv_shef.py:/config/avaccess/directv_shef.py:ro
+      - ../scripts/route_targets.py:/config/avaccess/route_targets.py:ro
+      - ../scripts/generate_ha_bundle.py:/config/avaccess/generate_ha_bundle.py:ro
+      - ../scripts/refresh_ha_weekly.py:/config/avaccess/refresh_ha_weekly.py:ro
+      - ../scripts/sync_weekly_schedule.py:/config/avaccess/sync_weekly_schedule.py:ro
+      - ../config:/config/avaccess/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      TZ: America/New_York
