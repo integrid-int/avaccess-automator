@@ -488,14 +488,15 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                 self.assertIn("Actions", dumped, view.get("title"))
                 if view.get("path") == "av-control":
                     self.assertIn("Displays", dumped, view.get("title"))
-                self.assertIn("custom:avaccess-key", dumped, view.get("title"))
+                self.assertIn("type: button", dumped, view.get("title"))
+                self.assertNotIn("custom:avaccess-key", dumped, view.get("title"))
                 self.assertIn("Route Program → TVs", dumped, view.get("title"))
                 self.assertGreaterEqual(dumped.count("Route Program → TVs"), 2, view.get("title"))
                 self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))
                 tune_services = {
                     (card.get("tap_action") or {}).get("service", "")
                     for card in _iter_cards(view.get("cards"))
-                    if card.get("type") in {"button", "custom:avaccess-key"}
+                    if card.get("type") == "button"
                     and str((card.get("tap_action") or {}).get("service", "")).startswith("script.avaccess_tune_")
                 }
                 self.assertEqual(tune_services, {"script.avaccess_tune_selected_channel"}, view.get("title"))
@@ -541,8 +542,7 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             program_buttons = _buttons_calling(control, "script.avaccess_set_program")
             self.assertEqual([button["name"] for button in program_buttons], [f"Program {letter}" for letter in "ABCDEFGHI"])
             for button in program_buttons:
-                self.assertEqual(button["variant"], "choice")
-                self.assertEqual(button["selected_state"], button["name"])
+                self.assertEqual(button["type"], "button")
             for button, key in zip(program_buttons, "abcdefghi", strict=True):
                 self.assertEqual(button["tap_action"]["service"], "script.avaccess_set_program")
                 self.assertEqual(button["tap_action"]["data"]["program"], f"program_{key}")
@@ -576,7 +576,8 @@ class GenerateHaBundleCliTests(unittest.TestCase):
             for expected in ("NFL", "College Football", "Basketball"):
                 self.assertIn(expected, titles)
             self.assertIn("Actions", dumped_dash)
-            self.assertIn("custom:avaccess-key", dumped_dash)
+            self.assertIn("type: button", dumped_dash)
+            self.assertNotIn("custom:avaccess-key", dumped_dash)
             self.assertIn("Route Program → TVs", dumped_dash)
             self.assertIn("All 9 receivers", dumped_dash)
 

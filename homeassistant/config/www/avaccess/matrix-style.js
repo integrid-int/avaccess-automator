@@ -1,6 +1,5 @@
 // Lovelace cards for the AVAccess Matrix dashboard.
-// Same graphite field, charcoal keys, and blue latch as Sports Routing.
-// Loaded from frontend.extra_module_url so Lovelace can use custom:avaccess-key.
+// Loaded from frontend.extra_module_url / lovelace resources.
 
 const VIEW_STYLE_ID = "avaccess-matrix-view-style";
 
@@ -52,7 +51,7 @@ function escapeHtml(value) {
 }
 
 function markMatrixView(element) {
-  const view = element.closest("hui-panel-view, hui-view, hui-root");
+  const view = element?.closest?.("hui-panel-view, hui-view, hui-root");
   if (view) view.classList.add("avaccess-matrix");
   if (document.getElementById(VIEW_STYLE_ID)) return;
   const style = document.createElement("style");
@@ -64,6 +63,7 @@ function markMatrixView(element) {
 class AvaccessLabel extends HTMLElement {
   setConfig(config) {
     this._config = config || {};
+    if (this.isConnected) this._paint();
   }
 
   set hass(_hass) {}
@@ -78,9 +78,10 @@ class AvaccessLabel extends HTMLElement {
   }
 
   _paint() {
+    if (!this.shadowRoot) this.attachShadow({ mode: "open" });
     const text = escapeHtml(this._config?.text || "");
     const room = this._config?.variant === "room";
-    this.innerHTML = `
+    this.shadowRoot.innerHTML = `
       <style>
         :host { display: block; }
         p { margin: 0; }
@@ -105,14 +106,19 @@ class AvaccessLabel extends HTMLElement {
 
 class AvaccessKey extends HTMLElement {
   setConfig(config) {
-    if (!config || !config.name || !config.tap_action) {
-      throw new Error("avaccess-key needs name and tap_action");
+    // Never throw — Lovelace turns setConfig exceptions into "Configuration error".
+    this._config = config && typeof config === "object" ? config : {};
+    this._painted = false;
+    if (this.isConnected) {
+      this._on = this._isOn();
+      this._painted = true;
+      this._paint();
     }
-    this._config = config;
   }
 
   set hass(hass) {
     this._hass = hass;
+    if (!this._config) return;
     const on = this._isOn();
     if (this._painted && on === this._on) return;
     this._on = on;
@@ -122,7 +128,11 @@ class AvaccessKey extends HTMLElement {
 
   connectedCallback() {
     markMatrixView(this);
-    if (!this._painted) this._paint();
+    if (!this._painted && this._config) {
+      this._on = this._isOn();
+      this._painted = true;
+      this._paint();
+    }
   }
 
   getCardSize() {
@@ -130,20 +140,23 @@ class AvaccessKey extends HTMLElement {
   }
 
   _isOn() {
-    const variant = this._config?.variant || "choice";
+    const cfg = this._config || {};
+    const variant = cfg.variant || "choice";
     if (variant === "action") return true;
     if (variant === "favorite") return false;
-    const entity = this._config.selected_entity;
-    const expected = this._config.selected_state;
+    const entity = cfg.selected_entity;
+    const expected = cfg.selected_state;
     if (!entity || expected == null || !this._hass?.states?.[entity]) return false;
     return this._hass.states[entity].state === expected;
   }
 
   _paint() {
-    const name = escapeHtml(this._config?.name || "");
-    const detail = this._config?.detail ? escapeHtml(this._config.detail) : "";
+    if (!this.shadowRoot) this.attachShadow({ mode: "open" });
+    const cfg = this._config || {};
+    const name = escapeHtml(cfg.name || "—");
+    const detail = cfg.detail ? escapeHtml(cfg.detail) : "";
     const on = this._isOn();
-    this.innerHTML = `
+    this.shadowRoot.innerHTML = `
       <style>
         :host { display: block; }
         button {
@@ -181,11 +194,12 @@ class AvaccessKey extends HTMLElement {
         <span><b>${name}</b>${detail ? `<small>${detail}</small>` : ""}</span>
       </button>
     `;
-    this.querySelector("button").addEventListener("click", () => this._run());
+    const button = this.shadowRoot.querySelector("button");
+    if (button) button.addEventListener("click", () => this._run());
   }
 
   _run() {
-    const tap = this._config.tap_action || {};
+    const tap = this._config?.tap_action || {};
     const service = String(tap.service || "");
     const dot = service.indexOf(".");
     if (!this._hass || dot < 1) return;
@@ -199,3 +213,16 @@ if (!customElements.get("avaccess-label")) {
 if (!customElements.get("avaccess-key")) {
   customElements.define("avaccess-key", AvaccessKey);
 }
+
+window.customCards = window.customCards || [];
+for (const card of [
+  { type: "avaccess-label", name: "AVAccess Label", description: "Matrix section/room label" },
+  { type: "avaccess-key", name: "AVAccess Key", description: "Matrix charcoal action key" },
+]) {
+  if (!window.customCards.some((c) => c.type === card.type)) {
+    window.customCards.push(card);
+  }
+}
+
+// Rebuild any Lovelace error cards that rendered before this module finished loading.
+window.dispatchEvent(new Event("ll-rebuild", { bubbles: true }));

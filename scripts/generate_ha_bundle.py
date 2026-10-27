@@ -603,9 +603,9 @@ def _selectable_buttons(
     entity: str,
     option: str,
 ) -> list[dict[str, Any]]:
-    """One key. The card turns blue when the input_select matches this option."""
-    del icon  # Stock HA icons are not the bar-panel key. The custom card paints the latch.
-    return [_key_card(name, tap_action, variant="choice", selected_entity=entity, selected_state=option)]
+    """One stock button. Custom avaccess-* cards race Lovelace and flake as Configuration error."""
+    del icon, entity, option
+    return [_key_card(name, tap_action, variant="choice")]
 
 
 def _key_card(
@@ -617,18 +617,17 @@ def _key_card(
     selected_entity: str | None = None,
     selected_state: str | None = None,
 ) -> dict[str, Any]:
-    """Charcoal key from the Sports Routing panel. Action keys stay blue."""
+    """Stock Lovelace button — reliable on HAOS; no custom element load race."""
+    del variant, selected_entity, selected_state
     card: dict[str, Any] = {
-        "type": "custom:avaccess-key",
+        "type": "button",
         "name": name,
-        "variant": variant,
+        "show_name": True,
+        "show_icon": False,
         "tap_action": tap_action,
     }
     if detail:
-        card["detail"] = detail
-    if selected_entity:
-        card["selected_entity"] = selected_entity
-        card["selected_state"] = selected_state
+        card["name"] = f"{name} — {detail}"
     return card
 
 
@@ -702,7 +701,8 @@ def _now_playing_cards(encoder_media_player: dict[str, Any], ui_staging: bool) -
 
 
 def _label(text: str, variant: str = "section") -> dict[str, Any]:
-    return {"type": "custom:avaccess-label", "text": text, "variant": variant}
+    content = f"## {text}" if variant == "room" else f"**{text}**"
+    return {"type": "markdown", "content": content}
 
 
 def _selection_card(title: str) -> dict[str, Any]:

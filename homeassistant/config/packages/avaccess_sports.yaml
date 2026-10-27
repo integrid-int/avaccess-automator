@@ -5,17 +5,19 @@
 # browser for each upcoming day as Bars and Restaurants (customer type 20),
 # then keeps public-viewing channels (plus Greensboro locals 2, 8, 12, and 45).
 #
-# shell_command runs with cwd = HA config dir and is stopped after 60 seconds.
-# The Selenium add-on must already be running.
+# shell_command runs inside the Home Assistant container, so 127.0.0.1 is not
+# the add-on. Use the add-on's supervisor DNS name. The command is stopped
+# after 60 seconds. The Selenium add-on must already be running.
 
 shell_command:
   avaccess_refresh_sports: >-
     python3 avaccess/scripts/directv_sports.py
     --pull
-    --selenium http://127.0.0.1:4444
+    --selenium http://14f65a56-selenium-standalone.local.hass.io:4444
     --ahead 8
     --zip 27403
     --out www/avaccess/sports_schedule.json
+    > /config/avaccess/sports-refresh.log 2>&1
 
 automation:
   - id: avaccess_refresh_sports_morning
