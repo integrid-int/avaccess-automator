@@ -46,6 +46,7 @@ import {
   restoreScrollPositions,
   teamInitials,
 } from "./panel-view.js?v=1";
+import { ROOM_CSS, cecCallArgs, parseCecReport, roomScreenHtml } from "./room-cec.js?v=1";
 
 const DEFAULT_STATE = {
   screen: "browse-sport",
@@ -70,6 +71,10 @@ const DEFAULT_STATE = {
   draftName: "",
   draftTvs: [],
   setError: "",
+  roomOpen: false,
+  roomTv: 12,
+  roomConfirm: false,
+  roomNote: "",
 };
 
 const LIVE_BLOCKED_WARNING = "Live blocked: inventory not ready";
@@ -128,6 +133,8 @@ class PanelHealth extends HTMLElement {
     this._guideQueryDraft = null;
     this._sendLock = createInFlightLock();
     this._sending = false;
+    this._roomBusy = false;
+    this._roomMarks = {};
   }
 
   get hass() {
@@ -634,6 +641,41 @@ class PanelHealth extends HTMLElement {
     return this._gameLabel(content);
   }
 
+  async _sendCec(action) {
+    if (!this._state.liveCommit || this._roomBusy) return;
+    if (!this._state.roomOpen) return;
+    const tv = this._state.roomTv;
+    this._roomBusy = true;
+    this._setState({ roomNote: "Sending…", roomConfirm: false });
+    try {
+      const response = await this.hass.callService(...cecCallArgs(action, action.startsWith("power") ? 0 : tv));
+      const report = parseCecReport(response);
+      if (!report || report.ok === false) {
+        const error = report?.errors?.[0] || "CEC command failed.";
+        this._setState({ roomNote: error });
+        return;
+      }
+      if (action === "up" || action === "down" || action === "mute") {
+        const mark = { ...(this._roomMarks[tv] || { steps: 0, mute: false }) };
+        if (action === "up") mark.steps += 1;
+        if (action === "down") mark.steps -= 1;
+        if (action === "mute") mark.mute = !mark.mute;
+        this._roomMarks[tv] = mark;
+      }
+      const failed = (report.results || []).filter((row) => row && row.ok === false);
+      const accepted = report.accepted ?? (report.results || []).filter((row) => row?.ok).length;
+      const note = action === "power-on" || action === "power-off"
+        ? `${accepted} receivers accepted.${failed.length ? ` Failed: ${failed.map((row) => row.id).join(", ")}` : ""}`
+        : `Sent to TV ${tv}.`;
+      this._setState({ roomNote: note });
+    } catch {
+      this._setState({ roomNote: "CEC command failed." });
+    } finally {
+      this._roomBusy = false;
+      this.render();
+    }
+  }
+
   _onClick(event) {
     const target = event.target.closest?.("[data-action]");
     if (!target) return;
@@ -646,6 +688,40 @@ class PanelHealth extends HTMLElement {
         action === "send-plan" ||
         action === "send-tv-first")
     ) {
+      return;
+    }
+    if (action === "open-room") {
+      this._setState({ roomOpen: true, roomConfirm: false });
+      return;
+    }
+    if (action === "close-room") {
+      this._setState({ roomOpen: false, roomConfirm: false });
+      return;
+    }
+    if (action === "room-tv") {
+      const roomTv = Number(value);
+      if (roomTv >= 1 && roomTv <= 35) this._setState({ roomTv });
+      return;
+    }
+    if (action === "room-power-off") {
+      if (!this._state.liveCommit || this._roomBusy) return;
+      this._setState({ roomConfirm: true });
+      return;
+    }
+    if (action === "room-cancel-off") {
+      this._setState({ roomConfirm: false });
+      return;
+    }
+    if (action === "room-power-on") {
+      this._sendCec("power-on");
+      return;
+    }
+    if (action === "room-confirm-off") {
+      this._sendCec("power-off");
+      return;
+    }
+    if (action === "room-vol") {
+      this._sendCec(value);
       return;
     }
     if (action === "open-sport" || action === "select-sport") {
@@ -2507,8 +2583,14 @@ class PanelHealth extends HTMLElement {
         }
 
         .routing .room {
+          background: transparent;
+          border: 0;
+          color: inherit;
+          cursor: pointer;
+          font: inherit;
           font-size: 22px;
           font-weight: 650;
+          padding: 0;
         }
 
         .routing .status {
@@ -2939,11 +3021,30 @@ class PanelHealth extends HTMLElement {
             grid-template-columns: repeat(5, minmax(0, 1fr));
           }
         }
+        ${ROOM_CSS}
       </style>
 
-      <div class="routing${banner.mode === "live" ? " is-live" : ""}">
-        <header class="routing-top">
-          <div class="room">Bar</div>
+      <div class="routing${banner.mode === "live" ? " is-live" : ""}${this._state.roomOpen ? " room-open" : ""}">
+        ${
+          this._state.roomOpen
+            ? roomScreenHtml({
+                live: Boolean(this._state.liveCommit),
+                busy: this._roomBusy,
+                bannerText: banner.text,
+                bannerMode: banner.mode,
+                statusText: this._routeStatusLabel(),
+                selectedTv: this._state.roomTv,
+                marks: this._roomMarks,
+                note: this._state.roomNote,
+                confirm: this._state.roomConfirm,
+              })
+            : ""
+        }
+        ${
+          this._state.roomOpen
+            ? ""
+            : `<header class="routing-top">
+          <button type="button" class="room" data-action="open-room">Bar</button>
           <div class="mode-banner is-${banner.mode}" role="status" data-commit-mode="${banner.mode}">${escapeHtml(banner.text)}</div>
           <div class="status">${escapeHtml(this._routeStatusLabel())}</div>
           ${
@@ -2954,7 +3055,8 @@ class PanelHealth extends HTMLElement {
         </header>
         ${this._renderLiveCommitToggle()}
         ${this._showReplaceSheet() ? this._renderReplaceSheet() : this._renderDryRunSummary()}
-        ${this._renderRoutingBoard()}
+        ${this._renderRoutingBoard()}`
+        }
       </div>
     `;
 

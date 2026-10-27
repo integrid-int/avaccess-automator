@@ -6,7 +6,7 @@ There are two operator surfaces. You can enable both on one HA:
 
 | Surface | Sidebar | What it does live |
 |---------|---------|-------------------|
-| **Sports Routing** | `Sports Routing` → `/panel-health` | Bar iPad panel. Hold it sideways. **Take** plans the route. The header banner reads **PRACTICE – TVs will not change** until the room inventory is filled in **and** `input_boolean.avaccess_live_commit` is on; then it reads **LIVE – TVs WILL change** and the same Take calls `script.avaccess_live_execute` (SHEF + UDP). |
+| **Sports Routing** | `Sports Routing` → `/panel-health` | Bar iPad panel. Hold it sideways. **Take** plans the route. The header banner reads **PRACTICE – TVs will not change** until the room inventory is filled in **and** `input_boolean.avaccess_live_commit` is on; then it reads **LIVE – TVs WILL change** and the same Take calls `script.avaccess_live_execute` (SHEF + UDP). **Bar** opens HDMI-CEC for all-TV power and one-TV volume (`script.avaccess_cec`), and that also waits for the LIVE banner. |
 | **AVAccess Matrix** | `AVAccess Matrix` | Lovelace favorites (FOX / NFL afternoon / all Sunday), DirecTV SHEF tune, contiguous Preset 1/2/3, route to specific TVs. **Always live** once the package is generated without `--ui-staging`: there is no Live commit switch, no PRACTICE banner, and no inventory gate on Matrix. |
 
 **Which surface is live:** a Matrix tap changes the wall immediately. A Sports Routing Take changes the wall only while its banner says **LIVE**. The two screens look alike (same charcoal and blue), so during Soft Launch tell staff which one they are on.
@@ -152,7 +152,7 @@ The `www` copy in step 2 is what the panel fetches. These files have to be prese
 
 | URL | `source` | What breaks if it is missing or wrong |
 |-----|----------|----------------------------------------|
-| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=35` in `configuration.yaml`. |
+| `/local/panels/panel-health.js` | — | Sidebar item is blank. Cache-bust with `?v=36` in `configuration.yaml`. |
 | `/local/avaccess/sports_schedule.json` | `directv-sports-info` | Sports rail stays empty. TV Passport must not be copied in as the sports file. |
 | `/local/avaccess/guide_channels.json` | `tvpassport:5960D` | Guide has no Greensboro lineup. |
 | `/local/avaccess/guide_epg.json` | fresh `generatedAt` | Guide still lists channels, with **Guide listings unavailable — channel list only**. |
@@ -306,7 +306,7 @@ panel_custom:
     sidebar_title: Sports Routing
     sidebar_icon: mdi:trophy
     url_path: panel-health
-    module_url: /local/panels/panel-health.js?v=35
+    module_url: /local/panels/panel-health.js?v=36
     require_admin: false
     config:
       environment: live
@@ -392,7 +392,7 @@ To go back to practice at any time, turn **Live commit** off. Every iPad returns
 2. Connect to `http://<ha-host>:8123` (or your TLS proxy).
 3. Sidebar: **Sports Routing** for the bar, **AVAccess Matrix** for favorites.
 4. Hold the iPad **sideways** for Sports Routing. Below 900px wide the three columns stack and the buttons get small. Matrix favorites still fit portrait.
-5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=35` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
+5. After a panel update, force-quit Companion (or clear its cache) so it does not keep an old `panel-health.js`. The `?v=` on `module_url` is the cache buster; it is `v=36` in this repo (`homeassistant/config/configuration.yaml`). Bump it when you copy a new `panel-health.js`, then restart Home Assistant. The panel’s own imports (`live-execute.js`, `panel-view.js`, …) carry separate `?v=` values inside `panel-health.js`; copy the whole `www/panels/` directory so they stay in step.
 
 Staff handouts: [STAFF_QUICK_START.pdf](STAFF_QUICK_START.pdf) and [STAFF_FULL_GUIDE.pdf](STAFF_FULL_GUIDE.pdf) _(PDFs pending rebuild; use [STAFF_TRAINING.md](STAFF_TRAINING.md) for the current UI.)_. Matrix cheat sheet: [OPERATIONS_GUIDE.md](OPERATIONS_GUIDE.md).
 

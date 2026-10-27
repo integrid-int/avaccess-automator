@@ -28,7 +28,7 @@ This panel is designed for Home Assistant Companion on iPad and implements **Tra
 - Panel validator: `scripts/validate_panels.py`
 - Automated tests: `tests/test_validate_panels.py`
 - DirecTV H25 SHEF transport + Lovelace **AVAccess Matrix** dashboard (favorites / presets / sports tabs)
-- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=35`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
+- **[docs/HA_LIVE.md](docs/HA_LIVE.md)** — site go-live. SHEF, the matrix package, Sports Routing (`panel-health.js?v=36`), DirecTV sports JSON, the TV Passport guide, and named TV sets. Do not clone the repo over `/config`.
 - Raspberry Pi host-network deploy (default SSH `pi@gaps`): `scripts/deploy_gaps_pi.sh` (`--init` once, then plain updates) and `homeassistant/docker-compose.host.yml`
 - iPad picture playbook: **[docs/OPERATIONS_GUIDE.md](docs/OPERATIONS_GUIDE.md)** and printable **[docs/AVACCESS_OPERATORS_GUIDE.pdf](docs/AVACCESS_OPERATORS_GUIDE.pdf)**
 - Sports Routing staff handouts: **[docs/STAFF_QUICK_START.pdf](docs/STAFF_QUICK_START.pdf)** and **[docs/STAFF_FULL_GUIDE.pdf](docs/STAFF_FULL_GUIDE.pdf)** _(PDFs pending rebuild; use [docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md) for the current UI.)_ Source text: **[docs/STAFF_TRAINING.md](docs/STAFF_TRAINING.md)**

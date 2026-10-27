@@ -104,7 +104,7 @@ test("panel shell keeps radii at token scale and avoids amber assignment accents
 test("panel shell brands the routing board and drops stub content picker", () => {
   const src = readPanelSource();
   assert.match(src, /class="routing(?:"|\$\{)/);
-  assert.match(src, /class="room">Bar</);
+  assert.match(src, /class="room" data-action="open-room">Bar</);
   assert.match(src, /<h2>Sources<\/h2>/);
   assert.match(src, /<h2>Displays<\/h2>/);
   assert.match(src, /data-action="send-destination"/);

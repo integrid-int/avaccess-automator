@@ -35,6 +35,12 @@ shell_command:
     python3 avaccess/scripts/save_tv_sets.py
     --sets-b64 '{{ sets_b64 if sets_b64 is string and sets_b64 | regex_match("^[A-Za-z0-9+/]+={0,2}$") else "" }}'
     --out www/avaccess/custom_tv_sets.json
+  avaccess_cec: >-
+    python3 avaccess/scripts/cec_rx.py
+    --inventory avaccess/config/inventory.yaml
+    --action {{ action if action in ['power-on', 'power-off', 'volume-up', 'volume-down', 'mute'] else '' }}
+    --tv {{ tv if tv is string and tv | regex_match('^[0-9]{1,2}$') else '0' }}
+    --live --live-commit {{ 'on' if is_state('input_boolean.avaccess_live_commit', 'on') else 'off' }}
 
 script:
   avaccess_live_execute:
@@ -78,5 +84,49 @@ script:
                 stdout: |-
                   Live Commit is off - refusing Live Send.
                   {"ok": false, "slots": [], "errors": ["Live Commit is off in Home Assistant. Nothing was sent."]}
+          - stop: Live Commit is off
+            response_variable: refused
+  avaccess_cec:
+    alias: AVAccess CEC
+    description: >-
+      HDMI-CEC power for every TV, or volume for one TV, via each receiver.
+      Refuses unless input_boolean.avaccess_live_commit is on. The shell
+      command also sends --live-commit from that boolean.
+    icon: mdi:television
+    mode: queued
+    max: 8
+    max_exceeded: warning
+    fields:
+      action:
+        name: Action
+        required: true
+        selector:
+          text:
+      tv:
+        name: TV number
+        required: false
+        selector:
+          text:
+    sequence:
+      - if:
+          - condition: state
+            entity_id: input_boolean.avaccess_live_commit
+            state: "on"
+        then:
+          - action: shell_command.avaccess_cec
+            data:
+              action: "{{ action }}"
+              tv: "{{ tv | default('0') }}"
+            response_variable: result
+          - stop: CEC finished
+            response_variable: result
+        else:
+          - variables:
+              refused:
+                returncode: 3
+                stderr: ""
+                stdout: |-
+                  Live Commit is off - refusing CEC.
+                  {"ok": false, "refused": true, "errors": ["Live Commit is off in Home Assistant. Nothing was sent."], "results": []}
           - stop: Live Commit is off
             response_variable: refused
