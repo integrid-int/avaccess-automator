@@ -295,6 +295,18 @@ def fetch_window_in_browser(
     return payloads_from_page_results(results)
 
 
+# Home Assistant kills a shell_command at 60s. One in-page fetch of eight days
+# exceeds the WebDriver script timeout (the 06:00 log was "script timeout").
+# Two days per call stays inside that timeout and inside the shell limit.
+_SELENIUM_DAY_CHUNK = 2
+
+
+def _day_chunks(days: list[str], size: int = _SELENIUM_DAY_CHUNK) -> list[list[str]]:
+    if size < 1:
+        raise DirectvSportsError("Selenium day chunk must be at least 1.")
+    return [days[index : index + size] for index in range(0, len(days), size)]
+
+
 def fetch_window_via_selenium(
     endpoint: str,
     zip_code: str,
@@ -306,13 +318,15 @@ def fetch_window_via_selenium(
     """Ask the Selenium Standalone add-on to open the sports page and pull each day.
 
     The add-on already runs Chromium on a virtual screen. This client only
-    speaks WebDriver. It does not send DirecTV cookies.
+    speaks WebDriver. It does not send DirecTV cookies. Days are fetched a
+    couple at a time so one slow page script cannot burn the whole shell budget.
     """
     days = require_days(list(days))
     base = endpoint.strip().rstrip("/")
     if not base:
         raise DirectvSportsError("Pass the Selenium add-on URL, for example http://127.0.0.1:4444.")
     session = _wd_new_session(base, timeout_s=page_timeout_s)
+    results: list[Any] = []
     try:
         _wd_call(
             base,
@@ -333,21 +347,25 @@ def fetch_window_via_selenium(
             f"const run = {_PAGE_FETCH_JS};"
             "Promise.resolve(run(arguments[0])).then(done).catch((error) => done({error: String(error)}));"
         )
-        result = _wd_call(
-            base,
-            "POST",
-            f"/session/{session}/execute/async",
-            {"script": wrapper, "args": [_page_fetch_args(zip_code, days)]},
-            timeout_s=script_timeout_s + 5,
-        )
+        for chunk in _day_chunks(days):
+            result = _wd_call(
+                base,
+                "POST",
+                f"/session/{session}/execute/async",
+                {"script": wrapper, "args": [_page_fetch_args(zip_code, chunk)]},
+                timeout_s=script_timeout_s + 5,
+            )
+            if isinstance(result, dict) and result.get("error"):
+                raise DirectvSportsError(f"DirecTV browser pull failed: {result['error']}")
+            if not isinstance(result, list):
+                raise DirectvSportsError("DirecTV browser pull returned no days.")
+            results.extend(result)
     finally:
         try:
             _wd_call(base, "DELETE", f"/session/{session}", timeout_s=10)
         except DirectvSportsError:
             pass
-    if isinstance(result, dict) and result.get("error"):
-        raise DirectvSportsError(f"DirecTV browser pull failed: {result['error']}")
-    return payloads_from_page_results(result)
+    return payloads_from_page_results(results)
 
 
 def _wd_new_session(base: str, *, timeout_s: float) -> str:

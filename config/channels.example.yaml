@@ -68,7 +68,7 @@ channels:
   abc:
     number: "45"
     label: "WXLV ABC (Local)"
-  # These NFL slot numbers can be auto-updated weekly by schedule sync.
+  # Afternoon slots stay on 705–708. guide_channels.json has no NFL A1–A4 names.
   nfl_afternoon_game_1:
     number: "705"
     label: "NFL A1"
@@ -81,32 +81,34 @@ channels:
   nfl_afternoon_game_4:
     number: "708"
     label: "NFL A4"
+  # DirecTV SHEF majors from guide_channels.json. The name "NFL Sunday Ticket 705"
+  # is slot S1; the tune major is 9554 (S9 "NFL Sunday Ticket 713" is 9562).
   nfl_sunday_game_1:
-    number: "705"
+    number: "9554"
     label: "NFL S1"
   nfl_sunday_game_2:
-    number: "706"
+    number: "9555"
     label: "NFL S2"
   nfl_sunday_game_3:
-    number: "707"
+    number: "9556"
     label: "NFL S3"
   nfl_sunday_game_4:
-    number: "708"
+    number: "9557"
     label: "NFL S4"
   nfl_sunday_game_5:
-    number: "709"
+    number: "9558"
     label: "NFL S5"
   nfl_sunday_game_6:
-    number: "710"
+    number: "9559"
     label: "NFL S6"
   nfl_sunday_game_7:
-    number: "711"
+    number: "9560"
     label: "NFL S7"
   nfl_sunday_game_8:
-    number: "712"
+    number: "9561"
     label: "NFL S8"
   nfl_sunday_game_9:
-    number: "713"
+    number: "9562"
     label: "NFL S9"
 
 # Optional per-channel tail command depending on remote behavior.

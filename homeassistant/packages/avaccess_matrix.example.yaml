@@ -42,11 +42,20 @@ input_select:
     - NFL S9
     initial: ESPN
     icon: mdi:television-guide
+  avaccess_active_preset:
+    name: AVAccess Active Preset
+    options:
+    - None
+    - ALL
+    - 4 Programs
+    - 9 Programs
+    initial: None
+    icon: mdi:video-switch
 input_text:
   avaccess_target_rxs:
     name: AVAccess Target TVs
     max: 255
-    initial: RX-01,RX-02
+    initial: RX-01, RX-02
     icon: mdi:monitor-multiple
 shell_command:
   avaccess_preset_1_all: python3 /config/avaccess/apply_preset.py --inventory /config/avaccess/config/inventory.yaml --profile
@@ -77,6 +86,26 @@ script:
     mode: single
     sequence:
     - service: shell_command.avaccess_preset_3_nine_programs
+  avaccess_apply_selected_preset:
+    alias: AVAccess apply selected preset
+    mode: single
+    sequence:
+    - choose:
+      - conditions: '{{ states(''input_select.avaccess_active_preset'') == ''ALL'' }}'
+        sequence:
+        - service: script.avaccess_preset_1_all
+      - conditions: '{{ states(''input_select.avaccess_active_preset'') == ''4 Programs'' }}'
+        sequence:
+        - service: script.avaccess_preset_2_four_programs
+      - conditions: '{{ states(''input_select.avaccess_active_preset'') == ''9 Programs'' }}'
+        sequence:
+        - service: script.avaccess_preset_3_nine_programs
+      default:
+      - service: system_log.write
+        data:
+          level: warning
+          message: 'AVAccess apply preset: pick ALL, 4 Programs, or 9 Programs first. selected={{ states(''input_select.avaccess_active_preset'')
+            }}'
   avaccess_set_program:
     alias: AVAccess select program
     mode: single
@@ -138,16 +167,16 @@ script:
           number: '206'
           label: ESPN
         espn2:
-          number: '207'
+          number: '209'
           label: ESPN2
         fs1:
-          number: '400'
+          number: '219'
           label: FS1
         tnt:
           number: '245'
           label: TNT
         fox:
-          number: '4'
+          number: '8'
           label: WGHP FOX (Local)
         cbs:
           number: '2'
@@ -171,31 +200,31 @@ script:
           number: '708'
           label: NFL A4
         nfl_sunday_game_1:
-          number: '705'
+          number: '9554'
           label: NFL S1
         nfl_sunday_game_2:
-          number: '706'
+          number: '9555'
           label: NFL S2
         nfl_sunday_game_3:
-          number: '707'
+          number: '9556'
           label: NFL S3
         nfl_sunday_game_4:
-          number: '708'
+          number: '9557'
           label: NFL S4
         nfl_sunday_game_5:
-          number: '709'
+          number: '9558'
           label: NFL S5
         nfl_sunday_game_6:
-          number: '710'
+          number: '9559'
           label: NFL S6
         nfl_sunday_game_7:
-          number: '711'
+          number: '9560'
           label: NFL S7
         nfl_sunday_game_8:
-          number: '712'
+          number: '9561'
           label: NFL S8
         nfl_sunday_game_9:
-          number: '713'
+          number: '9562'
           label: NFL S9
       suffix_commands:
       - ok
@@ -235,16 +264,22 @@ script:
     - choose:
       - conditions: '{{ selected_encoder is not none and channel_number is not none }}'
         sequence:
-        - service: shell_command.avaccess_directv_tune
+        - action: shell_command.avaccess_directv_tune
+          response_variable: tune_result
           data:
             encoder: '{{ selected_encoder }}'
             channel: '{{ channel_number }}'
+        - if:
+          - condition: template
+            value_template: '{{ (tune_result.returncode | int(0)) != 0 }}'
+          then:
+          - stop: '{{ (tune_result.stderr | default('''') | trim) or (tune_result.stdout | default('''') | trim) or ''Tune
+              failed.'' }}'
+            error: true
       default:
-      - service: system_log.write
-        data:
-          level: warning
-          message: AVAccess tune failed (directv_shef); check program/channel/H25 maps. program={{ program_key }} channel={{
-            channel_key }}
+      - stop: AVAccess tune failed (directv_shef); missing program or channel. program={{ program_key }} channel={{ channel_key
+          }}
+        error: true
   avaccess_tune_selected_channel:
     alias: AVAccess tune selected channel
     mode: single

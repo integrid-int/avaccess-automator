@@ -355,6 +355,48 @@ class BundleGenerationTests(unittest.TestCase):
         self.assertIn("shell_command.avaccess_directv_tune", dumped)
         self.assertNotIn("shell_command.avaccess_itach_send_channel", dumped)
 
+    def test_tune_channel_stops_on_shell_failure_and_missing_map(self) -> None:
+        inventory = load_yaml(ROOT / "config" / "inventory.example.yaml")
+        channels = load_yaml(ROOT / "config" / "channels.example.yaml")
+        profile, _presets = resolve_presets(inventory, "numeric_v1")
+        package = build_package(
+            inventory=inventory,
+            channels_cfg=channels,
+            profile_override=profile,
+            inventory_ha_path="/config/avaccess/config/inventory.yaml",
+        )
+        tune_cmd = package["shell_command"]["avaccess_directv_tune"]
+        self.assertNotIn("--verify", tune_cmd)
+        self.assertNotIn("get-tuned", tune_cmd)
+        tune = package["script"]["avaccess_tune_channel"]
+        dumped = yaml.safe_dump(tune)
+        self.assertNotIn("get_tuned", dumped)
+        self.assertNotIn("get-tuned", dumped)
+        self.assertNotIn("system_log.write", dumped)
+
+        step = tune["sequence"][0]
+        choice = step["choose"][0]
+        shell, guard = choice["sequence"]
+        self.assertEqual(shell["action"], "shell_command.avaccess_directv_tune")
+        self.assertEqual(shell["response_variable"], "tune_result")
+        self.assertEqual(
+            shell["data"],
+            {"encoder": "{{ selected_encoder }}", "channel": "{{ channel_number }}"},
+        )
+        self.assertNotIn("stop", shell)
+        self.assertIn("tune_result.returncode | int(0)", guard["if"][0]["value_template"])
+        failure = guard["then"][0]
+        self.assertIs(failure["error"], True)
+        self.assertIn("tune_result.stderr", failure["stop"])
+        self.assertIn("tune_result.stdout", failure["stop"])
+        self.assertIn("Tune failed.", failure["stop"])
+
+        missing = step["default"][0]
+        self.assertIs(missing["error"], True)
+        self.assertIn("program={{ program_key }}", missing["stop"])
+        self.assertIn("channel={{ channel_key }}", missing["stop"])
+        self.assertNotIn("system_log", missing["stop"])
+
     def test_ui_staging_stubs_shell_commands(self) -> None:
         from scripts.generate_ha_bundle import apply_ui_staging_stubs
 
@@ -490,8 +532,7 @@ class GenerateHaBundleCliTests(unittest.TestCase):
                     self.assertIn("Displays", dumped, view.get("title"))
                 self.assertIn("type: button", dumped, view.get("title"))
                 self.assertNotIn("custom:avaccess-key", dumped, view.get("title"))
-                self.assertIn("Route Program → TVs", dumped, view.get("title"))
-                self.assertGreaterEqual(dumped.count("Route Program → TVs"), 2, view.get("title"))
+                self.assertEqual(dumped.count("Route Program → TVs"), 1, view.get("title"))
                 self.assertNotIn("mdi:television-multiple", dumped, view.get("title"))
                 tune_services = {
                     (card.get("tap_action") or {}).get("service", "")

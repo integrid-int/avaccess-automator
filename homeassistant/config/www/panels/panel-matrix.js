@@ -26,21 +26,51 @@ const CHANNELS = [
   { option: "NFL A2", detail: "706", pages: ["control", "nfl"] },
   { option: "NFL A3", detail: "707", pages: ["control", "nfl"] },
   { option: "NFL A4", detail: "708", pages: ["control", "nfl"] },
-  { option: "NFL S1", detail: "705", pages: ["control", "nfl"] },
-  { option: "NFL S2", detail: "706", pages: ["control", "nfl"] },
-  { option: "NFL S3", detail: "707", pages: ["control", "nfl"] },
-  { option: "NFL S4", detail: "708", pages: ["control", "nfl"] },
-  { option: "NFL S5", detail: "709", pages: ["control", "nfl"] },
-  { option: "NFL S6", detail: "710", pages: ["control", "nfl"] },
-  { option: "NFL S7", detail: "711", pages: ["control", "nfl"] },
-  { option: "NFL S8", detail: "712", pages: ["control", "nfl"] },
-  { option: "NFL S9", detail: "713", pages: ["control", "nfl"] },
+  { option: "NFL S1", detail: "9554", pages: ["control", "nfl"] },
+  { option: "NFL S2", detail: "9555", pages: ["control", "nfl"] },
+  { option: "NFL S3", detail: "9556", pages: ["control", "nfl"] },
+  { option: "NFL S4", detail: "9557", pages: ["control", "nfl"] },
+  { option: "NFL S5", detail: "9558", pages: ["control", "nfl"] },
+  { option: "NFL S6", detail: "9559", pages: ["control", "nfl"] },
+  { option: "NFL S7", detail: "9560", pages: ["control", "nfl"] },
+  { option: "NFL S8", detail: "9561", pages: ["control", "nfl"] },
+  { option: "NFL S9", detail: "9562", pages: ["control", "nfl"] },
 ];
 
+function tvRange(start, end) {
+  const tvs = [];
+  for (let tv = start; tv <= end; tv += 1) tvs.push(tv);
+  return tvs;
+}
+
+// Same groups Apply sends (numeric blocks, not the Sports Routing stripe).
+const PRESET_GROUPS = {
+  ALL: [tvRange(1, 35)],
+  "4 Programs": [tvRange(1, 9), tvRange(10, 18), tvRange(19, 27), tvRange(28, 35)],
+  "9 Programs": [
+    tvRange(1, 4),
+    tvRange(5, 8),
+    tvRange(9, 12),
+    tvRange(13, 16),
+    tvRange(17, 20),
+    tvRange(21, 24),
+    tvRange(25, 28),
+    tvRange(29, 32),
+    tvRange(33, 35),
+  ],
+};
+
+function programLetter(tv, preset) {
+  const groups = PRESET_GROUPS[preset];
+  if (!groups) return "";
+  const index = groups.findIndex((group) => group.includes(tv));
+  return index < 0 ? "" : String.fromCharCode(65 + index);
+}
+
 const PRESETS = [
-  { option: "ALL", detail: "Every TV on one program" },
-  { option: "4 Programs", detail: "ENC-01 through ENC-04" },
-  { option: "9 Programs", detail: "ENC-01 through ENC-09" },
+  { option: "ALL", detail: "TVs 1–35 on Program A" },
+  { option: "4 Programs", detail: "TVs 1–9, 10–18, 19–27, 28–35" },
+  { option: "9 Programs", detail: "Blocks of four, Programs A–I" },
 ];
 
 const PAGES = [
@@ -52,7 +82,7 @@ const PAGES = [
 const ACTIONS = [
   { action: "tune", name: "Tune Selected Program", detail: "Changes the DirecTV box only" },
   { action: "route", name: "Route Program → TVs", detail: "Points the TVs at that box" },
-  { action: "apply", name: "Apply Preset", detail: "Changes which TVs watch which box" },
+  { action: "apply", name: "Apply Preset", detail: "Sends the letters on the TV grid" },
 ];
 
 function escapeHtml(value) {
@@ -84,6 +114,7 @@ class PanelMatrix extends HTMLElement {
     this._statusError = false;
     this._busy = false;
     this._picked = null;
+    this._signature = "";
     this.attachShadow({ mode: "open" });
   }
 
@@ -111,7 +142,7 @@ class PanelMatrix extends HTMLElement {
     return state;
   }
 
-  async _call(domain, service, data) {
+  async _call(domain, service, data, done) {
     if (this._busy) return;
     if (typeof this._hass?.callService !== "function") {
       this._status = "Home Assistant is not connected.";
@@ -120,15 +151,17 @@ class PanelMatrix extends HTMLElement {
       return;
     }
     this._busy = true;
-    this._status = "";
-    this._statusError = false;
+    this._signature = "";
     try {
       await this._hass.callService(domain, service, data || {});
+      this._status = done || "";
+      this._statusError = false;
     } catch (error) {
       this._status = error?.message || "That action failed.";
       this._statusError = true;
     } finally {
       this._busy = false;
+      this._signature = "";
       this._render();
     }
   }
@@ -140,6 +173,7 @@ class PanelMatrix extends HTMLElement {
     const value = button.dataset.value;
     if (action === "page") {
       this._page = value || "control";
+      this._signature = "";
       this._render();
       return;
     }
@@ -162,7 +196,17 @@ class PanelMatrix extends HTMLElement {
       return;
     }
     if (action === "tune") {
-      this._call("script", "avaccess_tune_selected_channel", {});
+      this._status = "Sending tune…";
+      this._statusError = false;
+      this._signature = "";
+      const program = this._entityState("input_select.avaccess_program") || "Program A";
+      const channel = this._entityState("input_select.avaccess_channel") || "ESPN";
+      this._call(
+        "script",
+        "avaccess_tune_selected_channel",
+        {},
+        `Tuned ${channel} on ${program}.`,
+      );
       return;
     }
     if (action === "route") {
@@ -176,7 +220,15 @@ class PanelMatrix extends HTMLElement {
       return;
     }
     if (action === "apply") {
-      this._call("script", "avaccess_apply_selected_preset", {});
+      const preset = this._entityState("input_select.avaccess_active_preset");
+      if (!preset || preset === "None") {
+        this._status = "Pick a display first.";
+        this._statusError = true;
+        this._signature = "";
+        this._render();
+        return;
+      }
+      this._call("script", "avaccess_apply_selected_preset", {}, `Sent ${preset} to the wall.`);
       return;
     }
     if (action === "toggle-tv") {
@@ -205,11 +257,14 @@ class PanelMatrix extends HTMLElement {
   }
 
   _currentTvs() {
-    return this._picked || this._tvsFromState();
+    if (Array.isArray(this._picked)) return this._picked;
+    return this._tvsFromState();
   }
 
   _writeTvs(tvs) {
     this._picked = tvs;
+    this._signature = "";
+    this._render();
     const value = tvs.map((tv) => `RX-${String(tv).padStart(2, "0")}`).join(", ");
     this._call("input_text", "set_value", {
       entity_id: "input_text.avaccess_target_rxs",
@@ -248,6 +303,10 @@ class PanelMatrix extends HTMLElement {
     const status = this._status
       ? `<p class="status${this._statusError ? " error" : ""}" role="status">${escapeHtml(this._status)}</p>`
       : `<p class="status" role="status">${escapeHtml(program)} · ${escapeHtml(channel)}</p>`;
+
+    const signature = [this._page, program, channel, preset, picked.join(","), this._status, this._statusError].join("|");
+    if (signature === this._signature && this.shadowRoot.querySelector(".bank")) return;
+    this._signature = signature;
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -350,17 +409,28 @@ class PanelMatrix extends HTMLElement {
           grid-template-columns: repeat(7, minmax(0, 1fr));
         }
         .tv {
+          align-items: center;
           background: #2a2a2a;
           border: 0;
           border-radius: 3px;
           color: #f3f3f3;
           cursor: pointer;
+          display: flex;
+          flex-direction: column;
           font: inherit;
           font-size: 16px;
           font-weight: 650;
           height: 52px;
+          justify-content: center;
+          line-height: 1.05;
+        }
+        .tv small {
+          color: #bdbdbd;
+          font-size: 11px;
+          font-weight: 650;
         }
         .tv.is-selected { background: #0b5cab; color: #ffffff; }
+        .tv.is-selected small { color: #d7e7f8; }
         @media (max-width: 720px) {
           .keys.grid { grid-template-columns: 1fr; }
           .routing-top, .chips, .bank { padding-left: 16px; padding-right: 16px; }
@@ -375,14 +445,16 @@ class PanelMatrix extends HTMLElement {
         <div class="bank">
           <h2>TVs</h2>
           <div class="tv-toolbar">
-            <span>${picked.length} picked</span>
+            <span>${picked.length} picked${PRESET_GROUPS[preset] ? ` · ${escapeHtml(preset)}` : ""}</span>
             <button type="button" data-action="clear-tvs">Clear TVs</button>
           </div>
           <div class="tv-grid" aria-label="TV picker">
             ${Array.from({ length: 35 }, (_, index) => {
               const tv = index + 1;
               const on = picked.includes(tv) ? " is-selected" : "";
-              return `<button type="button" class="tv${on}" data-action="toggle-tv" data-value="${tv}">${tv}</button>`;
+              const letter = programLetter(tv, preset);
+              const mark = letter ? `<small>${letter}</small>` : "";
+              return `<button type="button" class="tv${on}" data-action="toggle-tv" data-value="${tv}">${tv}${mark}</button>`;
             }).join("")}
           </div>
           <h2>Actions</h2>
@@ -395,8 +467,6 @@ class PanelMatrix extends HTMLElement {
           <h2>Sources</h2>
           ${showPrograms ? `<div class="keys grid">${programs}</div>` : ""}
           <div class="keys grid">${channels}</div>
-          <h2>Actions</h2>
-          <div class="keys">${actions}</div>
         </div>
       </section>
     `;

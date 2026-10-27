@@ -49,7 +49,8 @@ channel_classification:
       - Sunday Ticket
       - NFL ST
       - NFL Ticket
-    by_numbers: ["705", "706", "707", "708", "709", "710", "711", "712", "713"]
+    # SHEF majors. Guide names "NFL Sunday Ticket 705"–"713" are slots, not these numbers.
+    by_numbers: ["9554", "9555", "9556", "9557", "9558", "9559", "9560", "9561", "9562"]
 
 # Optional per-zip market overrides.
 market_profiles:
@@ -84,4 +85,4 @@ channel_number_map:
 
 # Used when schedule data does not produce enough channels.
 fallback_afternoon_numbers: ["705", "706", "707", "708"]
-fallback_sunday_numbers: ["705", "706", "707", "708", "709", "710", "711", "712", "713"]
+fallback_sunday_numbers: ["9554", "9555", "9556", "9557", "9558", "9559", "9560", "9561", "9562"]

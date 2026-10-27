@@ -474,10 +474,19 @@ class DirectvSportsTests(unittest.TestCase):
                 page_timeout_s=5,
                 script_timeout_s=5,
             )
+            mark = len(seen)
+            chunked = fetch_window_via_selenium(
+                f"http://127.0.0.1:{server.server_address[1]}",
+                "27403",
+                ["2026-10-25", "2026-10-26", "2026-10-27"],
+                page_timeout_s=5,
+                script_timeout_s=5,
+            )
         finally:
             server.shutdown()
             server.server_close()
         assert payloads[0]["games"][0]["id"] == 1214005
+        assert chunked[0]["games"][0]["id"] == 1214005
         assert any(item[1] == "/session/abc/url" for item in seen)
         assert all(item[2] is None for item in seen)
         script = next(item[3]["script"] for item in seen if item[1].endswith("/execute/async"))
@@ -486,6 +495,12 @@ class DirectvSportsTests(unittest.TestCase):
         assert posted["args"] == [{"zip": "27403", "days": ["2026-10-25"], "bundles": 20}]
         assert "bundles=" in script
         assert not any("Cookie" in json.dumps(item[3]) for item in seen if item[3])
+        chunks = [
+            item[3]["args"][0]["days"]
+            for item in seen[mark:]
+            if item[1] and str(item[1]).endswith("/execute/async")
+        ]
+        assert chunks == [["2026-10-25", "2026-10-26"], ["2026-10-27"]]
 
     def test_merge_payloads_keeps_the_copy_with_showings(self):
         thin = _game(5, "NBA", "Mavericks", "Heat", [])

@@ -23,5 +23,5 @@ panel_custom:
     sidebar_title: AVAccess Matrix
     sidebar_icon: mdi:video-input-component
     url_path: panel-matrix
-    module_url: /local/panels/panel-matrix.js?v=2
+    module_url: /local/panels/panel-matrix.js?v=5
     require_admin: false

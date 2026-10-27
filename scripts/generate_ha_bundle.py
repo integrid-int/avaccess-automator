@@ -158,6 +158,57 @@ def validate_channels(channels_cfg: dict[str, Any]) -> None:
         raise SystemExit("directv_shef mode requires directv_config_path")
 
 
+# Empty stderr falls through to stdout, then to a short fallback. A returncode of 0
+# never reaches this stop, so a 200 tune stays a successful script run.
+_TUNE_SHELL_ERROR = (
+    "{{ (tune_result.stderr | default('') | trim) "
+    "or (tune_result.stdout | default('') | trim) "
+    "or 'Tune failed.' }}"
+)
+
+
+def _tune_stop(message: str) -> dict[str, Any]:
+    """Fail the script so Home Assistant raises the message to the service caller."""
+    return {"stop": message, "error": True}
+
+
+def _missing_tune_message(transport: str) -> str:
+    return (
+        f"AVAccess tune failed ({transport}); missing program or channel. "
+        "program={{ program_key }} channel={{ channel_key }}"
+    )
+
+
+def _shell_tune_sequence(action: str, data: dict[str, str], transport: str) -> list[dict[str, Any]]:
+    """Capture the shell response and fail the script unless returncode is 0."""
+    return [
+        {
+            "choose": [
+                {
+                    "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
+                    "sequence": [
+                        {
+                            "action": action,
+                            "response_variable": "tune_result",
+                            "data": data,
+                        },
+                        {
+                            "if": [
+                                {
+                                    "condition": "template",
+                                    "value_template": "{{ (tune_result.returncode | int(0)) != 0 }}",
+                                }
+                            ],
+                            "then": [_tune_stop(_TUNE_SHELL_ERROR)],
+                        },
+                    ],
+                }
+            ],
+            "default": [_tune_stop(_missing_tune_message(transport))],
+        }
+    ]
+
+
 def build_package(
     inventory: dict[str, Any],
     channels_cfg: dict[str, Any],
@@ -329,84 +380,29 @@ def build_package(
                         ],
                     }
                 ],
-                "default": [
-                    {
-                        "service": "system_log.write",
-                        "data": {
-                            "level": "warning",
-                            "message": (
-                                "AVAccess tune failed (ha_remote); check program/channel/entity maps. "
-                                "program={{ program_key }} channel={{ channel_key }}"
-                            ),
-                        },
-                    }
-                ],
+                "default": [_tune_stop(_missing_tune_message("ha_remote"))],
             }
         ]
     elif ir_transport == "directv_shef":
-        tune_sequence = [
+        tune_sequence = _shell_tune_sequence(
+            "shell_command.avaccess_directv_tune",
             {
-                "choose": [
-                    {
-                        "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
-                        "sequence": [
-                            {
-                                "service": "shell_command.avaccess_directv_tune",
-                                "data": {
-                                    "encoder": "{{ selected_encoder }}",
-                                    "channel": "{{ channel_number }}",
-                                },
-                            }
-                        ],
-                    }
-                ],
-                "default": [
-                    {
-                        "service": "system_log.write",
-                        "data": {
-                            "level": "warning",
-                            "message": (
-                                "AVAccess tune failed (directv_shef); check program/channel/H25 maps. "
-                                "program={{ program_key }} channel={{ channel_key }}"
-                            ),
-                        },
-                    }
-                ],
-            }
-        ]
+                "encoder": "{{ selected_encoder }}",
+                "channel": "{{ channel_number }}",
+            },
+            "directv_shef",
+        )
     else:
-        tune_sequence = [
+        tune_sequence = _shell_tune_sequence(
+            "shell_command.avaccess_itach_send_channel",
             {
-                "choose": [
-                    {
-                        "conditions": "{{ selected_encoder is not none and channel_number is not none }}",
-                        "sequence": [
-                            {
-                                "service": "shell_command.avaccess_itach_send_channel",
-                                "data": {
-                                    "encoder": "{{ selected_encoder }}",
-                                    "digits": "{{ channel_number }}",
-                                    "suffix": "{{ suffix_text }}",
-                                    "digit_delay_ms": "{{ digit_delay_ms }}",
-                                },
-                            }
-                        ],
-                    }
-                ],
-                "default": [
-                    {
-                        "service": "system_log.write",
-                        "data": {
-                            "level": "warning",
-                            "message": (
-                                "AVAccess tune failed (itach_tcp); check program/channel/itach maps. "
-                                "program={{ program_key }} channel={{ channel_key }}"
-                            ),
-                        },
-                    }
-                ],
-            }
-        ]
+                "encoder": "{{ selected_encoder }}",
+                "digits": "{{ channel_number }}",
+                "suffix": "{{ suffix_text }}",
+                "digit_delay_ms": "{{ digit_delay_ms }}",
+            },
+            "itach_tcp",
+        )
 
     scripts["avaccess_tune_channel"] = {
         "alias": "AVAccess tune channel on source",
@@ -860,7 +856,6 @@ def build_dashboard(
                 _keys("", favorite_buttons, 1),
             ]
         )
-    control_cards.append(_route_actions_card())
 
     views: list[dict[str, Any]] = [_panel_view("AV Control", "av-control", control_cards)]
 
@@ -890,8 +885,6 @@ def build_dashboard(
                     _route_actions_card(),
                     _label("Sources"),
                     _keys(page_title, buttons, channel_columns),
-                    _label("Actions"),
-                    _route_actions_card(),
                 ]
             )
             views.append(_panel_view(page_title, page_path, page_cards))
